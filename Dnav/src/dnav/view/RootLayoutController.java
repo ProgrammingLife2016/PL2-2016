@@ -28,15 +28,19 @@ public class RootLayoutController {
 
     private TreeNode currentRoot;
 
+    private static RootLayoutController controller;
+    public final static double GRAPH_BORDER_OFFSET = 5.0;
+
     /**
      * Initializes the controller class.
      */
     public void initialize() {
-        // TODO
+        assert (controller == null);
+        controller = this;
     }
 
     public void handleSceneWidthChanged() {
-//        setRoot(currentRoot);
+        setRoot(currentRoot);
     }
 
     public void handleSceneHeightChanged() {
@@ -49,34 +53,9 @@ public class RootLayoutController {
     }
 
     private void setRoot(TreeNode root) {
-//        System.out.println("root.getChildCount() = " + root.getChildCount());
         currentRoot = root;
         graphPane.getChildren().clear();
-        drawNode(root, 5, 10, graphPane.getWidth() * 0.8, 10, graphPane.getHeight() - 10);
-    }
-
-    private ViewNode drawNode(TreeNode dataNode, int levels, double startX, double endX,
-            double startY, double endY) {
-        ViewNode r = new ViewNode(dataNode);
-        r.setCenterX(r.getRadius() + startX);
-        r.setCenterY((endY - startY) / 2.0 + startY);
-        r.setOnMouseClicked(clickNode);
-        graphPane.getChildren().add(r);
-
-        if (levels >= 1) {
-            int directChildren = dataNode.getDirectChildCount();
-            for (int i = 0; i < directChildren; i++) {
-                TreeNode data = dataNode.getChild(i);
-                double nextStartX = (endX - startX) / 2.0 + startX;
-                double ySize = (endY - startY) / directChildren;
-                double nextStartY = ySize * i + startY;
-                double nextEndY = nextStartY + ySize;
-                ViewNode child = drawNode(data, levels - 1, nextStartX, endX, nextStartY,
-                        nextEndY);
-                drawEdge(r, child);
-            }
-        }
-        return r;
+        ViewNode.drawRootNode(root);
     }
 
     private void drawEdge(ViewNode from, ViewNode to) {
@@ -89,7 +68,15 @@ public class RootLayoutController {
         edge.toBack();
     }
 
-    private final EventHandler<MouseEvent> clickNode = (MouseEvent event) -> {
+    public final EventHandler<MouseEvent> clickNode = (MouseEvent event) -> {
         setRoot(((ViewNode) event.getSource()).getDataNode());
     };
+
+    protected Pane getGraphPane() {
+        return graphPane;
+    }
+
+    protected static RootLayoutController getController() {
+        return controller;
+    }
 }
