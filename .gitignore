@@ -248,3 +248,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 
+### Netbeans ###
+nbproject/
+build/
+manifest.mf
+build.xml
