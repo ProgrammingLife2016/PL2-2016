@@ -1,5 +1,6 @@
 package dnav;
 
+import dnav.model.TreeNode;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +25,7 @@ public class Dnav extends Application {
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(Dnav.class.getResource("view/RootLayout.fxml"));
-        Scene scene = new Scene(loader.load(), 600, 400);
+        Scene scene = new Scene(loader.load(), 1000, 800);
         RootLayoutController controller = loader.getController();
         scene.widthProperty().addListener(o -> {
             controller.handleSceneWidthChanged();
@@ -34,6 +35,12 @@ public class Dnav extends Application {
         });
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        insertData(controller);
+    }
+
+    private void insertData(RootLayoutController controller) {
+        controller.insertData(TreeNode.createRandomGraph(10, 3));
     }
 
     /**
