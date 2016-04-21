@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane fx:id="spane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="proto.RootLayoutController">
+   <children>
+      <Pane fx:id="graphPane" prefHeight="200.0" prefWidth="200.0" />
+      <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <MenuBar AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Settings">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                    </items>
+                  </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <HBox alignment="BASELINE_LEFT" layoutX="137.0" layoutY="93.0" maxHeight="-Infinity" minHeight="-Infinity" pickOnBounds="false" prefHeight="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0">
+               <children>
+                  <StackPane fx:id="locationIdentifierPane" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="120.0">
+                     <children>
+                        <ImageView fitHeight="80.0" fitWidth="120.0" pickOnBounds="true" StackPane.alignment="TOP_LEFT">
+                           <image>
+                              <Image url="@BLACK.png" />
+                           </image>
+                        </ImageView>
+                        <Rectangle fx:id="locationIdentifierRectangle" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="80.0" stroke="RED" strokeType="INSIDE" width="120.0" StackPane.alignment="TOP_LEFT" />
+                     </children>
+                  </StackPane>
+                  <Slider fx:id="zoomInSlider" blockIncrement="0.1" max="0.9" prefHeight="14.0" prefWidth="120.0" translateY="-10.0" HBox.hgrow="NEVER">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Slider>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
