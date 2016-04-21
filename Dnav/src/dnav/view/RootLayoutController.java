@@ -1,4 +1,4 @@
-package proto;
+package dnav.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;
@@ -14,8 +14,6 @@ import javafx.scene.shape.Rectangle;
 public class RootLayoutController {
 
     @FXML
-    private StackPane spane;
-    @FXML
     private Pane graphPane;
     @FXML
     private StackPane locationIdentifierPane;
@@ -23,7 +21,7 @@ public class RootLayoutController {
     private Rectangle locationIdentifierRectangle;
     @FXML
     private Slider zoomInSlider;
-    
+
     /**
      * Initializes the controller class.
      */
@@ -31,4 +29,9 @@ public class RootLayoutController {
         // TODO
     }
 
+    public void handleSceneWidthChanged() {
+    }
+
+    public void handleSceneHeightChanged() {
+    }
 }
