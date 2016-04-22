@@ -5,7 +5,7 @@
  ******************************************************************************/
 
 .root {
-    -fx-base: derive(backgroundcolor, 60%); 
+    -fx-base: derive(backgroundcolor, 75%); 
 
     /* Base color for window backgrounds */
     backgroundcolor: rgba(0, 0, 0, 1);
@@ -27,15 +27,15 @@
     -fx-font: 14pt 'Verdana';
     -fx-font-weight: bold;
     -fx-text-fill: derive(backgroundcolor, 80%);
-    -fx-background-color: derive(backgroundcolor, 40%);
+    -fx-background-color: derive(backgroundcolor, 45%);
 }
 
 .button:hover {
-    -fx-background-color: derive(backgroundcolor, 30%);
+    -fx-background-color: derive(backgroundcolor, 35%);
 }
 
 .button:pressed {
-    -fx-background-color: derive(backgroundcolor, 25%);
+    -fx-background-color: derive(backgroundcolor, 30%);
 }
 
 .button:disabled {
@@ -60,4 +60,32 @@
 
 .split-pane:horizontal > .split-pane-divider {
     -fx-background-color: derive(backgroundcolor, 50%);
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Menu Bar                                                                    *
+ *                                                                             *
+ ******************************************************************************/
+
+
+.menu-bar {
+    -fx-font: 9pt 'Verdana';
+    -fx-background-color: derive(backgroundcolor, 20%);
+    -fx-effect: dropshadow(three-pass-box, white, 3px, 0, 0, 0);
+}
+
+.menu-bar > .container > .menu-button:hover,
+.menu-bar > .container > .menu-button:focused,
+.menu-bar > .container > .menu-button:showing {
+    -fx-background-color: derive(backgroundcolor, 40%);
+}
+
+.menu-bar > .container > .menu-button:showing {
+    -fx-background-color: derive(backgroundcolor, 40%);
+}
+
+.menu-item > .label {
+    -fx-font: 10pt 'Verdana';
+    -fx-text-fill: derive(backgroundcolor, 20%);
 }
