@@ -27,15 +27,9 @@ public class Dnav extends Application {
         loader.setLocation(Dnav.class.getResource("view/RootLayout.fxml"));
         Scene scene = new Scene(loader.load(), 1000, 800);
         RootLayoutController controller = loader.getController();
-        scene.widthProperty().addListener(o -> {
-            controller.handleSceneWidthChanged();
-        });
-        scene.heightProperty().addListener(o -> {
-            controller.handleSceneHeightChanged();
-        });
         primaryStage.setScene(scene);
         primaryStage.show();
-        
+
         insertData(controller);
     }
 

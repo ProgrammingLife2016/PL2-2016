@@ -3,7 +3,7 @@ package dnav.model;
 import java.util.Random;
 
 /**
- *
+ * Dummy tree class.
  * @author Faris
  */
 public class TreeNode {
