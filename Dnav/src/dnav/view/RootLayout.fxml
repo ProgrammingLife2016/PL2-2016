@@ -66,11 +66,6 @@
                         <Rectangle fx:id="locationIdentifierRectangle" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="80.0" stroke="RED" strokeType="INSIDE" width="120.0" StackPane.alignment="TOP_LEFT" />
                      </children>
                   </StackPane>
-                  <Slider fx:id="zoomInSlider" blockIncrement="0.01" disable="true" max="1.0" prefHeight="14.0" prefWidth="120.0" translateY="-10.0" HBox.hgrow="NEVER">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Slider>
                </children>
             </HBox>
          </children>
