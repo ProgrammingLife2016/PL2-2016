@@ -46,7 +46,7 @@ public class TreeController {
             }
             if (currentRoot.getDataNode().hasParent()) {
                 Timeline timeline = new Timeline();
-                currentRoot.zoomOut(currentRoot, timeline);
+                currentRoot.zoomOut(timeline);
                 timeline.setOnFinished(e2 -> {
                     setRoot(currentRoot.getDataNode().getParent());
                     isZooming = false;
