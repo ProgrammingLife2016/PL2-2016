@@ -155,10 +155,10 @@ public class ViewNode extends Circle {
     }
 
     /**
-     * Zoom in on a node and animate the zooming proces.
+     * Animate the zoom in on a node.
      *
      * @param newRoot the node which should be the root after zooming in.
-     * @param timeline
+     * @param timeline the timeline which is used for the animation.
      */
     public void zoomIn(ViewNode newRoot, Timeline timeline) {
         zoomIn(this.graphArea, newRoot.graphArea, timeline);
@@ -188,8 +188,13 @@ public class ViewNode extends Circle {
         }
     }
 
-    public void zoomOut(ViewNode oldRoot, Timeline timeline) {
-        TreeNode newRoot = oldRoot.dataNode.getParent();
+    /**
+     * Animate the zoom out of 1 level (to the direct parent of the current root).
+     *
+     * @param timeline the timeline which is used for the animation.
+     */
+    public void zoomOut(Timeline timeline) {
+        TreeNode newRoot = dataNode.getParent();
         double nextStartX = graphArea.getCenterX();
         double ySize = graphArea.getHeight() / newRoot.getDirectChildCount();
         double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + graphArea.startY;
@@ -198,6 +203,13 @@ public class ViewNode extends Circle {
         zoomOut(this.graphArea, newArea, timeline);
     }
 
+    /**
+     * Zoom out and animate the zooming proces.
+     *
+     * @param originalArea the area of the currently drawn tree.
+     * @param zoomArea the area of the tree where the current tree will be drawn after zooming out.
+     * @param timeline the timeline which is used for the animation.
+     */
     private void zoomOut(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
         double newX = (getCenterX() - originalArea.startX - NODE_RADIUS);
         newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.startX;

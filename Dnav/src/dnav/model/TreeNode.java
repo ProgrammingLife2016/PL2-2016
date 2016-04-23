@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @author Faris
  */
-public class TreeNode {
+public class TreeNode implements IPhylogeneticTree {
 
     private final TreeNode parent;
     private final TreeNode[] children;
@@ -57,6 +57,7 @@ public class TreeNode {
     }
 
     public TreeNode getParent() {
+        assert hasParent();
         return parent;
     }
 
@@ -68,18 +69,4 @@ public class TreeNode {
         }
         throw new ArrayIndexOutOfBoundsException();
     }
-
-    public String recusiveToString(int level) {
-        StringBuilder res = new StringBuilder();
-        for (int i = 0; i < level; i++) {
-            res.append("  ");
-        }
-        res.append("> node");
-        res.append('\n');
-        for (TreeNode child : children) {
-            res.append(child.recusiveToString(level + 1));
-        }
-        return res.toString();
-    }
-
 }
