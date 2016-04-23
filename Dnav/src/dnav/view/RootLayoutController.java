@@ -24,8 +24,6 @@ public class RootLayoutController {
     private StackPane locationIdentifierPane;
     @FXML
     private Rectangle locationIdentifierRectangle;
-    @FXML
-    private Slider zoomInSlider;
 
     private TreeNode currentRoot;
 
