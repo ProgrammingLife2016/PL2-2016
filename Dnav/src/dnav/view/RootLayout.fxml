@@ -23,7 +23,7 @@
    <children>
       <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
          <children>
-            <Button fx:id="zoomOutButton" disable="true" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#zoomOutButtonClicked" prefHeight="400.0" prefWidth="20.0" styleClass="zoomOutButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0" />
+            <Button fx:id="zoomOutButton" disable="true" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="400.0" prefWidth="20.0" styleClass="zoomOutButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0" />
             <SplitPane dividerPositions="0.8" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                <items>
                   <Pane fx:id="graphPane" minWidth="60.0" prefHeight="400.0" prefWidth="460.0" SplitPane.resizableWithParent="false" />
