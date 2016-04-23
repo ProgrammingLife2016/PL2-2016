@@ -158,14 +158,10 @@ public class ViewNode extends Circle {
      * Zoom in on a node and animate the zooming proces.
      *
      * @param newRoot the node which should be the root after zooming in.
+     * @param timeline
      */
-    public void zoomIn(ViewNode newRoot) {
-        Timeline tl = new Timeline();
-        zoomIn(this.graphArea, newRoot.graphArea, tl);
-        tl.setOnFinished(e -> {
-            controller.setRoot(newRoot.dataNode);
-        });
-        tl.play();
+    public void zoomIn(ViewNode newRoot, Timeline timeline) {
+        zoomIn(this.graphArea, newRoot.graphArea, timeline);
     }
 
     /**
@@ -192,28 +188,22 @@ public class ViewNode extends Circle {
         }
     }
 
-    public void zoomOut(ViewNode oldRoot) {
+    public void zoomOut(ViewNode oldRoot, Timeline timeline) {
         TreeNode newRoot = oldRoot.dataNode.getParent();
-        Timeline tl = new Timeline();
         double nextStartX = graphArea.getCenterX();
         double ySize = graphArea.getHeight() / newRoot.getDirectChildCount();
         double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + graphArea.startY;
         double nextEndY = nextStartY + ySize;
         GraphArea newArea = new GraphArea(nextStartX, this.graphArea.endX, nextStartY, nextEndY);
-        zoomOut(this.graphArea, newArea, tl);
-        tl.setOnFinished(e -> {
-            controller.setRoot(newRoot);
-        });
-        tl.play();
+        zoomOut(this.graphArea, newArea, timeline);
     }
 
     private void zoomOut(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
         double newX = (getCenterX() - originalArea.startX - NODE_RADIUS);
         newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.startX;
-        newX += NODE_RADIUS + TreeController.GRAPH_BORDER_OFFSET;
+        newX += NODE_RADIUS;
         double newY = (getCenterY() - originalArea.startY);
         newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.startY;
-        newY += TreeController.GRAPH_BORDER_OFFSET;
 
         KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
         KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);

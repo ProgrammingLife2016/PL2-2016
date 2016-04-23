@@ -4,7 +4,6 @@ import dnav.model.TreeNode;
 import dnav.view.graph.TreeController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;

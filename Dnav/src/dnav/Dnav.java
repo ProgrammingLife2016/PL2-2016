@@ -36,7 +36,7 @@ public class Dnav extends Application {
     }
 
     private void insertData(RootLayoutController controller) {
-        controller.setData(TreeNode.createRandomGraph(10, 4));
+        controller.setData(TreeNode.createRandomGraph(10, 2));
     }
 
     /**
