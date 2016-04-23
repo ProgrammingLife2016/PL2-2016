@@ -28,7 +28,7 @@ public class TreeNode {
         }
         Random rand = new Random();
         int children = rand.nextInt(maxChildren - 1) + 2; // between 2 and maxChildren
-        if (rand.nextDouble() < 0.01) {
+        if (rand.nextDouble() * treeDepth < 0.5) {
             children = 0;
         }
         TreeNode res = new TreeNode(parent, children);
