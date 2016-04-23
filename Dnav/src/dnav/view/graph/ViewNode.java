@@ -20,7 +20,7 @@ public class ViewNode extends Circle {
 
     private final static double NODE_RADIUS = 10.0;
     private final static double NODE_DIAMETER = NODE_RADIUS * 2.0;
-    private final static Duration ANIMATION_DURATION = Duration.millis(500.0);
+    private final static Duration ANIMATION_DURATION = Duration.millis(750.0);
 
     private final TreeNode dataNode;
     private final ViewNode parent;
@@ -99,7 +99,7 @@ public class ViewNode extends Circle {
         ViewNode node = new ViewNode(dataNode, parent, graphArea, controller);
         controller.getGraphPane().getChildren().add(node);
         double nextStartX = graphArea.getCenterX();
-        double ySize = (graphArea.endY - graphArea.startY) / dataNode.getDirectChildCount();
+        double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
         for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
             TreeNode childDataNode = dataNode.getChild(i);
             double nextStartY = ySize * i + graphArea.startY;
@@ -192,11 +192,35 @@ public class ViewNode extends Circle {
         }
     }
 
-//    public void zoomOut(ViewNode oldRoot, TreeNode newRoot) {
-//        
-//    }
-//    
-//    private void zoomOut(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
-//        
-//    }
+    public void zoomOut(ViewNode oldRoot) {
+        TreeNode newRoot = oldRoot.dataNode.getParent();
+        Timeline tl = new Timeline();
+        double nextStartX = graphArea.getCenterX();
+        double ySize = graphArea.getHeight() / newRoot.getDirectChildCount();
+        double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + graphArea.startY;
+        double nextEndY = nextStartY + ySize;
+        GraphArea newArea = new GraphArea(nextStartX, this.graphArea.endX, nextStartY, nextEndY);
+        zoomOut(this.graphArea, newArea, tl);
+        tl.setOnFinished(e -> {
+            controller.setRoot(newRoot);
+        });
+        tl.play();
+    }
+
+    private void zoomOut(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
+        double newX = (getCenterX() - originalArea.startX - NODE_RADIUS);
+        newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.startX;
+        newX += NODE_RADIUS + TreeController.GRAPH_BORDER_OFFSET;
+        double newY = (getCenterY() - originalArea.startY);
+        newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.startY;
+        newY += TreeController.GRAPH_BORDER_OFFSET;
+
+        KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
+        KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
+        timeline.getKeyFrames().add(new KeyFrame(ANIMATION_DURATION, kvX, kvY));
+
+        for (ViewNode child : children) {
+            child.zoomOut(originalArea, zoomArea, timeline);
+        }
+    }
 }
