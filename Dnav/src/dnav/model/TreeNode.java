@@ -4,6 +4,7 @@ import java.util.Random;
 
 /**
  * Dummy tree class.
+ *
  * @author Faris
  */
 public class TreeNode {
@@ -57,6 +58,15 @@ public class TreeNode {
 
     public TreeNode getParent() {
         return parent;
+    }
+
+    public int getChildIndex(TreeNode child) {
+        for (int i = 0; i < children.length; i++) {
+            if (children[i] == child) {
+                return i;
+            }
+        }
+        throw new ArrayIndexOutOfBoundsException();
     }
 
     public String recusiveToString(int level) {

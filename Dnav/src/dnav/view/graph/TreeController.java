@@ -39,8 +39,8 @@ public class TreeController {
     private void initializeZoomEventHandlers() {
         zoomOutButton.setOnAction(e -> {
             if (currentRoot.getDataNode().hasParent()) {
-                setRoot(currentRoot.getDataNode().getParent());
-//                currentRoot.zoomOut(currentRoot, currentRoot.getDataNode().getParent());
+//                setRoot(currentRoot.getDataNode().getParent());
+                currentRoot.zoomOut(currentRoot);
             } else {
                 zoomOutButton.setDisable(true);
             }
