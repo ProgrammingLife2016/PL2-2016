@@ -10,7 +10,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 /**
- * FXML Controller class
+ * FXML Controller class.
  *
  * @author Faris
  */
@@ -40,27 +40,13 @@ public class RootLayoutController {
         controller = this;
     }
 
+    /**
+     * Set the data which has to be visualized.
+     *
+     * @param root the root of the tree which has to be drawn.
+     */
     public void setData(TreeNode root) {
         assert treeController == null;
         treeController = new TreeController(graphPane, root, zoomOutButton);
-//        setRoot(root);
     }
-
-//    public void setRoot(TreeNode root) {
-//        zoomOutButton.setDisable(!root.hasParent());
-//        currentRoot = root;
-//        graphPane.getChildren().clear();
-//        ViewNode.drawRootNode(root, graphPane);
-//    }
-//
-//    public static RootLayoutController getController() {
-//        return controller;
-//    }
-
-//    @FXML
-//    private void zoomOutButtonClicked() {
-////        if (currentRoot.hasParent()) {
-////            setRoot(currentRoot.getParent());
-////        }
-//    }
 }
