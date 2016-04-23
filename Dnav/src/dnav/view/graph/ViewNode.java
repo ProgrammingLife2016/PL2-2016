@@ -1,6 +1,6 @@
 package dnav.view.graph;
 
-import dnav.model.TreeNode;
+import dnav.model.IPhylogeneticTree;
 import java.util.ArrayList;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -22,7 +22,7 @@ public class ViewNode extends Circle {
     private final static double NODE_DIAMETER = NODE_RADIUS * 2.0;
     private final static Duration ANIMATION_DURATION = Duration.millis(750.0);
 
-    private final TreeNode dataNode;
+    private final IPhylogeneticTree dataNode;
     private final ViewNode parent;
     private final ArrayList<ViewNode> children = new ArrayList<>();
     private Line edge, elipsis;
@@ -38,7 +38,7 @@ public class ViewNode extends Circle {
      * @param graphArea the graph area in which the node has to be drawn.
      * @param controller the controller of the tree.
      */
-    private ViewNode(TreeNode dataNode, ViewNode parent, GraphArea graphArea,
+    private ViewNode(IPhylogeneticTree dataNode, ViewNode parent, GraphArea graphArea,
             TreeController controller) {
         super(NODE_RADIUS);
         this.dataNode = dataNode;
@@ -60,7 +60,7 @@ public class ViewNode extends Circle {
      *
      * @return the data of this node.
      */
-    protected TreeNode getDataNode() {
+    protected IPhylogeneticTree getDataNode() {
         return dataNode;
     }
 
@@ -71,7 +71,7 @@ public class ViewNode extends Circle {
      * @param controller the controller of the tree.
      * @return the view node of the root.
      */
-    protected static ViewNode drawRootNode(TreeNode root, TreeController controller) {
+    protected static ViewNode drawRootNode(IPhylogeneticTree root, TreeController controller) {
         Pane graphPane = controller.getGraphPane();
         double startX = TreeController.GRAPH_BORDER_OFFSET;
         double endX = graphPane.getWidth() - TreeController.GRAPH_BORDER_OFFSET;
@@ -90,7 +90,7 @@ public class ViewNode extends Circle {
      * @param controller the controller of the tree.
      * @return the drawn view node.
      */
-    private static ViewNode drawNode(TreeNode dataNode, ViewNode parent, GraphArea graphArea,
+    private static ViewNode drawNode(IPhylogeneticTree dataNode, ViewNode parent, GraphArea graphArea,
             TreeController controller) {
         if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
                 || dataNode == null) {
@@ -101,7 +101,7 @@ public class ViewNode extends Circle {
         double nextStartX = graphArea.getCenterX();
         double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
         for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
-            TreeNode childDataNode = dataNode.getChild(i);
+            IPhylogeneticTree childDataNode = dataNode.getChild(i);
             double nextStartY = ySize * i + graphArea.startY;
             double nextEndY = nextStartY + ySize;
             GraphArea childArea = new GraphArea(nextStartX, graphArea.endX, nextStartY, nextEndY);
@@ -194,7 +194,7 @@ public class ViewNode extends Circle {
      * @param timeline the timeline which is used for the animation.
      */
     public void zoomOut(Timeline timeline) {
-        TreeNode newRoot = dataNode.getParent();
+        IPhylogeneticTree newRoot = dataNode.getParent();
         double nextStartX = graphArea.getCenterX();
         double ySize = graphArea.getHeight() / newRoot.getDirectChildCount();
         double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + graphArea.startY;

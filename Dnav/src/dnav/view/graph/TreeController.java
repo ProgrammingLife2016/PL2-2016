@@ -1,6 +1,6 @@
 package dnav.view.graph;
 
-import dnav.model.TreeNode;
+import dnav.model.IPhylogeneticTree;
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -26,7 +26,7 @@ public class TreeController {
      * @param root the root node of the tree.
      * @param zoomOutButton the zoom out button.
      */
-    public TreeController(Pane graphPane, TreeNode root, Button zoomOutButton) {
+    public TreeController(Pane graphPane, IPhylogeneticTree root, Button zoomOutButton) {
         this.graphPane = graphPane;
         this.zoomOutButton = zoomOutButton;
         initializeZoomInEventHandler();
@@ -100,7 +100,7 @@ public class TreeController {
      *
      * @param root the root of the part of the tree which should be shown.
      */
-    protected final void setRoot(TreeNode root) {
+    protected final void setRoot(IPhylogeneticTree root) {
         zoomOutButton.setDisable(!root.hasParent());
         graphPane.getChildren().clear();
         currentRoot = ViewNode.drawRootNode(root, this);
