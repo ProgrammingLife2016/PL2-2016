@@ -9,9 +9,9 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <modules>
-        <module>pl2016gr2-launcher</module>
-        <module>pl2016gr2-shared</module>
-        <module>pl2016gr2-gui</module>
+        <module>PL2-launcher</module>
+        <module>PL2-shared</module>
+        <module>PL2-gui</module>
     </modules>
 
     <build>
