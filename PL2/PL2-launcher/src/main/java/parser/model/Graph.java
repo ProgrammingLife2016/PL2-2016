@@ -22,6 +22,13 @@ public class Graph {
 		this.size = nodes.size();
 		this.nodes = nodes;
 	}
+	
+	public void print() {
+		for(Node n : nodes) {
+			if (n.getId() != 0)
+				System.out.println(n.getId() + " " + n.getFlow());
+		}
+	}
 
 	public Node getRoot() {
 		return root;

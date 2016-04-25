@@ -11,7 +11,7 @@ public class Node {
 	
 	private ArrayList<Edge> in;
 	private ArrayList<Edge> out;
-	private int id;
+	private int id, flow;
 	
 	/**
 	 * Construct a new node.
@@ -61,6 +61,14 @@ public class Node {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getFlow() {
+		return flow;
+	}
+	
+	public void setFlow(int f) {
+		this.flow = f;
 	}
 
 }

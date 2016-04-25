@@ -20,14 +20,15 @@ public class GFAReader {
 	private Graph g;
 	//This is ugly hardcoded, but this way we know how much nodes we have to initialize.
 	//@Wouter and Justin, you can probably find some better way to know this beforehand. (read the file from the bottom for example)
-	public static final int NUM_NODES = 8728;
+	public final int NUM_NODES;
 	private ArrayList<Node> nodes;
 	
 	/**
 	 * Creates a reader object and reads the gfa data from the filename.
 	 * @param filename the name of the file to be read.
 	 */
-	public GFAReader(String filename) {
+	public GFAReader(String filename, int graphsize) {
+		this.NUM_NODES = graphsize;
 		File f = new File(filename);
 		try {
 			this.sc = new Scanner(f);
