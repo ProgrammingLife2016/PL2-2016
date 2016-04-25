@@ -7,8 +7,8 @@ package parser.model;
  */
 public class Edge {
 	
-	private Node parent;
-	private Node child;
+	private Node source;
+	private Node target;
 	//We can add for example a weight to this.
 	
 	/**
@@ -16,25 +16,25 @@ public class Edge {
 	 * @param p the parent.
 	 * @param c the child.
 	 */
-	public Edge(Node p, Node c) {
-		this.parent = p;
-		this.child = c;
+	public Edge(Node source, Node target) {
+		this.source = source;
+		this.target = target;
 	}
 
-	public Node getParent() {
-		return parent;
+	public Node getSource() {
+		return source;
 	}
 
-	public void setParent(Node parent) {
-		this.parent = parent;
+	public void setSource(Node source) {
+		this.source = source;
 	}
 
-	public Node getChild() {
-		return child;
+	public Node getTarget() {
+		return target;
 	}
 
-	public void setChild(Node child) {
-		this.child = child;
+	public void setTarget(Node target) {
+		this.target = target;
 	}
 
 }

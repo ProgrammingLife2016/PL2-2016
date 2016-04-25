@@ -11,7 +11,9 @@ public class Node {
 	
 	private ArrayList<Edge> in;
 	private ArrayList<Edge> out;
-	private int id, flow;
+	private double flow;
+	private int id, bubbleStart, bubbleEnd;
+	private boolean isInDel;
 	
 	/**
 	 * Construct a new node.
@@ -21,6 +23,26 @@ public class Node {
 		this.in = new ArrayList<Edge>();
 		this.out = new ArrayList<Edge>();
 		this.id = id;
+		this.flow = 0;
+		this.bubbleStart = 0;
+		this.bubbleEnd = 0;
+		this.isInDel = false;
+	}
+	
+	@Override
+	public String toString() {
+		return id + " inedges: " + in.size() + " outedges: " + out.size() + " flow: " + flow + " bubble (" + bubbleStart + ", " + bubbleEnd + ")" + " isInDel: " + isInDel;
+	}
+	
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof Node) {
+			Node node = (Node) object;
+			
+			return node.id == this.id;
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -37,6 +59,22 @@ public class Node {
 	 */
 	public void addOut(Edge e) {
 		out.add(e);
+	}
+	
+	public boolean isInDel() {
+		return isInDel;
+	}
+	
+	public void setInDel(boolean isInDel) {
+		this.isInDel = isInDel;
+	}
+	
+	public void setBubbleStart(int bubbleStart) {
+		this.bubbleStart = bubbleStart;
+	}
+	
+	public void setBubbleEnd(int bubbleEnd) {
+		this.bubbleEnd = bubbleEnd;
 	}
 
 	public ArrayList<Edge> getIn() {
@@ -63,12 +101,16 @@ public class Node {
 		this.id = id;
 	}
 	
-	public int getFlow() {
+	public double getFlow() {
 		return flow;
 	}
 	
-	public void setFlow(int f) {
+	public void setFlow(double f) {
 		this.flow = f;
+	}
+	
+	public void addFlow(double flow) {
+		this.flow += flow;
 	}
 
 }

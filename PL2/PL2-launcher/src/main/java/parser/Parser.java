@@ -1,7 +1,8 @@
 package parser;
 
 import parser.controller.GFAReader;
-import parser.controller.MutationAlgorithm;
+import parser.model.FilterInDels;
+import parser.model.FindBubbles;
 import parser.model.Graph;
 
 /**
@@ -11,8 +12,9 @@ import parser.model.Graph;
  */
 public class Parser {
 	
-	public static final String FILENAME = "src/main/java/Resources/TEST3.gfa";
-	public static final int GRAPH_SIZE = 10;
+	public static final String FILENAME = "src/main/java/Resources/TB10.gfa";
+	public static final int GRAPH_SIZE = 8728;
+	//public static final int GRAPH_SIZE = 10;
 
 	/**
 	 * Main method to call. It prints the number of lines in the file (in the reader class), the number of nodes (+1 for node 0), 
@@ -26,8 +28,13 @@ public class Parser {
 		System.out.println("Size of the graph: " + g.getSize());
 		long e = System.currentTimeMillis();
 		System.out.println("The loading took " + (e - s) + " milliseconds to run");
-		MutationAlgorithm m = new MutationAlgorithm();
-		m.calc(g);
+		//MutationAlgorithm m = new MutationAlgorithm();
+		//m.calc(g);
+//		FindBubbles findBubbles = new FindBubbles(g);
+//		findBubbles.calculateFlows();
+		FilterInDels filter = new FilterInDels(g);
+		Graph filteredGraph = filter.filterGraph();
+		filteredGraph.print();
 		g.print();
 		//System.out.println(g.getNodes().get(8).getIn().get(0).getParent().getFlow());
 		long f = System.currentTimeMillis();

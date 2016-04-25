@@ -10,7 +10,6 @@ import java.util.ArrayList;
 public class Graph {
 	
 	private Node root;
-	private int size;
 	private ArrayList<Node> nodes;
 	
 	/**
@@ -19,14 +18,13 @@ public class Graph {
 	 */
 	public Graph(ArrayList<Node> nodes) {
 		this.root = nodes.get(1);
-		this.size = nodes.size();
 		this.nodes = nodes;
 	}
 	
 	public void print() {
 		for(Node n : nodes) {
 			if (n.getId() != 0)
-				System.out.println(n.getId() + " " + n.getFlow());
+				System.out.println(n);
 		}
 	}
 
@@ -39,19 +37,15 @@ public class Graph {
 	}
 
 	public int getSize() {
-		return size;
-	}
-
-	public void setSize(int size) {
-		this.size = size;
+		return nodes.size();
 	}
 
 	public ArrayList<Node> getNodes() {
 		return nodes;
 	}
 
-	public void setNodes(ArrayList<Node> nodes) {
-		this.nodes = nodes;
+	public void addNode(Node node) {
+		nodes.add(node);
 	}
 	
 	
