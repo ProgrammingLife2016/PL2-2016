@@ -14,7 +14,7 @@ import nl.tudelft.pl2016gr2.parser.model.Graph;
  */
 public class Parser {
 	
-	public static final String FILENAME = "PL2-launcher///src/main/resources/TB10.gfa";
+	public static final String FILENAME = "TB10.gfa";
 
 	/**
 	 * Main method to call. It prints the number of lines in the file (in the reader class), the number of nodes (+1 for node 0), 
