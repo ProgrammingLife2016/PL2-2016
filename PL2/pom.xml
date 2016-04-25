@@ -12,6 +12,7 @@
         <module>PL2-launcher</module>
         <module>PL2-shared</module>
         <module>PL2-gui</module>
+        <module>PL2-parser</module>
     </modules>
 
     <build>
