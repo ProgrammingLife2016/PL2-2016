@@ -1,20 +1,20 @@
-package parser;
+package nl.tudelft.pl2016gr2.parser;
 
 import java.util.ArrayList;
 
-import parser.controller.GFAReader;
-import parser.controller.MutationAlgorithm;
-import parser.model.Edge;
-import parser.model.Graph;
+import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
+import nl.tudelft.pl2016gr2.parser.controller.MutationAlgorithm;
+import nl.tudelft.pl2016gr2.parser.model.Edge;
+import nl.tudelft.pl2016gr2.parser.model.Graph;
 
 /**
- * This class acts as the launcher for my simple parser.
+ * This class acts as the launcher for my simple nl.tudelft.pl2016gr2.parser.
  * @author Cas
  *
  */
 public class Parser {
 	
-	public static final String FILENAME = "src/main/java/Resources/TB10.gfa";
+	public static final String FILENAME = "PL2-launcher///src/main/resources/TB10.gfa";
 
 	/**
 	 * Main method to call. It prints the number of lines in the file (in the reader class), the number of nodes (+1 for node 0), 

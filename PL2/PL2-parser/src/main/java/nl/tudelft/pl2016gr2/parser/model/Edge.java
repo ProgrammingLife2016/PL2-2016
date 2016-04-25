@@ -1,4 +1,4 @@
-package parser.model;
+package nl.tudelft.pl2016gr2.parser.model;
 
 /**
  * Data holder class which represents a directed edge.
