@@ -28,13 +28,15 @@ public class MutationAlgorithm {
 		int inSize = inedge.size();
 		int outSize = outedge.size();
 		int flow;
-		if (inSize >= outSize) {
-			flow = findMinimumFlow(inedge);
+		if (inSize == outSize) {
+			flow = n.getFlow();
+		} else if (inSize > outSize) {
+			flow = findMinimumFlow(inedge) - 1;
+			n.setFlow(flow);
 		} else {
 			flow = n.getFlow() + 1;
 		}
 		if (outSize == 0) {
-			//Of flow
 			n.setFlow(0);
 		} else {
 			sendFlow(outedge, flow);

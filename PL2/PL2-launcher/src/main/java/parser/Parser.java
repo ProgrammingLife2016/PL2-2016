@@ -11,8 +11,8 @@ import parser.model.Graph;
  */
 public class Parser {
 	
-	public static final String FILENAME = "src/main/java/Resources/TEST2.gfa";
-	public static final int GRAPH_SIZE = 7;
+	public static final String FILENAME = "src/main/java/Resources/TEST3.gfa";
+	public static final int GRAPH_SIZE = 10;
 
 	/**
 	 * Main method to call. It prints the number of lines in the file (in the reader class), the number of nodes (+1 for node 0), 
