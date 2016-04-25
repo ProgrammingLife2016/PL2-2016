@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Rectangle?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
+   <children>
+      <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Button fx:id="zoomOutButton" disable="true" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="400.0" prefWidth="20.0" styleClass="zoomOutButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0" />
+            <SplitPane dividerPositions="0.8" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+               <items>
+                  <Pane fx:id="graphPane" minWidth="60.0" prefHeight="400.0" prefWidth="460.0" SplitPane.resizableWithParent="false" />
+                  <Pane fx:id="heatmapPane" minWidth="10.0" prefHeight="200.0" prefWidth="120.0" SplitPane.resizableWithParent="false" />
+               </items>
+            </SplitPane>
+            <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <menus>
+                <Menu mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Close" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Delete" />
+                  </items>
+                </Menu>
+                  <Menu mnemonicParsing="false" text="Settings">
+                    <items>
+                      <MenuItem mnemonicParsing="false" text="Action 1" />
+                    </items>
+                  </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="About" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <HBox alignment="BASELINE_LEFT" layoutX="137.0" layoutY="93.0" maxHeight="-Infinity" minHeight="-Infinity" pickOnBounds="false" prefHeight="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="10.0">
+               <children>
+                  <StackPane fx:id="locationIdentifierPane" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="120.0">
+                     <children>
+                        <ImageView fitHeight="80.0" fitWidth="120.0" pickOnBounds="true" StackPane.alignment="TOP_LEFT">
+                           <image>
+                              <Image url="@BLACK.png" />
+                           </image>
+                        </ImageView>
+                        <Rectangle fx:id="locationIdentifierRectangle" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="80.0" stroke="RED" strokeType="INSIDE" width="120.0" StackPane.alignment="TOP_LEFT" />
+                     </children>
+                  </StackPane>
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>
