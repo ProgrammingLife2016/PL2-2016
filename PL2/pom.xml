@@ -15,6 +15,10 @@
         <module>PL2-parser</module>
     </modules>
 
+    <properties>
+        <PL2-shared-version>1.0-SNAPSHOT</PL2-shared-version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
