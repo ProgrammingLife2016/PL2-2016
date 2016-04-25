@@ -15,7 +15,7 @@ public class MutationAlgorithm {
 	public void calc(Graph g) {
 		Node r = g.getRoot();
 		ArrayList<Edge> out = r.getOut();
-		sendFlow(out, out.size());	
+		sendFlow(out, 1);	
 		while(!q.isEmpty()) {
 			Node n = q.poll();
 			iterate(n);
@@ -36,11 +36,7 @@ public class MutationAlgorithm {
 		} else {
 			flow = n.getFlow() + 1;
 		}
-		if (outSize == 0) {
-			n.setFlow(0);
-		} else {
-			sendFlow(outedge, flow);
-		}
+		sendFlow(outedge, flow);
 	}
 	
 	private void sendFlow(ArrayList<Edge> out, int flow) {
