@@ -32,7 +32,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>nl.tudelft.pl2016gr2.launcher.Main</mainClass>
+                            <mainClass>nl.tudelft.pl2016gr2.launcher.Dnav</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
