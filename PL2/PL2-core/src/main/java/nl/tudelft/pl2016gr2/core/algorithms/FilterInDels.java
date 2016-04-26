@@ -1,8 +1,12 @@
-package parser.model;
+package nl.tudelft.pl2016gr2.core.algorithms;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import nl.tudelft.pl2016gr2.model.Edge;
+import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.Node;
 
 public class FilterInDels {
 	

@@ -1,6 +1,10 @@
-package parser.model;
+package nl.tudelft.pl2016gr2.core.algorithms;
 
 import java.util.ArrayList;
+
+import nl.tudelft.pl2016gr2.model.Edge;
+import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.Node;
 
 public class FindBubbles {
 	

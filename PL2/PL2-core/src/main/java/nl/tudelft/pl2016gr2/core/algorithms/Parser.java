@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.parser;
+package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
@@ -10,7 +10,7 @@ import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
  */
 public class Parser {
 	
-	public static final String FILENAME = "TB10.gfa";
+	public static final String FILENAME = Parser.class.getClassLoader().getResource("TB10.gfa").getFile();
 	public static final int GRAPH_SIZE = 8728;
 	//public static final int GRAPH_SIZE = 10;
 
@@ -28,11 +28,11 @@ public class Parser {
 		System.out.println("The loading took " + (e - s) + " milliseconds to run");
 		//MutationAlgorithm m = new MutationAlgorithm();
 		//m.calc(g);
-//		FindBubbles findBubbles = new FindBubbles(g);
-//		findBubbles.calculateFlows();
-//		FilterInDels filter = new FilterInDels(g);
-//		Graph filteredGraph = filter.filterGraph();
-//		filteredGraph.print();
+		FindBubbles findBubbles = new FindBubbles(g);
+		findBubbles.calculateFlows();
+		FilterInDels filter = new FilterInDels(g);
+		Graph filteredGraph = filter.filterGraph();
+		filteredGraph.print();
 		g.print();
 		//System.out.println(g.getNodes().get(8).getIn().get(0).getParent().getFlow());
 		long f = System.currentTimeMillis();

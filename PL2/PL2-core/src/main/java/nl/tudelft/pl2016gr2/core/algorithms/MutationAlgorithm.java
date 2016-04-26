@@ -1,28 +1,29 @@
-package parser.controller;
+package nl.tudelft.pl2016gr2.core.algorithms;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import parser.model.Edge;
-import parser.model.Graph;
-import parser.model.Node;
+import nl.tudelft.pl2016gr2.model.Edge;
+import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.Node;
+
 
 public class MutationAlgorithm {
 	
 //	Queue<Node> q = new LinkedList<Node>();
-//	
+//
 //	public void calc(Graph g) {
 //		Node r = g.getRoot();
 //		ArrayList<Edge> out = r.getOut();
-//		sendFlow(out, 1);	
+//		sendFlow(out, 1);
 //		while(!q.isEmpty()) {
 //			Node n = q.poll();
 //			iterate(n);
-//			Sys tem.out.println(n);
+//			System.out.println(n);
 //		}
 //	}
-//	
+//
 //	private void iterate(Node n) {
 //		ArrayList<Edge> inedge = n.getIn();
 //		ArrayList<Edge> outedge = n.getOut();
@@ -39,7 +40,7 @@ public class MutationAlgorithm {
 //		}
 //		sendFlow(outedge, flow);
 //	}
-//	
+//
 //	private void sendFlow(ArrayList<Edge> out, int flow) {
 //		for (Edge e : out) {
 //			Node child = e.getChild();
@@ -49,7 +50,7 @@ public class MutationAlgorithm {
 //			//}
 //		}
 //	}
-//	
+//
 //	private int findMinimumFlow(ArrayList<Edge> inedge) {
 //		int res = Integer.MAX_VALUE;
 //		for(Edge e : inedge) {
