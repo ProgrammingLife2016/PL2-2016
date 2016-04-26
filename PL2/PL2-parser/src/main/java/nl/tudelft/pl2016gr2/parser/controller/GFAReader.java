@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import nl.tudelft.pl2016gr2.parser.model.Edge;
-import nl.tudelft.pl2016gr2.parser.model.Graph;
-import nl.tudelft.pl2016gr2.parser.model.Node;
+import nl.tudelft.pl2016gr2.model.Edge;
+import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.Node;
 
 /**
  * This class reads a gfa file

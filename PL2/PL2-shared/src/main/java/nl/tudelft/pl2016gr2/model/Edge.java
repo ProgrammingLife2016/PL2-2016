@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.parser.model;
+package nl.tudelft.pl2016gr2.model;
 
 /**
  * Data holder class which represents a directed edge.
@@ -13,8 +13,8 @@ public class Edge {
 	
 	/**
 	 * Creates a directed edge from p to c.
-	 * @param p the parent.
-	 * @param c the child.
+	 * @param source the source.
+	 * @param target the target.
 	 */
 	public Edge(Node source, Node target) {
 		this.source = source;

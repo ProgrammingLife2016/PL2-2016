@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.parser.model;
+package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 
