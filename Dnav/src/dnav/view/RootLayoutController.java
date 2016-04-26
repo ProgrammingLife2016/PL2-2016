@@ -1,5 +1,6 @@
 package dnav.view;
 
+import dnav.model.IPhylogeneticTreeNode;
 import dnav.model.TreeNode;
 import dnav.view.graph.TreeController;
 import javafx.fxml.FXML;
@@ -42,7 +43,7 @@ public class RootLayoutController {
      *
      * @param root the root of the tree which has to be drawn.
      */
-    public void setData(TreeNode root) {
+    public void setData(IPhylogeneticTreeNode root) {
         assert treeController == null;
         treeController = new TreeController(graphPane, root, zoomOutButton);
     }

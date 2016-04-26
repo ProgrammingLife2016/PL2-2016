@@ -7,7 +7,7 @@ import java.util.Random;
  *
  * @author Faris
  */
-public class TreeNode implements IPhylogeneticTree {
+public class TreeNode implements IPhylogeneticTreeNode {
 
     private final TreeNode parent;
     private final TreeNode[] children;
@@ -48,13 +48,13 @@ public class TreeNode implements IPhylogeneticTree {
         if (treeDepth <= 1) {
             return new TreeNode(parent, 0);
         }
-        Random rand = new Random();
-        int children = rand.nextInt(maxChildren - 1) + 2; // between 2 and maxChildren
-        if (rand.nextDouble() * treeDepth < 0.5) {
-            children = 0;
-        }
-        TreeNode res = new TreeNode(parent, children);
-        for (int i = 0; i < children; i++) {
+//        Random rand = new Random();
+//        int children = rand.nextInt(maxChildren - 1) + 2; // between 2 and maxChildren
+//        if (rand.nextDouble() * treeDepth < 0.5) {
+//            children = 0;
+//        }
+        TreeNode res = new TreeNode(parent, 2);
+        for (int i = 0; i < 2; i++) {
             res.children[i] = createRandomGraph(res, treeDepth - 1, maxChildren);
             res.childCount += res.children[i].childCount;
         }
@@ -88,7 +88,7 @@ public class TreeNode implements IPhylogeneticTree {
     }
 
     @Override
-    public int getChildIndex(IPhylogeneticTree child) {
+    public int getChildIndex(IPhylogeneticTreeNode child) {
         for (int i = 0; i < children.length; i++) {
             if (children[i] == child) {
                 return i;

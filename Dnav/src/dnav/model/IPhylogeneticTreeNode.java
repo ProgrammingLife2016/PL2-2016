@@ -6,7 +6,7 @@ package dnav.model;
  *
  * @author Faris
  */
-public interface IPhylogeneticTree {
+public interface IPhylogeneticTreeNode {
 
     /**
      * Check if this node has a parent.
@@ -20,7 +20,7 @@ public interface IPhylogeneticTree {
      *
      * @return the parent of this node.
      */
-    public IPhylogeneticTree getParent();
+    public IPhylogeneticTreeNode getParent();
 
     /**
      * Get the amount of direct child nodes (i.e. child nodes with an edge to this node).
@@ -43,7 +43,7 @@ public interface IPhylogeneticTree {
      * @param index the index of the child node.
      * @return the child at the given index.
      */
-    public IPhylogeneticTree getChild(int index);
+    public IPhylogeneticTreeNode getChild(int index);
 
     /**
      * Get the index of a direct child node.
@@ -51,5 +51,5 @@ public interface IPhylogeneticTree {
      * @param child a direct child node.
      * @return the index of the child ndoe.
      */
-    public int getChildIndex(IPhylogeneticTree child);
+    public int getChildIndex(IPhylogeneticTreeNode child);
 }
