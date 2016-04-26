@@ -1,18 +1,16 @@
-package parser;
+package nl.tudelft.pl2016gr2.parser;
 
-import parser.controller.GFAReader;
-import parser.model.FilterInDels;
-import parser.model.FindBubbles;
-import parser.model.Graph;
+import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
 
 /**
- * This class acts as the launcher for my simple parser.
+ * This class acts as the launcher for my simple nl.tudelft.pl2016gr2.parser.
  * @author Cas
  *
  */
 public class Parser {
 	
-	public static final String FILENAME = "src/main/java/Resources/TB10.gfa";
+	public static final String FILENAME = "TB10.gfa";
 	public static final int GRAPH_SIZE = 8728;
 	//public static final int GRAPH_SIZE = 10;
 
@@ -32,9 +30,9 @@ public class Parser {
 		//m.calc(g);
 //		FindBubbles findBubbles = new FindBubbles(g);
 //		findBubbles.calculateFlows();
-		FilterInDels filter = new FilterInDels(g);
-		Graph filteredGraph = filter.filterGraph();
-		filteredGraph.print();
+//		FilterInDels filter = new FilterInDels(g);
+//		Graph filteredGraph = filter.filterGraph();
+//		filteredGraph.print();
 		g.print();
 		//System.out.println(g.getNodes().get(8).getIn().get(0).getParent().getFlow());
 		long f = System.currentTimeMillis();

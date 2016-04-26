@@ -12,20 +12,35 @@
         <module>PL2-launcher</module>
         <module>PL2-shared</module>
         <module>PL2-gui</module>
+        <module>PL2-parser</module>
     </modules>
+
+    <properties>
+        <PL2-shared-version>1.0-SNAPSHOT</PL2-shared-version>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>nl.tudelft.pl2016gr2.launcher.Main</mainClass>
+                            <mainClass>nl.tudelft.pl2016gr2.launcher.Dnav</mainClass>
                         </manifest>
                     </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
                 </configuration>
             </plugin>
         </plugins>

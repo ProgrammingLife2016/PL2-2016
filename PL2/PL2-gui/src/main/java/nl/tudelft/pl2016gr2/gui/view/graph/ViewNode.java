@@ -1,6 +1,7 @@
-package dnav.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import dnav.model.IPhylogeneticTreeNode;
+import javafx.scene.shape.Circle;
+
 import java.util.ArrayList;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -11,6 +12,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphArea;
+import nl.tudelft.pl2016gr2.gui.view.graph.TreeController;
 
 /**
  *
@@ -31,10 +35,10 @@ public class ViewNode extends Circle {
     private boolean isLeaf = false;
 
     /**
-     * Create a view node.
+     * Create a nl.tudelft.pl2016gr2.gui.view node.
      *
      * @param dataNode the data of the node.
-     * @param parent the parent view node.
+     * @param parent the parent nl.tudelft.pl2016gr2.gui.view node.
      * @param graphArea the graph area in which the node has to be drawn.
      * @param controller the controller of the tree.
      */
@@ -69,7 +73,7 @@ public class ViewNode extends Circle {
      *
      * @param root the root node.
      * @param controller the controller of the tree.
-     * @return the view node of the root.
+     * @return the nl.tudelft.pl2016gr2.gui.view node of the root.
      */
     protected static ViewNode drawRootNode(IPhylogeneticTreeNode root, TreeController controller) {
         Pane graphPane = controller.getGraphPane();
@@ -88,7 +92,7 @@ public class ViewNode extends Circle {
      * @param parent the parent of the node to draw.
      * @param graphArea the area in which the node should be drawn.
      * @param controller the controller of the tree.
-     * @return the drawn view node.
+     * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
      */
     private static ViewNode drawNode(IPhylogeneticTreeNode dataNode, ViewNode parent, GraphArea graphArea,
             TreeController controller) {

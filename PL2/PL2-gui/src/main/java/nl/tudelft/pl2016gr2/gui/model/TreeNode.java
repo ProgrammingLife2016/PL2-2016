@@ -1,4 +1,4 @@
-package dnav.model;
+package nl.tudelft.pl2016gr2.gui.model;
 
 import java.util.Random;
 

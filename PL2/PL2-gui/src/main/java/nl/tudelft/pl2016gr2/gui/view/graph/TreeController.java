@@ -1,10 +1,10 @@
-package dnav.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import dnav.model.IPhylogeneticTreeNode;
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 
 /**
  *

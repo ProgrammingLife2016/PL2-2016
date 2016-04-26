@@ -1,13 +1,13 @@
-package parser.controller;
+package nl.tudelft.pl2016gr2.parser.controller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import parser.model.Edge;
-import parser.model.Graph;
-import parser.model.Node;
+import nl.tudelft.pl2016gr2.parser.model.Edge;
+import nl.tudelft.pl2016gr2.parser.model.Graph;
+import nl.tudelft.pl2016gr2.parser.model.Node;
 
 /**
  * This class reads a gfa file

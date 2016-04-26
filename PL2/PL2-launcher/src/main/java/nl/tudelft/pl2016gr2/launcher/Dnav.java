@@ -1,12 +1,12 @@
-package dnav;
+package nl.tudelft.pl2016gr2.launcher;
 
-import dnav.model.TreeNode;
 import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import dnav.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.gui.model.TreeNode;
+import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 
 /**
  *
@@ -24,7 +24,8 @@ public class Dnav extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Dnav.class.getResource("view/RootLayout.fxml"));
+        loader.setLocation(getClass().getClassLoader().getResource("RootLayout.fxml"));
+
         Scene scene = new Scene(loader.load(), 1000, 800);
         RootLayoutController controller = loader.getController();
         primaryStage.setMinHeight(400);
@@ -32,11 +33,12 @@ public class Dnav extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
+
         insertData(controller);
     }
 
     private void insertData(RootLayoutController controller) {
-        controller.setData(TreeNode.createRandomGraph(26, 2));
+        controller.setData(TreeNode.createRandomGraph(10, 2));
     }
 
     /**

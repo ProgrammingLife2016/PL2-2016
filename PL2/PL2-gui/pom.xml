@@ -11,5 +11,12 @@
 
     <artifactId>PL2-gui</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>nl.tudelft.pl2016gr2</groupId>
+            <artifactId>PL2-shared</artifactId>
+            <version>${PL2-shared-version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

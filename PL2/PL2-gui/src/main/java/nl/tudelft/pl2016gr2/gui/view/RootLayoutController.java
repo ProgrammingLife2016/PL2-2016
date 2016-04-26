@@ -1,13 +1,13 @@
-package dnav.view;
+package nl.tudelft.pl2016gr2.gui.view;
 
-import dnav.model.IPhylogeneticTreeNode;
-import dnav.model.TreeNode;
-import dnav.view.graph.TreeController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.model.TreeNode;
+import nl.tudelft.pl2016gr2.gui.view.graph.TreeController;
 
 /**
  * FXML Controller class.
