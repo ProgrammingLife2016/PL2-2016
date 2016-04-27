@@ -17,7 +17,7 @@ public class Graph {
 	 * @param nodes
 	 */
 	public Graph(ArrayList<Node> nodes) {
-		this.root = nodes.get(1);
+		//this.root = nodes.get(1);
 		this.nodes = nodes;
 	}
 	
@@ -29,7 +29,7 @@ public class Graph {
 	}
 
 	public Node getRoot() {
-		return root;
+		return nodes.get(1);
 	}
 
 	public void setRoot(Node root) {

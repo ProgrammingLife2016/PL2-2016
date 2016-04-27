@@ -29,11 +29,12 @@ public class AlgoRunner {
 		//MutationAlgorithm m = new MutationAlgorithm();
 		//m.calc(g);
 		FindBubbles findBubbles = new FindBubbles(g);
-		findBubbles.calculateFlows();
-		FilterInDels filter = new FilterInDels(g);
-		Graph filteredGraph = filter.filterGraph();
-		filteredGraph.print();
-		g.print();
+		findBubbles.calculateBubbles();
+//		findBubbles.calculateFlows();
+//		FilterInDels filter = new FilterInDels(g);
+//		Graph filteredGraph = filter.filterGraph();
+//		filteredGraph.print();
+		//g.print();
 		//System.out.println(g.getNodes().get(8).getIn().get(0).getParent().getFlow());
 		long f = System.currentTimeMillis();
 		System.out.println("The algorithm took " + (f - e) + " milliseconds to run");

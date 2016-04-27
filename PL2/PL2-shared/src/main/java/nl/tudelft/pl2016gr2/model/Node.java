@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * @author Cas
  *
  */
-public class Node {
+public class Node extends Bubble {
 	
 	private ArrayList<Edge> in;
 	private ArrayList<Edge> out;
@@ -31,7 +31,8 @@ public class Node {
 	
 	@Override
 	public String toString() {
-		return id + " inedges: " + in.size() + " outedges: " + out.size() + " flow: " + flow + " bubble (" + bubbleStart + ", " + bubbleEnd + ")" + " isInDel: " + isInDel;
+		//return id + " inedges: " + in.size() + " outedges: " + out.size() + " flow: " + flow + " bubble (" + bubbleStart + ", " + bubbleEnd + ")" + " isInDel: " + isInDel;
+		return id + " level: " + getLevel();
 	}
 	
 	@Override
