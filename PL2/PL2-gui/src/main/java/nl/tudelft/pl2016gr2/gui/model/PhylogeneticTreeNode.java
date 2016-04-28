@@ -1,5 +1,10 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
@@ -37,13 +42,20 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
     @Override
     public IPhylogeneticTreeNode getChild(int index) {
-        // TODO Should work for now, but need to start working with ids asap
         return new PhylogeneticTreeNode(node.getChild(index));
     }
 
     @Override
     public int getChildIndex(IPhylogeneticTreeNode child) {
-        // TODO can't directly reach without changing library
+        try {
+            Field children = net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode.class.
+                    getDeclaredField("children");
+            children.setAccessible(true);
+            return ((ArrayList) children.get(node)).indexOf(((PhylogeneticTreeNode) child).node);
+        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException |
+                IllegalAccessException ex) {
+            Logger.getLogger(PhylogeneticTreeNode.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return 0;
     }
 }
