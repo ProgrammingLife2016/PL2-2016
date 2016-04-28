@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tudelft.pl2016gr2.gui.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.tree;
 
 /**
  *

@@ -6,7 +6,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.view.graph.TreeController;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeController;
 
 /**
  * FXML Controller class.

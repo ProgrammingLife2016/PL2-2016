@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;

@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.scene.shape.Circle;
 
@@ -13,8 +13,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.view.graph.GraphArea;
-import nl.tudelft.pl2016gr2.gui.view.graph.TreeController;
+import nl.tudelft.pl2016gr2.gui.view.tree.GraphArea;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeController;
 
 /**
  *
