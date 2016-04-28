@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import java.util.Objects;
 
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
@@ -37,13 +38,30 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
     @Override
     public IPhylogeneticTreeNode getChild(int index) {
-        // TODO Should work for now, but need to start working with ids asap
         return new PhylogeneticTreeNode(node.getChild(index));
     }
 
     @Override
     public int getChildIndex(IPhylogeneticTreeNode child) {
-        // TODO can't directly reach without changing library
-        return 0;
+        int i = 0;
+        while (true) {
+            if (getChild(i).equals(child)) {
+                return i;
+            }
+            ++i;
+        }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PhylogeneticTreeNode other = (PhylogeneticTreeNode) obj;
+        return Objects.equals(this.node, other.node);
+    }
+
 }
