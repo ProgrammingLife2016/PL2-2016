@@ -8,20 +8,28 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import nl.tudelft.pl2016gr2.model.Bubble;
-import nl.tudelft.pl2016gr2.model.Edge;
 import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.model.Node;
 
 public class FindBubbles {
 	
 	private Graph graph;
-	private HashMap<Integer, PriorityQueue<Bubble>> bubbles;
+	private HashMap<Integer, PriorityQueue<Bubble>> bubbles = new HashMap<>();;
 	private Set<Bubble> collapsedBubbles = new HashSet<>();
+	private PriorityQueue<Node> flows;
 	
 	public FindBubbles(Graph graph) {
 		this.graph = graph;
 		
-		bubbles = new HashMap<>();
+		flows = new PriorityQueue<>((Node node1, Node node2) -> {
+			int comparison = Double.compare(node1.getFlow(), node2.getFlow());
+			
+			if (comparison == 0) {
+				return Integer.compare(node1.getId(), node2.getId());
+			}
+			
+			return comparison;
+		});
 	}
 	
 	public Graph calculateBubbles() {
@@ -29,6 +37,18 @@ public class FindBubbles {
 		
 		init();
 		sendFlow();
+		
+		while(!flows.isEmpty()) {
+			Node curNode = flows.poll();
+			//System.out.println(curNode);
+			
+			Node nextNode = flows.peek();
+			
+			if (curNode.getFlow() == nextNode.getFlow()) {
+				// is bubble
+				
+			}
+		}
 		
 		return overview;
 	}
@@ -45,27 +65,30 @@ public class FindBubbles {
 			bubbles.put(node.getId(), levels);
 		}
 	}
-	
-	public void calculateFlows() {
-		sendFlow();
-	}
-	
+
 	private void sendFlow() {
 		double flowStart = (double)graph.getSize();
 		graph.getRoot().setFlow(flowStart);
 		
 		for (Node node : graph.getNodes()) {
-			System.out.println(node);
-			ArrayList<Edge> outEdges = node.getOut();
+			flows.offer(node);
+			
+//			System.out.println(node);
+			ArrayList<Bubble> outLinks = node.getOutLinks();
 			double remainingFlow = node.getFlow();
 			
-			for (int i = 0; i < outEdges.size(); i++) {
-				Node target = outEdges.get(i).getTarget();
+			for (int i = 0; i < outLinks.size(); i++) {
+				Node target = (Node) outLinks.get(i);
 				
-				if (i == node.getOut().size() - 1) {
+				if (i == outLinks.size() - 1) {
 					target.addFlow(remainingFlow);
 				} else {
 					double random = Math.random();
+					if (random == 0) {
+						random += 0.1;
+					} else if (random == 1) {
+						random -= 0.1;
+					}
 					double flowToAdd = random * remainingFlow;
 					remainingFlow -= flowToAdd;
 					target.addFlow(flowToAdd);

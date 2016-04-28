@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import nl.tudelft.pl2016gr2.model.Edge;
 import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.model.Node;
 
@@ -70,9 +69,8 @@ public class GFAReader {
 				int child = sc.nextInt();
 				Node p = nodes.get(parent);
 				Node c = nodes.get(child);
-				Edge e = new Edge(p, c);
-				p.addOut(e);
-				c.addIn(e);
+				p.addOutLink(c);
+				c.addInLink(p);
 				sc.nextLine();
 				break;
 			default:

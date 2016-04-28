@@ -1,12 +1,5 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import nl.tudelft.pl2016gr2.model.Edge;
-import nl.tudelft.pl2016gr2.model.Graph;
-import nl.tudelft.pl2016gr2.model.Node;
 
 
 public class MutationAlgorithm {
