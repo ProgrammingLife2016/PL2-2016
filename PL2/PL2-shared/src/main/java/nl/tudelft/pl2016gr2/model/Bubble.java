@@ -25,7 +25,7 @@ public class Bubble {
 		if (object instanceof Bubble) {
 			Bubble bubble = (Bubble) object;
 			
-			return bubble.id == this.id;
+			return bubble.id == this.id && bubble.level == this.level;
 		}
 		
 		return false;
@@ -69,6 +69,14 @@ public class Bubble {
 	
 	public ArrayList<Bubble> getOutLinks() {
 		return outLinks;
+	}
+	
+	public void setInLinks(ArrayList<Bubble> inLinks) {
+		this.inLinks = inLinks;
+	}
+	
+	public void setOutLinks(ArrayList<Bubble> outLinks) {
+		this.outLinks = outLinks;
 	}
 	
 	public void addOutLink(Bubble bubble) {

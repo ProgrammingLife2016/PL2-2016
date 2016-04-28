@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.Set;
 
 import nl.tudelft.pl2016gr2.model.Bubble;
@@ -46,11 +48,43 @@ public class FindBubbles {
 			
 			if (curNode.getFlow() == nextNode.getFlow()) {
 				// is bubble
-				
+				Bubble bubble = new Bubble(curNode.getId());
+				bubble.setInLinks(curNode.getInLinks());
+				bubble.setOutLinks(nextNode.getOutLinks());
+				bubble.setStartBubble(curNode);
+				bubble.setEndBubble(nextNode);
+				findNestedBubbles(curNode, nextNode, bubble);
 			}
 		}
 		
 		return overview;
+	}
+	
+	private void findNestedBubbles(Bubble startBubble, Bubble endBubble, Bubble newBubble) {
+		if (startBubble.getOutLinks().size() == 1 && startBubble.getOutLinks().get(0).equals(endBubble)) {
+			return;
+		}
+		
+		Set<Bubble> visited = new HashSet<>();
+		visited.add(endBubble);
+		Queue<Bubble> toVisit = new LinkedList<>();
+		
+		toVisit.addAll(startBubble.getOutLinks());
+		
+		while (!toVisit.isEmpty()) {
+			Bubble bubble = toVisit.poll();
+			
+			if (!bubble.equals(endBubble)) {
+				newBubble.addNestedBubble(bubble);
+				visited.add(bubble);
+				
+				for (Bubble target : bubble.getOutLinks()) {
+					if (!visited.contains(target)) {
+						toVisit.add(target);
+					}
+				}
+			}
+		}
 	}
 	
 	private void init() {
