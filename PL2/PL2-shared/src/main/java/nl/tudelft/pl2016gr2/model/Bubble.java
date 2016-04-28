@@ -7,9 +7,9 @@ public class Bubble {
 	
 	private int level;
 	private int id;
-	private ArrayList<Bubble> nestedBubbles;
-	private ArrayList<Bubble> inLinks;
-	private ArrayList<Bubble> outLinks;
+	private ArrayList<Integer> nestedBubbles;
+	private ArrayList<Integer> inLinks;
+	private ArrayList<Integer> outLinks;
 	private Bubble startBubble;
 	private Bubble endBubble;
 	
@@ -59,35 +59,35 @@ public class Bubble {
 		return endBubble;
 	}
 	
-	public ArrayList<Bubble> getInLinks() {
+	public ArrayList<Integer> getInLinks() {
 		return inLinks;
 	}
 	
-	public void addInLink(Bubble bubble) {
+	public void addInLink(int bubble) {
 		inLinks.add(bubble);
 	}
 	
-	public ArrayList<Bubble> getOutLinks() {
+	public ArrayList<Integer> getOutLinks() {
 		return outLinks;
 	}
 	
-	public void setInLinks(ArrayList<Bubble> inLinks) {
+	public void setInLinks(ArrayList<Integer> inLinks) {
 		this.inLinks = inLinks;
 	}
 	
-	public void setOutLinks(ArrayList<Bubble> outLinks) {
+	public void setOutLinks(ArrayList<Integer> outLinks) {
 		this.outLinks = outLinks;
 	}
 	
-	public void addOutLink(Bubble bubble) {
+	public void addOutLink(int bubble) {
 		outLinks.add(bubble);
 	}
 	
-	public ArrayList<Bubble> getNestedBubbles() {
+	public ArrayList<Integer> getNestedBubbles() {
 		return nestedBubbles;
 	}
 	
-	public void addNestedBubble(Bubble bubble) {
+	public void addNestedBubble(int bubble) {
 		nestedBubbles.add(bubble);
 	}
 

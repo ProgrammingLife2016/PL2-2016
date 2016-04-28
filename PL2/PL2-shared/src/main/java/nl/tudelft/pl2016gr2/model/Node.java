@@ -17,6 +17,7 @@ public class Node extends Bubble {
 	public Node(int id) {
 		super(id);
 		this.flow = 0;
+		setLevel(0);
 	}
 	
 	@Override

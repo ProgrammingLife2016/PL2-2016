@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.model.Node;
 
@@ -20,7 +21,7 @@ public class GFAReader {
 	//This is ugly hardcoded, but this way we know how much nodes we have to initialize.
 	//@Wouter and Justin, you can probably find some better way to know this beforehand. (read the file from the bottom for example)
 	public final int NUM_NODES;
-	private ArrayList<Node> nodes;
+	private ArrayList<Bubble> nodes;
 	
 	/**
 	 * Creates a reader object and reads the gfa data from the filename.
@@ -42,7 +43,7 @@ public class GFAReader {
 	 * Because we know (hardcoded) how many nodes there will be, we can prepare them.
 	 */
 	private void prepNodes() {
-		this.nodes = new ArrayList<Node>(NUM_NODES + 1);
+		this.nodes = new ArrayList<Bubble>(NUM_NODES + 1);
 		for (int i = 0; i < NUM_NODES + 1; i++) {
 			nodes.add(new Node(i));
 		}
@@ -67,10 +68,10 @@ public class GFAReader {
 				int parent = sc.nextInt();
 				sc.next();
 				int child = sc.nextInt();
-				Node p = nodes.get(parent);
-				Node c = nodes.get(child);
-				p.addOutLink(c);
-				c.addInLink(p);
+				Bubble p = nodes.get(parent);
+				Bubble c = nodes.get(child);
+				p.addOutLink(c.getId());
+				c.addInLink(p.getId());
 				sc.nextLine();
 				break;
 			default:

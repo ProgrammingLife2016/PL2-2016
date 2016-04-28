@@ -10,25 +10,25 @@ import java.util.ArrayList;
 public class Graph {
 	
 	private Node root;
-	private ArrayList<Node> nodes;
+	private ArrayList<Bubble> nodes;
 	
 	/**
 	 * Constructs a graph from an arrayList of nodes. (the edges are already in these nodes)
 	 * @param nodes
 	 */
-	public Graph(ArrayList<Node> nodes) {
+	public Graph(ArrayList<Bubble> nodes) {
 		//this.root = nodes.get(1);
 		this.nodes = nodes;
 	}
 	
 	public void print() {
-		for(Node n : nodes) {
+		for(Bubble n : nodes) {
 			if (n.getId() != 0)
 				System.out.println(n);
 		}
 	}
 
-	public Node getRoot() {
+	public Bubble getRoot() {
 		return nodes.get(1);
 	}
 
@@ -40,11 +40,11 @@ public class Graph {
 		return nodes.size();
 	}
 
-	public ArrayList<Node> getNodes() {
+	public ArrayList<Bubble> getNodes() {
 		return nodes;
 	}
 
-	public void addNode(Node node) {
+	public void addNode(Bubble node) {
 		nodes.add(node);
 	}
 	

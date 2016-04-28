@@ -35,7 +35,7 @@ public class FindBubbles {
 	}
 	
 	public Graph calculateBubbles() {
-		Graph overview = new Graph(new ArrayList<Node>());
+		Graph overview = new Graph(new ArrayList<Bubble>());
 		
 		init();
 		sendFlow();
@@ -54,7 +54,12 @@ public class FindBubbles {
 				bubble.setStartBubble(curNode);
 				bubble.setEndBubble(nextNode);
 				findNestedBubbles(curNode, nextNode, bubble);
+				bubbles.get(bubble.getId()).offer(bubble);
 			}
+		}
+		
+		for (PriorityQueue<Bubble> bubbleLevels : bubbles.values()) {
+			overview.addNode(bubbleLevels.peek());
 		}
 		
 		return overview;
@@ -65,26 +70,32 @@ public class FindBubbles {
 			return;
 		}
 		
-		Set<Bubble> visited = new HashSet<>();
-		visited.add(endBubble);
-		Queue<Bubble> toVisit = new LinkedList<>();
+		Set<Integer> visited = new HashSet<>();
+		visited.add(endBubble.getId());
 		
+		Queue<Integer> toVisit = new LinkedList<>();
 		toVisit.addAll(startBubble.getOutLinks());
 		
+		int highestLevel = 0;
+		
 		while (!toVisit.isEmpty()) {
-			Bubble bubble = toVisit.poll();
+			Bubble bubble = bubbles.get(toVisit.poll()).peek();
 			
 			if (!bubble.equals(endBubble)) {
-				newBubble.addNestedBubble(bubble);
-				visited.add(bubble);
+				newBubble.addNestedBubble(bubble.getId());
+				visited.add(bubble.getId());
 				
-				for (Bubble target : bubble.getOutLinks()) {
+				highestLevel = bubble.getLevel() > highestLevel ? bubble.getLevel() : highestLevel;
+				
+				for (Integer target : bubble.getOutLinks()) {
 					if (!visited.contains(target)) {
 						toVisit.add(target);
 					}
 				}
 			}
 		}
+		
+		newBubble.setLevel(highestLevel);
 	}
 	
 	private void init() {
@@ -93,7 +104,7 @@ public class FindBubbles {
 			return Integer.compare(bubble2.getLevel(), bubble1.getLevel());
 		};
 		
-		for (Node node : graph.getNodes()) {
+		for (Bubble node : graph.getNodes()) {
 			PriorityQueue<Bubble> levels = new PriorityQueue<>(compareLevels);
 			levels.add(node);
 			bubbles.put(node.getId(), levels);
@@ -102,17 +113,20 @@ public class FindBubbles {
 
 	private void sendFlow() {
 		double flowStart = (double)graph.getSize();
-		graph.getRoot().setFlow(flowStart);
+		//graph.getRoot().setFlow(flowStart);
+		Node root = (Node) graph.getRoot();
+		root.setFlow(flowStart);
 		
-		for (Node node : graph.getNodes()) {
+		for (Bubble bubble : graph.getNodes()) {
+			Node node = (Node) bubble;
 			flows.offer(node);
 			
 //			System.out.println(node);
-			ArrayList<Bubble> outLinks = node.getOutLinks();
+			ArrayList<Integer> outLinks = node.getOutLinks();
 			double remainingFlow = node.getFlow();
 			
 			for (int i = 0; i < outLinks.size(); i++) {
-				Node target = (Node) outLinks.get(i);
+				Node target = (Node) bubbles.get(outLinks.get(i)).peek();
 				
 				if (i == outLinks.size() - 1) {
 					target.addFlow(remainingFlow);
