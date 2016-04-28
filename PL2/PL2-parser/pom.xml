@@ -17,6 +17,11 @@
             <artifactId>PL2-shared</artifactId>
             <version>${PL2-shared-version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.qurben</groupId>
+            <artifactId>libnewicktree</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
 </project>
