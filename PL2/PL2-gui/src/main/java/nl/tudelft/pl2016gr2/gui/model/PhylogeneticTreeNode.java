@@ -1,10 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Objects;
 
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
@@ -47,15 +43,25 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
     @Override
     public int getChildIndex(IPhylogeneticTreeNode child) {
-        try {
-            Field children = net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode.class.
-                    getDeclaredField("children");
-            children.setAccessible(true);
-            return ((ArrayList) children.get(node)).indexOf(((PhylogeneticTreeNode) child).node);
-        } catch (NoSuchFieldException | SecurityException | IllegalArgumentException |
-                IllegalAccessException ex) {
-            Logger.getLogger(PhylogeneticTreeNode.class.getName()).log(Level.SEVERE, null, ex);
+        int i = 0;
+        while (true) {
+            if (getChild(i).equals(child)) {
+                return i;
+            }
+            ++i;
         }
-        return 0;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PhylogeneticTreeNode other = (PhylogeneticTreeNode) obj;
+        return Objects.equals(this.node, other.node);
+    }
+
 }
