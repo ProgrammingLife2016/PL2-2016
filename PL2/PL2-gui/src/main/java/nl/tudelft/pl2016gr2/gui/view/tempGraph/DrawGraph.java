@@ -57,6 +57,13 @@ public class DrawGraph {
 		drawEdges(pane, bubbles, circles);
 
 		ArrayList<ArrayList<Bubble>> bubbleDepths = createGraphDepth(g.getRoot(), bubbles);
+		setBubbleLocatios(bubbleDepths, paneHeight, circles);
+		e = System.currentTimeMillis();
+		System.out.println("Drawing took " + (e - s) + " milliseconds");
+	}
+
+	private void setBubbleLocatios(ArrayList<ArrayList<Bubble>> bubbleDepths,
+			double paneHeight, HashMap<Integer, Circle> circles) {
 		int xPos = 0;
 		for (ArrayList<Bubble> bubbleDepth : bubbleDepths) {
 			xPos += X_OFFSET;
@@ -66,13 +73,24 @@ public class DrawGraph {
 				double startY = bubbleAreaHeight * i;
 				double endY = startY + bubbleAreaHeight;
 				double centerY = (endY + startY) / 2.0;
+				while (true) {
+					int sameHeight = 0;
+					for (Integer inLink : bubble.getInLinks()) {
+						Circle parent = circles.get(inLink);
+						if (Double.compare(parent.getCenterY(), centerY) == 0) {
+							++sameHeight;
+						}
+					}
+					if (sameHeight < 2) {
+						break;
+					}
+					centerY = (centerY + startY) / 2.0;
+				}
 				Circle c = circles.get(bubble.getId());
 				c.setCenterX(xPos);
 				c.setCenterY(centerY);
 			}
 		}
-		e = System.currentTimeMillis();
-		System.out.println("Drawing took " + (e - s) + " milliseconds");
 	}
 
 	private HashMap<Integer, Circle> drawCircles(Pane pane, HashMap<Integer, Bubble> bubbles) {
