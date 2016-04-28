@@ -11,6 +11,13 @@
 
     <artifactId>PL2-gui</artifactId>
 
+    <distributionManagement>
+        <site>
+            <id>PL2-gui</id>
+            <url>file://${basedir}/target/staging/gui/</url>
+        </site>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>nl.tudelft.pl2016gr2</groupId>
