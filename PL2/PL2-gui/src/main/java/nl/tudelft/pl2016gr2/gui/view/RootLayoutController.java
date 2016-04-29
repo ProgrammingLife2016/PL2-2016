@@ -1,13 +1,15 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import java.util.Observable;
+import java.util.Observer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.model.TreeNode;
-import nl.tudelft.pl2016gr2.gui.view.graph.TreeController;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeController;
+import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 
 /**
  * FXML Controller class.
@@ -25,10 +27,9 @@ public class RootLayoutController {
     @FXML
     private Rectangle locationIdentifierRectangle;
 
-    private TreeNode currentRoot;
-
     private static RootLayoutController controller;
     private TreeController treeController;
+	private HeatmapManager heatmapManager;
 
     /**
      * Initializes the controller class.
@@ -36,6 +37,7 @@ public class RootLayoutController {
     public void initialize() {
         assert (controller == null);
         controller = this;
+		heatmapManager = new HeatmapManager(heatmapPane);
     }
 
     /**
@@ -46,5 +48,8 @@ public class RootLayoutController {
     public void setData(IPhylogeneticTreeNode root) {
         assert treeController == null;
         treeController = new TreeController(graphPane, root, zoomOutButton);
+		treeController.setOnChildLeavesChanged((Observable o, Object arg) -> {
+			heatmapManager.setLeaves(treeController.getCurrentLeaves());
+		});
     }
 }

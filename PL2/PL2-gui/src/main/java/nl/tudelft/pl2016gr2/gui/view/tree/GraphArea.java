@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package nl.tudelft.pl2016gr2.gui.view.graph;
+package nl.tudelft.pl2016gr2.gui.view.tree;
 
 /**
  *
@@ -27,6 +27,22 @@ public class GraphArea {
         this.startY = startY;
         this.endY = endY;
     }
+
+	public double getStartX() {
+		return startX;
+	}
+
+	public double getEndX() {
+		return endX;
+	}
+
+	public double getStartY() {
+		return startY;
+	}
+
+	public double getEndY() {
+		return endY;
+	}
 
     /**
      * Get the width of the graph area.
