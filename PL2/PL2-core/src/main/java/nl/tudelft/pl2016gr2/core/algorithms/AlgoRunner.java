@@ -10,7 +10,7 @@ import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
  */
 public class AlgoRunner {
 	
-	public static final String FILENAME = AlgoRunner.class.getClassLoader().getResource("TB10.gfa").getFile();
+	public static final String FILENAME = "TB10.gfa";
 	public static final int GRAPH_SIZE = 8728;
 	//public static final int GRAPH_SIZE = 10;
 
