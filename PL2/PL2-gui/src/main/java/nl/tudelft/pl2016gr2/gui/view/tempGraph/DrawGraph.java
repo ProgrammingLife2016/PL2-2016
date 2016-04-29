@@ -30,11 +30,11 @@ public class DrawGraph {
 		Pane pane = new Pane();
 		ScrollPane scrollPane = new ScrollPane(pane);
 		double paneHeight = 600;
-//		Scene scene = new Scene(scrollPane, 1000, paneHeight);
-//		stage.setMinHeight(400);
-//		stage.setMinWidth(600);
-//		stage.setScene(scene);
-//		stage.show();
+		Scene scene = new Scene(scrollPane, 1000, paneHeight);
+		stage.setMinHeight(400);
+		stage.setMinWidth(600);
+		stage.setScene(scene);
+		stage.show();
 
 		long s = System.currentTimeMillis();
 		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);

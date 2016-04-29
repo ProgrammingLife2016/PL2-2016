@@ -47,7 +47,7 @@ public class Dnav extends Application {
 
 		insertData(controller);
 
-//		new DrawGraph().drawGraph(new Stage());
+		new DrawGraph().drawGraph(new Stage());
 	}
 
 	private void insertData(RootLayoutController controller) {
