@@ -37,6 +37,9 @@ public class GFAReader {
 		}		
 		prepNodes();
 		read();
+		
+		sc.close();
+		sc = null;
 	}
 
 	/**

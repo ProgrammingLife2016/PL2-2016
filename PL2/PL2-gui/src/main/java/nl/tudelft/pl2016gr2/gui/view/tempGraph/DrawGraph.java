@@ -26,15 +26,15 @@ public class DrawGraph {
 
 	private static final double X_OFFSET = 50.0;
 
-	public void drawGraph(Stage primaryStage) {
+	public void drawGraph(Stage stage) {
 		Pane pane = new Pane();
 		ScrollPane scrollPane = new ScrollPane(pane);
 		double paneHeight = 600;
-		Scene scene = new Scene(scrollPane, 1000, paneHeight);
-		primaryStage.setMinHeight(400);
-		primaryStage.setMinWidth(600);
-		primaryStage.setScene(scene);
-		primaryStage.show();
+//		Scene scene = new Scene(scrollPane, 1000, paneHeight);
+//		stage.setMinHeight(400);
+//		stage.setMinWidth(600);
+//		stage.setScene(scene);
+//		stage.show();
 
 		long s = System.currentTimeMillis();
 		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);
