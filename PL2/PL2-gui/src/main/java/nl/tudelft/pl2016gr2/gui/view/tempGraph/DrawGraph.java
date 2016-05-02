@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -24,11 +23,11 @@ public class DrawGraph {
 
 	private static final double X_OFFSET = 50.0;
 
-	public void drawGraph(Pane mainPane) {
-		Pane pane = new Pane();
-		ScrollPane scrollPane = new ScrollPane(pane);
+	public void drawGraph(Pane pane) {
+//		Pane pane = new Pane();
+//		ScrollPane scrollPane = new ScrollPane(pane);
 		double paneHeight = 600.0;
-        mainPane.getChildren().add(scrollPane);
+//        mainPane.getChildren().add(scrollPane);
 
 		long s = System.currentTimeMillis();
 		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);

@@ -89,5 +89,6 @@ public class RootLayoutController {
         treeController.setOnChildLeavesChanged((Observable o, Object arg) -> {
             heatmapManager.setLeaves(treeController.getCurrentLeaves());
         });
+        heatmapManager.setLeaves(treeController.getCurrentLeaves());
     }
 }

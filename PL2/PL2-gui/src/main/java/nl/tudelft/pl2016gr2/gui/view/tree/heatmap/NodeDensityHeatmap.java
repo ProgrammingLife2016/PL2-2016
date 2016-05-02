@@ -1,9 +1,15 @@
 package nl.tudelft.pl2016gr2.gui.view.tree.heatmap;
 
 import java.util.ArrayList;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+import nl.tudelft.pl2016gr2.gui.view.tree.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.tree.GraphArea;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
 
@@ -43,6 +49,18 @@ public class NodeDensityHeatmap implements INodeHeatmap {
             rect.setStrokeWidth(3.0);
             rect.setStroke(Color.BLACK);
             pane.getChildren().add(rect);
+
+            currentLeave.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
+                double newHeight = rect.getHeight() * event.getScale();
+                double newY = rect.getY() - (event.getStartY() - event.getEndY())
+                        - (newHeight - rect.getHeight()) / 2.0;
+//                double newY = event.getNewArea().getStartY();
+//                double newHeight = event.getNewArea().getHeight();
+                KeyValue kv = new KeyValue(rect.yProperty(), newY, Interpolator.EASE_BOTH);
+                KeyValue kv2
+                        = new KeyValue(rect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
+                event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
+            });
         }
     }
 
