@@ -1,7 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
-import java.util.Objects;
-
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
     private final net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node;
