@@ -61,7 +61,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
             return false;
         }
         final PhylogeneticTreeNode other = (PhylogeneticTreeNode) obj;
-        return Objects.equals(this.node, other.node);
+        return this.node == other.node;
     }
 
 }

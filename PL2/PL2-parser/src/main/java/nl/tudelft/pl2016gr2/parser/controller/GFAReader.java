@@ -29,12 +29,7 @@ public class GFAReader {
 	 */
 	public GFAReader(String filename, int graphsize) {
 		this.NUM_NODES = graphsize;
-		File f = new File(filename);
-		try {
-			this.sc = new Scanner(f);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}		
+		this.sc = new Scanner(GFAReader.class.getClassLoader().getResourceAsStream(filename));
 		prepNodes();
 		read();
 		

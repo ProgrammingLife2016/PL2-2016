@@ -24,6 +24,8 @@ import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
  */
 public class Dnav extends Application {
 
+	private Tree tree;
+
 	/**
 	 * Start the application. This method is automatically called by JavaFX when
 	 * the API is initialized, after the call to launch(args) in the main
@@ -58,7 +60,7 @@ public class Dnav extends Application {
 		BufferedReader br = new BufferedReader(r);
 		TreeParser tp = new TreeParser(br);
 
-		Tree tree = tp.tokenize("340tree.rooted.TKK");
+		tree = tp.tokenize("340tree.rooted.TKK");
 		controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
 		try {
 			r.close();
