@@ -38,7 +38,7 @@ public class Dnav extends Application {
 	@Override
 	public void start(Stage primaryStage) throws IOException {
 		FXMLLoader loader = new FXMLLoader();
-		loader.setLocation(getClass().getClassLoader().getResource("RootLayout.fxml"));
+		loader.setLocation(getClass().getClassLoader().getResource("pages/RootLayout.fxml"));
 
 		Scene scene = new Scene(loader.load(), 1000, 800);
 		RootLayoutController controller = loader.getController();
