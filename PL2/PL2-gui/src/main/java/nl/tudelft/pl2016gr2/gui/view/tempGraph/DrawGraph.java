@@ -5,13 +5,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.stage.Stage;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
 import nl.tudelft.pl2016gr2.model.Bubble;
@@ -26,15 +24,11 @@ public class DrawGraph {
 
 	private static final double X_OFFSET = 50.0;
 
-	public void drawGraph(Stage stage) {
+	public void drawGraph(Pane mainPane) {
 		Pane pane = new Pane();
 		ScrollPane scrollPane = new ScrollPane(pane);
-		double paneHeight = 600;
-		Scene scene = new Scene(scrollPane, 1000, paneHeight);
-		stage.setMinHeight(400);
-		stage.setMinWidth(600);
-		stage.setScene(scene);
-		stage.show();
+		double paneHeight = 600.0;
+        mainPane.getChildren().add(scrollPane);
 
 		long s = System.currentTimeMillis();
 		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);

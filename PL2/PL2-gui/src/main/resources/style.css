@@ -76,7 +76,7 @@
 
 .zoomOutButton {
     -fx-background-radius: 0 0 8 0;
-    -fx-graphic: url('left.png');
+    -fx-graphic: url('images/left.png');
 }
 
 /*******************************************************************************
