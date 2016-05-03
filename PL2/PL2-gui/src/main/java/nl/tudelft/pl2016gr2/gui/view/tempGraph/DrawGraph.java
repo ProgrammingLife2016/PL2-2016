@@ -5,15 +5,21 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import javafx.beans.value.ChangeListener;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
+import javafx.scene.shape.CubicCurve;
+import javafx.scene.shape.QuadCurve;
 import javafx.stage.Stage;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
+
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
@@ -113,17 +119,67 @@ public class DrawGraph {
 			Circle fromCircle = circles.get(id);
 			for (Integer outLink : from.getOutLinks()) {
 				Circle toCircle = circles.get(outLink);
-				Line edge = new Line();
-				edge.startXProperty().bind(fromCircle.centerXProperty());
-				edge.startYProperty().bind(fromCircle.centerYProperty());
-				edge.endXProperty().bind(toCircle.centerXProperty());
-				edge.endYProperty().bind(toCircle.centerYProperty());
-				pane.getChildren().add(edge);
-				edge.toBack();
+				QuadCurve curve = new QuadCurve();
+
+                curve.setFill(Color.TRANSPARENT);
+                curve.setStroke(Color.BLACK);
+                curve.setStrokeWidth(2.0d);
+
+                fromCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+                    curve.startXProperty().setValue(newValue);
+                    bendCurve(curve, fromCircle, toCircle);
+                });
+                fromCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+                    curve.startYProperty().setValue(newValue);
+                    bendCurve(curve, fromCircle, toCircle);
+                });
+                toCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+                    curve.endXProperty().setValue(newValue);
+                    bendCurve(curve, fromCircle, toCircle);
+                });
+                toCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+                    curve.endYProperty().setValue(newValue);
+                    bendCurve(curve, fromCircle, toCircle);
+                });
+
+                pane.getChildren().add(curve);
+				curve.toBack();
 //				edge.setSmooth(true);
 			}
 		});
 	}
+
+    private static void bendCurve(QuadCurve curve, Circle from, Circle to) {
+        Point2D perpP;
+        if (from.getCenterY() > to.getCenterY()) {
+            perpP = getPerpendicularPoint(from.getCenterX(), from.getCenterY(), to.getCenterX(), to.getCenterY(), 20.0d);
+        } else {
+            perpP = getPerpendicularPoint(to.getCenterX(), to.getCenterY(), from.getCenterX(), from.getCenterY(), 20.0d);
+        }
+
+        curve.setControlX(perpP.getX());
+        curve.setControlY(perpP.getY());
+    }
+
+    /**
+     *
+     * Not that 4(!) objects are created for a single invocation. This is considerably slower than
+     * a more efficient way of handling thing. (atleast until the JIT kicks in it seems)
+     *
+     * @param startX x of "from" point
+     * @param startY y of "from" point
+     * @param stopX x of "to" point
+     * @param stopY y of "to" point
+     * @param distance distance to offset the point
+     * @return Point2D object representing the point
+     */
+    private static Point2D getPerpendicularPoint(double startX, double startY, double stopX, double stopY, double distance) {
+        Point2D M = new Point2D((startX + stopX) / 2, (startY + stopY) / 2);
+        Point2D p = new Point2D(startX - stopX, startY - stopY);
+        Point2D n = new Point2D(-p.getY(), p.getX()).normalize();
+
+        return new Point2D(M.getX() + (distance * n.getX()), M.getY() + (distance * n.getY()));
+    }
 
 	private ArrayList<ArrayList<Bubble>> createGraphDepth(Bubble root, HashMap<Integer, Bubble> bubbles) {
 		HashMap<Integer, BubbleDepth> bubbleDepths = new HashMap<>();
