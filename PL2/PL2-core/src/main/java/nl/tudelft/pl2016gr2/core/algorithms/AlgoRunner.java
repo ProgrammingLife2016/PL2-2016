@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
 
 /**
@@ -22,18 +22,11 @@ public class AlgoRunner {
 	public static void main(String[] args) {
 		long s = System.currentTimeMillis();
 		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);
-		Graph g = r.getGraph();
+		OriginalGraph g = r.getGraph();
 		System.out.println("Size of the graph: " + g.getSize());
 		long e = System.currentTimeMillis();
 		System.out.println("The loading took " + (e - s) + " milliseconds to run");
-		//MutationAlgorithm m = new MutationAlgorithm();
-		//m.calc(g);
-		FindBubbles findBubbles = new FindBubbles(g);
-		findBubbles.calculateBubbles();
-//		findBubbles.calculateFlows();
-//		FilterInDels filter = new FilterInDels(g);
-//		Graph filteredGraph = filter.filterGraph();
-//		filteredGraph.print();
+
 		//g.print();
 		//System.out.println(g.getNodes().get(8).getIn().get(0).getParent().getFlow());
 		long f = System.currentTimeMillis();

@@ -1,13 +1,10 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import nl.tudelft.pl2016gr2.model.Bubble;
-import nl.tudelft.pl2016gr2.model.Graph;
 import nl.tudelft.pl2016gr2.model.Node;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 /**
  * This class reads a gfa file
@@ -17,11 +14,11 @@ import nl.tudelft.pl2016gr2.model.Node;
 public class GFAReader {
 
 	private Scanner sc;
-	private Graph g;
+	private OriginalGraph originalGraph;
 	//This is ugly hardcoded, but this way we know how much nodes we have to initialize.
 	//@Wouter and Justin, you can probably find some better way to know this beforehand. (read the file from the bottom for example)
 	public final int NUM_NODES;
-	private ArrayList<Bubble> nodes;
+	//private ArrayList<BubbleOld> nodes;
 	
 	/**
 	 * Creates a reader object and reads the gfa data from the filename.
@@ -30,6 +27,7 @@ public class GFAReader {
 	public GFAReader(String filename, int graphsize) {
 		this.NUM_NODES = graphsize;
 		this.sc = new Scanner(GFAReader.class.getClassLoader().getResourceAsStream(filename));
+		originalGraph = new OriginalGraph();
 		prepNodes();
 		read();
 		
@@ -41,9 +39,9 @@ public class GFAReader {
 	 * Because we know (hardcoded) how many nodes there will be, we can prepare them.
 	 */
 	private void prepNodes() {
-		this.nodes = new ArrayList<Bubble>(NUM_NODES + 1);
-		for (int i = 0; i < NUM_NODES + 1; i++) {
-			nodes.add(new Node(i));
+		//this.nodes = new ArrayList<BubbleOld>(NUM_NODES + 1);
+		for (int i = 1; i < NUM_NODES + 1; i++) {
+			originalGraph.addNode(new Node(i, 0, new ArrayList<>(), 0));
 		}
 	}
 
@@ -66,10 +64,10 @@ public class GFAReader {
 				int parent = sc.nextInt();
 				sc.next();
 				int child = sc.nextInt();
-				Bubble p = nodes.get(parent);
-				Bubble c = nodes.get(child);
-				p.addOutLink(c.getId());
-				c.addInLink(p.getId());
+				Node p = originalGraph.getNode(parent);
+				Node c = originalGraph.getNode(child);
+				p.addOutlink(c.getId());
+				c.addInlink(p.getId());
 				sc.nextLine();
 				break;
 			default:
@@ -77,15 +75,14 @@ public class GFAReader {
 			}
 		}
 		System.out.println("Number of lines read: " + count);
-		this.g = new Graph(nodes);
 	}
 	
 	/**
 	 * Method which returns the read graph.
 	 * @return The graph.
 	 */
-	public Graph getGraph() {
-		return this.g;
+	public OriginalGraph getGraph() {
+		return originalGraph;
 	}
 
 }

@@ -21,7 +21,7 @@ public class OriginalGraph implements GraphInterface {
 	public int getSize() {
 		return nodes.size();
 	}
-
+	
 	@Override
 	public void addNode(AbstractNode node) {
 		assert(node instanceof Node);
@@ -37,6 +37,10 @@ public class OriginalGraph implements GraphInterface {
 	@Override
 	public Node getRoot() {
 		return nodes.get(lowestId);
+	}
+	
+	public HashMap<Integer, Node> getNodes() {
+		return nodes;
 	}
 
 }
