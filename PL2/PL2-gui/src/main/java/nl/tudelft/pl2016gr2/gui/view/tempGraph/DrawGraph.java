@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.stage.Stage;
+import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
@@ -45,16 +46,14 @@ public class DrawGraph {
 		long e = System.currentTimeMillis();
 		System.out.println("The loading took " + (e - s) + " milliseconds to run");
 		s = e;
-//		FindBubbles findBubbles = new FindBubbles(g);
-//		findBubbles.calculateBubbles();
-//		long f = System.currentTimeMillis();
-//		System.out.println("The algorithm took " + (f - e) + " milliseconds to run");
+		
+		FilterSnips filter = new FilterSnips(g);
+		g = filter.filter();
+
+		long f = System.currentTimeMillis();
+		System.out.println("The algorithm took " + (f - e) + " milliseconds to run");
 
 		HashMap<Integer, Node> bubbles = g.getNodes();
-//		ArrayList<AbstractNode> rawBubbles = g.getNodes();
-//		for (int i = 1; i < rawBubbles.size(); i++) { // skip first
-//			bubbles.put(rawBubbles.get(i).getId(), rawBubbles.get(i));
-//		}
 		HashMap<Integer, Circle> circles = drawCircles(pane, bubbles);
 		drawEdges(pane, bubbles, circles);
 
@@ -79,6 +78,10 @@ public class DrawGraph {
 					int sameHeight = 0;
 					for (Integer inLink : bubble.getInlinks()) {
 						Circle parent = circles.get(inLink);
+						if (parent == null) {
+							System.out.println(bubble);
+							System.out.println(inLink);
+						}
 						if (Double.compare(parent.getCenterY(), centerY) == 0) {
 							++sameHeight;
 						}

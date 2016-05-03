@@ -41,7 +41,7 @@ public class GFAReader {
 	private void prepNodes() {
 		//this.nodes = new ArrayList<BubbleOld>(NUM_NODES + 1);
 		for (int i = 1; i < NUM_NODES + 1; i++) {
-			originalGraph.addNode(new Node(i, 0, new ArrayList<>(), 0));
+			originalGraph.addNode(new Node(i, 1, new ArrayList<>(), 0));
 		}
 	}
 

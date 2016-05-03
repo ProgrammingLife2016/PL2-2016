@@ -14,6 +14,11 @@ public class Node extends AbstractNode {
 		this.snips = snips;
 	}
 	
+	@Override
+	public String toString() {
+		return super.toString() + " snips: " + snips;
+	}
+	
 	public ArrayList<String> getGenomes() {
 		return genomes;
 	}

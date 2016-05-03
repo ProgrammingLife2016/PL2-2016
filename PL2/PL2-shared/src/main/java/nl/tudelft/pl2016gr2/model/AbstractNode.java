@@ -16,6 +16,17 @@ public abstract class AbstractNode {
 		this.outLinks = new ArrayList<>();
 	}
 	
+	@Override
+	public String toString() {
+		return "id: " + id + " sequencelength: " + sequenceLength + " inlinks: " + inLinks +
+				" outlinks: " + outLinks;
+	}
+	
+	public void replaceInlink(int oldLink, int newLink) {
+		inLinks.remove((Integer)oldLink);
+		inLinks.add(newLink);
+	}
+	
 	public void addInlink(int inlink) {
 		inLinks.add(inlink);
 	}
@@ -24,12 +35,20 @@ public abstract class AbstractNode {
 		return inLinks;
 	}
 	
+	public void setInlinks(ArrayList<Integer> inlinks) {
+		this.inLinks = inlinks;
+	}
+	
 	public void addOutlink(int outlink) {
 		outLinks.add(outlink);
 	}
 	
 	public ArrayList<Integer> getOutlinks() {
 		return outLinks;
+	}
+	
+	public void setOutlinks(ArrayList<Integer> outlinks) {
+		this.outLinks = outlinks;
 	}
 	
 	public int getSequenceLength() {
