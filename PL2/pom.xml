@@ -18,6 +18,7 @@
 
     <properties>
         <PL2-shared-version>1.0-SNAPSHOT</PL2-shared-version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <distributionManagement>
