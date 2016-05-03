@@ -18,9 +18,13 @@ public class HeatmapManager {
 	public HeatmapManager(Pane pane) {
 		this.pane = pane;
 	}
-
-	public void setLeaves(ArrayList<ViewNode> currentLeaves) {
+    
+    public void initLeaves(ArrayList<ViewNode> currentLeaves) {
 		GraphArea area = new GraphArea(10, 20, 0, pane.getHeight());
 		densityMap = new NodeDensityHeatmap(pane, currentLeaves, area);
+    }
+
+	public void setLeaves(ArrayList<ViewNode> currentLeaves) {
+        densityMap.onChange(currentLeaves);
 	}
 }

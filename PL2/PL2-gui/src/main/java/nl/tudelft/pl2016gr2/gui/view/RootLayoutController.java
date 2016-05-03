@@ -1,8 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
 import java.util.Observable;
-import java.util.Observer;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
@@ -86,9 +84,9 @@ public class RootLayoutController {
     public void setData(IPhylogeneticTreeNode root) {
         assert treeController == null;
         treeController = new TreeController(treePane, root, zoomOutButton);
+        heatmapManager.initLeaves(treeController.getCurrentLeaves());
         treeController.setOnChildLeavesChanged((Observable o, Object arg) -> {
             heatmapManager.setLeaves(treeController.getCurrentLeaves());
         });
-        heatmapManager.setLeaves(treeController.getCurrentLeaves());
     }
 }
