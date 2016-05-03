@@ -78,10 +78,6 @@ public class DrawGraph {
 					int sameHeight = 0;
 					for (Integer inLink : bubble.getInlinks()) {
 						Circle parent = circles.get(inLink);
-						if (parent == null) {
-							System.out.println(bubble);
-							System.out.println(inLink);
-						}
 						if (Double.compare(parent.getCenterY(), centerY) == 0) {
 							++sameHeight;
 						}

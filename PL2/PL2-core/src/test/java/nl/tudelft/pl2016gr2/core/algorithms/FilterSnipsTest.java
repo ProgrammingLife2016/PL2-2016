@@ -21,9 +21,7 @@ public class FilterSnipsTest {
 				if (i != 1) {
 					node.addInlink(i - 1);
 					node.addInlink(i - 2);
-				} else {
-					node.addInlink(0);
-				}
+				} 
 			} else if (i == 2 || i == 5) {
 				node.addOutlink(i + 2);
 				node.addInlink(i - 1);
@@ -39,15 +37,15 @@ public class FilterSnipsTest {
 			graph.addNode(node);
 		}
 		
-		Node zeroNode = new Node(0, 1, null, 0);
-		zeroNode.addOutlink(1);
+//		Node zeroNode = new Node(0, 1, null, 0);
+//		zeroNode.addOutlink(1);
 		//graph.addNode(zeroNode);
 		
 		graph.print();
 		System.out.println("-------------------");
 		FilterSnips filter = new FilterSnips(graph);
 		OriginalGraph filteredGraph = filter.filter();
-		filteredGraph.print();
+		//filteredGraph.print();
 	}
 
 }

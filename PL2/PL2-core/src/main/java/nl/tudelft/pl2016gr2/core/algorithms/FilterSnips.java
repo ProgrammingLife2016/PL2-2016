@@ -2,9 +2,6 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
 
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
@@ -12,56 +9,29 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 public class FilterSnips {
 	
 	private OriginalGraph graph;
-	private OriginalGraph filteredGraph;
 	private HashSet<Integer> collapsedNodes = new HashSet<>();
 	
 	public FilterSnips(OriginalGraph graph) {
 		this.graph = graph;
-		filteredGraph = new OriginalGraph();
 	}
 	
 	public OriginalGraph filter() {
-		filteredGraph = new OriginalGraph();
-		
-		Queue<Integer> toVisit = new LinkedList<>();
-		Set<Integer> visited = new HashSet<>();
-		toVisit.add(graph.getRoot().getId());
-		//int totalSnips = 0;
-		
-		while (!toVisit.isEmpty()) {
-//			System.out.println("to visit: " + toVisit);
-//			System.out.println("visited: " + visited);
-			Node current = graph.getNode(toVisit.poll());
-			visited.add(current.getId());
-//			System.out.println(current);
-			
-			if (isSnip(current)) {
-				Node snip = makeSnip(current);
-				//totalSnips += snip.getSnips();
+		OriginalGraph filteredGraph = new OriginalGraph();
+
+		for (int i = 1; i <= graph.getSize(); i++) {
+			if (!collapsedNodes.contains(i)){
+				Node current = graph.getNode(i);
 				
-				for (Integer outlink : snip.getOutlinks()) {
-//					if (current.getId() == 6557) {
-//						System.out.println(snip);
-//						System.out.println(visited.contains(outlink));
-//						System.out.println(toVisit.contains(outlink));
-//						System.out.println(visited.size());
-//						System.out.println(totalSnips);
-//					}
-					if (!visited.contains(outlink) && !toVisit.contains(outlink))
-						toVisit.offer(outlink);
+				if (isSnip(current)) {
+					Node snip = makeSnip(current);
+					filteredGraph.addNode(snip);
+				} else {
+					filteredGraph.addNode(current);
 				}
-				
-				filteredGraph.addNode(snip);
-			} else {
-				for (Integer outlink : current.getOutlinks()) {
-					if (!visited.contains(outlink) && !toVisit.contains(outlink))
-						toVisit.offer(outlink);
-				}
-				
-				filteredGraph.addNode(current);
 			}
+			
 		}
-		filteredGraph.print();
+		
 		return filteredGraph;
 	}
 	
@@ -70,21 +40,25 @@ public class FilterSnips {
 		boolean isSnip = true;
 		
 		while (isSnip) {
-			//System.out.println("Current: " + current);
+			for (Integer outlink : current.getOutlinks()) {
+				if (outlink == 2102) {
+					System.out.println("Current snip: " + current);
+				}
+				collapsedNodes.add(outlink);
+			}
+
 			Node intermediate = graph.getNode(current.getOutlinks().get(0));
 			Node end = graph.getNode(intermediate.getOutlinks().get(0));
+			collapsedNodes.add(end.getId());
 			
 			snip = new Node(current.getId(), current.getSequenceLength() + 1 + end.getSequenceLength(), 
 					current.getGenomes(), current.getSnips() + 1);
 			snip.setInlinks(current.getInlinks());
 			snip.setOutlinks(end.getOutlinks());
 			current = snip;
-			//System.out.println("Snip: " + snip);
 			
 			updateLinks(snip, end.getId());
-			
 			isSnip = isSnip(snip);
-			//System.out.println("Is Snip: " + isSnip);
 		}
 		
 		return snip;
@@ -100,6 +74,8 @@ public class FilterSnips {
 				targets.get(1).getSequenceLength() == 1 &&
 				targets.get(0).getOutlinks().size() == 1 &&
 				targets.get(1).getOutlinks().size() == 1 &&
+				targets.get(0).getInlinks().size() == 1 &&
+				targets.get(1).getInlinks().size() == 1 &&
 				graph.getNode(targets.get(0).getOutlinks().get(0)).getInlinks().size() == 2;
 	}
 	
@@ -107,11 +83,6 @@ public class FilterSnips {
 		for (Integer outlink : snip.getOutlinks()) {
 			Node out = graph.getNode(outlink);
 			out.replaceInlink(originalId, snip.getId());
-			
-			Node outFiltered = filteredGraph.getNode(outlink);
-			if (outFiltered != null) {
-				outFiltered.replaceInlink(originalId, snip.getId());
-			}
 		}
 	}
 }
