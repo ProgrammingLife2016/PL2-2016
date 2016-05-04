@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
-import java.util.Observable;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
@@ -14,6 +13,8 @@ import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeController;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 
+import java.util.Observable;
+
 /**
  * FXML Controller class.
  *
@@ -22,7 +23,9 @@ import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 public class RootLayoutController {
 
   @FXML
-  private Pane treePane, heatmapPane;
+  private Pane treePane;
+  @FXML
+  private Pane heatmapPane;
   @FXML
   private Button zoomOutButton;
   @FXML
@@ -30,7 +33,9 @@ public class RootLayoutController {
   @FXML
   private Rectangle locationIdentifierRectangle;
   @FXML
-  private ImageView treeIcon, graphIcon;
+  private ImageView treeIcon;
+  @FXML
+  private ImageView graphIcon;
   @FXML
   private SplitPane mainPane;
   private final Pane graphPane = new Pane();
@@ -91,7 +96,7 @@ public class RootLayoutController {
     assert treeController == null;
     treeController = new TreeController(treePane, root, zoomOutButton);
     heatmapManager.initLeaves(treeController.getCurrentLeaves());
-    treeController.setOnChildLeavesChanged((Observable o, Object arg) -> {
+    treeController.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(treeController.getCurrentLeaves());
     });
   }

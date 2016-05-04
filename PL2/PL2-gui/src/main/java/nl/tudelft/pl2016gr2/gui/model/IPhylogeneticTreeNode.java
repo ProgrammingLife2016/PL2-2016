@@ -13,21 +13,21 @@ public interface IPhylogeneticTreeNode {
    *
    * @return if this node has a parent.
    */
-  public boolean hasParent();
+  boolean hasParent();
 
   /**
    * Get the parent of this node.
    *
    * @return the parent of this node.
    */
-  public IPhylogeneticTreeNode getParent();
+  IPhylogeneticTreeNode getParent();
 
   /**
    * Get the amount of direct child nodes (i.e. child nodes with an edge to this node).
    *
    * @return theamount of direct child nodes.
    */
-  public int getDirectChildCount();
+  int getDirectChildCount();
 
   /**
    * Get the total amount of child nodes. This includes the direct child nodes and the indirect
@@ -35,7 +35,7 @@ public interface IPhylogeneticTreeNode {
    *
    * @return the total amount of child nodes.
    */
-  public int getChildCount();
+  int getChildCount();
 
   /**
    * Get the child at the given index.
@@ -43,7 +43,7 @@ public interface IPhylogeneticTreeNode {
    * @param index the index of the child node.
    * @return the child at the given index.
    */
-  public IPhylogeneticTreeNode getChild(int index);
+  IPhylogeneticTreeNode getChild(int index);
 
   /**
    * Get the index of a direct child node.
@@ -51,5 +51,5 @@ public interface IPhylogeneticTreeNode {
    * @param child a direct child node.
    * @return the index of the child ndoe.
    */
-  public int getChildIndex(IPhylogeneticTreeNode child);
+  int getChildIndex(IPhylogeneticTreeNode child);
 }

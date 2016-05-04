@@ -1,20 +1,22 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
-import java.util.ArrayList;
-import java.util.Observer;
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 
+import java.util.ArrayList;
+import java.util.Observer;
+
 /**
+ * This class controlls the phylogenetic tree.
  *
  * @author Faris
  */
 public class TreeController {
 
-  public final static double GRAPH_BORDER_OFFSET = 5.0;
+  public static final double GRAPH_BORDER_OFFSET = 5.0;
 
   private final Pane graphPane;
   private final Button zoomOutButton;
@@ -25,8 +27,8 @@ public class TreeController {
   /**
    * Create a new tree controller which manages the pholygenetic tree.
    *
-   * @param graphPane the pane in which to draw the tree.
-   * @param root the root node of the tree.
+   * @param graphPane     the pane in which to draw the tree.
+   * @param root          the root node of the tree.
    * @param zoomOutButton the zoom out button.
    */
   public TreeController(Pane graphPane, IPhylogeneticTreeNode root, Button zoomOutButton) {
@@ -62,6 +64,9 @@ public class TreeController {
     });
   }
 
+  /**
+   * Initialize node clicked events, which cause a zoom in on the clicked node.
+   */
   private void initializeZoomInEventHandler() {
     graphPane.setOnMouseClicked((MouseEvent event) -> {
       if (isZooming) {
@@ -107,8 +112,8 @@ public class TreeController {
     zoomOutButton.setDisable(!root.hasParent());
     graphPane.getChildren().clear();
     currentRoot = ViewNode.drawRootNode(root, this);
-    childLeaveObservers.forEach((Observer t) -> {
-      t.update(null, null);
+    childLeaveObservers.forEach((Observer observer) -> {
+      observer.update(null, null);
     });
   }
 
@@ -121,10 +126,20 @@ public class TreeController {
     return graphPane;
   }
 
-  public void setOnChildLeavesChanged(Observer o) {
-    childLeaveObservers.add(o);
+  /**
+   * Add an observer for the event which occurs when the currently displayed leaf nodes change.
+   *
+   * @param observer the observer to add.
+   */
+  public void setOnLeavesChanged(Observer observer) {
+    childLeaveObservers.add(observer);
   }
 
+  /**
+   * Get the currently displayed leaf nodes.
+   *
+   * @return the currently displayed leaf nodes.
+   */
   public ArrayList<ViewNode> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
   }

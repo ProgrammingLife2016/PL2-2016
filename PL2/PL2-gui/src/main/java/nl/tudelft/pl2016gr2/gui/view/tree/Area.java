@@ -1,45 +1,65 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 /**
+ * This class can be used to store an area of for a part of the user interface. An area consists out
+ * of a pair of start coordinates: (startX, startY) and a pair of end coordinates: (endX, endY).
  *
- * @author faris
+ * @author Faris
  */
-public class GraphArea {
+public class Area {
 
-  protected final double startX, endX, startY, endY;
+  private final double startX;
+  private final double endX;
+  private final double startY;
+  private final double endY;
 
   /**
    * Create a graph area.
    *
    * @param startX the x coordinate of the left border of the graph area.
-   * @param endX the x coordinate of the right border of the graph area.
+   * @param endX   the x coordinate of the right border of the graph area.
    * @param startY the y coordinate of the top border of the graph area.
-   * @param endY the y coordinate of the bottom border of the graph area.
+   * @param endY   the y coordinate of the bottom border of the graph area.
    */
-  public GraphArea(double startX, double endX, double startY, double endY) {
+  public Area(double startX, double endX, double startY, double endY) {
     this.startX = startX;
     this.endX = endX;
     this.startY = startY;
     this.endY = endY;
   }
 
+  /**
+   * Get the start position of the x coordinate.
+   *
+   * @return the start position of the x coordinate.
+   */
   public double getStartX() {
     return startX;
   }
 
+  /**
+   * Get the end position of the x coordinate.
+   *
+   * @return the end position of the x coordinate.
+   */
   public double getEndX() {
     return endX;
   }
 
+  /**
+   * Get the start position of the y coordinate.
+   *
+   * @return the start position of the y coordinate.
+   */
   public double getStartY() {
     return startY;
   }
 
+  /**
+   * Get the end position of the y coordinate.
+   *
+   * @return the end position of the y coordinate.
+   */
   public double getEndY() {
     return endY;
   }
@@ -89,6 +109,6 @@ public class GraphArea {
    */
   public boolean contains(double xCoord, double yCoord) {
     return xCoord >= startX && xCoord <= endX
-            && yCoord >= startY && yCoord <= endY;
+        && yCoord >= startY && yCoord <= endY;
   }
 }

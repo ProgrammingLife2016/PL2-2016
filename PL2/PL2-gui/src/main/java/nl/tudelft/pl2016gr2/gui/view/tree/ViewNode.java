@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
-import java.util.ArrayList;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -12,22 +11,23 @@ import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 
+import java.util.ArrayList;
+
 /**
+ * This class represent a node of the phylogenetic tree which can be drawn in the user interface (it
+ * extends Circle).
  *
  * @author Faris
  */
 public class ViewNode extends Circle {
 
-  private final static double NODE_RADIUS = 10.0;
-  private final static double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  private final static Duration ANIMATION_DURATION = Duration.millis(750.0);
+  private static final double NODE_RADIUS = 10.0;
+  private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
+  private static final Duration ANIMATION_DURATION = Duration.millis(750.0);
 
   private final IPhylogeneticTreeNode dataNode;
-  private final ViewNode parent;
   private final ArrayList<ViewNode> children = new ArrayList<>();
-  private Line edge, elipsis;
-  private final TreeController controller;
-  private GraphArea graphArea;
+  private Area area;
   private boolean isLeaf = true;
 
   /**
@@ -38,20 +38,17 @@ public class ViewNode extends Circle {
    * @param graphArea the graph area in which the node has to be drawn.
    * @param controller the controller of the tree.
    */
-  private ViewNode(IPhylogeneticTreeNode dataNode, ViewNode parent, GraphArea graphArea,
-          TreeController controller) {
+  private ViewNode(IPhylogeneticTreeNode dataNode, Area graphArea) {
     super(NODE_RADIUS);
     this.dataNode = dataNode;
-    this.graphArea = graphArea;
-    this.parent = parent;
-    this.controller = controller;
+    this.area = graphArea;
 
     double red = Math.abs(((dataNode.getChildCount() * 13) % 200) / 255d);
     double green = Math.abs(((dataNode.getChildCount() * 34) % 200) / 255d);
     double blue = Math.abs(((dataNode.getChildCount() * 88) % 200) / 255d);
     this.setFill(new Color(red, green, blue, 1.0));
 
-    this.setCenterX(this.getRadius() + graphArea.startX);
+    this.setCenterX(this.getRadius() + graphArea.getStartX());
     this.setCenterY(graphArea.getCenterY());
   }
 
@@ -77,8 +74,8 @@ public class ViewNode extends Circle {
     double endX = graphPane.getWidth() - TreeController.GRAPH_BORDER_OFFSET;
     double startY = TreeController.GRAPH_BORDER_OFFSET;
     double endY = graphPane.getHeight() - TreeController.GRAPH_BORDER_OFFSET;
-    GraphArea gbox = new GraphArea(startX, endX, startY, endY);
-    return drawNode(root, null, gbox, controller);
+    Area gbox = new Area(startX, endX, startY, endY);
+    return drawNode(root, gbox, controller);
   }
 
   /**
@@ -90,22 +87,22 @@ public class ViewNode extends Circle {
    * @param controller the controller of the tree.
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
-  private static ViewNode drawNode(IPhylogeneticTreeNode dataNode, ViewNode parent, GraphArea graphArea,
+  private static ViewNode drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
           TreeController controller) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
             || dataNode == null) {
       return null; // box too small to draw node.
     }
-    ViewNode node = new ViewNode(dataNode, parent, graphArea, controller);
+    ViewNode node = new ViewNode(dataNode, graphArea);
     controller.getGraphPane().getChildren().add(node);
     double nextStartX = graphArea.getCenterX();
     double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
     for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
       IPhylogeneticTreeNode childDataNode = dataNode.getChild(i);
-      double nextStartY = ySize * i + graphArea.startY;
+      double nextStartY = ySize * i + graphArea.getStartY();
       double nextEndY = nextStartY + ySize;
-      GraphArea childArea = new GraphArea(nextStartX, graphArea.endX, nextStartY, nextEndY);
-      ViewNode child = drawNode(childDataNode, node, childArea, controller);
+      Area childArea = new Area(nextStartX, graphArea.getEndX(), nextStartY, nextEndY);
+      ViewNode child = drawNode(childDataNode, childArea, controller);
       if (child == null) {
         drawElipsis(node, controller.getGraphPane());
         node.isLeaf = true;
@@ -133,7 +130,6 @@ public class ViewNode extends Circle {
     edge.endYProperty().bind(child.centerYProperty());
     graphPane.getChildren().add(edge);
     edge.toBack();
-    child.edge = edge;
   }
 
   /**
@@ -144,14 +140,13 @@ public class ViewNode extends Circle {
    * @param graphPane the pane in which to draw the elipsis.
    */
   private static void drawElipsis(ViewNode node, Pane graphPane) {
-    Line l = new Line();
-    l.startXProperty().bind(node.centerXProperty().add(node.getRadius() * 2));
-    l.endXProperty().bind(node.centerXProperty().add(node.getRadius() * 4));
-    l.startYProperty().bind(node.centerYProperty());
-    l.endYProperty().bind(node.centerYProperty());
-    l.getStrokeDashArray().addAll(2d, 5d);
-    graphPane.getChildren().add(l);
-    node.elipsis = l;
+    Line elipsis = new Line();
+    elipsis.startXProperty().bind(node.centerXProperty().add(node.getRadius() * 2));
+    elipsis.endXProperty().bind(node.centerXProperty().add(node.getRadius() * 4));
+    elipsis.startYProperty().bind(node.centerYProperty());
+    elipsis.endYProperty().bind(node.centerYProperty());
+    elipsis.getStrokeDashArray().addAll(2d, 5d);
+    graphPane.getChildren().add(elipsis);
   }
 
   /**
@@ -161,7 +156,7 @@ public class ViewNode extends Circle {
    * @param timeline the timeline which is used for the animation.
    */
   public void zoomIn(ViewNode newRoot, Timeline timeline) {
-    zoomIn(this.graphArea, newRoot.graphArea, timeline);
+    zoomIn(this.area, newRoot.area, timeline);
   }
 
   /**
@@ -171,11 +166,11 @@ public class ViewNode extends Circle {
    * @param zoomArea the area of the tree to zoom in on.
    * @param timeline the timeline which is used for the animation.
    */
-  private void zoomIn(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
-    double newX = (getCenterX() - zoomArea.startX - NODE_RADIUS);
+  private void zoomIn(Area originalArea, Area zoomArea, Timeline timeline) {
+    double newX = getCenterX() - zoomArea.getStartX() - NODE_RADIUS;
     newX = newX / zoomArea.getWidth() * originalArea.getWidth();
     newX += NODE_RADIUS + TreeController.GRAPH_BORDER_OFFSET;
-    double newY = (getCenterY() - zoomArea.startY);
+    double newY = getCenterY() - zoomArea.getStartY();
     newY = newY / zoomArea.getHeight() * originalArea.getHeight();
     newY += TreeController.GRAPH_BORDER_OFFSET;
 
@@ -197,12 +192,12 @@ public class ViewNode extends Circle {
    */
   public void zoomOut(Timeline timeline) {
     IPhylogeneticTreeNode newRoot = dataNode.getParent();
-    double nextStartX = graphArea.getCenterX();
-    double ySize = graphArea.getHeight() / newRoot.getDirectChildCount();
-    double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + graphArea.startY;
+    double nextStartX = area.getCenterX();
+    double ySize = area.getHeight() / newRoot.getDirectChildCount();
+    double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + area.getStartY();
     double nextEndY = nextStartY + ySize;
-    GraphArea newArea = new GraphArea(nextStartX, this.graphArea.endX, nextStartY, nextEndY);
-    zoomOut(this.graphArea, newArea, timeline);
+    Area newArea = new Area(nextStartX, this.area.getEndX(), nextStartY, nextEndY);
+    zoomOut(this.area, newArea, timeline);
   }
 
   /**
@@ -212,12 +207,12 @@ public class ViewNode extends Circle {
    * @param zoomArea the area of the tree where the current tree will be drawn after zooming out.
    * @param timeline the timeline which is used for the animation.
    */
-  private void zoomOut(GraphArea originalArea, GraphArea zoomArea, Timeline timeline) {
-    double newX = (getCenterX() - originalArea.startX - NODE_RADIUS);
-    newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.startX;
+  private void zoomOut(Area originalArea, Area zoomArea, Timeline timeline) {
+    double newX = getCenterX() - originalArea.getStartX() - NODE_RADIUS;
+    newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.getStartX();
     newX += NODE_RADIUS;
-    double newY = (getCenterY() - originalArea.startY);
-    newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.startY;
+    double newY = getCenterY() - originalArea.getStartY();
+    newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.getStartY();
 
     KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
     KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
@@ -230,10 +225,20 @@ public class ViewNode extends Circle {
     }
   }
 
-  public GraphArea getGraphArea() {
-    return graphArea;
+  /**
+   * Get the area of this node.
+   *
+   * @return the area of this node.
+   */
+  public Area getGraphArea() {
+    return area;
   }
 
+  /**
+   * Get the nodes which are currently being displayed as leaf nodes.
+   *
+   * @return the nodes which are currently being displayed as leaf nodes.
+   */
   public ArrayList<ViewNode> getCurrentLeaves() {
     ArrayList<ViewNode> res = new ArrayList<>();
     if (!isLeaf) {

@@ -26,48 +26,44 @@ public class DrawGraph {
 
   private static final double X_OFFSET = 50.0;
 
+  /**
+   * Load and draw a graph in the given pane.
+   *
+   * @param pane the pane in which to draw the graph.
+   */
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
-
-    long s = System.currentTimeMillis();
-    GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);
-    Graph g = r.getGraph();
-    System.out.println("Size of the graph: " + g.getSize());
-    long e = System.currentTimeMillis();
-    System.out.println("The loading took " + (e - s) + " milliseconds to run");
-    s = e;
+    Graph graph = new GFAReader(FILENAME, GRAPH_SIZE).getGraph();
 
     HashMap<Integer, Bubble> bubbles = new HashMap<>();
-    ArrayList<Bubble> rawBubbles = g.getNodes();
+    ArrayList<Bubble> rawBubbles = graph.getNodes();
     for (int i = 1; i < rawBubbles.size(); i++) { // skip first
       bubbles.put(rawBubbles.get(i).getId(), rawBubbles.get(i));
     }
     HashMap<Integer, Circle> circles = drawNodes(pane, bubbles);
     drawEdges(pane, bubbles, circles);
 
-    ArrayList<ArrayList<Bubble>> bubbleDepths = createGraphDepth(g.getRoot(), bubbles);
+    ArrayList<ArrayList<Bubble>> bubbleDepths = createGraphDepth(graph.getRoot(), bubbles);
     setBubbleLocatios(bubbleDepths, paneHeight, circles);
-    e = System.currentTimeMillis();
-    System.out.println("Drawing took " + (e - s) + " milliseconds");
   }
 
   /**
    * Draw all of the nodes as circles.
    *
-   * @param pane the pane to draw the edges into.
+   * @param pane    the pane to draw the edges into.
    * @param bubbles a hashmap containing all (id, bubble) pairs.
    * @return a hashmap containing all (id, circle) pairs, where the circle is the visual
-   * representation of the bubble.
+   *         representation of the bubble.
    */
   private HashMap<Integer, Circle> drawNodes(Pane pane, HashMap<Integer, Bubble> bubbles) {
     HashMap<Integer, Circle> circles = new HashMap<>();
     bubbles.forEach((Integer id, Bubble bubble) -> {
-      Circle c = new Circle(15);
-      circles.put(id, c);
-      pane.getChildren().add(c);
+      Circle circle = new Circle(15);
+      circles.put(id, circle);
+      pane.getChildren().add(circle);
       Label label = new Label(Integer.toString(bubble.getId()));
-      label.layoutXProperty().bind(c.centerXProperty().add(-c.getRadius() + 3));
-      label.layoutYProperty().bind(c.centerYProperty().add(-c.getRadius() / 2));
+      label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3));
+      label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2));
       label.setTextFill(new javafx.scene.paint.Color(1, 1, 1, 1));
       pane.getChildren().add(label);
     });
@@ -77,11 +73,12 @@ public class DrawGraph {
   /**
    * Draw all edges between the nodes.
    *
-   * @param pane the pane to draw the edges into.
+   * @param pane    the pane to draw the edges into.
    * @param bubbles a hashmap containing all (id, bubble) pairs.
    * @param circles a hashmap containing all (id, circle) pairs.
    */
-  private void drawEdges(Pane pane, HashMap<Integer, Bubble> bubbles, HashMap<Integer, Circle> circles) {
+  private void drawEdges(Pane pane, HashMap<Integer, Bubble> bubbles,
+          HashMap<Integer, Circle> circles) {
     bubbles.forEach((Integer id, Bubble from) -> {
       Circle fromCircle = circles.get(id);
       for (Integer outLink : from.getOutLinks()) {
@@ -101,10 +98,10 @@ public class DrawGraph {
   /**
    * Calculate the graph depth for each bubble.
    *
-   * @param root the root bubble.
+   * @param root    the root bubble.
    * @param bubbles a hashmap containing all (id, bubble) pairs.
    * @return an list of lists, where the 2nd list contains all of the bubbles at the depth of the
-   * tree which is equal to the index of the 2nd list in the first list.
+   *         tree which is equal to the index of the 2nd list in the first list.
    */
   private ArrayList<ArrayList<Bubble>> createGraphDepth(Bubble root,
           HashMap<Integer, Bubble> bubbles) {
@@ -141,9 +138,9 @@ public class DrawGraph {
    * in the graph.
    *
    * @param bubbleDepths a list of lists of bubbles, where the inner lists are sorted according to
-   * depth in the graph.
-   * @param paneHeight the height of the pane in which the graph is drawn.
-   * @param circles all of the circles representing the bubbles.
+   *                     depth in the graph.
+   * @param paneHeight   the height of the pane in which the graph is drawn.
+   * @param circles      all of the circles representing the bubbles.
    */
   private void setBubbleLocatios(ArrayList<ArrayList<Bubble>> bubbleDepths,
           double paneHeight, HashMap<Integer, Circle> circles) {

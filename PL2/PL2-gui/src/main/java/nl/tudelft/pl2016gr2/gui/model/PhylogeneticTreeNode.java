@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import java.util.Objects;
+
 /**
  * This class is an adapter class which maps the methods of the
  * net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode class to the interface which is needed by
@@ -72,6 +74,13 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
     }
     final PhylogeneticTreeNode other = (PhylogeneticTreeNode) obj;
     return this.node == other.node;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + Objects.hashCode(this.node);
+    return hash;
   }
 
 }
