@@ -1,9 +1,21 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+/**
+ * This class is an adapter class which maps the methods of the
+ * net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode class to the interface which is needed by
+ * our application.
+ *
+ * @author Faris
+ */
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
 
     private final net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node;
 
+    /**
+     * Construct a phylogenetic tree node.
+     *
+     * @param node the TreeNode of this node.
+     */
     public PhylogeneticTreeNode(net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node) {
         this.node = node;
     }

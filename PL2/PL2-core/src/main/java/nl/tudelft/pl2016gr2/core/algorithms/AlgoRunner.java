@@ -10,9 +10,9 @@ import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
  */
 public class AlgoRunner {
 	
-	public static final String FILENAME = "TB10.gfa";
-	public static final int GRAPH_SIZE = 8728;
-	//public static final int GRAPH_SIZE = 10;
+	public static final String FILENAME = "TEST3.gfa";
+//	public static final int GRAPH_SIZE = 8728;
+	public static final int GRAPH_SIZE = 10;
 
 	/**
 	 * Main method to call. It prints the number of lines in the file (in the reader class), the number of nodes (+1 for node 0), 

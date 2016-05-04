@@ -52,6 +52,9 @@ public class RootLayoutController {
         new DrawGraph().drawGraph(graphPane);
     }
 
+    /**
+     * Initialize the tree icon. When this icon is clicked, the tree will be shown.
+     */
     private void initializeTreeIcon() {
         treeIcon.setOnMouseClicked((MouseEvent event) -> {
             if (mainPane.getItems().contains(treePane)) {
@@ -64,6 +67,9 @@ public class RootLayoutController {
         });
     }
 
+    /**
+     * Initialize the tree icon. When this icon is clicked, the tree will be shown.
+     */
     private void initializeGraphIcon() {
         graphIcon.setOnMouseClicked((MouseEvent event) -> {
             if (mainPane.getItems().contains(graphPane)) {
