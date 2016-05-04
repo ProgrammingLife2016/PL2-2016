@@ -12,19 +12,19 @@ import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
  */
 public class HeatmapManager {
 
-	private final Pane pane;
-	private NodeDensityHeatmap densityMap;
+  private final Pane pane;
+  private NodeDensityHeatmap densityMap;
 
-	public HeatmapManager(Pane pane) {
-		this.pane = pane;
-	}
-    
-    public void initLeaves(ArrayList<ViewNode> currentLeaves) {
-		GraphArea area = new GraphArea(10, 20, 0, pane.getHeight());
-		densityMap = new NodeDensityHeatmap(pane, currentLeaves, area);
-    }
+  public HeatmapManager(Pane pane) {
+    this.pane = pane;
+  }
 
-	public void setLeaves(ArrayList<ViewNode> currentLeaves) {
-        densityMap.onChange(currentLeaves);
-	}
+  public void initLeaves(ArrayList<ViewNode> currentLeaves) {
+    GraphArea area = new GraphArea(10, 20, 0, pane.getHeight());
+    densityMap = new NodeDensityHeatmap(pane, currentLeaves, area);
+  }
+
+  public void setLeaves(ArrayList<ViewNode> currentLeaves) {
+    densityMap.onChange(currentLeaves);
+  }
 }
