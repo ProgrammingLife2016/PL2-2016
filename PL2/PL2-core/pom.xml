@@ -11,6 +11,13 @@
 
     <artifactId>PL2-core</artifactId>
 
+    <distributionManagement>
+        <site>
+            <id>PL2-core</id>
+            <url>file://${basedir}/target/staging/core/</url>
+        </site>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>nl.tudelft.pl2016gr2</groupId>
