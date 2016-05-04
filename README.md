@@ -1,4 +1,4 @@
-# DNAv
+# DNAv [![Build Status](https://travis-ci.org/ProgrammingLife2016/PL2-2016.svg?branch=dev)](https://travis-ci.org/ProgrammingLife2016/PL2-2016)
 
 DNAv (pronounced D-Nav) is a shorthand for DNA Navigation. This application is a semantic visualization tool for analysis of DNA sequences, aimed at biogenetic researchers. The application uses sophisticated data management to process a collection of sequences and detects areas of interest for the user, which it shows in a graphical user interface.
 
@@ -9,11 +9,11 @@ DNA is complex and mutations therein are varied and mostly unpredictable. Becaus
 DNAv gives these researchers interactive, semantic and clearly visualized tools in their toolbox to help them with the detection and root cause analysis of these mutations.
 
 ### Organization and Team
-DNAv is developed for the Contextproject course at the Delft University of Technology with course code TI2806, as part of the curriculum of the Bachelor Computer Science. The project is led by [Dr. Thomas Abeel](http://www.abeel.be/), who can be contacted by [T.Abeel@tudelft.nl](mailto:T.Abeel@tudelft.nl).
+DNAv is developed for the Contextproject course at the Delft University of Technology with course code TI2806, as part of the curriculum of the Bachelor Computer Science. The project is led by [Dr. Thomas Abeel](http://www.abeel.be/), who can be contacted by e-mail at [T.Abeel@tudelft.nl](mailto:T.Abeel@tudelft.nl).
 
 #### Members
-Wouter Smit
-Cas Bilstra
-Faris Elghlan
-Justin van der Krieken
-Casper Athmer
+- Wouter Smit
+- Cas Bilstra
+- Faris Elghlan
+- Justin van der Krieken
+- Casper Athmer
