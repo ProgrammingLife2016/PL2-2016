@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
+import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 /**
  * This class acts as the launcher for my simple nl.tudelft.pl2016gr2.parser.
@@ -25,7 +25,7 @@ public class AlgoRunner {
    */
   public static void main(String[] args) {
     long s = System.currentTimeMillis();
-    GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);
+    FullGfaReader r = new FullGfaReader(FILENAME, GRAPH_SIZE);
     OriginalGraph g = r.getGraph();
     System.out.println("Size of the graph: " + g.getSize());
     long e = System.currentTimeMillis();

@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
+import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 /**
  *
@@ -40,7 +40,7 @@ public class DrawGraph {
 		stage.show();
 
 		long s = System.currentTimeMillis();
-		GFAReader r = new GFAReader(FILENAME, GRAPH_SIZE);
+		FullGfaReader r = new FullGfaReader(FILENAME, GRAPH_SIZE);
 		OriginalGraph g = r.getGraph();
 		System.out.println("Size of the graph: " + g.getSize());
 		long e = System.currentTimeMillis();

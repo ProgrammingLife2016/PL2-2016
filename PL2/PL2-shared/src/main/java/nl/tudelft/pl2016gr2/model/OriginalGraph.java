@@ -7,6 +7,7 @@ public class OriginalGraph implements GraphInterface {
 
   private HashMap<Integer, Node> nodes;
   private int lowestId;
+  private ArrayList<String> genoms;
 
   public OriginalGraph() {
     nodes = new HashMap<>();
@@ -59,6 +60,14 @@ public class OriginalGraph implements GraphInterface {
 
   public HashMap<Integer, Node> getNodes() {
     return nodes;
+  }
+  
+  public ArrayList<String> getGenoms() {
+    return this.genoms;
+  }
+  
+  public void setGenoms(ArrayList<String> gs) {
+    this.genoms = gs;
   }
 
 }
