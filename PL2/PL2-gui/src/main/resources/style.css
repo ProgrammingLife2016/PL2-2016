@@ -18,6 +18,38 @@
 
 /*******************************************************************************
  *                                                                             *
+ * Icons                                                                       *
+ *                                                                             *
+ ******************************************************************************/
+
+.graphIcon {
+    -fx-image: url(icons/graph_icon.png);
+}
+
+.graphIcon:hover {
+    -fx-image: url(icons/graph_icon_hover.png);
+    -fx-cursor: hand;
+}
+
+.graphIcon:pressed {
+    -fx-image: url(icons/graph_icon_pressed.png);
+}
+
+.treeIcon {
+    -fx-image: url(icons/tree_icon.png);
+}
+
+.treeIcon:hover {
+    -fx-image: url(icons/tree_icon_hover.png);
+    -fx-cursor: hand;
+}
+
+.treeIcon:pressed {
+    -fx-image: url(icons/tree_icon_pressed.png);
+}
+
+/*******************************************************************************
+ *                                                                             *
  * Button                                                                      *
  *                                                                             *
  ******************************************************************************/
@@ -44,7 +76,7 @@
 
 .zoomOutButton {
     -fx-background-radius: 0 0 8 0;
-    -fx-graphic: url('left.png');
+    -fx-graphic: url('images/left.png');
 }
 
 /*******************************************************************************

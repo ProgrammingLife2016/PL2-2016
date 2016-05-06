@@ -4,11 +4,17 @@ import java.util.ArrayList;
 
 public abstract class AbstractNode {
 
-  private int id;
+  private final int id;
   private ArrayList<Integer> inLinks;
   private ArrayList<Integer> outLinks;
   private int sequenceLength;
 
+  /**
+   * Construct an abstract node.
+   *
+   * @param id             the id of the node.
+   * @param sequenceLength the sequence length of the node.
+   */
   public AbstractNode(int id, int sequenceLength) {
     this.id = id;
     this.sequenceLength = sequenceLength;

@@ -14,6 +14,9 @@ public class OriginalGraph implements GraphInterface {
     lowestId = Integer.MAX_VALUE;
   }
 
+  /**
+   * Print a string representation of this graph.
+   */
   public void print() {
     for (Node node : nodes.values()) {
       System.out.println(node);
@@ -25,6 +28,12 @@ public class OriginalGraph implements GraphInterface {
     return nodes.get(id);
   }
 
+  /**
+   * Get all of the nodes to which the node with the given ID has an outlink.
+   *
+   * @param id the id of the node.
+   * @return the nodes of the outlinks.
+   */
   public ArrayList<Node> getTargets(int id) {
     ArrayList<Integer> outLinks = nodes.get(id).getOutlinks();
     ArrayList<Node> targets = new ArrayList<>();
@@ -43,7 +52,7 @@ public class OriginalGraph implements GraphInterface {
 
   @Override
   public void addNode(AbstractNode node) {
-    assert (node instanceof Node);
+    assert node instanceof Node;
 
     int id = node.getId();
     if (id < lowestId) {
@@ -61,11 +70,11 @@ public class OriginalGraph implements GraphInterface {
   public HashMap<Integer, Node> getNodes() {
     return nodes;
   }
-  
+
   public ArrayList<String> getGenoms() {
     return this.genoms;
   }
-  
+
   public void setGenoms(ArrayList<String> gs) {
     this.genoms = gs;
   }

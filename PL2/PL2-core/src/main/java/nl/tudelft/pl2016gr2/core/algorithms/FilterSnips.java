@@ -1,10 +1,10 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
+import nl.tudelft.pl2016gr2.model.Node;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
+
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.model.Node;
 
 public class FilterSnips {
 
@@ -15,6 +15,10 @@ public class FilterSnips {
     this.graph = graph;
   }
 
+  /**
+   * Filter the graph by combining bubbles.
+   * @return the filtered graph.
+   */
   public OriginalGraph filter() {
     OriginalGraph filteredGraph = new OriginalGraph();
 

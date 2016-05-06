@@ -19,14 +19,14 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
    <children>
       <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
          <children>
             <Button fx:id="zoomOutButton" disable="true" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="400.0" prefWidth="20.0" styleClass="zoomOutButton" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0" />
-            <SplitPane dividerPositions="0.8" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+            <SplitPane fx:id="mainPane" dividerPositions="0.8" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                <items>
-                  <Pane fx:id="graphPane" minWidth="60.0" prefHeight="400.0" prefWidth="460.0" SplitPane.resizableWithParent="false" />
+                  <Pane fx:id="treePane" minWidth="60.0" prefHeight="400.0" prefWidth="460.0" SplitPane.resizableWithParent="false" />
                   <Pane fx:id="heatmapPane" minWidth="10.0" prefHeight="200.0" prefWidth="120.0" SplitPane.resizableWithParent="false" />
                </items>
             </SplitPane>
@@ -60,12 +60,19 @@
                      <children>
                         <ImageView fitHeight="80.0" fitWidth="120.0" pickOnBounds="true" StackPane.alignment="TOP_LEFT">
                            <image>
-                              <Image url="@BLACK.png" />
+                              <Image url="@../images/BLACK.png" />
                            </image>
                         </ImageView>
                         <Rectangle fx:id="locationIdentifierRectangle" arcHeight="5.0" arcWidth="5.0" fill="#ffffff00" height="80.0" stroke="RED" strokeType="INSIDE" width="120.0" StackPane.alignment="TOP_LEFT" />
                      </children>
                   </StackPane>
+               </children>
+            </HBox>
+            <VBox prefHeight="80.0" prefWidth="40.0" spacing="3.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="30.0" />
+            <HBox prefHeight="40.0" prefWidth="80.0" spacing="5.0" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="40.0">
+               <children>
+                  <ImageView fx:id="treeIcon" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="treeIcon" />
+                  <ImageView fx:id="graphIcon" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="graphIcon" />
                </children>
             </HBox>
          </children>
