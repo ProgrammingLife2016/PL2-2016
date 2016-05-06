@@ -6,8 +6,13 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 import org.junit.Test;
 
+/**
+ * This class tests the {@link FullGfaReader} class.
+ *
+ * @author Cas
+ */
 public class FullGfaReaderTest {
-  
+
   private static final String filename = "TBSMALL.gfa";
   private static final int GRAPH_SIZE = 5;
 

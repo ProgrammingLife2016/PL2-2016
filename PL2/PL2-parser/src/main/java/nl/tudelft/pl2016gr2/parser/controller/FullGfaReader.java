@@ -4,37 +4,35 @@ import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 /**
  * This class reads a gfa file.
- * 
+ *
  * @author Cas
  *
  */
 public class FullGfaReader {
+
   private Scanner sc;
-  
-  private ArrayList<String> genoms = new ArrayList<String>();
+
+  private ArrayList<String> genoms = new ArrayList<>();
 
   private OriginalGraph originalGraph;
-  // This is ugly hardcoded, but this way we know how much nodes we have to
-  // initialize.
-  // @Wouter and Justin, you can probably find some better way to know this
-  // beforehand. (read the file from the bottom for example)
   public final int numNodes;
 
   /**
    * Creates a reader object and reads the gfa data from the filename.
-   * 
-   * @param filename
-   *          the name of the file to be read.
+   *
+   * @param filename  the name of the file to be read.
+   * @param graphsize the size of the graph.
    */
   public FullGfaReader(String filename, int graphsize) {
     this.numNodes = graphsize;
     this.sc = new Scanner(FullGfaReader.class.getClassLoader().getResourceAsStream(filename));
     originalGraph = new OriginalGraph();
-    prepNodes();
+    prepNodes(originalGraph, numNodes);
     read();
 
     sc.close();
@@ -42,12 +40,14 @@ public class FullGfaReader {
   }
 
   /**
-   * Because we know (hardcoded) how many nodes there will be, we can prepare
-   * them.
+   * Initialize the nodes of a graph.
+   *
+   * @param graph the graph of which to initialize a set amount of node.
+   * @param nodes the amount of nodes to initialize.
    */
-  private void prepNodes() {
-    for (int i = 1; i < numNodes + 1; i++) {
-      originalGraph.addNode(new Node(i, 1, new ArrayList<>(), 0));
+  protected static void prepNodes(OriginalGraph graph, int nodes) {
+    for (int i = 1; i < nodes + 1; i++) {
+      graph.addNode(new Node(i, 1, new ArrayList<>(), 0));
     }
   }
 
@@ -80,18 +80,16 @@ public class FullGfaReader {
   private void handleH(Scanner sc) {
     String line = sc.nextLine();
     this.genoms = extractGenoms(line);
-    
+
   }
-  
+
   private ArrayList<String> extractGenoms(String line) {
     String[] words = line.split(":");
     if (words[0].endsWith("ORI")) {
       String[] gens = words[2].split(";");
-      ArrayList<String> gensAr = new ArrayList<String>();
-      for (String s : gens) {
-        gensAr.add(s);
-      }
-      return gensAr;   
+      ArrayList<String> gensAr = new ArrayList<>();
+      gensAr.addAll(Arrays.asList(gens));
+      return gensAr;
     }
     return null;
   }
@@ -106,7 +104,7 @@ public class FullGfaReader {
     no.setGenomes(nodeGens);
     no.setBases(bases);
   }
-  
+
   private void handleL(Scanner sc) {
     int parent = sc.nextInt();
     sc.next();
@@ -120,12 +118,12 @@ public class FullGfaReader {
 
   /**
    * Method which returns the read graph.
-   * 
+   *
    * @return The graph.
    */
   public OriginalGraph getGraph() {
     originalGraph.setGenoms(genoms);
-    return originalGraph;    
+    return originalGraph;
   }
 
 }
