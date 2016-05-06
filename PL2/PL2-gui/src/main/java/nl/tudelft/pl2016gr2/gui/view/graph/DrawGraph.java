@@ -91,9 +91,70 @@ public class DrawGraph {
         pane.getChildren().add(edge);
         edge.toBack();
         edge.setSmooth(true);
+
+        //        QuadCurve curve = new QuadCurve();
+        //
+        //        curve.setFill(Color.TRANSPARENT);
+        //        curve.setStroke(Color.BLACK);
+        //        curve.setStrokeWidth(2.0d);
+        //
+        //        fromCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+        //          curve.startXProperty().setValue(newValue);
+        //          bendCurve(curve, fromCircle, toCircle);
+        //        });
+        //        fromCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+        //          curve.startYProperty().setValue(newValue);
+        //          bendCurve(curve, fromCircle, toCircle);
+        //        });
+        //        toCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+        //          curve.endXProperty().setValue(newValue);
+        //          bendCurve(curve, fromCircle, toCircle);
+        //        });
+        //        toCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+        //          curve.endYProperty().setValue(newValue);
+        //          bendCurve(curve, fromCircle, toCircle);
+        //        });
+        //
+        //        pane.getChildren().add(curve);
+        //        curve.toBack();
       }
     });
   }
+
+  //  private static void bendCurve(QuadCurve curve, Circle from, Circle to) {
+  //    Point2D perpP;
+  //    if (from.getCenterY() > to.getCenterY()) {
+  //      perpP = getPerpendicularPoint(from.getCenterX(), from.getCenterY(), to.getCenterX(),
+  //              to.getCenterY(), 20.0d);
+  //    } else {
+  //      perpP = getPerpendicularPoint(to.getCenterX(), to.getCenterY(), from.getCenterX(),
+  //              from.getCenterY(), 20.0d);
+  //    }
+  //
+  //    curve.setControlX(perpP.getX());
+  //    curve.setControlY(perpP.getY());
+  //  }
+  //
+  //  /**
+  //   * Note that 4(!) objects are created for a single invocation. This is considerably slower 
+  //   * than a more efficient way of handling thing. (atleast until the JIT kicks in it seems)
+  //   *
+  //   * @param startX   x of "from" point
+  //   * @param startY   y of "from" point
+  //   * @param stopX    x of "to" point
+  //   * @param stopY    y of "to" point
+  //   * @param distance distance to offset the point
+  //   * @return Point2D object representing the point
+  //   */
+  //  private static Point2D getPerpendicularPoint(double startX, double startY, double stopX,
+  //          double stopY, double distance) {
+  //    Point2D mid = new Point2D((startX + stopX) / 2, (startY + stopY) / 2);
+  //    Point2D vector = new Point2D(startX - stopX, startY - stopY);
+  //    Point2D normal = new Point2D(-vector.getY(), vector.getX()).normalize();
+  //
+  //    return new Point2D(mid.getX() + (distance * normal.getX()),
+  //            mid.getY() + (distance * normal.getY()));
+  //  }
 
   /**
    * Calculate the graph depth for each bubble.
