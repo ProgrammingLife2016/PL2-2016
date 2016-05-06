@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class Graph {
 
-  private ArrayList<Bubble> nodes;
+  private final ArrayList<Bubble> nodes;
 
   /**
    * Constructs a graph from an arrayList of nodes. (the edges are already in these nodes)

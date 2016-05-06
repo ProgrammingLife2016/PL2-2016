@@ -7,9 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import nl.tudelft.pl2016gr2.model.Bubble;
-import nl.tudelft.pl2016gr2.model.Graph;
-import nl.tudelft.pl2016gr2.parser.controller.GFAReader;
+import nl.tudelft.pl2016gr2.model.Node;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  * This class is used to draw a graph in a pane.
  *
- * @author faris
+ * @author Faris
  */
 public class DrawGraph {
 
@@ -33,35 +33,31 @@ public class DrawGraph {
    */
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
-    Graph graph = new GFAReader(FILENAME, GRAPH_SIZE).getGraph();
+    OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
 
-    HashMap<Integer, Bubble> bubbles = new HashMap<>();
-    ArrayList<Bubble> rawBubbles = graph.getNodes();
-    for (int i = 1; i < rawBubbles.size(); i++) { // skip first
-      bubbles.put(rawBubbles.get(i).getId(), rawBubbles.get(i));
-    }
-    HashMap<Integer, Circle> circles = drawNodes(pane, bubbles);
-    drawEdges(pane, bubbles, circles);
+    HashMap<Integer, Node> nodes = graph.getNodes();
+    HashMap<Integer, Circle> circles = drawNodes(pane, nodes);
+    drawEdges(pane, nodes, circles);
 
-    ArrayList<ArrayList<Bubble>> bubbleDepths = createGraphDepth(graph.getRoot(), bubbles);
-    setBubbleLocatios(bubbleDepths, paneHeight, circles);
+    ArrayList<ArrayList<Node>> nodeDepths = createGraphDepth(graph.getRoot(), nodes);
+    setNodeLocatios(nodeDepths, paneHeight, circles);
   }
 
   /**
    * Draw all of the nodes as circles.
    *
-   * @param pane    the pane to draw the edges into.
-   * @param bubbles a hashmap containing all (id, bubble) pairs.
+   * @param pane  the pane to draw the edges into.
+   * @param nodes a hashmap containing all (id, node) pairs.
    * @return a hashmap containing all (id, circle) pairs, where the circle is the visual
-   *         representation of the bubble.
+   *         representation of the node.
    */
-  private HashMap<Integer, Circle> drawNodes(Pane pane, HashMap<Integer, Bubble> bubbles) {
+  private HashMap<Integer, Circle> drawNodes(Pane pane, HashMap<Integer, Node> nodes) {
     HashMap<Integer, Circle> circles = new HashMap<>();
-    bubbles.forEach((Integer id, Bubble bubble) -> {
+    nodes.forEach((Integer id, Node node) -> {
       Circle circle = new Circle(15);
       circles.put(id, circle);
       pane.getChildren().add(circle);
-      Label label = new Label(Integer.toString(bubble.getId()));
+      Label label = new Label(Integer.toString(node.getId()));
       label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3));
       label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2));
       label.setTextFill(new javafx.scene.paint.Color(1, 1, 1, 1));
@@ -74,14 +70,14 @@ public class DrawGraph {
    * Draw all edges between the nodes.
    *
    * @param pane    the pane to draw the edges into.
-   * @param bubbles a hashmap containing all (id, bubble) pairs.
+   * @param nodes   a hashmap containing all (id, node) pairs.
    * @param circles a hashmap containing all (id, circle) pairs.
    */
-  private void drawEdges(Pane pane, HashMap<Integer, Bubble> bubbles,
-          HashMap<Integer, Circle> circles) {
-    bubbles.forEach((Integer id, Bubble from) -> {
+  private void drawEdges(Pane pane, HashMap<Integer, Node> nodes,
+      HashMap<Integer, Circle> circles) {
+    nodes.forEach((Integer id, Node from) -> {
       Circle fromCircle = circles.get(id);
-      for (Integer outLink : from.getOutLinks()) {
+      for (Integer outLink : from.getOutlinks()) {
         Circle toCircle = circles.get(outLink);
         Line edge = new Line();
         edge.startXProperty().bind(fromCircle.centerXProperty());
@@ -155,68 +151,67 @@ public class DrawGraph {
   //    return new Point2D(mid.getX() + (distance * normal.getX()),
   //            mid.getY() + (distance * normal.getY()));
   //  }
-
   /**
-   * Calculate the graph depth for each bubble.
+   * Calculate the graph depth for each node.
    *
-   * @param root    the root bubble.
-   * @param bubbles a hashmap containing all (id, bubble) pairs.
-   * @return an list of lists, where the 2nd list contains all of the bubbles at the depth of the
-   *         tree which is equal to the index of the 2nd list in the first list.
+   * @param root  the root node.
+   * @param nodes a hashmap containing all (id, node) pairs.
+   * @return an list of lists, where the 2nd list contains all of the nodes at the depth of the tree
+   *         which is equal to the index of the 2nd list in the first list.
    */
-  private ArrayList<ArrayList<Bubble>> createGraphDepth(Bubble root,
-          HashMap<Integer, Bubble> bubbles) {
-    HashMap<Integer, BubbleDepth> bubbleDepths = new HashMap<>();
-    bubbles.forEach((Integer id, Bubble bubble) -> {
-      bubbleDepths.put(id, new BubbleDepth(bubble));
+  private ArrayList<ArrayList<Node>> createGraphDepth(Node root,
+      HashMap<Integer, Node> nodes) {
+    HashMap<Integer, NodeDepth> nodeDepths = new HashMap<>();
+    nodes.forEach((Integer id, Node node) -> {
+      nodeDepths.put(id, new NodeDepth(node));
     });
-    Set currentBubbles = new HashSet<>();
-    currentBubbles.add(root.getId());
+    Set currentNode = new HashSet<>();
+    currentNode.add(root.getId());
     int depth = 0;
-    while (!currentBubbles.isEmpty()) {
-      Set nextBubbles = new HashSet();
-      Iterator<Integer> it = currentBubbles.iterator();
+    while (!currentNode.isEmpty()) {
+      Set nextNodes = new HashSet();
+      Iterator<Integer> it = currentNode.iterator();
       while (it.hasNext()) {
-        int currentBubble = it.next();
-        bubbleDepths.get(currentBubble).depth = depth;
-        nextBubbles.addAll(bubbles.get(currentBubble).getOutLinks());
+        int currentNodes = it.next();
+        nodeDepths.get(currentNodes).depth = depth;
+        nextNodes.addAll(nodes.get(currentNodes).getOutlinks());
       }
-      currentBubbles = nextBubbles;
+      currentNode = nextNodes;
       depth++;
     }
-    ArrayList<ArrayList<Bubble>> res = new ArrayList<>();
+    ArrayList<ArrayList<Node>> res = new ArrayList<>();
     for (int i = 0; i < depth; i++) {
       res.add(new ArrayList<>());
     }
-    bubbleDepths.forEach((Integer id, BubbleDepth bubbleDepth) -> {
-      res.get(bubbleDepth.depth).add(bubbleDepth.bubble);
+    nodeDepths.forEach((Integer id, NodeDepth nodeDepth) -> {
+      res.get(nodeDepth.depth).add(nodeDepth.node);
     });
     return res;
   }
 
   /**
-   * Set the x-coordinate of each circle representing a bubble according to the depth of the bubble
-   * in the graph.
+   * Set the x-coordinate of each circle representing a node according to the depth of the node in
+   * the graph.
    *
-   * @param bubbleDepths a list of lists of bubbles, where the inner lists are sorted according to
-   *                     depth in the graph.
-   * @param paneHeight   the height of the pane in which the graph is drawn.
-   * @param circles      all of the circles representing the bubbles.
+   * @param nodeDepths a list of lists of nodes, where the inner lists are sorted according to depth
+   *                   in the graph.
+   * @param paneHeight the height of the pane in which the graph is drawn.
+   * @param circles    all of the circles representing the nodes.
    */
-  private void setBubbleLocatios(ArrayList<ArrayList<Bubble>> bubbleDepths,
-          double paneHeight, HashMap<Integer, Circle> circles) {
+  private void setNodeLocatios(ArrayList<ArrayList<Node>> nodeDepths,
+      double paneHeight, HashMap<Integer, Circle> circles) {
     int xPos = 0;
-    for (ArrayList<Bubble> bubbleDepth : bubbleDepths) {
+    for (ArrayList<Node> nodeDepth : nodeDepths) {
       xPos += X_OFFSET;
-      double bubbleAreaHeight = paneHeight / bubbleDepth.size();
-      for (int i = 0; i < bubbleDepth.size(); i++) {
-        Bubble bubble = bubbleDepth.get(i);
-        double startY = bubbleAreaHeight * i;
-        double endY = startY + bubbleAreaHeight;
+      double nodeAreaHeight = paneHeight / nodeDepth.size();
+      for (int i = 0; i < nodeDepth.size(); i++) {
+        Node node = nodeDepth.get(i);
+        double startY = nodeAreaHeight * i;
+        double endY = startY + nodeAreaHeight;
         double centerY = (endY + startY) / 2.0;
         while (true) {
           int sameHeight = 0;
-          for (Integer inLink : bubble.getInLinks()) {
+          for (Integer inLink : node.getInlinks()) {
             Circle parent = circles.get(inLink);
             if (Double.compare(parent.getCenterY(), centerY) == 0) {
               ++sameHeight;
@@ -227,7 +222,7 @@ public class DrawGraph {
           }
           centerY = (centerY + startY) / 2.0;
         }
-        Circle circle = circles.get(bubble.getId());
+        Circle circle = circles.get(node.getId());
         circle.setCenterX(xPos);
         circle.setCenterY(centerY);
       }
@@ -235,20 +230,20 @@ public class DrawGraph {
   }
 
   /**
-   * This class is used to decide the depth in the graph of a bubble.
+   * This class is used to decide the depth in the graph of a node.
    */
-  private class BubbleDepth {
+  private class NodeDepth {
 
-    private final Bubble bubble;
+    private final Node node;
     private int depth;
 
     /**
      * Create an instance of this class.
      *
-     * @param bubble the bubble.
+     * @param node the node.
      */
-    public BubbleDepth(Bubble bubble) {
-      this.bubble = bubble;
+    public NodeDepth(Node node) {
+      this.node = node;
     }
   }
 }

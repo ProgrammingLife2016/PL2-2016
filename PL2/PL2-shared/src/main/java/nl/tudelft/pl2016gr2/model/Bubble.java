@@ -7,11 +7,10 @@ import java.util.ArrayList;
  *
  * @author Cas
  */
-public class Bubble {
+public class Bubble extends AbstractNode {
 
   private int level;
-  private int id;
-  private ArrayList<Integer> nestedBubbles;
+  private final ArrayList<Integer> nestedBubbles;
   private ArrayList<Integer> inLinks;
   private ArrayList<Integer> outLinks;
   private Bubble startBubble;
@@ -20,17 +19,14 @@ public class Bubble {
   /**
    * Construct a bubble.
    *
-   * @param id the ID of the bubble.
+   * @param id             the ID of the bubble.
+   * @param sequenceLength the sequence length.
    */
-  public Bubble(int id) {
-    this.id = id;
+  public Bubble(int id, int sequenceLength) {
+    super(id, sequenceLength);
     nestedBubbles = new ArrayList<>();
     inLinks = new ArrayList<>();
     outLinks = new ArrayList<>();
-  }
-
-  public int getId() {
-    return id;
   }
 
   public int getLevel() {
@@ -93,17 +89,15 @@ public class Bubble {
   public boolean equals(Object object) {
     if (object instanceof Bubble) {
       Bubble bubble = (Bubble) object;
-
-      return bubble.id == this.id && bubble.level == this.level;
+      return bubble.getId() == this.getId() && bubble.level == this.level;
     }
-
     return false;
   }
 
   @Override
   public int hashCode() {
     int hash = 3;
-    hash = 41 * hash + this.id;
+    hash = 41 * hash + this.getId();
     return hash;
   }
 }
