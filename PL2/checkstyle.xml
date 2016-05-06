@@ -34,6 +34,12 @@
         </module>
 
     <module name="TreeWalker">
+        <!--    START   Custom additions    -->
+        <module name="MethodLength">
+            <property name="max" value="25"/>
+        </module>
+        <!--    END     Custom additions    -->
+
         <module name="OuterTypeFilename"/>
         <module name="IllegalTokenText">
             <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
