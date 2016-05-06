@@ -10,6 +10,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>PL2-shared</artifactId>
+
+    <distributionManagement>
+        <site>
+            <id>PL2-shared</id>
+            <url>file://${basedir}/target/staging/shared/</url>
+        </site>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>

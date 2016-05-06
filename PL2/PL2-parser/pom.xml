@@ -11,6 +11,13 @@
 
     <artifactId>PL2-parser</artifactId>
 
+    <distributionManagement>
+        <site>
+            <id>PL2-parser</id>
+            <url>file://${basedir}/target/staging/parser/</url>
+        </site>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>nl.tudelft.pl2016gr2</groupId>
