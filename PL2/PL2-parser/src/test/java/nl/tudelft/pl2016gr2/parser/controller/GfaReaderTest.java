@@ -7,7 +7,7 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import org.junit.Test;
 
 public class GfaReaderTest {
-  
+
   private static final String filename = "TBSMALL.gfa";
   private static final int GRAPH_SIZE = 5;
 
