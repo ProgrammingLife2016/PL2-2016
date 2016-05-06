@@ -35,13 +35,6 @@
             <version>4.10</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>nl.tudelft.pl2016gr2</groupId>
-            <artifactId>PL2-parser</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
 </project>
