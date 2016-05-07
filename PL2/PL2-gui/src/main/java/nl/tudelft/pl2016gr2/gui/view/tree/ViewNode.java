@@ -29,7 +29,8 @@ public class ViewNode extends Circle implements ISelectable {
 
   private static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  private static final Duration ANIMATION_DURATION = Duration.millis(750.0);
+  private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
+  private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
 
   private final IPhylogeneticTreeNode dataNode;
   private final ArrayList<ViewNode> children = new ArrayList<>();
@@ -46,7 +47,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param controller the controller of the tree.
    */
   private ViewNode(IPhylogeneticTreeNode dataNode, Area graphArea,
-          SelectionManager selectionManager) {
+      SelectionManager selectionManager) {
     super(NODE_RADIUS);
     this.dataNode = dataNode;
     this.area = graphArea;
@@ -87,7 +88,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @return the nl.tudelft.pl2016gr2.gui.view node of the root.
    */
   protected static ViewNode drawRootNode(IPhylogeneticTreeNode root, Pane graphPane,
-          SelectionManager selectionManager) {
+      SelectionManager selectionManager) {
     double startX = TreeManager.GRAPH_BORDER_OFFSET;
     double endX = graphPane.getWidth() - TreeManager.GRAPH_BORDER_OFFSET;
     double startY = TreeManager.GRAPH_BORDER_OFFSET;
@@ -107,9 +108,9 @@ public class ViewNode extends Circle implements ISelectable {
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
   private static ViewNode drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
-          Pane graphPane, SelectionManager selectionManager) {
+      Pane graphPane, SelectionManager selectionManager) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
-            || dataNode == null) {
+        || dataNode == null) {
       return null; // box too small to draw node.
     }
     ViewNode node = new ViewNode(dataNode, graphArea, selectionManager);
@@ -195,9 +196,9 @@ public class ViewNode extends Circle implements ISelectable {
 
     KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
     KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
-    timeline.getKeyFrames().add(new KeyFrame(ANIMATION_DURATION, kvX, kvY));
+    timeline.getKeyFrames().add(new KeyFrame(ZOOM_IN_ANIMATION_DURATION, kvX, kvY));
     fireEvent(new AnimationEvent(getCenterX(), getCenterY(), newX, newY,
-            originalArea.getHeight() / zoomArea.getHeight(), timeline, ANIMATION_DURATION));
+        originalArea.getHeight() / zoomArea.getHeight(), timeline, ZOOM_IN_ANIMATION_DURATION));
 
     for (ViewNode child : children) {
       child.zoomIn(originalArea, zoomArea, timeline);
@@ -236,9 +237,9 @@ public class ViewNode extends Circle implements ISelectable {
 
     KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
     KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
-    timeline.getKeyFrames().add(new KeyFrame(ANIMATION_DURATION, kvX, kvY));
+    timeline.getKeyFrames().add(new KeyFrame(ZOOM_OUT_ANIMATION_DURATION, kvX, kvY));
     fireEvent(new AnimationEvent(getCenterX(), getCenterY(), newX, newY, 0.5, timeline,
-            ANIMATION_DURATION));
+        ZOOM_OUT_ANIMATION_DURATION));
 
     for (ViewNode child : children) {
       child.zoomOut(originalArea, zoomArea, timeline);
@@ -271,6 +272,29 @@ public class ViewNode extends Circle implements ISelectable {
     return res;
   }
 
+  /**
+   * Get the closest parent node to the given x and y coordinates. Parent nodes contain the given x
+   * and y coordinates in their {@code area}. The node which is the deepest in the tree and contains
+   * the given x and y coordinate in its {@code area} is returned.
+   *
+   * @param xCoord the x coordinate.
+   * @param yCoord the y coordinate.
+   * @return the closest parent.
+   */
+  public ViewNode getClosestParentNode(double xCoord, double yCoord) {
+    if (area.contains(xCoord, yCoord)) {
+      for (ViewNode child : children) {
+        ViewNode closest = child.getClosestParentNode(xCoord, yCoord);
+        if (closest != null) {
+          return closest;
+        }
+      }
+      return this;
+    } else {
+      return null;
+    }
+  }
+
   @Override
   public void select() {
   }
@@ -282,33 +306,33 @@ public class ViewNode extends Circle implements ISelectable {
   @Override
   public ISelectionInfo getSelectionInfo() {
     return new TextDescription(this + "\n"
-            + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quia nec honesto quic quam "
+        + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quia nec honesto quic quam "
         + "honestius nec turpi turpius. Serpere anguiculos, nare anaticulas, evolare merulas, "
         + "cornibus uti videmus boves, nepas aculeis. Duo Reges: constructio interrete. Haec bene "
         + "dicuntur, nec ego repugno, sed inter sese ipsa pugnant. Itaque in rebus minime obscuris "
         + "non multus est apud eos disserendi labor. Quod cum accidisset ut alter alterum "
         + "necopinato videremus, surrexit statim.\n"
-            + "\n"
-            + "Sed vos squalidius, illorum vides quam niteat oratio. Et harum quidem rerum facilis "
+        + "\n"
+        + "Sed vos squalidius, illorum vides quam niteat oratio. Et harum quidem rerum facilis "
         + "est et expedita distinctio. Sine ea igitur iucunde negat posse se vivere? Varietates "
         + "autem iniurasque fortunae facile veteres philosophorum praeceptis instituta vita "
         + "superabat. Eorum enim est haec querela, qui sibi cari sunt seseque diligunt. Ut non "
         + "sine causa ex iis memoriae ducta sit disciplina. Quorum altera prosunt, nocent altera. "
         + "Piso igitur hoc modo, vir optimus tuique, ut scis, amantissimus.\n"
-            + "\n"
-            + "Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte "
+        + "\n"
+        + "Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte "
         + "disputari potest. Habent enim et bene longam et satis litigiosam disputationem. Qua "
         + "ex cognitione facilior facta est investigatio rerum occultissimarum. Nam memini etiam "
         + "quae nolo, oblivisci non possum quae volo. Quid enim mihi potest esse optatius quam cum "
         + "Catone, omnium virtutum auctore, de virtutibus disputare? Si longus, levis;\n"
-            + "\n"
-            + "At multis se probavit. Tibi hoc incredibile, quod beatissimum. Num igitur utiliorem "
+        + "\n"
+        + "At multis se probavit. Tibi hoc incredibile, quod beatissimum. Num igitur utiliorem "
         + "tibi hunc Triarium putas esse posse, quam si tua sint Puteolis granaria? Immo alio "
         + "genere; Tollitur beneficium, tollitur gratia, quae sunt vincla concordiae. An me, "
         + "inquam, nisi te audire vellem, censes haec dicturum fuisse? Item de contrariis, a "
         + "quibus ad genera formasque generum venerunt. De illis, cum volemus.\n"
-            + "\n"
-            + "Nunc omni virtuti vitium contrario nomine opponitur. Vide, quaeso, rectumne sit. At "
+        + "\n"
+        + "Nunc omni virtuti vitium contrario nomine opponitur. Vide, quaeso, rectumne sit. At "
         + "ille pellit, qui permulcet sensum voluptate. Experiamur igitur, inquit, etsi habet haec "
         + "Stoicorum ratio difficilius quiddam et obscurius. Cur deinde Metrodori liberos "
         + "commendas? Dic in quovis conventu te omnia facere, ne doleas. Traditur, inquit, ab "

@@ -57,11 +57,24 @@ public class RootLayoutController {
     assert (controller == null);
     controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
-    selectionManager
-        = new SelectionManager(selectionDescriptionPane, mainPane);
+    initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
     new DrawGraph().drawGraph(graphPane);
+  }
+
+  /**
+   * Initialize the selection manager (which manages showing the description of selected objects).
+   */
+  private void initializeSelectionManager() {
+    selectionManager
+        = new SelectionManager(selectionDescriptionPane, mainPane);
+    mainPane.setOnMouseClicked((MouseEvent event) -> {
+      if (!event.isConsumed()) {
+        selectionManager.deselect();
+        event.consume();
+      }
+    });
   }
 
   /**

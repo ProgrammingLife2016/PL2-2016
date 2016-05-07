@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
@@ -40,7 +40,7 @@ public class TreeManager {
     this.graphPane = graphPane;
     this.zoomOutButton = zoomOutButton;
     this.selectionManager = selectionManager;
-    initializeZoomInEventHandler();
+    initializeZoomEventHandler();
     initializeZoomOutEventHandler();
     initializeGraphSizeListeners();
     setRoot(root);
@@ -52,34 +52,59 @@ public class TreeManager {
    */
   private void initializeZoomOutEventHandler() {
     zoomOutButton.setOnAction(e -> {
-      if (isZooming) {
-        return;
-      }
-      if (currentRoot.getDataNode().hasParent()) {
-        Timeline timeline = new Timeline();
-        currentRoot.zoomOut(timeline);
-        timeline.setOnFinished(e2 -> {
-          setRoot(currentRoot.getDataNode().getParent());
-          isZooming = false;
-        });
-        isZooming = true;
-        timeline.play();
-      } else {
-        zoomOutButton.setDisable(true);
-      }
+      zoomOut();
     });
   }
 
   /**
    * Initialize node clicked events, which cause a zoom in on the clicked node.
    */
-  private void initializeZoomInEventHandler() {
-    graphPane.setOnMouseClicked((MouseEvent event) -> {
-      if (!event.isConsumed()) {
-        selectionManager.deselect();
+  private void initializeZoomEventHandler() {
+    graphPane.setOnScroll((ScrollEvent event) -> {
+      boolean scrollUp = event.getDeltaY() > 0;
+      if (scrollUp) {
+        zoomIn(currentRoot.getClosestParentNode(event.getX(), event.getY()));
+      } else {
+        zoomOut();
       }
       event.consume();
     });
+  }
+
+  /**
+   * Zoom in on a node.
+   *
+   * @param zoomedInNode the node to zoom in on.
+   */
+  private void zoomIn(ViewNode zoomedInNode) {
+    if (isZooming || zoomedInNode == null || zoomedInNode.equals(currentRoot)) {
+      return;
+    }
+    Timeline timeline = new Timeline();
+    currentRoot.zoomIn(zoomedInNode, timeline);
+    timeline.setOnFinished(e -> {
+      setRoot(zoomedInNode.getDataNode());
+      isZooming = false;
+    });
+    isZooming = true;
+    timeline.play();
+  }
+
+  /**
+   * Zoom out.
+   */
+  private void zoomOut() {
+    if (isZooming || !currentRoot.getDataNode().hasParent()) {
+      return;
+    }
+    Timeline timeline = new Timeline();
+    currentRoot.zoomOut(timeline);
+    timeline.setOnFinished(event -> {
+      setRoot(currentRoot.getDataNode().getParent());
+      isZooming = false;
+    });
+    isZooming = true;
+    timeline.play();
   }
 
   /**
