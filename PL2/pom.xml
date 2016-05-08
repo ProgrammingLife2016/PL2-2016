@@ -61,6 +61,8 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.6</version>
                 <configuration>
+                    <includeTests>true</includeTests>
+                    <minimumPriority>5</minimumPriority>
                     <rulesets>
                         <ruleset>rulesets/java/basic.xml</ruleset>
                         <ruleset>rulesets/java/naming.xml</ruleset>
@@ -83,6 +85,7 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>3.0.3</version>
                 <configuration>
+                    <includeTests>true</includeTests>
                     <!--
                         Enables analysis which takes more memory but finds more bugs.
                         If you run out of memory, changes the value of the effort element
@@ -144,12 +147,11 @@
                 <version>3.6</version>
                 <executions>
                     <execution>
+                        <id>pmd-build</id>
                         <configuration>
-                            <rulesets>
-                                <ruleset>rulesets/java/basic.xml</ruleset>
-                                <ruleset>rulesets/java/naming.xml</ruleset>
-                                <ruleset>rulesets/java/design.xml</ruleset>
-                            </rulesets>
+                            <printFailingErrors>true</printFailingErrors>
+                            <failOnViolation>true</failOnViolation>
+                            <failurePriority>5</failurePriority>
                         </configuration>
                         <goals>
                             <goal>check</goal>
