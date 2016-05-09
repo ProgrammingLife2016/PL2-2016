@@ -31,9 +31,9 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   /**
    * Create an instance of this class.
    *
-   * @param pane the pane in which to draw the heatmap.
+   * @param pane          the pane in which to draw the heatmap.
    * @param currentLeaves the current leaves.
-   * @param heatmapArea the area of the pane that may be user to draw the heatmap.
+   * @param heatmapArea   the area of the pane that may be user to draw the heatmap.
    */
   public NodeDensityHeatmap(Pane pane, ArrayList<ViewNode> currentLeaves, Area heatmapArea) {
     this.pane = pane;
@@ -42,7 +42,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   }
 
   @Override
-  public final void onChange(ArrayList<ViewNode> newLeaves) {
+  public void onChange(ArrayList<ViewNode> newLeaves) {
     currentLeaves = newLeaves;
     pane.getChildren().clear();
     int maxChildren = getMaxChildren();
@@ -65,10 +65,10 @@ public class NodeDensityHeatmap implements INodeHeatmap {
       currentLeaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
         double newHeight = rect.getHeight() * event.getScale();
         double newY = rect.getY() - (event.getStartY() - event.getEndY())
-                - (newHeight - rect.getHeight()) / 2.0;
+            - (newHeight - rect.getHeight()) / 2.0;
         KeyValue kv = new KeyValue(rect.yProperty(), newY, Interpolator.EASE_BOTH);
         KeyValue kv2
-                = new KeyValue(rect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
+            = new KeyValue(rect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
         event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
       });
     }
@@ -95,7 +95,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * Maps the amount of children to a color.
    *
    * @param amountOfChildren the amount of children.
-   * @param maxChildren the maximum amount of children of any current leave node.
+   * @param maxChildren      the maximum amount of children of any current leave node.
    * @return the color.
    */
   @TestId(id = "mapColor")
