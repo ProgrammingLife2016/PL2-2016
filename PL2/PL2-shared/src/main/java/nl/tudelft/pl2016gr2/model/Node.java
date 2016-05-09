@@ -46,6 +46,13 @@ public class Node extends Bubble {
     }
     return false;
   }
+  
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + this.getId();
+    return hash;
+  }
 
   public ArrayList<String> getGenomes() {
     return genomes;
