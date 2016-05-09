@@ -21,7 +21,22 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
   public PhylogeneticTreeNode(net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node) {
     this.node = node;
   }
+  
+  @Override
+  public String toString() {
+    return node.label;
+  }
+  
+  @Override
+  public void print() {
+    node.print();
+  }
 
+  @Override
+  public boolean isLeaf() {
+    return node.isLeaf();
+  }
+  
   @Override
   public boolean hasParent() {
     return !node.isRoot();

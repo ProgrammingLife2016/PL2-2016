@@ -8,6 +8,15 @@ package nl.tudelft.pl2016gr2.model;
  */
 public interface IPhylogeneticTreeNode {
 
+  void print();
+  
+  /**
+   * Check if this node is a leaf.
+   * 
+   * @return true if this node is a leaf.
+   */
+  boolean isLeaf();
+  
   /**
    * Check if this node has a parent.
    *
