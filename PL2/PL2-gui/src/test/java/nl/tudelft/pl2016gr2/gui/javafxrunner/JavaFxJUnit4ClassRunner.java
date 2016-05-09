@@ -26,11 +26,16 @@ public class JavaFxJUnit4ClassRunner extends BlockJUnit4ClassRunner {
    */
   public JavaFxJUnit4ClassRunner(final Class<?> clazz) throws InitializationError {
     super(clazz);
-    JavaFxJUnit4Application.startJavaFx();
+    if (!isTravisBuild()) {
+      JavaFxJUnit4Application.startJavaFx();
+    }
   }
 
   @Override
   protected void runChild(final FrameworkMethod method, final RunNotifier notifier) {
+    if (isTravisBuild()) {
+      return;
+    }
     final CountDownLatch latch = new CountDownLatch(1);
     Platform.runLater(() -> {
       JavaFxJUnit4ClassRunner.super.runChild(method, notifier);
@@ -41,5 +46,16 @@ public class JavaFxJUnit4ClassRunner extends BlockJUnit4ClassRunner {
     } catch (InterruptedException ex) {
       Logger.getLogger(JavaFxJUnit4ClassRunner.class.getName()).log(Level.SEVERE, null, ex);
     }
+  }
+
+  /**
+   * Check if this is a travis build. Travis can't open displays (when you try to you get the error:
+   * "(java:2726): Gtk-WARNING **: cannot open display:"), so JavaFX tests must be skipped if this
+   * is a travis build.
+   *
+   * @return if this is a travis build.
+   */
+  private static boolean isTravisBuild() {
+    return "true".equals(System.getenv("TRAVIS"));
   }
 }
