@@ -31,6 +31,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
   public void print() {
     node.print();
   }
+  
+  @Override
+  public String getLabel() {
+    return node.label;
+  }
 
   @Override
   public boolean isLeaf() {

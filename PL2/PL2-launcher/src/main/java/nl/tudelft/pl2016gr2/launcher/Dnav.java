@@ -63,8 +63,6 @@ public class Dnav extends Application {
     TreeParser tp = new TreeParser(br);
 
     tree = tp.tokenize("10tree.rooted.TKK");
-    FilterBubbles filter = new FilterBubbles(null, null, new PhylogeneticTreeNode(tree.getRoot()));
-    filter.getLeaves();
     
     controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
     try {

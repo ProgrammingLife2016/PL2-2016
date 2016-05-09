@@ -17,6 +17,7 @@ public class OriginalGraph implements GraphInterface {
   /**
    * Print a string representation of this graph.
    */
+  @Override
   public void print() {
     for (Node node : nodes.values()) {
       System.out.println(node);
@@ -69,6 +70,11 @@ public class OriginalGraph implements GraphInterface {
 
   public HashMap<Integer, Node> getNodes() {
     return nodes;
+  }
+  
+  @Override
+  public HashMap<Integer, AbstractNode> getAbstractNodes() {
+    return null;
   }
 
   public ArrayList<String> getGenoms() {

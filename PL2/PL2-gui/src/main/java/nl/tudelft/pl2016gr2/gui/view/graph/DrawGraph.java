@@ -2,15 +2,24 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
-
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
+import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
+import nl.tudelft.pl2016gr2.model.AbstractNode;
+import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,13 +43,28 @@ public class DrawGraph {
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
     OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
-    System.out.println(graph.getRoot().getGenomes());
+    
+    // THIS HAS TO GO OUT, THE TREE HAS TO BE ACCESSED IN SOME WAY HERE, THIS IS JUST FOR TESTING PURPOSES
+    Reader reader = new InputStreamReader(
+        FullGfaReader.class.getClassLoader().getResourceAsStream("10tree.rooted.TKK.nwk"));
+    BufferedReader br = new BufferedReader(reader);
+    TreeParser tp = new TreeParser(br);
 
-    HashMap<Integer, Node> nodes = graph.getNodes();
+    Tree tree = tp.tokenize("10tree.rooted.TKK");
+    
+    FilterSnips filterSnips = new FilterSnips(graph);
+    graph = filterSnips.filter();
+    
+    FilterBubbles filterBubbles = new FilterBubbles(graph, new PhylogeneticTreeNode(tree.getRoot()));
+    GraphInterface bubbledGraph = filterBubbles.filter();
+    
+    // END OF CODE THAT HAS TO GO OUT
+
+    HashMap<Integer, AbstractNode> nodes = bubbledGraph.getAbstractNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);
     drawEdges(pane, nodes, circles);
 
-    ArrayList<ArrayList<Node>> nodeDepths = createGraphDepth(graph.getRoot(), nodes);
+    ArrayList<ArrayList<AbstractNode>> nodeDepths = createGraphDepth(bubbledGraph.getRoot(), nodes);
     setNodeLocatios(nodeDepths, paneHeight, circles);
   }
 
@@ -52,9 +76,9 @@ public class DrawGraph {
    * @return a hashmap containing all (id, circle) pairs, where the circle is the visual
    *         representation of the node.
    */
-  private HashMap<Integer, Circle> drawNodes(Pane pane, HashMap<Integer, Node> nodes) {
+  private HashMap<Integer, Circle> drawNodes(Pane pane, HashMap<Integer, AbstractNode> nodes) {
     HashMap<Integer, Circle> circles = new HashMap<>();
-    nodes.forEach((Integer id, Node node) -> {
+    nodes.forEach((Integer id, AbstractNode node) -> {
       Circle circle = new Circle(15);
       circles.put(id, circle);
       pane.getChildren().add(circle);
@@ -74,15 +98,19 @@ public class DrawGraph {
    * @param nodes   a hashmap containing all (id, node) pairs.
    * @param circles a hashmap containing all (id, circle) pairs.
    */
-  private void drawEdges(Pane pane, HashMap<Integer, Node> nodes,
+  private void drawEdges(Pane pane, HashMap<Integer, AbstractNode> nodes,
       HashMap<Integer, Circle> circles) {
-    nodes.forEach((Integer id, Node from) -> {
+    nodes.forEach((Integer id, AbstractNode from) -> {
       Circle fromCircle = circles.get(id);
       for (Integer outLink : from.getOutlinks()) {
         Circle toCircle = circles.get(outLink);
         Line edge = new Line();
         edge.startXProperty().bind(fromCircle.centerXProperty());
         edge.startYProperty().bind(fromCircle.centerYProperty());
+        if (toCircle == null) {
+          System.out.println("Id: " + id);
+          System.out.println("Outlink: " + outLink);
+        }
         edge.endXProperty().bind(toCircle.centerXProperty());
         edge.endYProperty().bind(toCircle.centerYProperty());
         pane.getChildren().add(edge);
@@ -160,10 +188,10 @@ public class DrawGraph {
    * @return an list of lists, where the 2nd list contains all of the nodes at the depth of the tree
    *         which is equal to the index of the 2nd list in the first list.
    */
-  private ArrayList<ArrayList<Node>> createGraphDepth(Node root,
-      HashMap<Integer, Node> nodes) {
+  private ArrayList<ArrayList<AbstractNode>> createGraphDepth(AbstractNode root,
+      HashMap<Integer, AbstractNode> nodes) {
     HashMap<Integer, NodeDepth> nodeDepths = new HashMap<>();
-    nodes.forEach((Integer id, Node node) -> {
+    nodes.forEach((Integer id, AbstractNode node) -> {
       nodeDepths.put(id, new NodeDepth(node));
     });
     Set currentNode = new HashSet<>();
@@ -180,7 +208,7 @@ public class DrawGraph {
       currentNode = nextNodes;
       depth++;
     }
-    ArrayList<ArrayList<Node>> res = new ArrayList<>();
+    ArrayList<ArrayList<AbstractNode>> res = new ArrayList<>();
     for (int i = 0; i < depth; i++) {
       res.add(new ArrayList<>());
     }
@@ -199,14 +227,14 @@ public class DrawGraph {
    * @param paneHeight the height of the pane in which the graph is drawn.
    * @param circles    all of the circles representing the nodes.
    */
-  private void setNodeLocatios(ArrayList<ArrayList<Node>> nodeDepths,
+  private void setNodeLocatios(ArrayList<ArrayList<AbstractNode>> nodeDepths,
       double paneHeight, HashMap<Integer, Circle> circles) {
     int xPos = 0;
-    for (ArrayList<Node> nodeDepth : nodeDepths) {
+    for (ArrayList<AbstractNode> nodeDepth : nodeDepths) {
       xPos += X_OFFSET;
       double nodeAreaHeight = paneHeight / nodeDepth.size();
       for (int i = 0; i < nodeDepth.size(); i++) {
-        Node node = nodeDepth.get(i);
+        AbstractNode node = nodeDepth.get(i);
         double startY = nodeAreaHeight * i;
         double endY = startY + nodeAreaHeight;
         double centerY = (endY + startY) / 2.0;
@@ -235,7 +263,7 @@ public class DrawGraph {
    */
   private class NodeDepth {
 
-    private final Node node;
+    private final AbstractNode node;
     private int depth;
 
     /**
@@ -243,7 +271,7 @@ public class DrawGraph {
      *
      * @param node the node.
      */
-    public NodeDepth(Node node) {
+    public NodeDepth(AbstractNode node) {
       this.node = node;
     }
   }

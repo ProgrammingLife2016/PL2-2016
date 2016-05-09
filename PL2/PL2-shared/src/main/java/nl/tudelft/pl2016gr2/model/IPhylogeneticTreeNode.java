@@ -14,6 +14,13 @@ public interface IPhylogeneticTreeNode {
   void print();
   
   /**
+   * Returns the label of this node.
+   * 
+   * @return the label of this node.
+   */
+  String getLabel();
+  
+  /**
    * Check if this node is a leaf.
    * 
    * @return true if this node is a leaf.
