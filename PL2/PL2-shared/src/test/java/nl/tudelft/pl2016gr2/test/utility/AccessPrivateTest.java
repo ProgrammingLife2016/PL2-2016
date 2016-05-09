@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import nl.tudelft.pl2016gr2.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.utility.TestAnnotationException;
+
 /**
  * This class tests if the test utility classes work correctly.
  *

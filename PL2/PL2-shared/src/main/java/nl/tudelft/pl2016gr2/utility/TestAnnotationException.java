@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.test.utility;
+package nl.tudelft.pl2016gr2.utility;
 
 /**
  * An exception which is thrown when there is something wrong with the test annotation. This
