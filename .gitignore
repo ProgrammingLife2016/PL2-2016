@@ -1,3 +1,9 @@
+# Project specific
+# Sequence Graphs
+TB*.gfa
+
+# Phylogenetic Tree
+*tree.rooted.TKK.nwk
 
 # Created by https://www.gitignore.io/api/c,java,latex,intellij,emacs,eclipse,maven
 
