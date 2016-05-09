@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
 /**
  * This is an interface which contains all of the methods which must be implemented by a container

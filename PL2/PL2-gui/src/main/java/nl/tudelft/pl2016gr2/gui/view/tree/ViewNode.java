@@ -10,12 +10,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 
 import java.util.ArrayList;
 
