@@ -1,6 +1,6 @@
 package interfaces;
 
-import nl.tudelft.pl2016gr2.model.Graph;
+import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.Node;
 
@@ -18,7 +18,7 @@ public interface DataAlgoInterface {
    * @param tag The name of the genome.
    * @return The graph of the genome.
    */
-  public Graph getPhylo(String tag);
+  public GraphInterface getPhylo(String tag);
   
   /**
    * This method should return metadata of some Node.

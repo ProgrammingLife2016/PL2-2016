@@ -17,10 +17,14 @@ public class OriginalGraph implements GraphInterface {
   /**
    * Print a string representation of this graph.
    */
-  public void print() {
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
     for (Node node : nodes.values()) {
-      System.out.println(node);
+      sb.append(node);
+      sb.append("\n");
     }
+    return sb.toString();
   }
 
   @Override
