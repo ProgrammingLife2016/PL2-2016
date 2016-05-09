@@ -88,7 +88,11 @@ public class FullGfaReader {
     if (words[0].endsWith("ORI")) {
       String[] gens = words[2].split(";");
       ArrayList<String> gensAr = new ArrayList<>();
-      gensAr.addAll(Arrays.asList(gens));
+      for (String gen : gens) {
+        if (!gen.contains(".ref.")) {
+          gensAr.add(gen.substring(0, gen.length() - 6));
+        }
+      }
       return gensAr;
     }
     return null;

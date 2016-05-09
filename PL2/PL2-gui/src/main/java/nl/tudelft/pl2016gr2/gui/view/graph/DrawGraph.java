@@ -34,6 +34,7 @@ public class DrawGraph {
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
     OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
+    System.out.println(graph.getRoot().getGenomes());
 
     HashMap<Integer, Node> nodes = graph.getNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);

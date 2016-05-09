@@ -8,6 +8,9 @@ package nl.tudelft.pl2016gr2.model;
  */
 public interface IPhylogeneticTreeNode {
 
+  /**
+   * Prints information about the current node.
+   */
   void print();
   
   /**

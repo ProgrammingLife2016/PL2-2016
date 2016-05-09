@@ -20,10 +20,7 @@ public class FilterBubbles {
   
   public ArrayList<IPhylogeneticTreeNode> getLeaves() {
     ArrayList<IPhylogeneticTreeNode> leaves = new ArrayList<>();
-    addLeaf(leaves, treeRoot);
-    System.out.println(leaves);
-    System.out.println(leaves.size());
-    
+    addLeaf(leaves, treeRoot);    
     return leaves;
   }
   
@@ -33,8 +30,7 @@ public class FilterBubbles {
       return;
     }
     
-    int childCount = node.getDirectChildCount();
-    for (int i = 0; i < childCount; i++) {
+    for (int i = 0; i < node.getDirectChildCount(); i++) {
       addLeaf(leaves, node.getChild(i));
     }
   }
