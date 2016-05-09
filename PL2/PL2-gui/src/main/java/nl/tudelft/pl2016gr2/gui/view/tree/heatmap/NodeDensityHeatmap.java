@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
 
   private final Pane pane;
   private final Area area;
+  @TestId(id = "currentLeaves")
   private ArrayList<ViewNode> currentLeaves;
 
   /**
@@ -48,19 +50,19 @@ public class NodeDensityHeatmap implements INodeHeatmap {
     double height;
     double width = area.getWidth();
     double startX = area.getStartX();
-    for (ViewNode currentLeave : currentLeaves) {
-      Area nodeArea = currentLeave.getGraphArea();
+    for (ViewNode currentLeaf : currentLeaves) {
+      Area nodeArea = currentLeaf.getGraphArea();
       startY = nodeArea.getStartY();
       height = nodeArea.getHeight();
       Rectangle rect = new Rectangle(startX, startY, width, height);
       startY += height;
-      int children = currentLeave.getDataNode().getChildCount();
+      int children = currentLeaf.getDataNode().getChildCount();
       rect.setFill(mapColor(children, maxChildren));
       rect.setStrokeWidth(3.0);
       rect.setStroke(Color.BLACK);
       pane.getChildren().add(rect);
 
-      currentLeave.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
+      currentLeaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
         double newHeight = rect.getHeight() * event.getScale();
         double newY = rect.getY() - (event.getStartY() - event.getEndY())
                 - (newHeight - rect.getHeight()) / 2.0;
@@ -73,10 +75,11 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   }
 
   /**
-   * Get the maximum amount of children of the leave nodes.
+   * Get the maximum amount of children of the leaf nodes.
    *
-   * @return the maximum amount of children of the leave nodes.
+   * @return the maximum amount of children of the leaf nodes.
    */
+  @TestId(id = "getMaxChildren")
   private int getMaxChildren() {
     int maxChildren = 1;
     for (ViewNode currentLeave : currentLeaves) {
@@ -95,7 +98,8 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * @param maxChildren the maximum amount of children of any current leave node.
    * @return the color.
    */
-  private Color mapColor(int amountOfChildren, int maxChildren) {
+  @TestId(id = "mapColor")
+  private static Color mapColor(int amountOfChildren, int maxChildren) {
     if (amountOfChildren == 0) {
       return Color.WHITE;
     }
