@@ -99,7 +99,7 @@ public class FilterSnipsTest {
    * one node.
    */
   @Test
-  public void testMakeSnip2() {
+  public void testMakeSnipNodeFour() {
     FilterSnips filter = new FilterSnips(graph);
     Node snip = (Node)AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, 
         filter, graph.getNode(4));
