@@ -47,5 +47,10 @@ public class FilterSnipsTest {
     OriginalGraph filteredGraph = filter.filter();
     // filteredGraph.print();
   }
+  
+  @Test
+  public void testUpdateLinks() {
+    
+  }
 
 }
