@@ -8,6 +8,11 @@ DNA is complex and mutations therein are varied and mostly unpredictable. Becaus
 
 DNAv gives these researchers interactive, semantic and clearly visualized tools in their toolbox to help them with the detection and root cause analysis of these mutations.
 
+### Building and running
+This project uses maven. To create a single runnable jar use `mvn compile assembly:single` inside the `PL2` directory. The executable jar will then be ` PL2-launcher/target/PL2-launcher-1.0-SNAPSHOT-jar-with-dependencies.jar`.
+
+This jar can be than executed by double-clicking.
+
 ### Organization and Team
 DNAv is developed for the Contextproject course at the Delft University of Technology with course code TI2806, as part of the curriculum of the Bachelor Computer Science. The project is led by [Dr. Thomas Abeel](http://www.abeel.be/), who can be contacted by e-mail at [T.Abeel@tudelft.nl](mailto:T.Abeel@tudelft.nl).
 
