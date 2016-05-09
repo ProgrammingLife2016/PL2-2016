@@ -1,11 +1,11 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.test.utility.TestId;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Class to filter snips. A snip is a point mutation. 

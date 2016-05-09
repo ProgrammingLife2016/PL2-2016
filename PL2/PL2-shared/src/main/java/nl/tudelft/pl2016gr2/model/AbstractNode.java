@@ -24,8 +24,8 @@ public abstract class AbstractNode {
 
   @Override
   public String toString() {
-    return "id: " + id + " sequencelength: " + sequenceLength + " inlinks: " + inLinks
-        + " outlinks: " + outLinks;
+    return "id: " + id + " sequencelength: " + sequenceLength + " inlinks: " + getInlinks()
+        + " outlinks: " + getOutlinks();
   }
 
   public void replaceInlink(int oldLink, int newLink) {
