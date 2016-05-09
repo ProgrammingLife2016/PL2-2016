@@ -55,7 +55,6 @@ public class ViewNodeTest {
   @Mock
   private SelectionManager selectionManager;
   private ViewNode viewNode;
-  //private ViewNode viewNodeSpy;
   private final Area area = new Area(0, 50, 100, 200);
   private Pane graphPaneSpy;
 
@@ -71,7 +70,6 @@ public class ViewNodeTest {
     mockLeafLl();
     graphPaneSpy = Mockito.spy(new Pane());
     viewNode = ViewNode.drawNode(root, area, graphPaneSpy, selectionManager);
-    //viewNodeSpy = Mockito.spy(ViewNode.drawNode(root, area, graphPaneSpy, selectionManager));
   }
 
   /**
