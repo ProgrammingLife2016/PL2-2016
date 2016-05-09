@@ -132,11 +132,24 @@ public class TreeManager {
   private void setRoot(IPhylogeneticTreeNode root) {
     zoomOutButton.setDisable(!root.hasParent());
     graphPane.getChildren().clear();
-    currentRoot = ViewNode.drawRootNode(root, graphPane, selectionManager);
+    currentRoot = ViewNode.drawNode(root, getGraphPaneArea(), graphPane, selectionManager);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
     graphPane.fireEvent(new GraphicsChangedEvent());
+  }
+
+  /**
+   * Get the area of the graph pane.
+   *
+   * @return the area of the graph pane.
+   */
+  private Area getGraphPaneArea() {
+    double startX = TreeManager.GRAPH_BORDER_OFFSET;
+    double endX = graphPane.getWidth() - TreeManager.GRAPH_BORDER_OFFSET;
+    double startY = TreeManager.GRAPH_BORDER_OFFSET;
+    double endY = graphPane.getHeight() - TreeManager.GRAPH_BORDER_OFFSET;
+    return new Area(startX, endX, startY, endY);
   }
 
   /**
