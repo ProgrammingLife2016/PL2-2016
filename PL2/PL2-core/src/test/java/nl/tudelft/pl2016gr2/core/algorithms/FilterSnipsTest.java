@@ -48,7 +48,6 @@ public class FilterSnipsTest {
       } else {
         node.addInlink(i - 2);
       }
-
       graph.addNode(node);
     }
   }

@@ -29,9 +29,9 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   /**
    * Create an instance of this class.
    *
-   * @param pane the pane in which to draw the heatmap.
+   * @param pane          the pane in which to draw the heatmap.
    * @param currentLeaves the current leaves.
-   * @param heatmapArea the area of the pane that may be user to draw the heatmap.
+   * @param heatmapArea   the area of the pane that may be user to draw the heatmap.
    */
   public NodeDensityHeatmap(Pane pane, ArrayList<ViewNode> currentLeaves, Area heatmapArea) {
     this.pane = pane;
@@ -48,28 +48,38 @@ public class NodeDensityHeatmap implements INodeHeatmap {
     double height;
     double width = area.getWidth();
     double startX = area.getStartX();
-    for (ViewNode currentLeave : currentLeaves) {
-      Area nodeArea = currentLeave.getGraphArea();
+    for (ViewNode currentLeaf : currentLeaves) {
+      Area nodeArea = currentLeaf.getGraphArea();
       startY = nodeArea.getStartY();
       height = nodeArea.getHeight();
       Rectangle rect = new Rectangle(startX, startY, width, height);
       startY += height;
-      int children = currentLeave.getDataNode().getChildCount();
+      int children = currentLeaf.getDataNode().getChildCount();
       rect.setFill(mapColor(children, maxChildren));
       rect.setStrokeWidth(3.0);
       rect.setStroke(Color.BLACK);
       pane.getChildren().add(rect);
-
-      currentLeave.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
-        double newHeight = rect.getHeight() * event.getScale();
-        double newY = rect.getY() - (event.getStartY() - event.getEndY())
-                - (newHeight - rect.getHeight()) / 2.0;
-        KeyValue kv = new KeyValue(rect.yProperty(), newY, Interpolator.EASE_BOTH);
-        KeyValue kv2
-                = new KeyValue(rect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
-        event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
-      });
+      addAnimationEventHandler(currentLeaf, rect);
     }
+  }
+
+  /**
+   * Add an animation handler to the given view node, which animates the heatmap rectangle when the
+   * view node is animated.
+   *
+   * @param leaf        the view node.
+   * @param heatmapRect the heatmap rectangle associated with the given view node.
+   */
+  private void addAnimationEventHandler(ViewNode leaf, Rectangle heatmapRect) {
+    leaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
+      double newHeight = heatmapRect.getHeight() * event.getScale();
+      double newY = heatmapRect.getY() - (event.getStartY() - event.getEndY())
+          - (newHeight - heatmapRect.getHeight()) / 2.0;
+      KeyValue kv = new KeyValue(heatmapRect.yProperty(), newY, Interpolator.EASE_BOTH);
+      KeyValue kv2
+          = new KeyValue(heatmapRect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
+      event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
+    });
   }
 
   /**
@@ -92,7 +102,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * Maps the amount of children to a color.
    *
    * @param amountOfChildren the amount of children.
-   * @param maxChildren the maximum amount of children of any current leave node.
+   * @param maxChildren      the maximum amount of children of any current leave node.
    * @return the color.
    */
   private Color mapColor(int amountOfChildren, int maxChildren) {
