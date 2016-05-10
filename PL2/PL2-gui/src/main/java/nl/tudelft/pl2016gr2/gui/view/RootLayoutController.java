@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
@@ -56,7 +57,8 @@ public class RootLayoutController {
     assert (controller == null);
     controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
-    selectionManager = new SelectionManager(selectionDescriptionPane, mainPane);
+    selectionManager
+        = new SelectionManager(selectionDescriptionPane, mainPane);
     initializeTreeIcon();
     initializeGraphIcon();
     new DrawGraph().drawGraph(graphPane);
@@ -74,6 +76,7 @@ public class RootLayoutController {
       mainPane.getItems().addAll(treePane, heatmapPane);
       mainPane.setDividerPositions(0.8);
       zoomOutButton.setDisable(zoomOutButtonDisabled);
+      mainPane.fireEvent(new GraphicsChangedEvent());
     });
   }
 
@@ -89,6 +92,7 @@ public class RootLayoutController {
       mainPane.getItems().add(graphPane);
       zoomOutButtonDisabled = zoomOutButton.isDisabled();
       zoomOutButton.setDisable(true);
+      mainPane.fireEvent(new GraphicsChangedEvent());
     });
   }
 

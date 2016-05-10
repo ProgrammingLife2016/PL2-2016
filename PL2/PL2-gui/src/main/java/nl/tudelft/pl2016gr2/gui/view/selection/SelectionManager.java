@@ -1,24 +1,14 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
-import javafx.animation.Animation.Status;
+import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.Observable;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
 /**
@@ -30,23 +20,28 @@ import javafx.util.Duration;
 public class SelectionManager {
 
   private final Pane selectionDescriptionPane;
-  private final Region mainPane;
+  private final Region background;
+  private DescriptionPane contentPane;
   private ISelectable selected;
   private Timeline timeline;
-  private final TranslationListener translationListener;
 
   /**
    * Create a selection manager.
    *
    * @param selectionDescriptionPane the pane in which to draw information about selected items.
-   * @param mainPane                 the main pane containing the tree and heatmap.
+   * @param background               the background pane which is positioned behind the description.
    */
-  public SelectionManager(Pane selectionDescriptionPane, Region mainPane) {
+  public SelectionManager(Pane selectionDescriptionPane, Region background) {
     this.selectionDescriptionPane = selectionDescriptionPane;
-    this.mainPane = mainPane;
-    translationListener = new TranslationListener();
+    this.background = background;
 
-    selectionDescriptionPane.translateXProperty().addListener(translationListener);
+    selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
+      if (selectionDescriptionPane.getChildren().size() == 0) {
+        selectionDescriptionPane.setVisible(false);
+      } else {
+        selectionDescriptionPane.setVisible(true);
+      }
+    });
   }
 
   /**
@@ -60,15 +55,8 @@ public class SelectionManager {
     }
     deselect();
     this.selected = selected;
-    if (timeline != null && timeline.getStatus().equals(Status.RUNNING)) {
-      timeline.setOnFinished((ActionEvent event) -> {
-        selected.select();
-        createDescription(selected);
-      });
-    } else {
-      selected.select();
-      createDescription(selected);
-    }
+    selected.select();
+    createDescription(selected);
   }
 
   /**
@@ -88,72 +76,40 @@ public class SelectionManager {
    * @param selected the currently selected object.
    */
   private void createDescription(ISelectable selected) {
+    createNewContentPane();
     Node description = selected.getSelectionInfo().getNode();
-    selectionDescriptionPane.getChildren().add(description);
-    selectionDescriptionPane.setVisible(true);
-
-    selectionDescriptionPane.setBackground(new Background(
-        new BackgroundFill(new Color(0.02, 0.05, 0.7, 1.0),
-            new CornerRadii(0.0, 0.0, 0.0, 8.0, false), Insets.EMPTY)));
-
-    WritableImage wIm = mainPane.snapshot(null, null);
-    WritableImage wIm2 = new WritableImage(wIm.getPixelReader(),
-        (int) (mainPane.getWidth() - selectionDescriptionPane.getWidth()), 0,
-        (int) selectionDescriptionPane.getWidth(), (int) selectionDescriptionPane.getHeight());
-    ImageView im = new ImageView(wIm2);
-    selectionDescriptionPane.getChildren().add(0, im);
-    im.setEffect(new GaussianBlur());
-    im.setOpacity(0.9);
-    im.setViewport(new Rectangle2D(selectionDescriptionPane.getWidth() - 1, 0, 1,
-        selectionDescriptionPane.getHeight()));
-
-    double translation = selectionDescriptionPane.getWidth();
-    selectionDescriptionPane.setTranslateX(translation);
+    contentPane.getChildren().add(description);
+    contentPane.setOpacity(0);
     timeline = new Timeline();
     timeline.getKeyFrames().add(
         new KeyFrame(Duration.millis(500),
-            new KeyValue(selectionDescriptionPane.translateXProperty(), 0)));
-    translationListener.setCurrentImage(im, selectionDescriptionPane.getWidth(),
-        selectionDescriptionPane.getHeight());
+            new KeyValue(contentPane.opacityProperty(), 1.0, Interpolator.EASE_OUT)));
     timeline.play();
+  }
+
+  /**
+   * Create a new content pane.
+   */
+  private void createNewContentPane() {
+    contentPane = new DescriptionPane(background, selectionDescriptionPane);
   }
 
   /**
    * Clear the description pane.
    */
   private void clearDescription() {
+    DescriptionPane curContentPane = this.contentPane;
     timeline.stop();
     timeline = new Timeline();
     timeline.getKeyFrames().add(
         new KeyFrame(Duration.millis(300),
-            new KeyValue(selectionDescriptionPane.translateXProperty(),
-                selectionDescriptionPane.getWidth())));
+            new KeyValue(curContentPane.opacityProperty(),
+                0)));
     timeline.setOnFinished((ActionEvent event) -> {
-      selectionDescriptionPane.getChildren().clear();
-      selectionDescriptionPane.setVisible(false);
+      curContentPane.getChildren().clear();
+      selectionDescriptionPane.getChildren().remove(curContentPane);
+      curContentPane.clear();
     });
     timeline.play();
-  }
-
-  private static class TranslationListener implements ChangeListener<Number> {
-
-    private ImageView image;
-    private double width;
-    private double height;
-
-    public void setCurrentImage(ImageView image, double width, double height) {
-      this.image = image;
-      this.width = width;
-      this.height = height;
-    }
-
-    @Override
-    public void changed(ObservableValue<? extends Number> observable, Number oldValue,
-        Number newValue) {
-      if (image != null) {
-        image.setViewport(new Rectangle2D(newValue.doubleValue(), 0,
-            width - newValue.doubleValue(), height));
-      }
-    }
   }
 }

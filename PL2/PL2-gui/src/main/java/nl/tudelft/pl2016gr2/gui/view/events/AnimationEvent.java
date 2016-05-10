@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.view.tree;
+package nl.tudelft.pl2016gr2.gui.view.events;
 
 import javafx.animation.Timeline;
 import javafx.event.Event;

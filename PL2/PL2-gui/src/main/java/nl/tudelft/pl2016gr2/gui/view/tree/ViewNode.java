@@ -11,6 +11,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -63,7 +64,6 @@ public class ViewNode extends Circle implements ISelectable {
 
   private void initializeClickedEvent() {
     setOnMouseClicked((MouseEvent event) -> {
-      System.out.println("clicked");
       selectionManager.select(this);
       event.consume();
     });
@@ -273,12 +273,10 @@ public class ViewNode extends Circle implements ISelectable {
 
   @Override
   public void select() {
-    System.out.println("selected: " + this);
   }
 
   @Override
   public void deselect() {
-    System.out.println("deselected: " + this);
   }
 
   @Override

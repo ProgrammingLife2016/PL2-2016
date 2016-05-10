@@ -39,7 +39,7 @@ public class Dnav extends Application {
     loader.setLocation(getClass().getClassLoader().getResource("pages/RootLayout.fxml"));
 
     Scene scene = new Scene(loader.load(), 1000, 800);
-    primaryStage.setMinHeight(400);
+    primaryStage.setMinHeight(700);
     primaryStage.setMinWidth(600);
     primaryStage.setScene(scene);
     primaryStage.show();

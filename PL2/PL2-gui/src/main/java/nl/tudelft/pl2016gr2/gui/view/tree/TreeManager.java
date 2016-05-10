@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 
 import java.util.ArrayList;
@@ -110,6 +111,7 @@ public class TreeManager {
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
+    graphPane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**
