@@ -87,36 +87,35 @@ public class DrawGraph {
         pane.getChildren().add(edge);
         edge.toBack();
         edge.setSmooth(true);
-
-        //        QuadCurve curve = new QuadCurve();
-        //
-        //        curve.setFill(Color.TRANSPARENT);
-        //        curve.setStroke(Color.BLACK);
-        //        curve.setStrokeWidth(2.0d);
-        //
-        //        fromCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
-        //          curve.startXProperty().setValue(newValue);
-        //          bendCurve(curve, fromCircle, toCircle);
-        //        });
-        //        fromCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
-        //          curve.startYProperty().setValue(newValue);
-        //          bendCurve(curve, fromCircle, toCircle);
-        //        });
-        //        toCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
-        //          curve.endXProperty().setValue(newValue);
-        //          bendCurve(curve, fromCircle, toCircle);
-        //        });
-        //        toCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
-        //          curve.endYProperty().setValue(newValue);
-        //          bendCurve(curve, fromCircle, toCircle);
-        //        });
-        //
-        //        pane.getChildren().add(curve);
-        //        curve.toBack();
       }
     });
   }
 
+  //        QuadCurve curve = new QuadCurve();
+  //
+  //        curve.setFill(Color.TRANSPARENT);
+  //        curve.setStroke(Color.BLACK);
+  //        curve.setStrokeWidth(2.0d);
+  //
+  //        fromCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+  //          curve.startXProperty().setValue(newValue);
+  //          bendCurve(curve, fromCircle, toCircle);
+  //        });
+  //        fromCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+  //          curve.startYProperty().setValue(newValue);
+  //          bendCurve(curve, fromCircle, toCircle);
+  //        });
+  //        toCircle.centerXProperty().addListener((observable, oldValue, newValue) -> {
+  //          curve.endXProperty().setValue(newValue);
+  //          bendCurve(curve, fromCircle, toCircle);
+  //        });
+  //        toCircle.centerYProperty().addListener((observable, oldValue, newValue) -> {
+  //          curve.endYProperty().setValue(newValue);
+  //          bendCurve(curve, fromCircle, toCircle);
+  //        });
+  //
+  //        pane.getChildren().add(curve);
+  //        curve.toBack();
   //  private static void bendCurve(QuadCurve curve, Circle from, Circle to) {
   //    Point2D perpP;
   //    if (from.getCenterY() > to.getCenterY()) {
@@ -151,6 +150,7 @@ public class DrawGraph {
   //    return new Point2D(mid.getX() + (distance * normal.getX()),
   //            mid.getY() + (distance * normal.getY()));
   //  }
+  
   /**
    * Calculate the graph depth for each node.
    *

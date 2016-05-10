@@ -6,7 +6,7 @@ import javafx.animation.KeyValue;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import nl.tudelft.pl2016gr2.gui.view.tree.AnimationEvent;
+import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
 

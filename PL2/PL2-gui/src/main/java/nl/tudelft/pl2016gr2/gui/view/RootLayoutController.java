@@ -9,8 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
-import nl.tudelft.pl2016gr2.gui.view.tree.TreeController;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 
 import java.util.Observable;
@@ -27,6 +29,8 @@ public class RootLayoutController {
   @FXML
   private Pane heatmapPane;
   @FXML
+  private Pane selectionDescriptionPane;
+  @FXML
   private Button zoomOutButton;
   @FXML
   private StackPane locationIdentifierPane;
@@ -41,8 +45,9 @@ public class RootLayoutController {
   private final Pane graphPane = new Pane();
 
   private static RootLayoutController controller;
-  private TreeController treeController;
+  private TreeManager treeManager;
   private HeatmapManager heatmapManager;
+  private SelectionManager selectionManager;
   private boolean zoomOutButtonDisabled = true;
 
   /**
@@ -52,9 +57,24 @@ public class RootLayoutController {
     assert (controller == null);
     controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
+    initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
     new DrawGraph().drawGraph(graphPane);
+  }
+
+  /**
+   * Initialize the selection manager (which manages showing the description of selected objects).
+   */
+  private void initializeSelectionManager() {
+    selectionManager
+        = new SelectionManager(selectionDescriptionPane, mainPane);
+    mainPane.setOnMouseClicked((MouseEvent event) -> {
+      if (!event.isConsumed()) {
+        selectionManager.deselect();
+        event.consume();
+      }
+    });
   }
 
   /**
@@ -69,6 +89,7 @@ public class RootLayoutController {
       mainPane.getItems().addAll(treePane, heatmapPane);
       mainPane.setDividerPositions(0.8);
       zoomOutButton.setDisable(zoomOutButtonDisabled);
+      mainPane.fireEvent(new GraphicsChangedEvent());
     });
   }
 
@@ -84,6 +105,7 @@ public class RootLayoutController {
       mainPane.getItems().add(graphPane);
       zoomOutButtonDisabled = zoomOutButton.isDisabled();
       zoomOutButton.setDisable(true);
+      mainPane.fireEvent(new GraphicsChangedEvent());
     });
   }
 
@@ -93,11 +115,11 @@ public class RootLayoutController {
    * @param root the root of the tree which has to be drawn.
    */
   public void setData(IPhylogeneticTreeNode root) {
-    assert treeController == null;
-    treeController = new TreeController(treePane, root, zoomOutButton);
-    heatmapManager.initLeaves(treeController.getCurrentLeaves());
-    treeController.setOnLeavesChanged((Observable observable, Object arg) -> {
-      heatmapManager.setLeaves(treeController.getCurrentLeaves());
+    assert treeManager == null;
+    treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
+    heatmapManager.initLeaves(treeManager.getCurrentLeaves());
+    treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
+      heatmapManager.setLeaves(treeManager.getCurrentLeaves());
     });
   }
 }

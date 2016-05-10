@@ -2,9 +2,11 @@ package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
 import javafx.scene.control.Button;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 
 import java.util.ArrayList;
 import java.util.Observer;
@@ -14,7 +16,7 @@ import java.util.Observer;
  *
  * @author Faris
  */
-public class TreeController {
+public class TreeManager {
 
   public static final double GRAPH_BORDER_OFFSET = 5.0;
 
@@ -23,18 +25,22 @@ public class TreeController {
   private ViewNode currentRoot;
   boolean isZooming = false;
   private final ArrayList<Observer> childLeaveObservers = new ArrayList<>();
+  private final SelectionManager selectionManager;
 
   /**
    * Create a new tree controller which manages the pholygenetic tree.
    *
-   * @param graphPane     the pane in which to draw the tree.
-   * @param root          the root node of the tree.
-   * @param zoomOutButton the zoom out button.
+   * @param graphPane        the pane in which to draw the tree.
+   * @param root             the root node of the tree.
+   * @param zoomOutButton    the zoom out button.
+   * @param selectionManager the selection manager.
    */
-  public TreeController(Pane graphPane, IPhylogeneticTreeNode root, Button zoomOutButton) {
+  public TreeManager(Pane graphPane, IPhylogeneticTreeNode root, Button zoomOutButton,
+      SelectionManager selectionManager) {
     this.graphPane = graphPane;
     this.zoomOutButton = zoomOutButton;
-    initializeZoomInEventHandler();
+    this.selectionManager = selectionManager;
+    initializeZoomEventHandler();
     initializeZoomOutEventHandler();
     initializeGraphSizeListeners();
     setRoot(root);
@@ -46,44 +52,59 @@ public class TreeController {
    */
   private void initializeZoomOutEventHandler() {
     zoomOutButton.setOnAction(e -> {
-      if (isZooming) {
-        return;
-      }
-      if (currentRoot.getDataNode().hasParent()) {
-        Timeline timeline = new Timeline();
-        currentRoot.zoomOut(timeline);
-        timeline.setOnFinished(e2 -> {
-          setRoot(currentRoot.getDataNode().getParent());
-          isZooming = false;
-        });
-        isZooming = true;
-        timeline.play();
-      } else {
-        zoomOutButton.setDisable(true);
-      }
+      zoomOut();
     });
   }
 
   /**
    * Initialize node clicked events, which cause a zoom in on the clicked node.
    */
-  private void initializeZoomInEventHandler() {
-    graphPane.setOnMouseClicked((MouseEvent event) -> {
-      if (isZooming) {
-        return;
+  private void initializeZoomEventHandler() {
+    graphPane.setOnScroll((ScrollEvent event) -> {
+      boolean scrollUp = event.getDeltaY() > 0;
+      if (scrollUp) {
+        zoomIn(currentRoot.getClosestParentNode(event.getX(), event.getY()));
+      } else {
+        zoomOut();
       }
-      if (event.getTarget().getClass().equals(ViewNode.class)) {
-        ViewNode clickedNode = (ViewNode) event.getTarget();
-        Timeline timeline = new Timeline();
-        currentRoot.zoomIn(clickedNode, timeline);
-        timeline.setOnFinished(e -> {
-          setRoot(clickedNode.getDataNode());
-          isZooming = false;
-        });
-        isZooming = true;
-        timeline.play();
-      }
+      event.consume();
     });
+  }
+
+  /**
+   * Zoom in on a node.
+   *
+   * @param zoomedInNode the node to zoom in on.
+   */
+  private void zoomIn(ViewNode zoomedInNode) {
+    if (isZooming || zoomedInNode == null || zoomedInNode.equals(currentRoot)) {
+      return;
+    }
+    Timeline timeline = new Timeline();
+    currentRoot.zoomIn(zoomedInNode, timeline);
+    timeline.setOnFinished(e -> {
+      setRoot(zoomedInNode.getDataNode());
+      isZooming = false;
+    });
+    isZooming = true;
+    timeline.play();
+  }
+
+  /**
+   * Zoom out.
+   */
+  private void zoomOut() {
+    if (isZooming || !currentRoot.getDataNode().hasParent()) {
+      return;
+    }
+    Timeline timeline = new Timeline();
+    currentRoot.zoomOut(timeline);
+    timeline.setOnFinished(event -> {
+      setRoot(currentRoot.getDataNode().getParent());
+      isZooming = false;
+    });
+    isZooming = true;
+    timeline.play();
   }
 
   /**
@@ -108,22 +129,14 @@ public class TreeController {
    *
    * @param root the root of the part of the tree which should be shown.
    */
-  protected final void setRoot(IPhylogeneticTreeNode root) {
+  private void setRoot(IPhylogeneticTreeNode root) {
     zoomOutButton.setDisable(!root.hasParent());
     graphPane.getChildren().clear();
-    currentRoot = ViewNode.drawRootNode(root, this);
+    currentRoot = ViewNode.drawRootNode(root, graphPane, selectionManager);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
-  }
-
-  /**
-   * Get the pane of the graph/tree.
-   *
-   * @return the pane of the graph/tree.
-   */
-  protected Pane getGraphPane() {
-    return graphPane;
+    graphPane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**
