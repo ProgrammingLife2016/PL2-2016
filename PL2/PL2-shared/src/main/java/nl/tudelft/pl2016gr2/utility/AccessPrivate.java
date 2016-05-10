@@ -51,7 +51,8 @@ public final class AccessPrivate {
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
       Logger.getLogger(AccessPrivate.class.getName()).log(Level.SEVERE, null, ex);
     }
-    throw new TestAnnotationException("An error occured while accessing the" + " method with test id: " + id + ".");
+    throw new TestAnnotationException("An error occured while accessing the" 
+        + " method with test id: " + id + ".");
   }
 
   /**
@@ -121,7 +122,8 @@ public final class AccessPrivate {
     try {
       Field field = AccessPrivate.getField(cl, id);
       if (Modifier.isFinal(field.getModifiers())) {
-        throw new TestAnnotationException("Trying to set the value of " + "the final field with id: " + id + ".");
+        throw new TestAnnotationException("Trying to set the value of " 
+            + "the final field with id: " + id + ".");
       }
       field.setAccessible(true);
       field.set(obj, value);

@@ -2,10 +2,10 @@ package nl.tudelft.pl2016gr2.test.utility;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-
 import nl.tudelft.pl2016gr2.utility.AccessPrivate;
 import nl.tudelft.pl2016gr2.utility.TestAnnotationException;
+
+import org.junit.Test;
 
 /**
  * This class tests if the test utility classes work correctly.
