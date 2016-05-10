@@ -13,7 +13,7 @@ import org.junit.Test;
  */
 public class GfaReaderTest {
 
-  private static final String filename = "TBSMALL.gfa";
+  private static final String filename = "SMALL.gfa";
   private static final int GRAPH_SIZE = 5;
 
   @Test
