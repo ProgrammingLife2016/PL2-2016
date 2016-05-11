@@ -57,11 +57,11 @@ public class Dnav extends Application {
 
     // abusing NWKReader class as this class' classloader can access the correct resource
     Reader reader = new InputStreamReader(
-        FullGfaReader.class.getClassLoader().getResourceAsStream("10tree.rooted.TKK.nwk"));
+        FullGfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("10tree.rooted.TKK");
+    tree = tp.tokenize("10tree_custom.rooted.TKK");
     
     controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
     try {
