@@ -36,6 +36,23 @@ public class Node extends Bubble {
   public String toString() {
     return super.toString() + " snips: " + snips + ", id: " + getId() + ", flow: " + flow;
   }
+  
+  @Override
+  public boolean equals(Object object) {
+    if (object instanceof Node) {
+      Node node = (Node) object;
+      return node.getId() == this.getId() && node.getOutlinks().equals(this.getOutlinks()) 
+          && node.getInlinks().equals(this.getInlinks());
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    int hash = 3;
+    hash = 41 * hash + this.getId();
+    return hash;
+  }
 
   public ArrayList<String> getGenomes() {
     return genomes;
