@@ -41,10 +41,9 @@ public class ViewNode extends Circle implements ISelectable {
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
    *
-   * @param dataNode   the data of the node.
-   * @param parent     the parent nl.tudelft.pl2016gr2.gui.view node.
-   * @param graphArea  the graph area in which the node has to be drawn.
-   * @param controller the controller of the tree.
+   * @param dataNode         the data of the node.
+   * @param graphArea        the graph area in which the node has to be drawn.
+   * @param selectionManager the selection manager.
    */
   private ViewNode(IPhylogeneticTreeNode dataNode, Area graphArea,
       SelectionManager selectionManager) {
@@ -101,7 +100,6 @@ public class ViewNode extends Circle implements ISelectable {
    * Recursively draw the node and all of its children.
    *
    * @param dataNode         the data of the node to draw.
-   * @param parent           the parent of the node to draw.
    * @param graphArea        the area in which the node should be drawn.
    * @param graphPane        the pane in which to draw the node.
    * @param selectionManager the selection manager.
@@ -115,6 +113,21 @@ public class ViewNode extends Circle implements ISelectable {
     }
     ViewNode node = new ViewNode(dataNode, graphArea, selectionManager);
     graphPane.getChildren().add(node);
+    drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
+    return node;
+  }
+
+  /**
+   * Draw the child nodes and edges to the child node.
+   *
+   * @param node             the node.
+   * @param dataNode         the data node.
+   * @param graphArea        the graph area of the node.
+   * @param graphPane        the pane in which to draw the node.
+   * @param selectionManager the selection manager.
+   */
+  private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area graphArea,
+      Pane graphPane, SelectionManager selectionManager) {
     double nextStartX = graphArea.getCenterX();
     double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
     for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
@@ -132,7 +145,6 @@ public class ViewNode extends Circle implements ISelectable {
       node.children.add(child);
       drawEdge(node, child, graphPane);
     }
-    return node;
   }
 
   /**
@@ -310,19 +322,16 @@ public class ViewNode extends Circle implements ISelectable {
         + "honestius nec turpi turpius. Serpere anguiculos, nare anaticulas, evolare merulas, "
         + "cornibus uti videmus boves, nepas aculeis. Duo Reges: constructio interrete. Haec bene "
         + "dicuntur, nec ego repugno, sed inter sese ipsa pugnant. Itaque in rebus minime obscuris "
-        + "non multus est apud eos disserendi labor. Quod cum accidisset ut alter alterum "
-        + "necopinato videremus, surrexit statim.\n"
+        + "non multus est apud eos disserendi labor. Quod cum accidisset ut alter alterum.\n"
         + "\n"
         + "Sed vos squalidius, illorum vides quam niteat oratio. Et harum quidem rerum facilis "
         + "est et expedita distinctio. Sine ea igitur iucunde negat posse se vivere? Varietates "
         + "autem iniurasque fortunae facile veteres philosophorum praeceptis instituta vita "
         + "superabat. Eorum enim est haec querela, qui sibi cari sunt seseque diligunt. Ut non "
-        + "sine causa ex iis memoriae ducta sit disciplina. Quorum altera prosunt, nocent altera. "
-        + "Piso igitur hoc modo, vir optimus tuique, ut scis, amantissimus.\n"
+        + "sine causa ex iis memoriae ducta sit disciplina.\n"
         + "\n"
         + "Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte "
         + "disputari potest. Habent enim et bene longam et satis litigiosam disputationem. Qua "
-        + "ex cognitione facilior facta est investigatio rerum occultissimarum. Nam memini etiam "
         + "quae nolo, oblivisci non possum quae volo. Quid enim mihi potest esse optatius quam cum "
         + "Catone, omnium virtutum auctore, de virtutibus disputare? Si longus, levis;\n"
         + "\n"
@@ -330,14 +339,6 @@ public class ViewNode extends Circle implements ISelectable {
         + "tibi hunc Triarium putas esse posse, quam si tua sint Puteolis granaria? Immo alio "
         + "genere; Tollitur beneficium, tollitur gratia, quae sunt vincla concordiae. An me, "
         + "inquam, nisi te audire vellem, censes haec dicturum fuisse? Item de contrariis, a "
-        + "quibus ad genera formasque generum venerunt. De illis, cum volemus.\n"
-        + "\n"
-        + "Nunc omni virtuti vitium contrario nomine opponitur. Vide, quaeso, rectumne sit. At "
-        + "ille pellit, qui permulcet sensum voluptate. Experiamur igitur, inquit, etsi habet haec "
-        + "Stoicorum ratio difficilius quiddam et obscurius. Cur deinde Metrodori liberos "
-        + "commendas? Dic in quovis conventu te omnia facere, ne doleas. Traditur, inquit, ab "
-        + "Epicuro ratio neglegendi doloris. Sit enim idem caecus, debilis. Dolere malum est: in "
-        + "crucem qui agitur, beatus esse non potest. Sin te auctoritas commovebat, nobisne "
-        + "omnibus et Platoni ipsi nescio quem illum anteponebas?");
+        + "quibus ad genera formasque generum venerunt. De illis, cum volemus.");
   }
 }
