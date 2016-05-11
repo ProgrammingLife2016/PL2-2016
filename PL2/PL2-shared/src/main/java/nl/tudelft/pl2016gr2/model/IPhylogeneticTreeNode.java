@@ -1,4 +1,6 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
+
+import java.util.ArrayList;
 
 /**
  * This is an interface which contains all of the methods which must be implemented by a container
@@ -8,6 +10,25 @@ package nl.tudelft.pl2016gr2.gui.model;
  */
 public interface IPhylogeneticTreeNode {
 
+  /**
+   * Prints information about the current node.
+   */
+  void print();
+  
+  /**
+   * Returns the label of this node.
+   * 
+   * @return the label of this node.
+   */
+  String getLabel();
+  
+  /**
+   * Check if this node is a leaf.
+   * 
+   * @return true if this node is a leaf.
+   */
+  boolean isLeaf();
+  
   /**
    * Check if this node has a parent.
    *
@@ -52,4 +73,10 @@ public interface IPhylogeneticTreeNode {
    * @return the index of the child ndoe.
    */
   int getChildIndex(IPhylogeneticTreeNode child);
+  
+  /**
+   * Gets all the leaves from the current node.
+   * @return : an ArrayList of strings with the labels of the leaves.
+   */
+  ArrayList<String> getLeaves();
 }

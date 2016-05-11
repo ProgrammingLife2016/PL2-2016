@@ -20,7 +20,7 @@ public class FullGfaReaderTest {
   public void test() {
     FullGfaReader fgr = new FullGfaReader(filename, GRAPH_SIZE);
     OriginalGraph og = fgr.getGraph();
-    assertEquals(og.getGenoms().size(), 11);
+    assertEquals(og.getGenoms().size(), 10);
     assertEquals(og.getNode(3).getGenomes().size(), 1);
   }
 

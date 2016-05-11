@@ -6,8 +6,8 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 import java.io.BufferedReader;
@@ -57,11 +57,12 @@ public class Dnav extends Application {
 
     // abusing NWKReader class as this class' classloader can access the correct resource
     Reader reader = new InputStreamReader(
-        FullGfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        FullGfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("340tree.rooted.TKK");
+    tree = tp.tokenize("10tree_custom.rooted.TKK");
+    
     controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
     try {
       reader.close();

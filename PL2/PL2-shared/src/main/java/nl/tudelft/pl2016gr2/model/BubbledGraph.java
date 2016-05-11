@@ -11,6 +11,13 @@ public class BubbledGraph implements GraphInterface {
     nodes = new HashMap<>();
     lowestId = Integer.MAX_VALUE;
   }
+  
+  @Override
+  public void print() {
+    for (AbstractNode node : nodes.values()) {
+      System.out.println(node);
+    }
+  }
 
   @Override
   public AbstractNode getNode(int id) {
@@ -20,6 +27,11 @@ public class BubbledGraph implements GraphInterface {
   @Override
   public int getSize() {
     return nodes.size();
+  }
+  
+  @Override
+  public HashMap<Integer, AbstractNode> getAbstractNodes() {
+    return nodes;
   }
 
   @Override

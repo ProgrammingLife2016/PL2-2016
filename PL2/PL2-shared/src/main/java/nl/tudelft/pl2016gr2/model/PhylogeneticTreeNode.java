@@ -1,5 +1,8 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.test.utility.TestId;
+
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -21,7 +24,27 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
   public PhylogeneticTreeNode(net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node) {
     this.node = node;
   }
+  
+  @Override
+  public String toString() {
+    return node.label;
+  }
+  
+  @Override
+  public void print() {
+    node.print();
+  }
+  
+  @Override
+  public String getLabel() {
+    return node.label;
+  }
 
+  @Override
+  public boolean isLeaf() {
+    return node.isLeaf();
+  }
+  
   @Override
   public boolean hasParent() {
     return !node.isRoot();
@@ -81,6 +104,31 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
     int hash = 3;
     hash = 41 * hash + Objects.hashCode(this.node);
     return hash;
+  }
+  
+  @Override
+  public ArrayList<String> getLeaves() {
+    ArrayList<String> leaves = new ArrayList<>();
+    addLeaf(leaves, this);    
+    return leaves;
+  }
+  
+  /**
+   * Recursively walks through the phylogenetic tree, and adds the label of
+   * a node to the list of leaves when it is a leaf. 
+   * @param leaves : the resulting list of leaves.
+   * @param node : the current node.
+   */
+  @TestId(id = "method_addLeaf")
+  private void addLeaf(ArrayList<String> leaves, IPhylogeneticTreeNode node) {
+    if (node.isLeaf()) {
+      leaves.add(node.getLabel());
+      return;
+    }
+    
+    for (int i = 0; i < node.getDirectChildCount(); i++) {
+      addLeaf(leaves, node.getChild(i));
+    }
   }
 
 }

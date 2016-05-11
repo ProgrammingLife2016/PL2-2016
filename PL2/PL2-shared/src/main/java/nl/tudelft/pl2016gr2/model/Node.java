@@ -34,7 +34,7 @@ public class Node extends Bubble {
 
   @Override
   public String toString() {
-    return super.toString() + " snips: " + snips + ", id: " + getId() + ", flow: " + flow;
+    return super.toString() + " snips: " + snips;
   }
   
   @Override

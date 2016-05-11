@@ -6,17 +6,23 @@ import java.util.HashMap;
 public class OriginalGraph implements GraphInterface {
 
   private HashMap<Integer, Node> nodes;
+  private HashMap<Integer, AbstractNode> abstractNodes;
   private int lowestId;
   private ArrayList<String> genoms;
 
+  /**
+   * Creates an originalgraph, which contains no bubbles and only nodes.
+   */
   public OriginalGraph() {
     nodes = new HashMap<>();
+    abstractNodes = new HashMap<>();
     lowestId = Integer.MAX_VALUE;
   }
 
   /**
    * Print a string representation of this graph.
    */
+  @Override
   public void print() {
     for (Node node : nodes.values()) {
       System.out.println(node);
@@ -60,6 +66,7 @@ public class OriginalGraph implements GraphInterface {
     }
 
     nodes.put(id, (Node) node);
+    abstractNodes.put(id, node);
   }
 
   @Override
@@ -69,6 +76,11 @@ public class OriginalGraph implements GraphInterface {
 
   public HashMap<Integer, Node> getNodes() {
     return nodes;
+  }
+  
+  @Override
+  public HashMap<Integer, AbstractNode> getAbstractNodes() {
+    return abstractNodes;
   }
 
   public ArrayList<String> getGenoms() {
