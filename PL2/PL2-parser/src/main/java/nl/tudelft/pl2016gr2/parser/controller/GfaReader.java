@@ -51,20 +51,27 @@ public class GfaReader {
           sc.nextLine();
           break;
         case "L":
-          int parent = sc.nextInt();
-          sc.next();
-          int child = sc.nextInt();
-          Node par = originalGraph.getNode(parent);
-          Node ch = originalGraph.getNode(child);
-          par.addOutlink(ch.getId());
-          ch.addInlink(par.getId());
-          sc.nextLine();
+          parseL();
           break;
         default:
           System.out.println("Not S, H or L at: " + count);
       }
     }
     System.out.println("Number of lines read: " + count);
+  }
+
+  /**
+   * Parse a read 'L' character.
+   */
+  private void parseL() {
+    int parent = sc.nextInt();
+    sc.next();
+    int child = sc.nextInt();
+    Node par = originalGraph.getNode(parent);
+    Node ch = originalGraph.getNode(child);
+    par.addOutlink(ch.getId());
+    ch.addInlink(par.getId());
+    sc.nextLine();
   }
 
   /**

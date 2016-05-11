@@ -61,21 +61,31 @@ public class NodeDensityHeatmap implements INodeHeatmap {
       rect.setStrokeWidth(3.0);
       rect.setStroke(Color.BLACK);
       pane.getChildren().add(rect);
-
-      currentLeaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
-        double newHeight = rect.getHeight() * event.getScale();
-        double newY = rect.getY() - (event.getStartY() - event.getEndY())
-            - (newHeight - rect.getHeight()) / 2.0;
-        KeyValue kv = new KeyValue(rect.yProperty(), newY, Interpolator.EASE_BOTH);
-        KeyValue kv2
-            = new KeyValue(rect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
-        event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
-      });
+      addAnimationEventHandler(currentLeaf, rect);
     }
   }
 
   /**
-   * Get the maximum amount of children of the leaf nodes.
+   * Add an animation handler to the given view node, which animates the heatmap rectangle when the
+   * view node is animated.
+   *
+   * @param leaf        the view node.
+   * @param heatmapRect the heatmap rectangle associated with the given view node.
+   */
+  private void addAnimationEventHandler(ViewNode leaf, Rectangle heatmapRect) {
+    leaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
+      double newHeight = heatmapRect.getHeight() * event.getScale();
+      double newY = heatmapRect.getY() - (event.getStartY() - event.getEndY())
+          - (newHeight - heatmapRect.getHeight()) / 2.0;
+      KeyValue kv = new KeyValue(heatmapRect.yProperty(), newY, Interpolator.EASE_BOTH);
+      KeyValue kv2
+          = new KeyValue(heatmapRect.heightProperty(), newHeight, Interpolator.EASE_BOTH);
+      event.getTimeline().getKeyFrames().add(new KeyFrame(event.getDuration(), kv, kv2));
+    });
+  }
+
+  /**
+   * Get the maximum amount of children of the leave nodes.
    *
    * @return the maximum amount of children of the leaf nodes.
    */

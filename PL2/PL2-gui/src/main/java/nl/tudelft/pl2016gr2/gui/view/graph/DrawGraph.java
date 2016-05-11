@@ -12,7 +12,6 @@ import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -163,20 +162,7 @@ public class DrawGraph {
     nodes.forEach((Integer id, Node node) -> {
       nodeDepths.put(id, new NodeDepth(node));
     });
-    Set currentNode = new HashSet<>();
-    currentNode.add(root.getId());
-    int depth = 0;
-    while (!currentNode.isEmpty()) {
-      Set nextNodes = new HashSet();
-      Iterator<Integer> it = currentNode.iterator();
-      while (it.hasNext()) {
-        int currentNodes = it.next();
-        nodeDepths.get(currentNodes).depth = depth;
-        nextNodes.addAll(nodes.get(currentNodes).getOutlinks());
-      }
-      currentNode = nextNodes;
-      depth++;
-    }
+    int depth = calcNodeDepths(root, nodes, nodeDepths);
     ArrayList<ArrayList<Node>> res = new ArrayList<>();
     for (int i = 0; i < depth; i++) {
       res.add(new ArrayList<>());
@@ -185,6 +171,31 @@ public class DrawGraph {
       res.get(nodeDepth.depth).add(nodeDepth.node);
     });
     return res;
+  }
+
+  /**
+   * Calculate the node depth of each node.
+   *
+   * @param root       the root node.
+   * @param nodes      the map containing all (id, node) pairs.
+   * @param nodeDepths the node depths map in which to store the node depths.
+   * @return the node depth of the deepest node.
+   */
+  private int calcNodeDepths(Node root, HashMap<Integer, Node> nodes,
+      HashMap<Integer, NodeDepth> nodeDepths) {
+    Set<Integer> currentNode = new HashSet<>();
+    currentNode.add(root.getId());
+    int depth = 0;
+    while (!currentNode.isEmpty()) {
+      Set nextNodes = new HashSet();
+      for (Integer node : currentNode) {
+        nodeDepths.get(node).depth = depth;
+        nextNodes.addAll(nodes.get(node).getOutlinks());
+      }
+      currentNode = nextNodes;
+      depth++;
+    }
+    return depth;
   }
 
   /**
@@ -204,27 +215,41 @@ public class DrawGraph {
       double nodeAreaHeight = paneHeight / nodeDepth.size();
       for (int i = 0; i < nodeDepth.size(); i++) {
         Node node = nodeDepth.get(i);
-        double startY = nodeAreaHeight * i;
-        double endY = startY + nodeAreaHeight;
-        double centerY = (endY + startY) / 2.0;
-        while (true) {
-          int sameHeight = 0;
-          for (Integer inLink : node.getInlinks()) {
-            Circle parent = circles.get(inLink);
-            if (Double.compare(parent.getCenterY(), centerY) == 0) {
-              ++sameHeight;
-            }
-          }
-          if (sameHeight < 2) {
-            break;
-          }
-          centerY = (centerY + startY) / 2.0;
-        }
         Circle circle = circles.get(node.getId());
         circle.setCenterX(xPos);
-        circle.setCenterY(centerY);
+        circle.setCenterY(calcNodeCenterY(node, circles, i, nodeAreaHeight));
       }
     }
+  }
+
+  /**
+   * Calculate the center y coordinate of the node.
+   *
+   * @param node           the node.
+   * @param circles        all of the circles representing the nodes.
+   * @param verticalIndex  the vertical index of the node (i.e. how many nodes are above this node).
+   * @param nodeAreaHeight the height which the node may use.
+   * @return the center y coordinate.
+   */
+  private double calcNodeCenterY(Node node, HashMap<Integer, Circle> circles, int verticalIndex,
+      double nodeAreaHeight) {
+    double startY = nodeAreaHeight * verticalIndex;
+    double endY = startY + nodeAreaHeight;
+    double centerY = (endY + startY) / 2.0;
+    while (true) {
+      int sameHeight = 0;
+      for (Integer inLink : node.getInlinks()) {
+        Circle parent = circles.get(inLink);
+        if (Double.compare(parent.getCenterY(), centerY) == 0) {
+          ++sameHeight;
+        }
+      }
+      if (sameHeight < 2) {
+        break;
+      }
+      centerY = (centerY + startY) / 2.0;
+    }
+    return centerY;
   }
 
   /**
