@@ -106,6 +106,7 @@ public class FullGfaReader {
     Node no = originalGraph.getNode(nodeId);
     no.setGenomes(nodeGens);
     no.setBases(bases);
+    no.setSequenceLength(bases.length());
   }
 
   private void handleL(Scanner sc) {
