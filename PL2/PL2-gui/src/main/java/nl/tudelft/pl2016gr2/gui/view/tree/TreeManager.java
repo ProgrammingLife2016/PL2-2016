@@ -7,6 +7,7 @@ import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Observer;
@@ -108,8 +109,8 @@ public class TreeManager {
   }
 
   /**
-   * Initialize the listeners which resize the content of the graph area when the pane or the window
-   * is resized.
+   * Initialize the listeners which resizes the content of the graph area when the pane or the
+   * window is resized.
    */
   private void initializeGraphSizeListeners() {
     graphPane.heightProperty().addListener((observable, oldVal, newVal) -> {
@@ -129,14 +130,28 @@ public class TreeManager {
    *
    * @param root the root of the part of the tree which should be shown.
    */
+  @TestId(id = "setRoot")
   private void setRoot(IPhylogeneticTreeNode root) {
     zoomOutButton.setDisable(!root.hasParent());
     graphPane.getChildren().clear();
-    currentRoot = ViewNode.drawRootNode(root, graphPane, selectionManager);
+    currentRoot = ViewNode.drawNode(root, getGraphPaneArea(), graphPane, selectionManager);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
     graphPane.fireEvent(new GraphicsChangedEvent());
+  }
+
+  /**
+   * Get the area of the graph pane.
+   *
+   * @return the area of the graph pane.
+   */
+  private Area getGraphPaneArea() {
+    double startX = TreeManager.GRAPH_BORDER_OFFSET;
+    double endX = graphPane.getWidth() - TreeManager.GRAPH_BORDER_OFFSET;
+    double startY = TreeManager.GRAPH_BORDER_OFFSET;
+    double endY = graphPane.getHeight() - TreeManager.GRAPH_BORDER_OFFSET;
+    return new Area(startX, endX, startY, endY);
   }
 
   /**

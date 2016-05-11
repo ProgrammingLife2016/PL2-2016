@@ -16,6 +16,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,7 @@ public class ViewNode extends Circle implements ISelectable {
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
 
   private final IPhylogeneticTreeNode dataNode;
+  @TestId(id = "children")
   private final ArrayList<ViewNode> children = new ArrayList<>();
   private final Area area;
   private final SelectionManager selectionManager;
@@ -79,24 +81,6 @@ public class ViewNode extends Circle implements ISelectable {
   }
 
   /**
-   * Draw a root node and all of its children which fit on the screen.
-   *
-   * @param root             the root node.
-   * @param graphPane        the pane in which to draw the node.
-   * @param selectionManager the selection manager.
-   * @return the nl.tudelft.pl2016gr2.gui.view node of the root.
-   */
-  protected static ViewNode drawRootNode(IPhylogeneticTreeNode root, Pane graphPane,
-      SelectionManager selectionManager) {
-    double startX = TreeManager.GRAPH_BORDER_OFFSET;
-    double endX = graphPane.getWidth() - TreeManager.GRAPH_BORDER_OFFSET;
-    double startY = TreeManager.GRAPH_BORDER_OFFSET;
-    double endY = graphPane.getHeight() - TreeManager.GRAPH_BORDER_OFFSET;
-    Area gbox = new Area(startX, endX, startY, endY);
-    return drawNode(root, gbox, graphPane, selectionManager);
-  }
-
-  /**
    * Recursively draw the node and all of its children.
    *
    * @param dataNode         the data of the node to draw.
@@ -105,7 +89,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param selectionManager the selection manager.
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
-  private static ViewNode drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
+  protected static ViewNode drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
       Pane graphPane, SelectionManager selectionManager) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {

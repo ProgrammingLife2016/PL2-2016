@@ -7,6 +7,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 /**
  * This is a description pane. The pane contains a description about a selected item. It extends the
@@ -18,7 +19,8 @@ public class DescriptionPane extends Pane {
 
   private static final Color BACKGROUND_COLOR = new Color(0.02, 0.08, 0.3, 1.0);
   private static final CornerRadii CORNER_RADII = new CornerRadii(8.0, false);
-  private final FrostGlassEffect frostGlassEffect;
+  @TestId(id = "frostGlassEffect")
+  private FrostGlassEffect frostGlassEffect;
 
   /**
    * Create a description pane.

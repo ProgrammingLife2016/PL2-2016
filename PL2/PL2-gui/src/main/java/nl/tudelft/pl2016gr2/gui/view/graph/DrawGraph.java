@@ -1,7 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
-import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -32,7 +30,7 @@ public class DrawGraph {
    */
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
-    OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
+    OriginalGraph graph = new FullGfaReader("SMALL.gfa", 5).getGraph();
 
     HashMap<Integer, Node> nodes = graph.getNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);

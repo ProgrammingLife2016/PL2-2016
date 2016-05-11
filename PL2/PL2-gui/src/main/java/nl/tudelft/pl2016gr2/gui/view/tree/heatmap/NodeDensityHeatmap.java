@@ -9,6 +9,7 @@ import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 
@@ -24,6 +25,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
 
   private final Pane pane;
   private final Area area;
+  @TestId(id = "currentLeaves")
   private ArrayList<ViewNode> currentLeaves;
 
   /**
@@ -40,7 +42,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   }
 
   @Override
-  public final void onChange(ArrayList<ViewNode> newLeaves) {
+  public void onChange(ArrayList<ViewNode> newLeaves) {
     currentLeaves = newLeaves;
     pane.getChildren().clear();
     int maxChildren = getMaxChildren();
@@ -85,8 +87,9 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   /**
    * Get the maximum amount of children of the leave nodes.
    *
-   * @return the maximum amount of children of the leave nodes.
+   * @return the maximum amount of children of the leaf nodes.
    */
+  @TestId(id = "getMaxChildren")
   private int getMaxChildren() {
     int maxChildren = 1;
     for (ViewNode currentLeave : currentLeaves) {
@@ -105,7 +108,8 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * @param maxChildren      the maximum amount of children of any current leave node.
    * @return the color.
    */
-  private Color mapColor(int amountOfChildren, int maxChildren) {
+  @TestId(id = "mapColor")
+  private static Color mapColor(int amountOfChildren, int maxChildren) {
     if (amountOfChildren == 0) {
       return Color.WHITE;
     }

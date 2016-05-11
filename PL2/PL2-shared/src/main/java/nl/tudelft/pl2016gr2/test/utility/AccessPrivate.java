@@ -44,8 +44,7 @@ public final class AccessPrivate {
       method.setAccessible(false);
       return res;
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      Logger.getLogger(
-          AccessPrivate.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(AccessPrivate.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new TestAnnotationException("An error occured while accessing the"
         + " method with test id: " + id + ".");
