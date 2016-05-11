@@ -20,7 +20,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 
 /**
- * This class tests the {@link ViewNode} class.
+ * This class tests the {@link NodeDensityHeatmap} class.
  *
  * @author Faris
  */

@@ -46,6 +46,7 @@ public class TreeManagerTest {
   private IPhylogeneticTreeNode leafLr;
   private IPhylogeneticTreeNode leafLl;
 
+  private TreeManager treeManager;
   private boolean lambdaExecuted = false;
 
   /**
@@ -63,6 +64,18 @@ public class TreeManagerTest {
     mockLeafL();
     mockLeafLr();
     mockLeafLl();
+    initializeTreeManager();
+  }
+  
+  /**
+   * Initialize a tree manager.
+   */
+  private void initializeTreeManager() {
+    SelectionManager selectionManager = new SelectionManager(new Pane(), new Pane());
+    Button zoomOutButton = new Button();
+    Pane graphPane = new Pane();
+    Scene scene = new Scene(graphPane, 500, 500);
+    treeManager = new TreeManager(graphPane, root, zoomOutButton, selectionManager);
   }
 
   /**
@@ -127,12 +140,6 @@ public class TreeManagerTest {
    */
   @Test
   public void testSetOnLeavesChanged() {
-    SelectionManager selectionManager = new SelectionManager(new Pane(), new Pane());
-    Button zoomOutButton = new Button();
-    Pane graphPane = new Pane();
-    Scene scene = new Scene(graphPane, 500, 500);
-    TreeManager treeManager = new TreeManager(graphPane, root, zoomOutButton, selectionManager);
-
     treeManager.setOnLeavesChanged((Observable obs, Object arg) -> {
       lambdaExecuted = true;
     });
@@ -146,13 +153,7 @@ public class TreeManagerTest {
    */
   @Test
   public void testGetCurrentLeaves() {
-    SelectionManager selectionManager = new SelectionManager(new Pane(), new Pane());
-    Button zoomOutButton = new Button();
-    Pane graphPane = new Pane();
-    Scene scene = new Scene(graphPane, 500, 500);
-    TreeManager treeManager = new TreeManager(graphPane, root, zoomOutButton, selectionManager);
     ArrayList<ViewNode> leaves = treeManager.getCurrentLeaves();
-
     assertEquals(3, leaves.size());
     ArrayList<IPhylogeneticTreeNode> actualLeaves = new ArrayList<>();
     actualLeaves.add(leafR);
