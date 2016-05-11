@@ -64,14 +64,14 @@ public class FilterSnipsTest {
     FilterSnips filter = new FilterSnips(graph);
     OriginalGraph filteredGraph = filter.filter();
     
-    assertEquals(filteredGraph.getSize(), 3);
+    assertEquals(3, filteredGraph.getSize());
     Node root = filteredGraph.getRoot();
-    assertEquals(root.getId(), 1);
+    assertEquals(1, root.getId());
     assertTrue(root.getOutlinks().contains(8));
     assertTrue(root.getOutlinks().contains(9));
 
-    assertEquals(filteredGraph.getNode(8), graph.getNode(8));
-    assertEquals(filteredGraph.getNode(9), graph.getNode(9));
+    assertEquals(graph.getNode(8), filteredGraph.getNode(8));
+    assertEquals(graph.getNode(9), filteredGraph.getNode(9));
   }
   
   /**
@@ -84,14 +84,14 @@ public class FilterSnipsTest {
     Node snip = (Node)AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, 
         filter, graph.getNode(1));
 
-    assertEquals(snip.getOutlinks().size(), 2);
+    assertEquals(2, snip.getOutlinks().size());
     assertTrue(snip.getOutlinks().contains(8));
     assertTrue(snip.getOutlinks().contains(9));
     
-    assertEquals(snip.getInlinks().size(), 0);
+    assertEquals(0, snip.getInlinks().size());
     
-    assertEquals(snip.getId(), 1);
-    assertEquals(snip.getSnips(), 2);
+    assertEquals(1, snip.getId());
+    assertEquals(2, snip.getSnips());
   }
   
   /**
@@ -104,16 +104,16 @@ public class FilterSnipsTest {
     Node snip = (Node)AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, 
         filter, graph.getNode(4));
 
-    assertEquals(snip.getOutlinks().size(), 2);
+    assertEquals(2, snip.getOutlinks().size());
     assertTrue(snip.getOutlinks().contains(8));
     assertTrue(snip.getOutlinks().contains(9));
     
-    assertEquals(snip.getInlinks().size(), 2);
+    assertEquals(2, snip.getInlinks().size());
     assertTrue(snip.getInlinks().contains(2));
     assertTrue(snip.getInlinks().contains(3));
     
-    assertEquals(snip.getId(), 4);
-    assertEquals(snip.getSnips(), 1);
+    assertEquals(4, snip.getId());
+    assertEquals(1, snip.getSnips());
   }
   
   /**
@@ -154,8 +154,8 @@ public class FilterSnipsTest {
     FilterSnips filter = new FilterSnips(graph);
     graph.getNode(1).setOutlinks(outlinks);
     AccessPrivate.callMethod("method_updateLinks", FilterSnips.class, filter, graph.getNode(1), 4);
-    assertEquals(graph.getNode(5).getInlinks().get(0).intValue(), 1);
-    assertEquals(graph.getNode(6).getInlinks().get(0).intValue(), 1);
+    assertEquals(1, graph.getNode(5).getInlinks().get(0).intValue());
+    assertEquals(1, graph.getNode(6).getInlinks().get(0).intValue());
   }
 
 }
