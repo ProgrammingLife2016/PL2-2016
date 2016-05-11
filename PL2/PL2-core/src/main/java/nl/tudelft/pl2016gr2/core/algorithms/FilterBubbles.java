@@ -6,6 +6,7 @@ import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,6 +15,11 @@ import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+/**
+ * Class used to filter bubbles based on the phylogenetic tree. 
+ * @author Casper
+ *
+ */
 public class FilterBubbles {
   
   //private GraphInterface graph;
@@ -61,6 +67,7 @@ public class FilterBubbles {
    * @param filteredGraph : the resulting filtered graph.
    * @param sharedNodes : a list of shared nodes, sorted on id.
    */
+  @TestId(id = "method_buildGraph")
   private void buildGraph(GraphInterface filteredGraph, PriorityQueue<Integer> sharedNodes) {
     Iterator<Integer> it = sharedNodes.iterator();
     int previous = it.next();
@@ -95,6 +102,7 @@ public class FilterBubbles {
    * Finds all the nodes which have all the genomes going through them.
    * @return : a queue of shared nodes, sorted on id.
    */
+  @TestId(id = "method_getSharedNodes")
   private PriorityQueue<Integer> getSharedNodes() {
     ArrayList<String> leaves = getLeaves();
     PriorityQueue<Integer> sharedNodes = new PriorityQueue<>();
@@ -130,6 +138,7 @@ public class FilterBubbles {
    * @param leaves : the list of leaves.
    * @return : true if the node contains all leaves.
    */
+  @TestId(id = "method_containsAllLeaves")
   private boolean containsAllLeaves(Node node, ArrayList<String> leaves) {
     for (String leaf : leaves) {
       if (!node.getGenomes().contains(leaf)) {
@@ -138,33 +147,6 @@ public class FilterBubbles {
     }
     
     return true;
-  }
-  
-  /**
-   * Gets all the leaves from the current node.
-   * @return : an ArrayList of strings with the labels of the leaves.
-   */
-  public ArrayList<String> getLeaves() {
-    ArrayList<String> leaves = new ArrayList<>();
-    addLeaf(leaves, treeRoot);    
-    return leaves;
-  }
-  
-  /**
-   * Recursively walks through the phylogenetic tree, and adds the label of
-   * a node to the list of leaves when it is a leaf. 
-   * @param leaves : the resulting list of leaves.
-   * @param node : the current node.
-   */
-  private void addLeaf(ArrayList<String> leaves, IPhylogeneticTreeNode node) {
-    if (node.isLeaf()) {
-      leaves.add(node.getLabel());
-      return;
-    }
-    
-    for (int i = 0; i < node.getDirectChildCount(); i++) {
-      addLeaf(leaves, node.getChild(i));
-    }
   }
   
 }
