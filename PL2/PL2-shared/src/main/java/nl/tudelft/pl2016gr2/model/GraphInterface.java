@@ -14,5 +14,5 @@ public interface GraphInterface {
 
   AbstractNode getRoot();
 
-  public HashMap<Integer, AbstractNode> getAbstractNodes();
+  HashMap<Integer, AbstractNode> getAbstractNodes();
 }

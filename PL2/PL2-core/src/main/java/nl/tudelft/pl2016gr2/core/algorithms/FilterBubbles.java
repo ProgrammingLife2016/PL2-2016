@@ -22,6 +22,13 @@ public class FilterBubbles {
   private HashSet<Integer> allSharedNodes = new HashSet<>();
   private int mutationId;
   
+  /**
+   * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
+   * tree based on which this graph will be filtered.
+   * @param originalGraph : the graph to be filtered.
+   * @param root : the node of the phylogenetic tree to use for filtering. This will be the root of 
+   *     the tree when a full overview is wanted.
+   */
   public FilterBubbles(OriginalGraph originalGraph, IPhylogeneticTreeNode root) {
     //this.graph = graph;
     this.originalGraph = originalGraph;
@@ -29,6 +36,13 @@ public class FilterBubbles {
     mutationId = 10000;
   }
   
+  /**
+   * Filters the input graph of this object, using the phylogenetic tree. It finds all leaves of the
+   * current node of the tree, which correspond to a certain genome. The filtered graph then only 
+   * shows nodes that have all these genomes going through them, and shows mutation nodes in between
+   * these.
+   * @return : a filtered graph.
+   */
   public GraphInterface filter() {
     GraphInterface filteredGraph = new BubbledGraph();
     
@@ -40,20 +54,25 @@ public class FilterBubbles {
     return filteredGraph;
   }
   
+  /**
+   * Builds the filtered graph. It loops through the shared nodes (which are ordered on id),
+   * and adds each shared node to the filtered graph. Between two subsequent shared nodes,
+   * a bubble is placed. 
+   * @param filteredGraph : the resulting filtered graph.
+   * @param sharedNodes : a list of shared nodes, sorted on id.
+   */
   private void buildGraph(GraphInterface filteredGraph, PriorityQueue<Integer> sharedNodes) {
     Iterator<Integer> it = sharedNodes.iterator();
     int previous = it.next();
     
     while (it.hasNext()) {
-      int next = it.next();
-      
       Node node = originalGraph.getNode(previous);
-      Node end = originalGraph.getNode(next);
-      
       node.getOutlinks().clear();
       node.getInlinks().clear();
       node.addOutlink(mutationId);
       
+      int next = it.next();
+      Node end = originalGraph.getNode(next);
       end.getInlinks().clear();
       end.getOutlinks().clear();
       end.addInlink(mutationId);
@@ -72,6 +91,10 @@ public class FilterBubbles {
     }
   }
   
+  /**
+   * Finds all the nodes which have all the genomes going through them.
+   * @return : a queue of shared nodes, sorted on id.
+   */
   private PriorityQueue<Integer> getSharedNodes() {
     ArrayList<String> leaves = getLeaves();
     PriorityQueue<Integer> sharedNodes = new PriorityQueue<>();
@@ -100,7 +123,13 @@ public class FilterBubbles {
     
     return sharedNodes;
   }
-   
+  
+  /**
+   * Checks if a node contains all leaves.
+   * @param node : the node to check.
+   * @param leaves : the list of leaves.
+   * @return : true if the node contains all leaves.
+   */
   private boolean containsAllLeaves(Node node, ArrayList<String> leaves) {
     for (String leaf : leaves) {
       if (!node.getGenomes().contains(leaf)) {
@@ -111,12 +140,22 @@ public class FilterBubbles {
     return true;
   }
   
+  /**
+   * Gets all the leaves from the current node.
+   * @return : an ArrayList of strings with the labels of the leaves.
+   */
   public ArrayList<String> getLeaves() {
     ArrayList<String> leaves = new ArrayList<>();
     addLeaf(leaves, treeRoot);    
     return leaves;
   }
   
+  /**
+   * Recursively walks through the phylogenetic tree, and adds the label of
+   * a node to the list of leaves when it is a leaf. 
+   * @param leaves : the resulting list of leaves.
+   * @param node : the current node.
+   */
   private void addLeaf(ArrayList<String> leaves, IPhylogeneticTreeNode node) {
     if (node.isLeaf()) {
       leaves.add(node.getLabel());
