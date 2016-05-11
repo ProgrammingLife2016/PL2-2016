@@ -7,19 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
-import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
-import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,30 +34,12 @@ public class DrawGraph {
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
     OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
-    
-    // THIS HAS TO GO OUT, THE TREE HAS TO BE ACCESSED IN SOME WAY HERE, 
-    // THIS IS JUST FOR TESTING PURPOSES
-    Reader reader = new InputStreamReader(
-        FullGfaReader.class.getClassLoader().getResourceAsStream("10tree.rooted.TKK.nwk"));
-    BufferedReader br = new BufferedReader(reader);
-    TreeParser tp = new TreeParser(br);
 
-    Tree tree = tp.tokenize("10tree.rooted.TKK");
-    
-    FilterSnips filterSnips = new FilterSnips(graph);
-    graph = filterSnips.filter();
-    
-    FilterBubbles filterBubbles = 
-        new FilterBubbles(graph, new PhylogeneticTreeNode(tree.getRoot()));
-    GraphInterface bubbledGraph = filterBubbles.filter();
-    
-    // END OF CODE THAT HAS TO GO OUT
-
-    HashMap<Integer, AbstractNode> nodes = bubbledGraph.getAbstractNodes();
+    HashMap<Integer, AbstractNode> nodes = graph.getAbstractNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);
     drawEdges(pane, nodes, circles);
 
-    ArrayList<ArrayList<AbstractNode>> nodeDepths = createGraphDepth(bubbledGraph.getRoot(), nodes);
+    ArrayList<ArrayList<AbstractNode>> nodeDepths = createGraphDepth(graph.getRoot(), nodes);
     setNodeLocatios(nodeDepths, paneHeight, circles);
   }
 

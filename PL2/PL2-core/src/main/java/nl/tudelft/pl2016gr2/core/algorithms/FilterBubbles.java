@@ -54,8 +54,6 @@ public class FilterBubbles {
     
     PriorityQueue<Integer> sharedNodes = getSharedNodes();
     buildGraph(filteredGraph, sharedNodes);
-    filteredGraph.print();
-    System.out.println(filteredGraph.getSize());
     
     return filteredGraph;
   }
@@ -67,7 +65,6 @@ public class FilterBubbles {
    * @param filteredGraph : the resulting filtered graph.
    * @param sharedNodes : a list of shared nodes, sorted on id.
    */
-  @TestId(id = "method_buildGraph")
   private void buildGraph(GraphInterface filteredGraph, PriorityQueue<Integer> sharedNodes) {
     Iterator<Integer> it = sharedNodes.iterator();
     int previous = it.next();
@@ -104,7 +101,7 @@ public class FilterBubbles {
    */
   @TestId(id = "method_getSharedNodes")
   private PriorityQueue<Integer> getSharedNodes() {
-    ArrayList<String> leaves = getLeaves();
+    ArrayList<String> leaves = treeRoot.getLeaves();
     PriorityQueue<Integer> sharedNodes = new PriorityQueue<>();
     
     HashSet<Integer> visited = new HashSet<>();
