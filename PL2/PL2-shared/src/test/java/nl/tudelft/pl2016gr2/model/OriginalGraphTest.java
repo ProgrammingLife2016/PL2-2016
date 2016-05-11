@@ -8,30 +8,30 @@ import java.util.ArrayList;
 
 public class OriginalGraphTest extends GraphTest {
   
-  private OriginalGraph curGra;
+  private OriginalGraph curGraph;
 
   @Override
   public GraphInterface getInstance() {
-    OriginalGraph gra = new OriginalGraph();
+    OriginalGraph graph = new OriginalGraph();
     ArrayList<String> ar = new ArrayList<String>();
     ar.add("aba");
     Node n1 = new Node(2, 8, ar, 5);
     Node n2 = new Node(5, 8, null, 9);
-    gra.addNode(n1);
-    gra.addNode(n2);
-    gra.setGenoms(ar);
-    this.curGra = gra;
-    return gra;
+    graph.addNode(n1);
+    graph.addNode(n2);
+    graph.setGenoms(ar);
+    this.curGraph = graph;
+    return graph;
   }
   
   @Test
   public void testGetNodes() {
-    assertEquals(curGra.getNodes().size(), 2);
+    assertEquals(2, curGraph.getNodes().size());
   }
   
   @Test
   public void testGetGenoms() {
-    assertEquals(curGra.getGenoms().size(), 1);
+    assertEquals(1, curGraph.getGenoms().size());
   }
   
   @Test
@@ -39,11 +39,11 @@ public class OriginalGraphTest extends GraphTest {
     String exp = "id: 2 sequencelength: 8 inlinks: [] outlinks: [] snips: 5, id: 2, "
         + "flow: 0.0\nid: 5 sequencelength: 8 inlinks: [] outlinks: [] snips: 9, id: 5, "
         + "flow: 0.0\n";
-    assertEquals(curGra.toString(), exp);
+    assertEquals(exp, curGraph.toString());
   }
   
   @Test
   public void getTargetTest() {
-    assertEquals(curGra.getTargets(2).size(), 0);
+    assertEquals(0, curGraph.getTargets(2).size());
   }
 }

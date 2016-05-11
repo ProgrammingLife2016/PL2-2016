@@ -23,20 +23,20 @@ public class MetaDataTest {
   public void basesTest() {
     String bas = "cgatatcgcgctacatcgatcatag";
     md.setBases(bas);
-    assertEquals(md.getBases(), bas);
+    assertEquals(bas, md.getBases());
   }
   
   @Test
   public void passesTest() {
     md.setPasses(4);
-    assertEquals(md.getPasses(), 4);
+    assertEquals(4, md.getPasses());
   }
   
   @Test
   public void nodeTest() {
     Node no = new Node(3, 2, null, 1);
     md.setNode(no);
-    assertEquals(md.getNode(), no);
+    assertEquals(no, md.getNode());
   }
 
 }

@@ -30,7 +30,7 @@ public class NodeTest {
   @Test
   public void alignmentTest() {
     node.setAlignment(9);
-    assertEquals(node.getAlignment(), 9);
+    assertEquals(9, node.getAlignment());
   }
   
   @Test
@@ -38,7 +38,7 @@ public class NodeTest {
     node.setFlow(5.0);
     node.addFlow(6.0);
     node.addFlow(-4.0);
-    assertEquals(node.getFlow(), 7.0, 0.001);
+    assertEquals(7.0, node.getFlow(), 0.001);
   }
   
   @Test
@@ -49,18 +49,18 @@ public class NodeTest {
   
   @Test
   public void getSnipsTest() {
-    assertEquals(node.getSnips(), 5);
+    assertEquals(5, node.getSnips());
   }
   
   @Test
   public void basesTest() {
     node.setBases(bases);
-    assertEquals(node.getBases(), "actcaggcagatcattcgctagacat");
+    assertEquals(bases, node.getBases());
   }
   
   @Test
   public void genomeTest() {
-    assertEquals(node.getGenomes().get(1).toString(), "ref2.fasta");
+    assertEquals("ref2.fasta", node.getGenomes().get(1));
   }
 
 }

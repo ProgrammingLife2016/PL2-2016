@@ -7,28 +7,33 @@ import org.junit.Test;
 
 public abstract class GraphTest {
   
-  public GraphInterface gra;
+  public GraphInterface graph;
   
   @Before
   public void setup() {
-    gra = getInstance();
+    graph = getInstance();
   }
   
+  /**
+   * Child classes should implement this method in order 
+   * the get an instance of a concrete implementation.
+   * @return an implementation of the GraphInterface.
+   */
   public abstract GraphInterface getInstance();
 
   @Test
   public void testSize() {
-    assertEquals(gra.getSize(), 2);
+    assertEquals(2, graph.getSize());
   }
   
   @Test
   public void testGetNode() {
-    assertEquals(gra.getNode(5).getSequenceLength(), 8);
+    assertEquals(8, graph.getNode(5).getSequenceLength());
   }
   
   @Test
   public void getRootTest() {
-    assertEquals(gra.getRoot().getId(), 2);
+    assertEquals(2, graph.getRoot().getId());
   }
 
 }
