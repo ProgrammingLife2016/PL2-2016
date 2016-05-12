@@ -2,8 +2,6 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
-
-import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -16,6 +14,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphInterface;
+import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
@@ -40,6 +39,8 @@ public class DrawGraph {
   private Pane pane;
   private Tree tree;
   private OriginalGraph graph;
+  private FilterBubbles filterBubbles;
+  private GraphInterface bubbledGraph;
 
   /**
    * Load and draw a graph in the given pane.
@@ -48,8 +49,12 @@ public class DrawGraph {
    */
   public void drawGraph(Pane pane) {
     this.pane = pane;
+    long startTime = System.currentTimeMillis();
     graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
 
+    //double paneHeight = 600.0;
+    long endTime = System.currentTimeMillis();
+    System.out.println("The loading took" + ((double)(endTime - startTime) / 1000.0d) + "secconds to run");
     // THIS HAS TO GO OUT, THE TREE HAS TO BE ACCESSED IN SOME WAY HERE, 
     // THIS IS JUST FOR TESTING PURPOSES
     Reader reader = new InputStreamReader(
@@ -57,18 +62,25 @@ public class DrawGraph {
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("10tree_custom.rooted.TKK");
+    Tree tree = tp.tokenize("10tree_custom.rooted.TKK");
     
     FilterSnips filterSnips = new FilterSnips(graph);
     graph = filterSnips.filter();
+    
+    filterBubbles = 
+        new FilterBubbles(graph);
+    
+    startTime = System.currentTimeMillis();
+    bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+    endTime = System.currentTimeMillis();
+    System.out.println("The filtering took" + ((double)(endTime - startTime) / 1000.0d) + "secconds to run");
+    
+    //bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8742), bubbledGraph);
+//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8974), bubbledGraph);
+//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8975), bubbledGraph);
+//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8976), bubbledGraph);
+//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8977), bubbledGraph);
 
-    FilterBubbles filterBubbles = new FilterBubbles(graph);
-    GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
-
-    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8974), bubbledGraph);
-    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8975), bubbledGraph);
-    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8976), bubbledGraph);
-    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8977), bubbledGraph);
     // END OF CODE THAT HAS TO GO OUT
     redraw(bubbledGraph);
   }
@@ -77,15 +89,15 @@ public class DrawGraph {
    * Temporary method which handles zooming in on a bubble.
    */
   private void tempZoomIn(AbstractNode node) {
-    if (!(node instanceof Bubble)) {
+    if (node instanceof Node) {
       System.out.println("Not a bubble.");
       return;
     }
     System.out.println("Zooming in on: " + node);
     Bubble bubble = (Bubble) node;
 
-    FilterBubbles filterBubbles = new FilterBubbles(graph);
-    GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+    //FilterBubbles filterBubbles = new FilterBubbles(graph);
+    //GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
 
     bubbledGraph = filterBubbles.zoom(bubble, bubbledGraph);
     redraw(bubbledGraph);

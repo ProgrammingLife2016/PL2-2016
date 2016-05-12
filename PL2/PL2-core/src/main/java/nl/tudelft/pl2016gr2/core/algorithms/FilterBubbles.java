@@ -48,10 +48,16 @@ public class FilterBubbles {
     
     // Do something here to indicate that zooming is not possible
     if (curTreeNode.isLeaf()) {
-      System.out.println(curTreeNode);
+      //System.out.println(curTreeNode);
+      GraphInterface zoomedGraph = new BubbledGraph();
+      // This doesn't always work. The in/out link might still have other bubbles connected to it
+      zoomedGraph.addNode(originalGraph.getNode(bubble.getInlinks().get(0)));
+      zoomedGraph.addNode(originalGraph.getNode(bubble.getOutlinks().get(0)));
       for (Integer nestedNode : bubble.getNestedNodes()) {
-        graph.replace(bubble, originalGraph.getNode(nestedNode));
+        zoomedGraph.addNode(originalGraph.getNode(nestedNode));
+        //graph.replace(bubble, originalGraph.getNode(nestedNode));
       }
+      graph.replace(bubble, zoomedGraph);
       return graph;
     }
     
