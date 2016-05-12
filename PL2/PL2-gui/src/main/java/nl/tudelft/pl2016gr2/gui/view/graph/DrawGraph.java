@@ -2,7 +2,10 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
+
+import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -34,6 +37,9 @@ import java.util.Set;
 public class DrawGraph {
 
   private static final double X_OFFSET = 50.0;
+  private Pane pane;
+  private Tree tree;
+  private OriginalGraph graph;
 
   /**
    * Load and draw a graph in the given pane.
@@ -41,9 +47,9 @@ public class DrawGraph {
    * @param pane the pane in which to draw the graph.
    */
   public void drawGraph(Pane pane) {
-    double paneHeight = 600.0;
-    OriginalGraph graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
-    
+    this.pane = pane;
+    graph = new FullGfaReader(FILENAME, GRAPH_SIZE).getGraph();
+
     // THIS HAS TO GO OUT, THE TREE HAS TO BE ACCESSED IN SOME WAY HERE, 
     // THIS IS JUST FOR TESTING PURPOSES
     Reader reader = new InputStreamReader(
@@ -51,28 +57,53 @@ public class DrawGraph {
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    Tree tree = tp.tokenize("10tree_custom.rooted.TKK");
+    tree = tp.tokenize("10tree_custom.rooted.TKK");
     
     FilterSnips filterSnips = new FilterSnips(graph);
     graph = filterSnips.filter();
-    
-    FilterBubbles filterBubbles = 
-        new FilterBubbles(graph);
-    GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
-    
-    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8742), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8974), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8975), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8976), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8977), bubbledGraph);
-    
-    // END OF CODE THAT HAS TO GO OUT
 
-    HashMap<Integer, AbstractNode> nodes = bubbledGraph.getAbstractNodes();
+    FilterBubbles filterBubbles = new FilterBubbles(graph);
+    GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+
+    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8974), bubbledGraph);
+    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8975), bubbledGraph);
+    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8976), bubbledGraph);
+    //    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8977), bubbledGraph);
+    // END OF CODE THAT HAS TO GO OUT
+    redraw(bubbledGraph);
+  }
+
+  /**
+   * Temporary method which handles zooming in on a bubble.
+   */
+  private void tempZoomIn(AbstractNode node) {
+    if (!(node instanceof Bubble)) {
+      System.out.println("Not a bubble.");
+      return;
+    }
+    System.out.println("Zooming in on: " + node);
+    Bubble bubble = (Bubble) node;
+
+    FilterBubbles filterBubbles = new FilterBubbles(graph);
+    GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+
+    bubbledGraph = filterBubbles.zoom(bubble, bubbledGraph);
+    redraw(bubbledGraph);
+  }
+
+  /**
+   * Draw the graph.
+   *
+   * @param graph the graph to draw.
+   */
+  private void redraw(GraphInterface graph) {
+    pane.getChildren().clear();
+    HashMap<Integer, AbstractNode> nodes = graph.getAbstractNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);
     drawEdges(pane, nodes, circles);
 
-    ArrayList<ArrayList<AbstractNode>> nodeDepths = createGraphDepth(bubbledGraph.getRoot(), nodes);
+    ArrayList<ArrayList<AbstractNode>> nodeDepths = createGraphDepth(graph.getRoot(), nodes);
+    double paneHeight = 600.0;
     setNodeLocatios(nodeDepths, paneHeight, circles);
   }
 
@@ -91,10 +122,14 @@ public class DrawGraph {
       circles.put(id, circle);
       pane.getChildren().add(circle);
       Label label = new Label(Integer.toString(node.getId()));
+      label.setMouseTransparent(true);
       label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3));
       label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2));
       label.setTextFill(new javafx.scene.paint.Color(1, 1, 1, 1));
       pane.getChildren().add(label);
+      circle.setOnMouseClicked((MouseEvent event) -> {
+        tempZoomIn(node);
+      });
     });
     return circles;
   }
@@ -187,7 +222,6 @@ public class DrawGraph {
   //    return new Point2D(mid.getX() + (distance * normal.getX()),
   //            mid.getY() + (distance * normal.getY()));
   //  }
-  
   /**
    * Calculate the graph depth for each node.
    *
