@@ -10,10 +10,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
+import nl.tudelft.pl2016gr2.gui.view.graph.CompareGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 import java.util.Observable;
 
@@ -60,7 +61,9 @@ public class RootLayoutController {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    new DrawGraph().drawGraph(graphPane);
+    CompareGraphs compareGraphs = new CompareGraphs(graphPane);
+    compareGraphs.drawGraphs(new FullGfaReader("SMALL.gfa", 5).getGraph(),
+        new FullGfaReader("SMALL.gfa", 5).getGraph());
   }
 
   /**
