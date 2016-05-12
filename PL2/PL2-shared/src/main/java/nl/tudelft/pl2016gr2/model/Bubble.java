@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import java.util.ArrayList;
+
 
 /**
  * This class represents a bubble. A bubble exists of multiple nodes which form a common group.
@@ -8,7 +10,8 @@ package nl.tudelft.pl2016gr2.model;
  */
 public class Bubble extends AbstractNode {
 
-  private int level;
+  private IPhylogeneticTreeNode treeNode;
+  private ArrayList<Integer> nestedNodes = new ArrayList<>();
 
   /**
    * Construct a bubble.
@@ -19,20 +22,28 @@ public class Bubble extends AbstractNode {
   public Bubble(int id, int sequenceLength) {
     super(id, sequenceLength);
   }
-
-  public int getLevel() {
-    return level;
+  
+  public void setTreeNode(IPhylogeneticTreeNode treeNode) {
+    this.treeNode = treeNode;
   }
-
-  public void setLevel(int level) {
-    this.level = level;
+  
+  public IPhylogeneticTreeNode getTreeNode() {
+    return treeNode;
+  }
+  
+  public void addNestedNode(int node) {
+    nestedNodes.add(node);
+  }
+  
+  public ArrayList<Integer> getNestedNodes() {
+    return nestedNodes;
   }
 
   @Override
   public boolean equals(Object object) {
     if (object instanceof Bubble) {
       Bubble bubble = (Bubble) object;
-      return bubble.getId() == this.getId() && bubble.level == this.level;
+      return bubble.getId() == this.getId() && bubble.treeNode.equals(this.treeNode);
     }
     return false;
   }

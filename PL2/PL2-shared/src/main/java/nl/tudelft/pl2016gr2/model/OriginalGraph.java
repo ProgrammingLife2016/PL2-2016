@@ -8,6 +8,7 @@ public class OriginalGraph implements GraphInterface {
   private HashMap<Integer, Node> nodes;
   private HashMap<Integer, AbstractNode> abstractNodes;
   private int lowestId;
+  private int highestId;
   private ArrayList<String> genoms;
 
   /**
@@ -17,6 +18,7 @@ public class OriginalGraph implements GraphInterface {
     nodes = new HashMap<>();
     abstractNodes = new HashMap<>();
     lowestId = Integer.MAX_VALUE;
+    highestId = 0;
   }
 
   /**
@@ -64,6 +66,9 @@ public class OriginalGraph implements GraphInterface {
     if (id < lowestId) {
       lowestId = id;
     }
+    if (id > highestId) {
+      highestId = id;
+    }
 
     nodes.put(id, (Node) node);
     abstractNodes.put(id, node);
@@ -72,6 +77,10 @@ public class OriginalGraph implements GraphInterface {
   @Override
   public Node getRoot() {
     return nodes.get(lowestId);
+  }
+  
+  public int getHighestId() {
+    return highestId;
   }
 
   public HashMap<Integer, Node> getNodes() {
@@ -89,6 +98,54 @@ public class OriginalGraph implements GraphInterface {
 
   public void setGenoms(ArrayList<String> gs) {
     this.genoms = gs;
+  }
+  
+  @Override
+  public void replace(Bubble bubble, GraphInterface graph) {
+    nodes.remove(bubble.getId());
+    
+    for (AbstractNode node : graph.getAbstractNodes().values()) {
+      nodes.put(node.getId(), (Node)node);
+    }
+  }
+  
+  public void replace(Bubble bubble, Node node) {
+    nodes.remove(bubble.getId());
+    
+    for (Integer inlink : bubble.getInlinks()) {
+      nodes.get(inlink).getOutlinks().remove((Integer)bubble.getId());
+    }
+    
+    for (Integer outlink : bubble.getOutlinks()) {
+      nodes.get(outlink).getInlinks().remove((Integer)bubble.getId());
+    }
+    
+    nodes.put(node.getId(), node);
+    
+    for (Integer inlink : node.getInlinks()) {
+      nodes.get(inlink).addOutlink(node.getId());
+    }
+    
+    for (Integer outlink : node.getOutlinks()) {
+      nodes.get(outlink).addInlink(node.getId());
+    }
+  }
+  
+  @Override
+  public boolean hasNode(int nodeId) {
+    return nodes.containsKey(nodeId);
+  }
+  
+  public void remove(AbstractNode node) {
+    nodes.remove(node.getId());
+    
+    for (Integer inlink : node.getInlinks()) {
+      nodes.get(inlink).getOutlinks().remove((Integer)node.getId());
+    }
+    
+    for (Integer outlink : node.getOutlinks()) {
+      nodes.get(outlink).getInlinks().remove((Integer)node.getId());
+    }
   }
 
 }

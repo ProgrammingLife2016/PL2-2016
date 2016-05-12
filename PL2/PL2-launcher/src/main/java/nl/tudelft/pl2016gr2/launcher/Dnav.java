@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.launcher;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
@@ -37,7 +38,7 @@ public class Dnav extends Application {
   public void start(Stage primaryStage) throws IOException {
     FXMLLoader loader = new FXMLLoader();
     loader.setLocation(getClass().getClassLoader().getResource("pages/RootLayout.fxml"));
-
+    
     Scene scene = new Scene(loader.load(), 1000, 800);
     primaryStage.setMinHeight(700);
     primaryStage.setMinWidth(600);

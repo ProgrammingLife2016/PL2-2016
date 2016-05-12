@@ -2,13 +2,13 @@ package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
-
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -103,7 +103,7 @@ public class RootLayoutController {
         return;
       }
       mainPane.getItems().clear();
-      mainPane.getItems().add(graphPane);
+      mainPane.getItems().add(new ScrollPane(graphPane));
       zoomOutButtonDisabled = zoomOutButton.isDisabled();
       zoomOutButton.setDisable(true);
       mainPane.fireEvent(new GraphicsChangedEvent());

@@ -15,4 +15,12 @@ public interface GraphInterface {
   AbstractNode getRoot();
 
   HashMap<Integer, AbstractNode> getAbstractNodes();
+  
+  void replace(Bubble bubble, GraphInterface graph);
+  
+  void replace(Bubble bubble, Node node);
+  
+  boolean hasNode(int nodeId);
+  
+  void remove(AbstractNode node);
 }

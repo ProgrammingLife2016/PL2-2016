@@ -48,5 +48,53 @@ public class BubbledGraph implements GraphInterface {
   public AbstractNode getRoot() {
     return nodes.get(lowestId);
   }
+  
+  @Override
+  public void replace(Bubble bubble, GraphInterface graph) {
+    nodes.remove(bubble.getId());
+    
+    for (AbstractNode node : graph.getAbstractNodes().values()) {
+      nodes.put(node.getId(), node);
+    }
+  }
+  
+  public void replace(Bubble bubble, Node node) {
+    nodes.remove(bubble.getId());
+    
+    for (Integer inlink : bubble.getInlinks()) {
+      nodes.get(inlink).getOutlinks().remove((Integer)bubble.getId());
+    }
+    
+    for (Integer outlink : bubble.getOutlinks()) {
+      nodes.get(outlink).getInlinks().remove((Integer)bubble.getId());
+    }
+    
+    nodes.put(node.getId(), node);
+    
+    for (Integer inlink : node.getInlinks()) {
+      nodes.get(inlink).addOutlink(node.getId());
+    }
+    
+    for (Integer outlink : node.getOutlinks()) {
+      nodes.get(outlink).addInlink(node.getId());
+    }
+  }
+  
+  @Override
+  public boolean hasNode(int nodeId) {
+    return nodes.containsKey(nodeId);
+  }
+  
+  public void remove(AbstractNode node) {
+    nodes.remove(node.getId());
+    
+    for (Integer inlink : node.getInlinks()) {
+      nodes.get(inlink).getOutlinks().remove((Integer)node.getId());
+    }
+    
+    for (Integer outlink : node.getOutlinks()) {
+      nodes.get(outlink).getInlinks().remove((Integer)node.getId());
+    }
+  }
 
 }

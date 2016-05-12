@@ -10,8 +10,6 @@ import java.util.ArrayList;
  */
 public class Node extends Bubble {
 
-  private double flow;
-
   private ArrayList<String> genomes;
   private final int snips;
   private String bases = "";
@@ -28,8 +26,6 @@ public class Node extends Bubble {
     super(id, sequenceLength);
     this.genomes = genomes;
     this.snips = snips;
-    this.flow = 0;
-    setLevel(0);
   }
 
   @Override
@@ -53,6 +49,10 @@ public class Node extends Bubble {
     hash = 41 * hash + this.getId();
     return hash;
   }
+  
+  public Node copy() {
+    return new Node(getId(), getSequenceLength(), this.genomes, this.snips);
+  }
 
   public ArrayList<String> getGenomes() {
     return genomes;
@@ -72,18 +72,6 @@ public class Node extends Bubble {
 
   public int getSnips() {
     return snips;
-  }
-
-  public double getFlow() {
-    return flow;
-  }
-
-  public void setFlow(double flow) {
-    this.flow = flow;
-  }
-
-  public void addFlow(double flow) {
-    this.flow += flow;
   }
 
 }
