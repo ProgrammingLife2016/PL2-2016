@@ -9,9 +9,11 @@ import javafx.animation.Timeline;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.test.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -7,7 +7,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import nl.tudelft.pl2016gr2.test.utility.TestId;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 /**
  * This is a description pane. The pane contains a description about a selected item. It extends the
