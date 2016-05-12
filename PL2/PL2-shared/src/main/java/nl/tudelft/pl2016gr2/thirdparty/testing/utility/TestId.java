@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.utility;
+package nl.tudelft.pl2016gr2.thirdparty.testing.utility;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

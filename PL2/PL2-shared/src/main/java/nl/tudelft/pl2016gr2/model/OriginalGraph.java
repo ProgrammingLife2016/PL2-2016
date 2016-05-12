@@ -21,8 +21,7 @@ public class OriginalGraph implements GraphInterface {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (Node node : nodes.values()) {
-      sb.append(node);
-      sb.append("\n");
+      sb.append(node).append('\n');
     }
     return sb.toString();
   }

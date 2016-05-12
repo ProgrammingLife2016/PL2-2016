@@ -102,11 +102,11 @@ public class FullGfaReader {
     //words[4] = CRDCTG:Z:XXXX
     //words[5] = CTG:Z:XXXX;XXXX;...
     //words[6] = START:Z:INT
-    Node no = originalGraph.getNode(nodeId);
-    no.setGenomes(nodeGens);
-    no.setBases(bases);
-    no.setSequenceLength(bases.length());
-    no.setAlignment(orientation);
+    Node node = originalGraph.getNode(nodeId);
+    node.setGenomes(nodeGens);
+    node.setBases(bases);
+    node.setSequenceLength(bases.length());
+    node.setAlignment(orientation);
   }
 
   /**
@@ -114,13 +114,13 @@ public class FullGfaReader {
    * @param sc The scanner which is used to parse the file.
    */
   private void handleL(Scanner sc) {
-    int parent = sc.nextInt();
+    int parentId = sc.nextInt();
     sc.next();
-    int child = sc.nextInt();
-    Node par = originalGraph.getNode(parent);
-    Node ch = originalGraph.getNode(child);
-    par.addOutlink(ch.getId());
-    ch.addInlink(par.getId());
+    int childId = sc.nextInt();
+    Node parent = originalGraph.getNode(parentId);
+    Node child = originalGraph.getNode(childId);
+    parent.addOutlink(child.getId());
+    child.addInlink(parent.getId());
     sc.nextLine();
   }
   
