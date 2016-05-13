@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.NoSuchElementException;
  */
 public class SplitGraphs {
 
+  @TestId(id = "graph_field")
   private OriginalGraph mainGraph;
 
   /**
