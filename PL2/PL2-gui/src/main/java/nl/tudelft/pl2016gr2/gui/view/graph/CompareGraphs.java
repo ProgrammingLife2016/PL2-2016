@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Compares two graphs by drawing them above each other in a Pane.
@@ -55,14 +57,23 @@ public class CompareGraphs {
   public void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph) {
     topPane.getChildren().clear();
     bottomPane.getChildren().clear();
-    long start = System.nanoTime();
-    HashMap<Integer, AbstractNode> overlappedNodes = getOverlappedNodes(topGraph, bottomGraph);
-    ArrayList<GraphNodeOrder> topOrder = calculateGraphOrder(topGraph);
-    ArrayList<GraphNodeOrder> bottomOrder = calculateGraphOrder(bottomGraph);
-    alignOverlappingNodes(topOrder, bottomOrder, overlappedNodes);
-    System.out.println("align nodes = " + (System.nanoTime() - start));
-    drawGraph(topPane, topOrder, overlappedNodes);
-    drawGraph(bottomPane, bottomOrder, overlappedNodes);
+    OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
+    GraphOrderer topGraphOrderer = new GraphOrderer(topGraph);
+    GraphOrderer bottomGraphOrderer = new GraphOrderer(bottomGraph);
+    overlapThread.start();
+    topGraphOrderer.start();
+    bottomGraphOrderer.start();
+    try {
+      overlapThread.join();
+      topGraphOrderer.join();
+      bottomGraphOrderer.join();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(CompareGraphs.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    alignOverlappingNodes(topGraphOrderer.orderedGraph, bottomGraphOrderer.orderedGraph,
+        overlapThread.overlappedNodes);
+    drawGraph(topPane, topGraphOrderer.orderedGraph, overlapThread.overlappedNodes);
+    drawGraph(bottomPane, bottomGraphOrderer.orderedGraph, overlapThread.overlappedNodes);
   }
 
   /**
@@ -365,5 +376,43 @@ public class CompareGraphs {
       }
     });
     return overlap;
+  }
+
+  /**
+   * Thread which can be used to calculate the overlapping nodes of two graph.
+   */
+  private class OverlapThread extends Thread {
+
+    private final OriginalGraph topGraph;
+    private final OriginalGraph bottomGraph;
+    public HashMap<Integer, AbstractNode> overlappedNodes;
+
+    public OverlapThread(OriginalGraph topGraph, OriginalGraph bottomGraph) {
+      this.topGraph = topGraph;
+      this.bottomGraph = bottomGraph;
+    }
+
+    @Override
+    public void run() {
+      overlappedNodes = getOverlappedNodes(topGraph, bottomGraph);
+    }
+  }
+
+  /**
+   * Thread which can be used to order a graph.
+   */
+  private class GraphOrderer extends Thread {
+
+    private final OriginalGraph graph;
+    public ArrayList<GraphNodeOrder> orderedGraph;
+
+    public GraphOrderer(OriginalGraph graph) {
+      this.graph = graph;
+    }
+
+    @Override
+    public void run() {
+      orderedGraph = calculateGraphOrder(graph);
+    }
   }
 }

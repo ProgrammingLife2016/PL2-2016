@@ -21,6 +21,8 @@ import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * FXML Controller class.
@@ -77,12 +79,20 @@ public class RootLayoutController {
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
     SplitGraphs splitGraphs = new SplitGraphs(graph);
-    long start = System.nanoTime();
-    OriginalGraph topGraph = splitGraphs.getSubgraph(topGenomes);
-    OriginalGraph bottomGraph = splitGraphs.getSubgraph(bottomGenomes);
-    System.out.println("split graphs = " + (System.nanoTime() - start));
+    //    OriginalGraph topGraph = splitGraphs.getSubgraph(topGenomes);
+    //    OriginalGraph bottomGraph = splitGraphs.getSubgraph(bottomGenomes);
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(splitGraphs, topGenomes);
+    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(splitGraphs, bottomGenomes);
+    topSubGraphThread.start();
+    bottomSubGraphThread.start();
+    try {
+      topSubGraphThread.join();
+      bottomSubGraphThread.join();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+    }
     CompareGraphs compareGraphs = new CompareGraphs(graphPane);
-    compareGraphs.drawGraphs(topGraph, bottomGraph);
+    compareGraphs.drawGraphs(topSubGraphThread.subGraph, bottomSubGraphThread.subGraph);
   }
 
   /**
@@ -155,5 +165,25 @@ public class RootLayoutController {
    */
   public static RootLayoutController getController() {
     return controller;
+  }
+
+  /**
+   * Thread which is used to get a graph of a subset of the genomes from a graph.
+   */
+  private class SplitGraphsThread extends Thread {
+
+    private final SplitGraphs splitGraphs;
+    private final ArrayList<String> genomes;
+    public OriginalGraph subGraph;
+
+    public SplitGraphsThread(SplitGraphs splitGraphs, ArrayList<String> genomes) {
+      this.splitGraphs = splitGraphs;
+      this.genomes = genomes;
+    }
+
+    @Override
+    public void run() {
+      subGraph = splitGraphs.getSubgraph(genomes);
+    }
   }
 }
