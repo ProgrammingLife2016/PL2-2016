@@ -2,20 +2,25 @@ package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.CompareGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Observable;
 
 /**
@@ -50,6 +55,7 @@ public class RootLayoutController {
   private HeatmapManager heatmapManager;
   private SelectionManager selectionManager;
   private boolean zoomOutButtonDisabled = true;
+  private OriginalGraph graph;
 
   /**
    * Initializes the controller class.
@@ -61,17 +67,28 @@ public class RootLayoutController {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
+    graph = new FullGfaReader("TB10.gfa", 8728).getGraph();
+  }
+
+  /**
+   * Draw two subgraphs.
+   *
+   * @param topGenomes    the genomes of the top graph.
+   * @param bottomGenomes the genomes of the bottom graph.
+   */
+  public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+    SplitGraphs splitGraphs = new SplitGraphs(graph);
+    OriginalGraph topGraph = splitGraphs.getSubgraph(topGenomes);
+    OriginalGraph bottomGraph = splitGraphs.getSubgraph(bottomGenomes);
     CompareGraphs compareGraphs = new CompareGraphs(graphPane);
-    compareGraphs.drawGraphs(new FullGfaReader("SMALL.gfa", 5).getGraph(),
-        new FullGfaReader("SMALL.gfa", 5).getGraph());
+    compareGraphs.drawGraphs(topGraph, bottomGraph);
   }
 
   /**
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager
-        = new SelectionManager(selectionDescriptionPane, mainPane);
+    selectionManager = new SelectionManager(selectionDescriptionPane, mainPane);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
@@ -104,8 +121,12 @@ public class RootLayoutController {
       if (mainPane.getItems().contains(graphPane)) {
         return;
       }
+      ScrollPane scrollpane = new ScrollPane();
+      graphPane.prefHeightProperty().bind(mainPane.heightProperty().add(-30));
+      scrollpane.setContent(graphPane);
+      scrollpane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
       mainPane.getItems().clear();
-      mainPane.getItems().add(graphPane);
+      mainPane.getItems().add(scrollpane);
       zoomOutButtonDisabled = zoomOutButton.isDisabled();
       zoomOutButton.setDisable(true);
       mainPane.fireEvent(new GraphicsChangedEvent());
@@ -124,5 +145,14 @@ public class RootLayoutController {
     treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(treeManager.getCurrentLeaves());
     });
+  }
+
+  /**
+   * Dirty hack.
+   *
+   * @return .
+   */
+  public static RootLayoutController getController() {
+    return controller;
   }
 }

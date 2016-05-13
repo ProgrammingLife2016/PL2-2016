@@ -40,9 +40,7 @@ public class CompareGraphs {
     topPane = new Pane();
     bottomPane = new Pane();
     pane.getChildren().addAll(topPane, bottomPane);
-    topPane.prefWidthProperty().bind(pane.widthProperty());
     topPane.prefHeightProperty().bind(pane.heightProperty().divide(2.0));
-    bottomPane.prefWidthProperty().bind(pane.widthProperty());
     bottomPane.prefHeightProperty().bind(pane.heightProperty().divide(2.0));
     bottomPane.layoutYProperty().bind(pane.heightProperty().divide(2.0));
   }
@@ -56,8 +54,7 @@ public class CompareGraphs {
   public void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph) {
     topPane.getChildren().clear();
     bottomPane.getChildren().clear();
-    HashMap<Integer, AbstractNode> overlappedNodes = getOverlappedNodes(topGraph,
-        bottomGraph);
+    HashMap<Integer, AbstractNode> overlappedNodes = getOverlappedNodes(topGraph, bottomGraph);
     ArrayList<GraphNodeOrder> topOrder = calculateGraphOrder(topGraph);
     ArrayList<GraphNodeOrder> bottomOrder = calculateGraphOrder(bottomGraph);
     alignOverlappingNodes(topOrder, bottomOrder, overlappedNodes);
@@ -193,6 +190,7 @@ public class CompareGraphs {
     label.setMouseTransparent(true);
     label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3));
     label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2));
+    label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
   }
 
@@ -238,23 +236,25 @@ public class CompareGraphs {
    *                                   order list.
    * @param topNodeId                  the node which the found node should match to.
    * @return a pair containing the new bottom order and a pair containing the new starting index of
-   *         the current bottem level in the bottom order list and the new bottom level.
+   *         the previous bottem level in the bottom order list and the new bottom level.
    */
   private Pair<GraphNodeOrder, Pair<Integer, Integer>> findMatchInBottomGraph(
       ArrayList<GraphNodeOrder> bottomOrder, int curBottomLevel, int startIndexOfCurBottomLevel,
       int topNodeId) {
     GraphNodeOrder bottomNode = null;
-    for (int j = startIndexOfCurBottomLevel; j < bottomOrder.size(); j++) {
-      bottomNode = bottomOrder.get(j);
+    int startIndexOfPrevBottomLevel = 0;
+    for (int i = startIndexOfCurBottomLevel; i < bottomOrder.size(); i++) {
+      bottomNode = bottomOrder.get(i);
       if (bottomNode.getLevel() > curBottomLevel) {
         curBottomLevel = bottomNode.getLevel();
-        startIndexOfCurBottomLevel = j;
+        startIndexOfPrevBottomLevel = startIndexOfCurBottomLevel;
+        startIndexOfCurBottomLevel = i;
       }
       if (bottomNode.getNode().getId() == topNodeId) {
         break;
       }
     }
-    return new Pair(bottomNode, new Pair(startIndexOfCurBottomLevel, curBottomLevel));
+    return new Pair(bottomNode, new Pair(startIndexOfPrevBottomLevel, curBottomLevel));
   }
 
   /**
@@ -301,27 +301,40 @@ public class CompareGraphs {
   private ArrayList<GraphNodeOrder> calculateGraphOrder(OriginalGraph graph) {
     ArrayList<GraphNodeOrder> nodeOrder = new ArrayList<>();
     HashMap<Integer, Integer> reachedCount = new HashMap<>();
-    AbstractNode root = graph.getRoot();
-    nodeOrder.add(new GraphNodeOrder(root, 0));
-
     Set<Integer> currentLevel = new HashSet<>();
-    currentLevel.addAll(root.getOutlinks());
+    currentLevel.add(graph.getRoot().getId());
 
-    for (int level = 1; !currentLevel.isEmpty(); level++) {
+    for (int level = 0; !currentLevel.isEmpty(); level++) {
       Set<Integer> nextLevel = new HashSet<>();
+      ArrayList<ArrayList<Integer>> addedOutLinks = new ArrayList<>();
       for (Integer nodeId : currentLevel) {
         AbstractNode node = graph.getNode(nodeId);
-        int newCount = reachedCount.getOrDefault(nodeId, 0) + 1;
-        if (node.getInlinks().size() >= newCount) {
+        int count = reachedCount.getOrDefault(nodeId, 0);
+        if (node.getInlinks().size() == count) {
           nodeOrder.add(new GraphNodeOrder(node, level));
           nextLevel.addAll(node.getOutlinks());
-        } else {
-          reachedCount.put(nodeId, newCount);
+          addedOutLinks.add(node.getOutlinks());
         }
       }
+      updateReachedCount(reachedCount, addedOutLinks);
       currentLevel = nextLevel;
     }
     return nodeOrder;
+  }
+
+  /**
+   * Update the reached count according to the outlinks which have been iterated over.
+   *
+   * @param reachedCount  the reached count map.
+   * @param addedOutLinks the outlinks which have been iterated over.
+   */
+  private void updateReachedCount(HashMap<Integer, Integer> reachedCount,
+      ArrayList<ArrayList<Integer>> addedOutLinks) {
+    for (ArrayList<Integer> outlinks : addedOutLinks) {
+      for (Integer outlink : outlinks) {
+        reachedCount.put(outlink, reachedCount.getOrDefault(outlink, 0) + 1);
+      }
+    }
   }
 
   /**

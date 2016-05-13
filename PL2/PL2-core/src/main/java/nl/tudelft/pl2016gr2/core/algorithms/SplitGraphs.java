@@ -31,8 +31,7 @@ public class SplitGraphs {
   /**
    * Instantiates an algorithmic class on a <code>OriginalGraph</code>.
    * <p>
-   * When {@link #getSubgraph(Collection)} is called, the class will construct a new instance of
-   * the
+   * When {@link #getSubgraph(Collection)} is called, the class will construct a new instance of the
    * graph containing only the specified genomes.
    * </p>
    *
@@ -42,15 +41,14 @@ public class SplitGraphs {
     this.mainGraph = mainGraph;
   }
 
-
   /**
    * Builds a subgraph of the {@link #mainGraph} containing only the nodes that contain (at least)
    * one of the specified genomes.
    *
    * @param genomes The genomes that should be included in the resulting graph
    * @return An <code>OriginalGraph</code> that is a subgraph of <code>mainGraph</code>
-   * @throws NoSuchElementException Iff the genome collection is not a
-   *                                subset of the main graph's genomes.
+   * @throws NoSuchElementException Iff the genome collection is not a subset of the main graph's
+   *                                genomes.
    */
   public OriginalGraph getSubgraph(Collection<String> genomes) {
     if (!mainGraph.getGenoms().containsAll(genomes)) {
@@ -85,13 +83,12 @@ public class SplitGraphs {
     return subGraph;
   }
 
-
   /**
    * Removes all redundant links from the nodes in the graph.
    * <p>
-   * Redundant links are links that point to a {@link Node} that is not part of the subgraph.
-   * The method will return a new {@link OriginalGraph} object with new <code>Node</code>s.
-   * The Nodes will contain identical fields, except for the {@link Node#inLinks} and {@link
+   * Redundant links are links that point to a {@link Node} that is not part of the subgraph. The
+   * method will return a new {@link OriginalGraph} object with new <code>Node</code>s. The Nodes
+   * will contain identical fields, except for the {@link Node#inLinks} and {@link
    * Node#outLinks}.
    * </p>
    * <p>
@@ -113,8 +110,7 @@ public class SplitGraphs {
       // TODO: Remove non-existent genomes from Node.genomes
       Node mirrorNode = new Node(node.getId(), node.getSequenceLength(), node.getGenomes(),
           node.getSnips());
-      // Add the correct in/out links
-      node.getInlinks().forEach((inLink) -> {
+      node.getInlinks().forEach((inLink) -> { // Add the correct in/out links
         if (nodeMap.containsKey(inLink)) {
           mirrorNode.addInlink(inLink);
         }
@@ -124,6 +120,7 @@ public class SplitGraphs {
           mirrorNode.addOutlink(outLink);
         }
       });
+      pruned.addNode(mirrorNode);
     }
     return pruned;
   }

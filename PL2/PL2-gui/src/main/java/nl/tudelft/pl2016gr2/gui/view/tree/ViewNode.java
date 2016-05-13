@@ -16,6 +16,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
+import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.test.utility.TestId;
 
 import java.util.ArrayList;
@@ -301,28 +302,9 @@ public class ViewNode extends Circle implements ISelectable {
 
   @Override
   public ISelectionInfo getSelectionInfo() {
-    return new TextDescription(this + "\n"
-        + "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quia nec honesto quic quam "
-        + "honestius nec turpi turpius. Serpere anguiculos, nare anaticulas, evolare merulas, "
-        + "cornibus uti videmus boves, nepas aculeis. Duo Reges: constructio interrete. Haec bene "
-        + "dicuntur, nec ego repugno, sed inter sese ipsa pugnant. Itaque in rebus minime obscuris "
-        + "non multus est apud eos disserendi labor. Quod cum accidisset ut alter alterum.\n"
-        + "\n"
-        + "Sed vos squalidius, illorum vides quam niteat oratio. Et harum quidem rerum facilis "
-        + "est et expedita distinctio. Sine ea igitur iucunde negat posse se vivere? Varietates "
-        + "autem iniurasque fortunae facile veteres philosophorum praeceptis instituta vita "
-        + "superabat. Eorum enim est haec querela, qui sibi cari sunt seseque diligunt. Ut non "
-        + "sine causa ex iis memoriae ducta sit disciplina.\n"
-        + "\n"
-        + "Neque enim disputari sine reprehensione nec cum iracundia aut pertinacia recte "
-        + "disputari potest. Habent enim et bene longam et satis litigiosam disputationem. Qua "
-        + "quae nolo, oblivisci non possum quae volo. Quid enim mihi potest esse optatius quam cum "
-        + "Catone, omnium virtutum auctore, de virtutibus disputare? Si longus, levis;\n"
-        + "\n"
-        + "At multis se probavit. Tibi hoc incredibile, quod beatissimum. Num igitur utiliorem "
-        + "tibi hunc Triarium putas esse posse, quam si tua sint Puteolis granaria? Immo alio "
-        + "genere; Tollitur beneficium, tollitur gratia, quae sunt vincla concordiae. An me, "
-        + "inquam, nisi te audire vellem, censes haec dicturum fuisse? Item de contrariis, a "
-        + "quibus ad genera formasque generum venerunt. De illis, cum volemus.");
+    if (dataNode.getChildCount() != 0) {
+      return new TreeNodeDescription(dataNode);
+    }
+    return new TextDescription("this is a root node");
   }
 }

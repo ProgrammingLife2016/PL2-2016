@@ -32,7 +32,7 @@
             </SplitPane>
             <HBox alignment="BASELINE_LEFT" layoutX="137.0" layoutY="93.0" maxHeight="-Infinity" minHeight="-Infinity" pickOnBounds="false" prefHeight="80.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="10.0">
                <children>
-                  <StackPane fx:id="locationIdentifierPane" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="120.0">
+                  <StackPane fx:id="locationIdentifierPane" alignment="BOTTOM_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="120.0" visible="false">
                      <children>
                         <ImageView fitHeight="80.0" fitWidth="120.0" pickOnBounds="true" StackPane.alignment="TOP_LEFT">
                            <image>

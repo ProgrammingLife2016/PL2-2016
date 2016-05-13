@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import java.util.ArrayList;
+
 /**
  * This is an interface which contains all of the methods which must be implemented by a container
  * class of a phylogenetic tree.
@@ -52,4 +54,11 @@ public interface IPhylogeneticTreeNode {
    * @return the index of the child ndoe.
    */
   int getChildIndex(IPhylogeneticTreeNode child);
+
+  /**
+   * Get all of the genomes whic are present in this branch of the tree.
+   *
+   * @return all of the genomes whic are present in this branch of the tree.
+   */
+  ArrayList<String> getGenomes();
 }
