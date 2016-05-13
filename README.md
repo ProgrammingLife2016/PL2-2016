@@ -8,8 +8,19 @@ DNA is complex and mutations therein are varied and mostly unpredictable. Becaus
 
 DNAv gives these researchers interactive, semantic and clearly visualized tools in their toolbox to help them with the detection and root cause analysis of these mutations.
 
+### Documentation
+Documentation is currently stored under the `documentation` folder.
+
+#### Testing documentation
+Documentation regarding testing can be found at `documentation/testing.md`.
+
 ### Building and running
-This project uses maven. To create a single runnable jar use `mvn compile assembly:single` inside the `PL2` directory. The executable jar will then be ` PL2-launcher/target/PL2-launcher-1.0-SNAPSHOT-jar-with-dependencies.jar`.
+When the project is first cloned, you must run `mvn install` before any other lifecycle goals.
+#### Site generation
+To generate the site, run `mvn site:site site:stage`.
+
+#### Packaging
+To create a single runnable jar use `mvn compile assembly:single` inside the `PL2` directory. The executable jar will then be located at `PL2-launcher/target/PL2-launcher-<VERSION>-jar-with-dependencies.jar`.
 
 This jar can be than executed by double-clicking.
 
