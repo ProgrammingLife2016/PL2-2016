@@ -6,8 +6,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import javafx.scene.layout.Pane;
+
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
-import nl.tudelft.pl2016gr2.test.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 

@@ -2,9 +2,9 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 
-public abstract class AbstractNode {
+public class AbstractNode {
 
-  private final int id;
+  private final int identifier;
   private ArrayList<Integer> inLinks;
   private ArrayList<Integer> outLinks;
   private int sequenceLength;
@@ -12,11 +12,11 @@ public abstract class AbstractNode {
   /**
    * Construct an abstract node.
    *
-   * @param id             the id of the node.
+   * @param iden             the id of the node.
    * @param sequenceLength the sequence length of the node.
    */
-  public AbstractNode(int id, int sequenceLength) {
-    this.id = id;
+  public AbstractNode(int iden, int sequenceLength) {
+    this.identifier = iden;
     this.sequenceLength = sequenceLength;
     this.inLinks = new ArrayList<>();
     this.outLinks = new ArrayList<>();
@@ -24,8 +24,8 @@ public abstract class AbstractNode {
 
   @Override
   public String toString() {
-    return "id: " + id + " sequencelength: " + sequenceLength + " inlinks: " + getInlinks()
-        + " outlinks: " + getOutlinks();
+    return "id: " + identifier + " sequencelength: " + sequenceLength + " inlinks: " + inLinks
+        + " outlinks: " + outLinks;
   }
 
   public void replaceInlink(int oldLink, int newLink) {
@@ -66,7 +66,7 @@ public abstract class AbstractNode {
   }
 
   public int getId() {
-    return id;
+    return identifier;
   }
 
 }

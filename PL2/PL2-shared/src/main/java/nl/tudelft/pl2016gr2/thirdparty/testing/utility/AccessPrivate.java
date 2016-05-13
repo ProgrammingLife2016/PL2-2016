@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.test.utility;
+package nl.tudelft.pl2016gr2.thirdparty.testing.utility;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -9,12 +9,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Access a private method or field which is annotated with the {@link TestId} annotation.
- * Uniqueness of a requested test ID will always be checked whenever a method or field is accessed.
- * It is possible to access non-private (for example protected) fields/methods too, although this
- * isn't the intended purpose of this class. <br>
- * If the requested ID is not present in the specified class, or if the ID is not unique then a
- * {@link TestAnnotationException} is thrown.
+ * Access a private method or field which is annotated with the {@link TestId}
+ * annotation. Uniqueness of a requested test ID will always be checked whenever
+ * a method or field is accessed. It is possible to access non-private (for
+ * example protected) fields/methods too, although this isn't the intended
+ * purpose of this class. <br>
+ * If the requested ID is not present in the specified class, or if the ID is
+ * not unique then a {@link TestAnnotationException} is thrown.
  *
  * @author Faris
  */
@@ -29,14 +30,18 @@ public final class AccessPrivate {
   /**
    * Call the method with the specified id of the specified object.
    *
-   * @param id     the annotated id of the method.
-   * @param cl     the class of the method.
-   * @param obj    the object the method is called on. Can be null if the method is static.
-   * @param params the parameters of the method.
+   * @param id
+   *          the annotated id of the method.
+   * @param cl
+   *          the class of the method.
+   * @param obj
+   *          the object the method is called on. Can be null if the method is
+   *          static.
+   * @param params
+   *          the parameters of the method.
    * @return the returned value of the method.
    */
-  public static Object callMethod(String id, Class cl, Object obj,
-      Object... params) {
+  public static Object callMethod(String id, Class cl, Object obj, Object... params) {
     Method method = getMethod(cl, id);
     try {
       method.setAccessible(true);
@@ -46,15 +51,17 @@ public final class AccessPrivate {
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
       Logger.getLogger(AccessPrivate.class.getName()).log(Level.SEVERE, null, ex);
     }
-    throw new TestAnnotationException("An error occured while accessing the"
+    throw new TestAnnotationException("An error occured while accessing the" 
         + " method with test id: " + id + ".");
   }
 
   /**
    * Get the method with the specified id and assure the id is unique.
    *
-   * @param cl the class of the method.
-   * @param id the id of the method.
+   * @param cl
+   *          the class of the method.
+   * @param id
+   *          the id of the method.
    * @return the method with the specified id.
    */
   private static Method getMethod(Class cl, String id) {
@@ -76,9 +83,13 @@ public final class AccessPrivate {
   /**
    * Get the value of the specified field of the specified object.
    *
-   * @param id  the annotated id of the field.
-   * @param cl  the class of the field.
-   * @param obj the object which contains the field. Can be null if the field is static.
+   * @param id
+   *          the annotated id of the field.
+   * @param cl
+   *          the class of the field.
+   * @param obj
+   *          the object which contains the field. Can be null if the field is
+   *          static.
    * @return the returned value of the field.
    */
   public static Object getFieldValue(String id, Class cl, Object obj) {
@@ -89,8 +100,7 @@ public final class AccessPrivate {
       field.setAccessible(false);
       return res;
     } catch (IllegalArgumentException | IllegalAccessException ex) {
-      Logger.getLogger(AccessPrivate.class.getName()).log(Level.SEVERE,
-          null, ex);
+      Logger.getLogger(AccessPrivate.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
   }
@@ -98,17 +108,21 @@ public final class AccessPrivate {
   /**
    * Set the value of the specified field of the specified object.
    *
-   * @param id    the annotated id of the field.
-   * @param cl    the class of the field.
-   * @param obj   the object which contains the field. Can be null if the field is static.
-   * @param value the new value of the field.
+   * @param id
+   *          the annotated id of the field.
+   * @param cl
+   *          the class of the field.
+   * @param obj
+   *          the object which contains the field. Can be null if the field is
+   *          static.
+   * @param value
+   *          the new value of the field.
    */
-  public static void setFieldValue(String id, Class cl, Object obj,
-      Object value) {
+  public static void setFieldValue(String id, Class cl, Object obj, Object value) {
     try {
       Field field = AccessPrivate.getField(cl, id);
       if (Modifier.isFinal(field.getModifiers())) {
-        throw new TestAnnotationException("Trying to set the value of "
+        throw new TestAnnotationException("Trying to set the value of " 
             + "the final field with id: " + id + ".");
       }
       field.setAccessible(true);
@@ -120,10 +134,13 @@ public final class AccessPrivate {
   }
 
   /**
-   * Get the field of the specified object. Also assure that the found field is unique.
+   * Get the field of the specified object. Also assure that the found field is
+   * unique.
    *
-   * @param cl the class of the field.
-   * @param id the annotated id of the field.
+   * @param cl
+   *          the class of the field.
+   * @param id
+   *          the annotated id of the field.
    * @return the returned value of the field.
    */
   private static Field getField(Class cl, String id) {
@@ -143,34 +160,36 @@ public final class AccessPrivate {
   }
 
   /**
-   * Create an exception according to the amount of times an id was found (either the id was not
-   * found, or the id was found too many times).
+   * Create an exception according to the amount of times an id was found
+   * (either the id was not found, or the id was found too many times).
    *
-   * @param id    the id.
-   * @param found the amount of times the id was found.
+   * @param id
+   *          the id.
+   * @param found
+   *          the amount of times the id was found.
    * @return an appropriate exception.
    */
-  private static TestAnnotationException createUniquenessException(Class cl,
-      String id,
-      int found) {
+  private static TestAnnotationException createUniquenessException(Class cl, String id, int found) {
     assert found != 1;
-    switch (found) {
-      case 0:
-        return new TestAnnotationException("The requested id: " + id
-            + " was not found inclass: " + cl.toString() + ".");
-      default:
-        return new TestAnnotationException("The requested id: " + id
-            + " is not unique. It was found " + found
-            + " times in class: " + cl.toString() + ".");
+    if (found == 0) {
+      return new TestAnnotationException("The requested id: " + id + " was not found inclass: " 
+        + cl.toString() + ".");
+    } else {
+      return new TestAnnotationException("The requested id: " + id + " is not unique. It was found "
+          + found + " times in class: " + cl.toString() + ".");
     }
   }
 
   /**
-   * Check if the list of annotations contains a TestId annotation with the right id.
+   * Check if the list of annotations contains a TestId annotation with the
+   * right id.
    *
-   * @param annotations the annotations.
-   * @param id          the id of the test annotation.
-   * @return if the list of annotations contains a TestId annotation with the right id.
+   * @param annotations
+   *          the annotations.
+   * @param id
+   *          the id of the test annotation.
+   * @return if the list of annotations contains a TestId annotation with the
+   *         right id.
    */
   private static boolean checkAnnotated(Annotation[] annotations, String id) {
     for (Annotation annotation : annotations) {

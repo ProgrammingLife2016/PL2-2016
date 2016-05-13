@@ -17,11 +17,11 @@ public class Bubble extends AbstractNode {
   /**
    * Construct a bubble.
    *
-   * @param id             the ID of the bubble.
+   * @param identifier the ID of the bubble.
    * @param sequenceLength the sequence length.
    */
-  public Bubble(int id, int sequenceLength) {
-    super(id, sequenceLength);
+  public Bubble(int identifier, int sequenceLength) {
+    super(identifier, sequenceLength);
     nestedBubbles = new ArrayList<>();
   }
 

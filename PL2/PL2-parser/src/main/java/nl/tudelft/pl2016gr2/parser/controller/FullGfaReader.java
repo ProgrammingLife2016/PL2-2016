@@ -50,7 +50,7 @@ public class FullGfaReader {
       graph.addNode(new Node(i, 1, new ArrayList<>(), 0));
     }
   }
-
+  
   /**
    * Read the actual data.
    */
@@ -77,44 +77,79 @@ public class FullGfaReader {
     System.out.println("Number of lines read: " + count);
   }
 
+  /**
+   * Private method for handling an "H" as first character on the line of a gfa file.
+   * @param sc The scanner which is used to parse the file.
+   */
   private void handleH(Scanner sc) {
     String line = sc.nextLine();
-    this.genoms = extractGenoms(line);
+    this.genoms = extractGenomes(line);
 
   }
 
-  private ArrayList<String> extractGenoms(String line) {
-    String[] words = line.split(":");
-    if (words[0].endsWith("ORI")) {
-      String[] gens = words[2].split(";");
-      ArrayList<String> gensAr = new ArrayList<>();
-      gensAr.addAll(Arrays.asList(gens));
-      return gensAr;
-    }
-    return null;
-  }
-
+  /**
+   * Private method for handling an "S" as first character on the line of a gfa file.
+   * @param sc The scanner which is used to parse the file.
+   */
   private void handleS(Scanner sc) {
     int nodeId = sc.nextInt();
     String bases = sc.next();
     String line = sc.nextLine();
     String[] words = line.split("\\s+");
-    ArrayList<String> nodeGens = extractGenoms(words[2]);
-    Node no = originalGraph.getNode(nodeId);
-    no.setGenomes(nodeGens);
-    no.setBases(bases);
-    no.setSequenceLength(bases.length());
+    ArrayList<String> nodeGens = extractGenomes(words[2]);
+    int orientation = extractStart(words[6]);
+    //words[3] = CRD:Z:XXXX
+    //words[4] = CRDCTG:Z:XXXX
+    //words[5] = CTG:Z:XXXX;XXXX;...
+    //words[6] = START:Z:INT
+    Node node = originalGraph.getNode(nodeId);
+    node.setGenomes(nodeGens);
+    node.setBases(bases);
+    node.setSequenceLength(bases.length());
+    node.setAlignment(orientation);
   }
 
+  /**
+   * Private method for handling an "L" as first character on the line of a gfa file.
+   * @param sc The scanner which is used to parse the file.
+   */
   private void handleL(Scanner sc) {
-    int parent = sc.nextInt();
+    int parentId = sc.nextInt();
     sc.next();
-    int child = sc.nextInt();
-    Node par = originalGraph.getNode(parent);
-    Node ch = originalGraph.getNode(child);
-    par.addOutlink(ch.getId());
-    ch.addInlink(par.getId());
+    int childId = sc.nextInt();
+    Node parent = originalGraph.getNode(parentId);
+    Node child = originalGraph.getNode(childId);
+    parent.addOutlink(child.getId());
+    child.addInlink(parent.getId());
     sc.nextLine();
+  }
+  
+  /**
+   * This method extracts the single genomes from the ORI tag.
+   * @param line the full ORI tag
+   * @return an arrayList of the names of the genomes.
+   */
+  private ArrayList<String> extractGenomes(String line) {
+    String[] words = line.split(":");
+    if (words[0].endsWith("ORI")) {
+      String[] gens = words[2].split(";");
+      ArrayList<String> gensAr = new ArrayList<>(Arrays.asList(gens));
+      return gensAr;
+    }
+    return null;
+  }
+  
+  /**
+   * This method extracts the alignment integer from the START tag.
+   * @param line the full START tag
+   * @return the alignment integer of the tag
+   */
+  private int extractStart(String line) {
+    String[] words = line.split(":");
+    if (words[0].endsWith("START")) {
+      return Integer.parseInt(words[2]);
+    }
+    return 0;
   }
 
   /**
