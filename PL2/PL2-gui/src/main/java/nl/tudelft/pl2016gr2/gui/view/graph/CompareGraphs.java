@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -54,10 +55,12 @@ public class CompareGraphs {
   public void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph) {
     topPane.getChildren().clear();
     bottomPane.getChildren().clear();
+    long start = System.nanoTime();
     HashMap<Integer, AbstractNode> overlappedNodes = getOverlappedNodes(topGraph, bottomGraph);
     ArrayList<GraphNodeOrder> topOrder = calculateGraphOrder(topGraph);
     ArrayList<GraphNodeOrder> bottomOrder = calculateGraphOrder(bottomGraph);
     alignOverlappingNodes(topOrder, bottomOrder, overlappedNodes);
+    System.out.println("align nodes = " + (System.nanoTime() - start));
     drawGraph(topPane, topOrder, overlappedNodes);
     drawGraph(bottomPane, bottomOrder, overlappedNodes);
   }
@@ -106,6 +109,9 @@ public class CompareGraphs {
       AbstractNode node = nodes.get(i);
       double relativeHeight = (i + 0.5) / nodes.size();
       NodeCircle circle = new NodeCircle(NODE_RADIUS, relativeHeight);
+      circle.setOnMouseClicked((MouseEvent event) -> {
+        circle.setVisible(false);
+      });
       pane.getChildren().add(circle);
       circleMap.put(node.getId(), circle);
       if (overlappedNodes.containsKey(node.getId())) {
@@ -188,8 +194,8 @@ public class CompareGraphs {
   private static void addLabel(Pane pane, Circle circle, int id) {
     Label label = new Label(Integer.toString(id));
     label.setMouseTransparent(true);
-    label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3));
-    label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2));
+    label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3.0));
+    label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
   }
@@ -207,7 +213,7 @@ public class CompareGraphs {
     int curTopLevel = 0;
     int startIndexOfCurTopLevel = 0;
     int curBottomLevel = 0;
-    int startIndexOfCurBottomLevel = 0;
+    int startIndexOfPrevBottomLevel = 0;
     for (int i = 0; i < topOrder.size(); i++) {
       GraphNodeOrder topNode = topOrder.get(i);
       int topNodeId = topNode.getNode().getId();
@@ -217,12 +223,12 @@ public class CompareGraphs {
       }
       if (overlappedNodes.containsKey(topNodeId)) {
         Pair<GraphNodeOrder, Pair<Integer, Integer>> match = findMatchInBottomGraph(bottomOrder,
-            curBottomLevel, startIndexOfCurBottomLevel, topNodeId);
+            curBottomLevel, startIndexOfPrevBottomLevel, topNodeId);
         GraphNodeOrder bottomNode = match.left;
-        startIndexOfCurBottomLevel = match.right.left;
+        startIndexOfPrevBottomLevel = match.right.left;
         curBottomLevel = match.right.right;
         alignOverlappingNode(topOrder, bottomOrder, curTopLevel, startIndexOfCurTopLevel,
-            curBottomLevel, startIndexOfCurBottomLevel, topNode, bottomNode);
+            curBottomLevel, startIndexOfPrevBottomLevel, topNode, bottomNode);
       }
     }
   }
@@ -261,19 +267,24 @@ public class CompareGraphs {
    * Move the nodes which don't align correctly to the found overlapping nodes, so they are
    * correctly aligned.
    *
-   * @param topOrder                   the order of the nodes of the top graph.
-   * @param bottomOrder                the order of the nodes of the top graph.
-   * @param curTopLevel                the current level in the graph of the top graph.
-   * @param startIndexOfCurTopLevel    the starting index of the current level of the top graph.
-   * @param curBottomLevel             the current leve in the graph of the bottom graph.
-   * @param startIndexOfCurBottomLevel the starting index of the current level of the bottom graph.
-   * @param topNode                    the overlapping node of the top graph.
-   * @param bottomNode                 the overlapping node of the bottom graph.
+   * @param topOrder                    the order of the nodes of the top graph.
+   * @param bottomOrder                 the order of the nodes of the top graph.
+   * @param curTopLevel                 the current level in the graph of the top graph.
+   * @param startIndexOfCurTopLevel     the starting index of the current level of the top graph.
+   * @param curBottomLevel              the current leve in the graph of the bottom graph.
+   * @param startIndexOfPrevBottomLevel the starting index of the previous level of the bottom
+   *                                    graph.
+   * @param topNode                     the overlapping node of the top graph.
+   * @param bottomNode                  the overlapping node of the bottom graph.
    */
   private void alignOverlappingNode(ArrayList<GraphNodeOrder> topOrder,
       ArrayList<GraphNodeOrder> bottomOrder, int curTopLevel, int startIndexOfCurTopLevel,
-      int curBottomLevel, int startIndexOfCurBottomLevel, GraphNodeOrder topNode,
+      int curBottomLevel, int startIndexOfPrevBottomLevel, GraphNodeOrder topNode,
       GraphNodeOrder bottomNode) {
+    int startIndexOfCurBottomLevel = startIndexOfPrevBottomLevel;
+    while (bottomOrder.get(startIndexOfCurBottomLevel).getLevel() < curBottomLevel) {
+      ++startIndexOfCurBottomLevel;
+    }
     if (curTopLevel > curBottomLevel) {
       int offset = curTopLevel - curBottomLevel;
       for (int j = startIndexOfCurBottomLevel; j < bottomOrder.size(); j++) {

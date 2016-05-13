@@ -20,7 +20,6 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Observable;
 
 /**
@@ -78,8 +77,10 @@ public class RootLayoutController {
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
     SplitGraphs splitGraphs = new SplitGraphs(graph);
+    long start = System.nanoTime();
     OriginalGraph topGraph = splitGraphs.getSubgraph(topGenomes);
     OriginalGraph bottomGraph = splitGraphs.getSubgraph(bottomGenomes);
+    System.out.println("split graphs = " + (System.nanoTime() - start));
     CompareGraphs compareGraphs = new CompareGraphs(graphPane);
     compareGraphs.drawGraphs(topGraph, bottomGraph);
   }
