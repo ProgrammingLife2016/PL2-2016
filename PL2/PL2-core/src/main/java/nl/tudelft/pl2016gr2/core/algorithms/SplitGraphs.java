@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,7 +58,7 @@ public class SplitGraphs {
       throw new NoSuchElementException("All genomes must present in the main graph.");
     }
     OriginalGraph subGraph = buildSubgraph(genomes);
-    return prune(subGraph);
+    return prune(subGraph, genomes);
   }
 
   /**
@@ -91,8 +92,8 @@ public class SplitGraphs {
    * <p>
    * Redundant links are links that point to a {@link Node} that is not part of the subgraph.
    * The method will return a new {@link OriginalGraph} object with new <code>Node</code>s.
-   * The Nodes will contain identical fields, except for the {@link Node#inLinks} and {@link
-   * Node#outLinks}.
+   * The Nodes will contain identical fields, except for the {@link Node#genomes}, {@link
+   * Node#inLinks} and {@link Node#outLinks}.
    * </p>
    * <p>
    * While this method is intended solely for subgraphs, it will provide the same behaviour when
@@ -102,18 +103,16 @@ public class SplitGraphs {
    * @param graph The graph to prune.
    * @return A new <code>OriginalGraph</code> with only the relevant links.
    */
-  private OriginalGraph prune(OriginalGraph graph) {
-    // TODO: Should be refactored to be accessible from the GraphInterface
+  private OriginalGraph prune(OriginalGraph graph, Collection<String> genomes) {
     HashMap<Integer, Node> nodeMap = graph.getNodes();
     // Create new mirror graph
     OriginalGraph pruned = new OriginalGraph();
 
     for (Node node : nodeMap.values()) {
       // Create mirror of original Node.
-      // TODO: Remove non-existent genomes from Node.genomes
-      Node mirrorNode = new Node(node.getId(), node.getSequenceLength(), node.getGenomes(),
-          node.getSnips());
-      // Add the correct in/out links
+      Node mirrorNode = new Node(node.getId(), node.getSequenceLength(),
+          pruneGenomes(node, genomes), node.getSnips());
+
       node.getInlinks().forEach((inLink) -> {
         if (nodeMap.containsKey(inLink)) {
           mirrorNode.addInlink(inLink);
@@ -124,7 +123,27 @@ public class SplitGraphs {
           mirrorNode.addOutlink(outLink);
         }
       });
+      pruned.addNode(mirrorNode);
     }
+
     return pruned;
+  }
+
+  /**
+   * Builds a subset of gGenomes that is the intersection of the genomes in the graph and the node.
+   * The intersection is formally described as <code>node.getGenomes &#8745 graphGenomes</code>
+   *
+   * @param node         The node to build the subset for
+   * @param graphGenomes The set of genomes in the graph
+   * @return The intersection of the node and graph genomes
+   */
+  private ArrayList<String> pruneGenomes(Node node, Collection<String> graphGenomes) {
+    ArrayList<String> prunedGenomes = new ArrayList<>();
+    node.getGenomes().forEach(genome -> {
+      if (graphGenomes.contains(genome)) {
+        prunedGenomes.add(genome);
+      }
+    });
+    return prunedGenomes;
   }
 }
