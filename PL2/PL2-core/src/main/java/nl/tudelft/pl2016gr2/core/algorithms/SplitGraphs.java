@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 public class SplitGraphs {
 
   @TestId(id = "graph_field")
-  private OriginalGraph mainGraph;
+  private final OriginalGraph mainGraph;
 
   /**
    * Instantiates an algorithmic class on a <code>OriginalGraph</code>.
@@ -57,7 +57,7 @@ public class SplitGraphs {
    */
   public OriginalGraph getSubgraph(Collection<String> genomes) {
     if (!mainGraph.getGenoms().containsAll(genomes)) {
-      throw new NoSuchElementException("All genomes must present in the main graph.");
+      throw new NoSuchElementException("All genomes must be present in the main graph.");
     }
     OriginalGraph subGraph = buildSubgraph(genomes);
     return prune(subGraph, genomes);

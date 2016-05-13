@@ -24,9 +24,9 @@ import java.util.Queue;
  */
 public class GenomeIterator implements Iterator<Node> {
 
-  private OriginalGraph graph;
-  private String genome;
-  private Node next;
+  private final OriginalGraph graph;
+  private final String genome;
+  private Node current;
 
   /**
    * Creates an iterator over the <code>graph</code> for <code>genome</code>.
@@ -41,7 +41,7 @@ public class GenomeIterator implements Iterator<Node> {
   public GenomeIterator(OriginalGraph graph, String genome) {
     this.genome = genome;
     this.graph = graph;
-    this.next = findFirstGenomeOccurrence();
+    this.current = findFirstGenomeOccurrence();
   }
 
   /**
@@ -55,10 +55,10 @@ public class GenomeIterator implements Iterator<Node> {
    */
   @Override
   public boolean hasNext() {
-    ArrayList<Node> children = graph.getTargets(next.getId());
+    ArrayList<Node> children = graph.getTargets(current.getId());
     for (Node child : children) {
       if (child.getGenomes().contains(genome)) {
-        next = child;
+        current = child;
         return true;
       }
     }
@@ -77,7 +77,7 @@ public class GenomeIterator implements Iterator<Node> {
    */
   @Override
   public Node next() {
-    return next;
+    return current;
   }
 
   /**
