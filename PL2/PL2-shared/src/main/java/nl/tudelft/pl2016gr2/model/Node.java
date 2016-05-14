@@ -15,6 +15,7 @@ public class Node extends Bubble {
   private ArrayList<String> genomes;
   private final int snips;
   private String bases = "";
+  private int alignment;
 
   /**
    * Construct a new node.
@@ -36,17 +37,17 @@ public class Node extends Bubble {
   public String toString() {
     return super.toString() + " snips: " + snips + ", id: " + getId() + ", flow: " + flow;
   }
-  
+
   @Override
   public boolean equals(Object object) {
     if (object instanceof Node) {
       Node node = (Node) object;
-      return node.getId() == this.getId() && node.getOutlinks().equals(this.getOutlinks()) 
+      return node.getId() == this.getId() && node.getOutlinks().equals(this.getOutlinks())
           && node.getInlinks().equals(this.getInlinks());
     }
     return false;
   }
-  
+
   @Override
   public int hashCode() {
     int hash = 3;
@@ -66,8 +67,14 @@ public class Node extends Bubble {
     return this.bases;
   }
 
-  public void setBases(String bs) {
-    this.bases = bs;
+  /**
+   * Set the bases.
+   *
+   * @param bases the bases.
+   */
+  public void setBases(String bases) {
+    setSequenceLength(bases.length());
+    this.bases = bases;
   }
 
   public int getSnips() {
@@ -84,6 +91,14 @@ public class Node extends Bubble {
 
   public void addFlow(double flow) {
     this.flow += flow;
+  }
+
+  public int getAlignment() {
+    return alignment;
+  }
+
+  public void setAlignment(int alignment) {
+    this.alignment = alignment;
   }
 
 }

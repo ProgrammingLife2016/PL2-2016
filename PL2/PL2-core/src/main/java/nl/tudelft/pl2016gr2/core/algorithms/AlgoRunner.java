@@ -26,7 +26,7 @@ public class AlgoRunner {
    */
   public static void main(String[] args) {
     long startTime = System.currentTimeMillis();
-    FullGfaReader reader = new FullGfaReader(FILENAME, GRAPH_SIZE);
+    FullGfaReader reader = new FullGfaReader(FILENAME);
     OriginalGraph graph = reader.getGraph();
     System.out.println("Size of the graph: " + graph.getSize());
     long endTime = System.currentTimeMillis();
@@ -37,4 +37,5 @@ public class AlgoRunner {
     long completeTime = System.currentTimeMillis();
     System.out.println("The algorithm took " + (completeTime - endTime) + " milliseconds to run");
   }
+  
 }

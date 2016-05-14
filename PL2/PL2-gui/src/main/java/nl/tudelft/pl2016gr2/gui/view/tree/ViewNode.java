@@ -17,7 +17,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
-import nl.tudelft.pl2016gr2.test.utility.TestId;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 

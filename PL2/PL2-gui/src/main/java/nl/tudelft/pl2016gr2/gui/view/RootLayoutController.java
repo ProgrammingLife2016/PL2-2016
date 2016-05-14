@@ -76,7 +76,7 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    graph = new FullGfaReader("TB10.gfa", 8728).getGraph();
+    graph = new FullGfaReader("TB10.gfa").getGraph();
   }
 
   /**

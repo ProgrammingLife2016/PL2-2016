@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.parser.controller;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -28,11 +29,23 @@ public class GfaReader {
     this.numNodes = graphsize;
     this.sc = new Scanner(GfaReader.class.getClassLoader().getResourceAsStream(filename));
     originalGraph = new OriginalGraph();
-    FullGfaReader.prepNodes(originalGraph, numNodes);
+    prepNodes(originalGraph, numNodes);
     read();
 
     sc.close();
     sc = null;
+  }
+
+  /**
+   * Initialize the nodes of a graph.
+   *
+   * @param graph the graph of which to initialize a set amount of node.
+   * @param nodes the amount of nodes to initialize.
+   */
+  private static void prepNodes(OriginalGraph graph, int nodes) {
+    for (int i = 1; i < nodes + 1; i++) {
+      graph.addNode(new Node(i, 1, new ArrayList<>(), 0));
+    }
   }
 
   /**

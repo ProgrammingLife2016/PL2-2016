@@ -2,6 +2,9 @@ package nl.tudelft.pl2016gr2.test.utility;
 
 import static org.junit.Assert.assertEquals;
 
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestAnnotationException;
+
 import org.junit.Test;
 
 /**

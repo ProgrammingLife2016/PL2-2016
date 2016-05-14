@@ -7,10 +7,11 @@ import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.test.utility.TestId;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Observer;
+
 
 /**
  * This class controlls the phylogenetic tree.
@@ -24,7 +25,7 @@ public class TreeManager {
   private final Pane graphPane;
   private final Button zoomOutButton;
   private ViewNode currentRoot;
-  boolean isZooming = false;
+  private boolean isZooming = false;
   private final ArrayList<Observer> childLeaveObservers = new ArrayList<>();
   private final SelectionManager selectionManager;
 
