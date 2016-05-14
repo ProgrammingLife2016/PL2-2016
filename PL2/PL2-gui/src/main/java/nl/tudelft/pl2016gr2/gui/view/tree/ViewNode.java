@@ -65,6 +65,9 @@ public class ViewNode extends Circle implements ISelectable {
     initializeClickedEvent();
   }
 
+  /**
+   * Initialize the click event for this object.
+   */
   private void initializeClickedEvent() {
     setOnMouseClicked((MouseEvent event) -> {
       selectionManager.select(this);
@@ -301,9 +304,9 @@ public class ViewNode extends Circle implements ISelectable {
   }
 
   @Override
-  public ISelectionInfo getSelectionInfo() {
+  public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
     if (dataNode.getChildCount() != 0) {
-      return new TreeNodeDescription(dataNode);
+      return new TreeNodeDescription(selectionManager, dataNode);
     }
     return new TextDescription("this is a root node");
   }

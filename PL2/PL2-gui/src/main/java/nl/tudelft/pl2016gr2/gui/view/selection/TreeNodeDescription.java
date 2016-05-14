@@ -5,7 +5,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 
 import java.util.ArrayList;
 
@@ -17,17 +16,19 @@ import java.util.ArrayList;
 public class TreeNodeDescription implements ISelectionInfo {
 
   private final IPhylogeneticTreeNode treeNode;
+  private final SelectionManager selectionManager;
   private final EventHandler<ActionEvent> buttonClicked = new EventHandler<ActionEvent>() {
 
     @Override
     public void handle(ActionEvent event) {
-      ArrayList<String> genomes1 = treeNode.getChild(0).getGenomes();
-      ArrayList<String> genomes2 = treeNode.getChild(1).getGenomes();
-      RootLayoutController.getController().drawGraph(genomes1, genomes2);
+      ArrayList<String> topGenomes = treeNode.getChild(0).getGenomes();
+      ArrayList<String> bottomGenomes = treeNode.getChild(1).getGenomes();
+      selectionManager.drawGraph(topGenomes, bottomGenomes);
     }
   };
 
-  public TreeNodeDescription(IPhylogeneticTreeNode treeNode) {
+  public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
+    this.selectionManager = selectionManager;
     this.treeNode = treeNode;
   }
 
@@ -41,5 +42,4 @@ public class TreeNodeDescription implements ISelectionInfo {
     button.setOnAction(buttonClicked);
     return button;
   }
-
 }

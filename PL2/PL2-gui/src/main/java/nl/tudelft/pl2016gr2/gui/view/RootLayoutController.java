@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import static nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs.compareGraphs;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -13,12 +15,14 @@ import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.CompareGraphs;
+import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
+import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,7 +58,6 @@ public class RootLayoutController implements Initializable {
   private SplitPane mainPane;
   private final Pane graphPane = new Pane();
 
-  private static RootLayoutController controller;
   private TreeManager treeManager;
   private HeatmapManager heatmapManager;
   private SelectionManager selectionManager;
@@ -69,8 +72,6 @@ public class RootLayoutController implements Initializable {
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    assert (controller == null);
-    controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
     initializeSelectionManager();
     initializeTreeIcon();
@@ -86,27 +87,36 @@ public class RootLayoutController implements Initializable {
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
     SplitGraphs splitGraphs = new SplitGraphs(graph);
-    //    OriginalGraph topGraph = splitGraphs.getSubgraph(topGenomes);
-    //    OriginalGraph bottomGraph = splitGraphs.getSubgraph(bottomGenomes);
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(splitGraphs, topGenomes);
     SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(splitGraphs, bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-    try {
-      topSubGraphThread.join();
-      bottomSubGraphThread.join();
-    } catch (InterruptedException ex) {
-      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    CompareGraphs compareGraphs = new CompareGraphs(graphPane);
-    compareGraphs.drawGraphs(topSubGraphThread.subGraph, bottomSubGraphThread.subGraph);
+
+    DrawComparedGraphs compareGraphs = new DrawComparedGraphs(graphPane);
+    Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
+        = compareGraphs(topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
+    compareGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
+  }
+
+  /**
+   * Set the data which has to be visualized.
+   *
+   * @param root the root of the tree which has to be drawn.
+   */
+  public void setData(IPhylogeneticTreeNode root) {
+    assert treeManager == null;
+    treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
+    heatmapManager.initLeaves(treeManager.getCurrentLeaves());
+    treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
+      heatmapManager.setLeaves(treeManager.getCurrentLeaves());
+    });
   }
 
   /**
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(selectionDescriptionPane, mainPane);
+    selectionManager = new SelectionManager(this, selectionDescriptionPane, mainPane);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
@@ -152,42 +162,43 @@ public class RootLayoutController implements Initializable {
   }
 
   /**
-   * Set the data which has to be visualized.
-   *
-   * @param root the root of the tree which has to be drawn.
-   */
-  public void setData(IPhylogeneticTreeNode root) {
-    assert treeManager == null;
-    treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
-    heatmapManager.initLeaves(treeManager.getCurrentLeaves());
-    treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
-      heatmapManager.setLeaves(treeManager.getCurrentLeaves());
-    });
-  }
-
-  /**
-   * Dirty hack.
-   *
-   * @return .
-   */
-  public static RootLayoutController getController() {
-    return controller;
-  }
-
-  /**
    * Thread which is used to get a graph of a subset of the genomes from a graph.
    */
   private class SplitGraphsThread extends Thread {
 
+    private OriginalGraph subGraph;
     private final SplitGraphs splitGraphs;
     private final ArrayList<String> genomes;
-    public OriginalGraph subGraph;
 
-    public SplitGraphsThread(SplitGraphs splitGraphs, ArrayList<String> genomes) {
+    /**
+     * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
+     * the given genomes.
+     *
+     * @param splitGraphs a {@link SplitGraphs} object.
+     * @param genomes     the list of genomes which must be present in the subgraph.
+     */
+    private SplitGraphsThread(SplitGraphs splitGraphs, ArrayList<String> genomes) {
       this.splitGraphs = splitGraphs;
       this.genomes = genomes;
     }
 
+    /**
+     * Wait till the thread completes its execution and get the subgraph.
+     *
+     * @return the subgraph.
+     */
+    public OriginalGraph getSubGraph() {
+      try {
+        this.join();
+      } catch (InterruptedException ex) {
+        Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return subGraph;
+    }
+
+    /**
+     * Subtract a subgraph from the given graph, containing all of the given genomes.
+     */
     @Override
     public void run() {
       subGraph = splitGraphs.getSubgraph(genomes);
