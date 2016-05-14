@@ -15,6 +15,7 @@ public class Node extends Bubble {
   private ArrayList<String> genomes;
   private final int snips;
   private String bases = "";
+  private int alignment;
 
   /**
    * Construct a new node.
@@ -84,6 +85,14 @@ public class Node extends Bubble {
 
   public void addFlow(double flow) {
     this.flow += flow;
+  }
+
+  public int getAlignment() {
+    return alignment;
+  }
+
+  public void setAlignment(int alignment) {
+    this.alignment = alignment;
   }
 
 }

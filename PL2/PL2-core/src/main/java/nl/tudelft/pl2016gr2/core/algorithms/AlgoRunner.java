@@ -37,4 +37,5 @@ public class AlgoRunner {
     long completeTime = System.currentTimeMillis();
     System.out.println("The algorithm took " + (completeTime - endTime) + " milliseconds to run");
   }
+  
 }

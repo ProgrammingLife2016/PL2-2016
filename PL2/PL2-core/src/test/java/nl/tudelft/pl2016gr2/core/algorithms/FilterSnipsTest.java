@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.test.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 
 import org.junit.Before;
 import org.junit.Test;

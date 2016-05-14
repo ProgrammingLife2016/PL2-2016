@@ -51,4 +51,5 @@ Changed grade to 8, since these changes happened this week.
 - In DrawGraph, using streams is neater for drawing edges.
 - Lack of design patterns
 
+
 Please prepare next meeting with questions.

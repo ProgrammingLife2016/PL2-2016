@@ -8,10 +8,12 @@ import static org.mockito.Mockito.when;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
-import nl.tudelft.pl2016gr2.test.utility.AccessPrivate;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
