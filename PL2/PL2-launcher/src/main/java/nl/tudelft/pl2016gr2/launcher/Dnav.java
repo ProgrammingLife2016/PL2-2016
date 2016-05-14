@@ -54,7 +54,6 @@ public class Dnav extends Application {
    * @param controller the controller of the root layout.
    */
   private void insertData(RootLayoutController controller) {
-
     // abusing NWKReader class as this class' classloader can access the correct resource
     Reader reader = new InputStreamReader(
         FullGfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));

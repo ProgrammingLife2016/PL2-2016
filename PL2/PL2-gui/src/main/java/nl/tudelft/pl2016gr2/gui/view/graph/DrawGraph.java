@@ -30,7 +30,7 @@ public class DrawGraph {
    */
   public void drawGraph(Pane pane) {
     double paneHeight = 600.0;
-    OriginalGraph graph = new FullGfaReader("SMALL.gfa", 5).getGraph();
+    OriginalGraph graph = new FullGfaReader("SMALL.gfa").getGraph();
 
     HashMap<Integer, Node> nodes = graph.getNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);
