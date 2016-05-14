@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
@@ -19,8 +20,10 @@ import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observable;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author Faris
  */
-public class RootLayoutController {
+public class RootLayoutController implements Initializable {
 
   @FXML
   private Pane treePane;
@@ -60,8 +63,12 @@ public class RootLayoutController {
 
   /**
    * Initializes the controller class.
+   *
+   * @param location  unused variable.
+   * @param resources unused variable.
    */
-  public void initialize() {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
     assert (controller == null);
     controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
