@@ -2,12 +2,12 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.test.utility.TestId;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
@@ -30,6 +30,7 @@ public class SplitGraphs {
 
   @TestId(id = "graph_field")
   private final OriginalGraph mainGraph;
+  private int part;
 
   /**
    * Instantiates an algorithmic class on a <code>OriginalGraph</code>.
@@ -40,9 +41,11 @@ public class SplitGraphs {
    * </p>
    *
    * @param mainGraph The graph to split
+   * @param part      temporary variable because the tree doesn't match the graph.
    */
-  public SplitGraphs(OriginalGraph mainGraph) {
+  public SplitGraphs(OriginalGraph mainGraph, int part) {
     this.mainGraph = mainGraph;
+    this.part = part;
   }
 
 
@@ -56,79 +59,102 @@ public class SplitGraphs {
    *                                subset of the main graph's genomes.
    */
   public OriginalGraph getSubgraph(Collection<String> genomes) {
-    if (!mainGraph.getGenoms().containsAll(genomes)) {
-      throw new NoSuchElementException("All genomes must be present in the main graph.");
-    }
-    OriginalGraph subGraph = buildSubgraph(genomes);
-    return prune(subGraph, genomes);
-  }
-
-  /**
-   * Creates a new graph containing only the nodes that will be part of the subGraph.
-   * <p>
-   * The nodes are not a deep copy, however the graph object is newly instantiated.
-   * </p>
-   *
-   * @param genomes The genomes that should be included in the subgraph
-   * @return The subgraph
-   */
-  private OriginalGraph buildSubgraph(Collection<String> genomes) {
-    OriginalGraph subGraph = new OriginalGraph();
-    // Add all nodes for every genome
-    for (String genome : genomes) {
-      Iterator<Node> iterator = mainGraph.iterator(genome);
-      // add genome root
-      subGraph.addNode(iterator.next());
-
-      while (iterator.hasNext()) {
-        subGraph.addNode(iterator.next());
+    genomes.forEach((String genome) -> {
+      if (mainGraph.getGenoms().contains(genome)) {
+        System.out.println("genome = " + genome);
       }
-
+    });
+    Collection<String> halfGens;
+    if (part == 0) {
+      halfGens = mainGraph.getGenoms().subList(0, mainGraph.getGenoms().size() / 2);
+    } else {
+      halfGens = mainGraph.getGenoms().subList(mainGraph.getGenoms().size() / 2 + 1, mainGraph
+          .getGenoms().size());
     }
-    return subGraph;
+    if (!mainGraph.getGenoms().containsAll(halfGens)) {
+      throw new NoSuchElementException("All genomes must present in the main graph.");
+    }
+    HashMap<String, String> genomeMap = new HashMap<>();
+    for (String genome : halfGens) {
+      genomeMap.put(genome, genome);
+    }
+    HashMap<Integer, Node> nodeMap = findSubgraphNodes(genomeMap);
+    return createNewGraph(nodeMap, genomeMap, halfGens);
+  }
+
+  /**
+   * Find all of the nodes which are part of the subgraph and put them into a map.
+   *
+   * @param genomeMap the genomes that should be included in the subgraph.
+   * @return a map containing all of the nodes which are part of the subgraph.
+   */
+  private HashMap<Integer, Node> findSubgraphNodes(Map<String, String> genomeMap) {
+    HashMap<Integer, Node> nodeMap = new HashMap<>();
+    mainGraph.getNodes().forEach((Integer id, Node node) -> {
+      for (String genome : node.getGenomes()) {
+        if (genomeMap.containsKey(genome)) {
+          nodeMap.put(id, node);
+          break;
+        }
+      }
+    });
+    return nodeMap;
   }
 
 
   /**
-   * Removes all redundant links from the nodes in the graph.
-   * <p>
-   * Redundant links are links that point to a {@link Node} that is not part of the subgraph.
-   * The method will return a new {@link OriginalGraph} object with new <code>Node</code>s.
-   * The Nodes will contain identical fields, except for the {@link Node#genomes}, {@link
-   * Node#inLinks} and {@link Node#outLinks}.
-   * </p>
-   * <p>
-   * While this method is intended solely for subgraphs, it will provide the same behaviour when
-   * called with any graph.
-   * </p>
+   * Create a new graph, containing all of the nodes in the node map with the correct in/out links
+   * and genome lists.
    *
-   * @param graph The graph to prune.
-   * @return A new <code>OriginalGraph</code> with only the relevant links.
+   * @param nodeMap   the map containing the original nodes which are contained in the subgraph.
+   * @param genomeMap the map containing all of the genome names which should be contained in the
+   *                  subgraph.
+   * @param genomes   all of the genomes in a collection (instead of in a map).
+   * @return the new graph which contains all of the newly created nodes.
    */
-  private OriginalGraph prune(OriginalGraph graph, Collection<String> genomes) {
-    HashMap<Integer, Node> nodeMap = graph.getNodes();
-    // Create new mirror graph
-    OriginalGraph pruned = new OriginalGraph();
-
-    for (Node node : nodeMap.values()) {
-      // Create mirror of original Node.
-      Node mirrorNode = new Node(node.getId(), node.getSequenceLength(),
-          pruneGenomes(node, genomes), node.getSnips());
-
-      node.getInlinks().forEach((inLink) -> {
-        if (nodeMap.containsKey(inLink)) {
-          mirrorNode.addInlink(inLink);
+  private OriginalGraph createNewGraph(HashMap<Integer, Node> nodeMap,
+      Map<String, String> genomeMap, Collection<String> genomes) {
+    ArrayList<Integer> rootNodes = new ArrayList<>();
+    HashMap<Integer, Node> newNodeMap = new HashMap<>();
+    nodeMap.forEach((Integer id, Node originalNode) -> {
+      ArrayList<String> nodeGenomes = new ArrayList<>();
+      for (String genome : originalNode.getGenomes()) {
+        if (genomeMap.containsKey(genome)) {
+          nodeGenomes.add(genome);
         }
-      });
-      node.getOutlinks().forEach((outLink) -> {
-        if (nodeMap.containsKey(outLink)) {
-          mirrorNode.addOutlink(outLink);
-        }
-      });
-      pruned.addNode(mirrorNode);
+      }
+      Node newNode = new Node(id, 1, nodeGenomes, 0);
+      newNodeMap.put(id, newNode);
+      newNode.setBases(originalNode.getBases());
+      newNode.setAlignment(originalNode.getAlignment());
+      setInOutLinks(originalNode, newNode, nodeMap, rootNodes);
+    });
+    return new OriginalGraph(newNodeMap, rootNodes, new ArrayList<>(genomes));
+  }
+
+  /**
+   * Set the in and out links of the node.
+   *
+   * @param originalNode the node from which this node is derived.
+   * @param newNode      the new node.
+   * @param nodeMap      the original node map.
+   * @param rootNodes    the list of root nodes to which to add any new nodes.
+   */
+  private void setInOutLinks(Node originalNode, Node newNode, HashMap<Integer, Node> nodeMap,
+      ArrayList<Integer> rootNodes) {
+    for (Integer inlink : originalNode.getInlinks()) {
+      if (nodeMap.containsKey(inlink)) {
+        newNode.addInlink(inlink);
+      }
     }
-
-    return pruned;
+    if (newNode.getInlinks().isEmpty()) {
+      rootNodes.add(originalNode.getId());
+    }
+    for (Integer outlink : originalNode.getOutlinks()) {
+      if (nodeMap.containsKey(outlink)) {
+        newNode.addOutlink(outlink);
+      }
+    }
   }
 
   /**

@@ -7,6 +7,7 @@ public class OriginalGraph implements GraphInterface {
 
   private HashMap<Integer, Node> nodes;
   private int lowestId;
+  private ArrayList<Integer> rootNodes;
   private ArrayList<String> genoms;
 
   public OriginalGraph() {
@@ -25,6 +26,24 @@ public class OriginalGraph implements GraphInterface {
     this.nodes = nodes;
     this.lowestId = lowestId;
     this.genoms = genoms;
+  }
+
+  /**
+   * Construct an original graph.
+   *
+   * @param nodes     the nodes of the graph.
+   * @param rootNodes the root nodes (nodes without inlinks) of the graph.
+   * @param genoms    the genomes which are contained in the graph.
+   */
+  public OriginalGraph(HashMap<Integer, Node> nodes, ArrayList<Integer> rootNodes,
+      ArrayList<String> genoms) {
+    this.nodes = nodes;
+    this.rootNodes = rootNodes;
+    this.genoms = genoms;
+  }
+
+  public ArrayList<Integer> getRootNodes() {
+    return rootNodes;
   }
 
   @Override
