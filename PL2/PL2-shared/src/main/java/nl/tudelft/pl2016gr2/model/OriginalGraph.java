@@ -1,9 +1,13 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.collectioninterfaces.GenomeIterator;
+import nl.tudelft.pl2016gr2.collectioninterfaces.IGenomeIterable;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
-public class OriginalGraph implements GraphInterface {
+public class OriginalGraph implements GraphInterface, IGenomeIterable {
 
   private HashMap<Integer, Node> nodes;
   private int lowestId;
@@ -82,4 +86,8 @@ public class OriginalGraph implements GraphInterface {
     this.genoms = gs;
   }
 
+  @Override
+  public Iterator<Node> iterator(String genome) {
+    return new GenomeIterator(this, genome);
+  }
 }
