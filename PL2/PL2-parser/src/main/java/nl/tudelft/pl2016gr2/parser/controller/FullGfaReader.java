@@ -64,7 +64,7 @@ public class FullGfaReader {
   }
 
   /**
-   * Parse a line of the GFA file which contains an edge.
+   * Parse a line of the GFA file that contains an edge.
    *
    * @param chars characters of the line.
    */
@@ -86,7 +86,7 @@ public class FullGfaReader {
   }
 
   /**
-   * Parse a line of the GFA file which contains a node.
+   * Parse a line of the GFA file that contains a node.
    *
    * @param chars characters of the line.
    */
@@ -220,7 +220,7 @@ public class FullGfaReader {
   /**
    * Method which returns the read graph.
    *
-   * @return The graph.
+   * @return the graph.
    */
   public OriginalGraph getGraph() {
     if (originalGraph == null) {
