@@ -76,7 +76,7 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    graph = new FullGfaReader("TB10.gfa").getGraph();
+    graph = new FullGfaReader("TB328.gfa").getGraph();
   }
 
   /**
@@ -86,16 +86,29 @@ public class RootLayoutController implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-    SplitGraphs splitGraphs = new SplitGraphs(graph);
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(splitGraphs, topGenomes);
-    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(splitGraphs, bottomGenomes);
+    long start = System.nanoTime();
+    // ---
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 0),
+        topGenomes);
+    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 1),
+        bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-
+    // ---
+    topSubGraphThread.getSubGraph(); 
+    bottomSubGraphThread.getSubGraph();
+    System.out.println("split time: " + (System.nanoTime() - start));
+    start = System.nanoTime();
+    // ---
     DrawComparedGraphs compareGraphs = new DrawComparedGraphs(graphPane);
     Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
         = compareGraphs(topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
+    // ---
+    System.out.println("compare time: " + (System.nanoTime() - start));
+    start = System.nanoTime();
+    // ---
     compareGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
+    System.out.println("draw time: " + (System.nanoTime() - start));
   }
 
   /**

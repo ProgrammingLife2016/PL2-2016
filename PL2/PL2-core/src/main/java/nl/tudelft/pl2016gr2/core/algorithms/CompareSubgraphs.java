@@ -22,12 +22,14 @@ import java.util.logging.Logger;
  */
 public class CompareSubgraphs {
 
+  private static long startTime;
+  
   /**
    * This is a class with only static methods, so let no one make an instance of it.
    */
   private CompareSubgraphs() {
   }
-
+  
   /**
    * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
    *
@@ -38,6 +40,7 @@ public class CompareSubgraphs {
    */
   public static Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> compareGraphs(
       OriginalGraph topGraph, OriginalGraph bottomGraph) {
+    startTime = System.nanoTime();
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
     GraphOrdererThread topGraphOrderer = new GraphOrdererThread(topGraph, overlapThread);
@@ -50,6 +53,7 @@ public class CompareSubgraphs {
     ArrayList<GraphNodeOrder> orderedBottomGraph = bottomGraphOrderer.getOrderedGraph();
 
     alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
+    System.out.println("aligning done " + (System.nanoTime() - startTime));
     // todo: recolapse bubble from the graphs
     // todo: check if nodes are really overlapping (taking into account the bubbles)
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
@@ -68,7 +72,7 @@ public class CompareSubgraphs {
     ArrayList<GraphNodeOrder> nodeOrder = new ArrayList<>();
     HashMap<Integer, Integer> reachedCount = new HashMap<>();
     Set<Integer> currentLevel = new HashSet<>();
-    currentLevel.add(graph.getRoot().getId());
+    currentLevel.addAll(graph.getRootNodes());
 
     for (int level = 0; !currentLevel.isEmpty(); level++) {
       Set<Integer> nextLevel = new HashSet<>();
@@ -144,12 +148,12 @@ public class CompareSubgraphs {
       }
       if (topNode.isOverlapping()) {
         Pair<GraphNodeOrder, Pair<Integer, Integer>> match = findMatchInBottomGraph(bottomOrder,
-            curBottomLevel, startIndexOfPrevBottomLevel, topNodeId);
+            curBottomLevel, startIndexOfPrevBottomLevel, topNodeId); // 20/41 seconds !!!!!!!!!!!!!!
         GraphNodeOrder bottomNode = match.left;
         startIndexOfPrevBottomLevel = match.right.left;
         curBottomLevel = match.right.right;
         alignOverlappingNode(topOrder, bottomOrder, curTopLevel, startIndexOfCurTopLevel,
-            curBottomLevel, startIndexOfPrevBottomLevel, topNode, bottomNode);
+            curBottomLevel, startIndexOfPrevBottomLevel, topNode, bottomNode); // 19/41 seconds !!!!
       }
     }
   }
@@ -210,12 +214,12 @@ public class CompareSubgraphs {
     }
     if (curTopLevel > curBottomLevel) {
       int offset = curTopLevel - curBottomLevel;
-      for (int j = startIndexOfCurBottomLevel; j < bottomOrder.size(); j++) {
+      for (int j = startIndexOfCurBottomLevel; j < bottomOrder.size(); j++) { // n squared !!!!!!!!!
         bottomOrder.get(j).addPositionOffset(offset);
       }
     } else if (curTopLevel < curBottomLevel) {
       int offset = curBottomLevel - curTopLevel;
-      for (int j = startIndexOfCurTopLevel; j < topOrder.size(); j++) {
+      for (int j = startIndexOfCurTopLevel; j < topOrder.size(); j++) { // n squared !!!!!!!!!!!!!!!
         topOrder.get(j).addPositionOffset(offset);
       }
     }
@@ -263,6 +267,7 @@ public class CompareSubgraphs {
     @Override
     public void run() {
       overlappedNodes = calculateOverlappedNodes(firstGraph, secondGraph);
+      System.out.println("overlap done " + (System.nanoTime() - startTime));
     }
   }
 
@@ -306,12 +311,14 @@ public class CompareSubgraphs {
     @Override
     public void run() {
       orderedGraph = calculateGraphOrder(graph);
+      System.out.println("ordering done " + (System.nanoTime() - startTime));
       try {
         overlapThread.join();
         orderedGraph.stream().forEach(graphNode -> {
           graphNode.setOverlapping(overlapThread.overlappedNodes.containsKey(
               graphNode.getNode().getId()));
         });
+        System.out.println("set overlapped value done " + (System.nanoTime() - startTime));
       } catch (InterruptedException ex) {
         Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
       }
