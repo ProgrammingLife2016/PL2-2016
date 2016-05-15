@@ -60,7 +60,7 @@ public class NodeDensityHeatmapTest {
     when(viewNode.getDataNode()).thenReturn(dataNode5, dataNode10);
     when(dataNode10.getChildCount()).thenReturn(10);
     when(dataNode5.getChildCount()).thenReturn(5);
-    ArrayList<ViewNode> nodeList = new ArrayList();
+    ArrayList<ViewNode> nodeList = new ArrayList<>();
     nodeList.add(viewNode);
     nodeList.add(viewNode);
     NodeDensityHeatmap heatmap = Mockito.mock(NodeDensityHeatmap.class);

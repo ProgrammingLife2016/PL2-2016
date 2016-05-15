@@ -1,44 +1,104 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.beans.value.ObservableValue;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Draws two compared graphs above each other in a pane.
  *
  * @author Faris
  */
-public class DrawComparedGraphs {
+public class DrawComparedGraphs implements Initializable {
+
+  @FXML
+  private AnchorPane mainPane;
+  @FXML
+  private Pane bottomPane;
+  @FXML
+  private Pane topPane;
+  @FXML
+  private ScrollBar scrollbar;
 
   private static final double X_OFFSET = 50.0;
   private static final double NODE_RADIUS = 15.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
-  private final Pane bottomPane;
-  private final Pane topPane;
+  /**
+   * Initialize the controller class.
+   *
+   * @param location  unused variable.
+   * @param resources unused variable.
+   */
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    scrollbar.valueProperty().addListener((ObservableValue<? extends Number> observable,
+        Number oldValue, Number newValue) -> {
+      
+    });
+  }
 
   /**
-   * Initialize the class by splitting the given pane into 2 parts.
+   * Load this view.
    *
-   * @param pane the pane in which to draw the graph.
+   * @return the controller of the loaded view.
    */
-  public DrawComparedGraphs(Pane pane) {
-    pane.getChildren().clear();
-    topPane = new Pane();
-    bottomPane = new Pane();
-    pane.getChildren().addAll(topPane, bottomPane);
-    topPane.prefHeightProperty().bind(pane.heightProperty().divide(2.0));
-    bottomPane.prefHeightProperty().bind(pane.heightProperty().divide(2.0));
-    bottomPane.layoutYProperty().bind(pane.heightProperty().divide(2.0));
+  public static DrawComparedGraphs loadView() {
+    FXMLLoader loader = new FXMLLoader();
+    try {
+      loader.setLocation(DrawComparedGraphs.class.getClassLoader()
+          .getResource("pages/CompareGraphsPane.fxml"));
+      loader.load();
+      return loader.<DrawComparedGraphs>getController();
+    } catch (IOException ex) {
+      Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
+  }
+
+  /**
+   * Get the pane in which the graphs are drawn.
+   *
+   * @return the pane in which the graphs are drawn.
+   */
+  public Region getGraphPane() {
+    return mainPane;
+  }
+
+  /**
+   * Draw two graphs to compare.
+   *
+   * @param topGraph    the top graph.
+   * @param bottomGraph the bottom graph.
+   */
+  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph,
+      ArrayList<GraphNodeOrder> bottomGraph) {
+    topPane.getChildren().clear();
+    bottomPane.getChildren().clear();
+    drawGraph(topPane, topGraph);
+    drawGraph(bottomPane, bottomGraph);
   }
 
   /**
@@ -168,19 +228,5 @@ public class DrawComparedGraphs {
     label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
-  }
-
-  /**
-   * Draw two graphs to compare.
-   *
-   * @param topGraph    the top graph.
-   * @param bottomGraph the bottom graph.
-   */
-  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph,
-      ArrayList<GraphNodeOrder> bottomGraph) {
-    topPane.getChildren().clear();
-    bottomPane.getChildren().clear();
-    drawGraph(topPane, topGraph);
-    drawGraph(bottomPane, bottomGraph);
   }
 }

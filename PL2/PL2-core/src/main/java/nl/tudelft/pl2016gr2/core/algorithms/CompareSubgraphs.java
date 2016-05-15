@@ -8,8 +8,6 @@ import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,209 +20,181 @@ import java.util.logging.Logger;
  */
 public class CompareSubgraphs {
 
-  private static long startTime;
-  
   /**
    * This is a class with only static methods, so let no one make an instance of it.
    */
   private CompareSubgraphs() {
   }
-  
+
   /**
    * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
    *
-   * @param topGraph    the top graph.
-   * @param bottomGraph the bottom graph.
+   * @param mainGraphOrder the main graph node order.
+   * @param topGraph       the top graph.
+   * @param bottomGraph    the bottom graph.
    * @return a pair containing as left value the graph node order of the top graph and as left value
    *         the node graph order of the bottom graph.
    */
   public static Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> compareGraphs(
-      OriginalGraph topGraph, OriginalGraph bottomGraph) {
-    startTime = System.nanoTime();
+      HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph topGraph,
+      OriginalGraph bottomGraph) {
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
-    GraphOrdererThread topGraphOrderer = new GraphOrdererThread(topGraph, overlapThread);
-    GraphOrdererThread bottomGraphOrderer = new GraphOrdererThread(bottomGraph, overlapThread);
+    SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, overlapThread);
+    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph,
+        overlapThread);
     overlapThread.start();
     topGraphOrderer.start();
     bottomGraphOrderer.start();
 
-    ArrayList<GraphNodeOrder> orderedTopGraph = topGraphOrderer.getOrderedGraph();
-    ArrayList<GraphNodeOrder> orderedBottomGraph = bottomGraphOrderer.getOrderedGraph();
+    ArrayList<GraphNodeOrder> orderedTopGraph = topGraphOrderer.getNodeOrder();
+    ArrayList<GraphNodeOrder> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
 
-    alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
-    System.out.println("aligning done " + (System.nanoTime() - startTime));
+    //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
+    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
     // todo: recolapse bubble from the graphs
     // todo: check if nodes are really overlapping (taking into account the bubbles)
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
   }
 
   /**
-   * Calculate the order of the nodes of the graph, so there are no backward edges. The given array
-   * list contains the nodes in order from left to right. Nodes which are at the same horizontal
-   * position have sequential positions in the array list and have the same value for their level
-   * field.
+   * Remove any level (graph depth level) which contains no nodes.
    *
-   * @param graph the graph.
-   * @return the node order.
+   * @param topOrder    the order of the top graph.
+   * @param bottomOrder the order of the bottom graph.
    */
-  private static ArrayList<GraphNodeOrder> calculateGraphOrder(OriginalGraph graph) {
-    ArrayList<GraphNodeOrder> nodeOrder = new ArrayList<>();
-    HashMap<Integer, Integer> reachedCount = new HashMap<>();
-    Set<Integer> currentLevel = new HashSet<>();
-    currentLevel.addAll(graph.getRootNodes());
-
-    for (int level = 0; !currentLevel.isEmpty(); level++) {
-      Set<Integer> nextLevel = new HashSet<>();
-      ArrayList<ArrayList<Integer>> addedOutLinks = new ArrayList<>();
-      for (Integer nodeId : currentLevel) {
-        AbstractNode node = graph.getNode(nodeId);
-        int count = reachedCount.getOrDefault(nodeId, 0);
-        if (node.getInlinks().size() == count) {
-          nodeOrder.add(new GraphNodeOrder(node, level));
-          nextLevel.addAll(node.getOutlinks());
-          addedOutLinks.add(node.getOutlinks());
-        }
-      }
-      updateReachedCount(reachedCount, addedOutLinks);
-      currentLevel = nextLevel;
-    }
-    return nodeOrder;
-  }
-
-  /**
-   * Update the reached count according to the outlinks which have been iterated over.
-   *
-   * @param reachedCount  the reached count map.
-   * @param addedOutLinks the outlinks which have been iterated over.
-   */
-  private static void updateReachedCount(HashMap<Integer, Integer> reachedCount,
-      ArrayList<ArrayList<Integer>> addedOutLinks) {
-    for (ArrayList<Integer> outlinks : addedOutLinks) {
-      for (Integer outlink : outlinks) {
-        reachedCount.put(outlink, reachedCount.getOrDefault(outlink, 0) + 1);
-      }
-    }
-  }
-
-  /**
-   * Get all of the nodes which are in both the top graph and the bottom graph.
-   *
-   * @param topGraph    the top graph.
-   * @param bottomGraph the bottom graph.
-   * @return the overlapping nodes.
-   */
-  private static HashMap<Integer, AbstractNode> calculateOverlappedNodes(OriginalGraph topGraph,
-      OriginalGraph bottomGraph) {
-    final HashMap<Integer, AbstractNode> overlap = new HashMap<>();
-    final HashMap<Integer, Node> bottomNodes = bottomGraph.getNodes();
-    topGraph.getNodes().forEach((Integer id, Node node) -> {
-      if (bottomNodes.containsKey(id)) {
-        overlap.put(id, node);
-      }
-    });
-    return overlap;
-  }
-
-  /**
-   * Align the shared graph nodes, so when the top and bottom graph are drawn separately the
-   * overlapping nodes are drawn at the same x coordinate.
-   *
-   * @param topOrder    the order of the nodes in the top graph.
-   * @param bottomOrder the order of the nodes in the bottom graph.
-   */
-  private static void alignOverlappingNodes(ArrayList<GraphNodeOrder> topOrder,
+  private static void removeEmptyLevels(ArrayList<GraphNodeOrder> topOrder,
       ArrayList<GraphNodeOrder> bottomOrder) {
-    int curTopLevel = 0;
-    int startIndexOfCurTopLevel = 0;
-    int curBottomLevel = 0;
-    int startIndexOfPrevBottomLevel = 0;
-    for (int i = 0; i < topOrder.size(); i++) {
-      GraphNodeOrder topNode = topOrder.get(i);
-      int topNodeId = topNode.getNode().getId();
-      if (topNode.getLevel() > curTopLevel) {
-        curTopLevel = topNode.getLevel();
-        startIndexOfCurTopLevel = i;
-      }
-      if (topNode.isOverlapping()) {
-        Pair<GraphNodeOrder, Pair<Integer, Integer>> match = findMatchInBottomGraph(bottomOrder,
-            curBottomLevel, startIndexOfPrevBottomLevel, topNodeId); // 20/41 seconds !!!!!!!!!!!!!!
-        GraphNodeOrder bottomNode = match.left;
-        startIndexOfPrevBottomLevel = match.right.left;
-        curBottomLevel = match.right.right;
-        alignOverlappingNode(topOrder, bottomOrder, curTopLevel, startIndexOfCurTopLevel,
-            curBottomLevel, startIndexOfPrevBottomLevel, topNode, bottomNode); // 19/41 seconds !!!!
-      }
+    ArrayList<Boolean> levelIsNotEmpty = new ArrayList<>();
+    for (GraphNodeOrder topNode : topOrder) {
+      ensureSize(levelIsNotEmpty, topNode.getLevel() + 1);
+      levelIsNotEmpty.set(topNode.getLevel(), true);
+    }
+    for (GraphNodeOrder bottomNode : bottomOrder) {
+      ensureSize(levelIsNotEmpty, bottomNode.getLevel() + 1);
+      levelIsNotEmpty.set(bottomNode.getLevel(), true);
+    }
+    fillEmptyLevels(topOrder, levelIsNotEmpty);
+    fillEmptyLevels(bottomOrder, levelIsNotEmpty);
+  }
+
+  /**
+   * Ensure that the size of the arraylist is correct (add false booleans if it isn't).
+   *
+   * @param levelIsNotEmpty the boolean arraylist.
+   * @param size            the minimum size of the arraylist.
+   */
+  private static void ensureSize(ArrayList<Boolean> levelIsNotEmpty, int size) {
+    while (levelIsNotEmpty.size() < size) {
+      levelIsNotEmpty.add(false);
     }
   }
 
   /**
-   * Find the matching node in the bottom graph.
+   * Fill all of the empty graph levels by moving everything after it to the left.
    *
-   * @param bottomOrder                the order of the nodes of the top graph.
-   * @param curBottomLevel             the current leve in the graph of the bottom graph.
-   * @param startIndexOfCurBottomLevel the starting index of the current bottom level in the bottom
-   *                                   order list.
-   * @param topNodeId                  the node which the found node should match to.
-   * @return a pair containing the new bottom order and a pair containing the new starting index of
-   *         the previous bottem level in the bottom order list and the new bottom level.
+   * @param nodeOrder       the order of the nodes in the graph.
+   * @param levelIsNotEmpty an arraylist containing all of the graph levels which containg no nodes.
    */
-  private static Pair<GraphNodeOrder, Pair<Integer, Integer>> findMatchInBottomGraph(
-      ArrayList<GraphNodeOrder> bottomOrder, int curBottomLevel, int startIndexOfCurBottomLevel,
-      int topNodeId) {
-    int newLevel = curBottomLevel;
-    int newStartIndex = startIndexOfCurBottomLevel;
-    GraphNodeOrder bottomNode = null;
-    int startIndexOfPrevBottomLevel = 0;
-    for (int i = newStartIndex; i < bottomOrder.size(); i++) {
-      bottomNode = bottomOrder.get(i);
-      if (bottomNode.getLevel() > newLevel) {
-        newLevel = bottomNode.getLevel();
-        startIndexOfPrevBottomLevel = newStartIndex;
-        newStartIndex = i;
+  private static void fillEmptyLevels(ArrayList<GraphNodeOrder> nodeOrder,
+      ArrayList<Boolean> levelIsNotEmpty) {
+    int curLevel = 0;
+    int emptyLevels = 0;
+    for (GraphNodeOrder node : nodeOrder) {
+      if (node.getLevel() > curLevel) {
+        for (int i = curLevel; i < node.getLevel(); i++) {
+          if (!levelIsNotEmpty.get(i)) {
+            ++emptyLevels;
+          }
+        }
+        curLevel = node.getLevel();
       }
-      if (bottomNode.getNode().getId() == topNodeId) {
-        break;
-      }
+      node.addPositionOffset(-emptyLevels);
     }
-    return new Pair<>(bottomNode, new Pair<>(startIndexOfPrevBottomLevel, newLevel));
   }
 
   /**
-   * Move the nodes which don't align correctly to the found overlapping nodes, so they are
-   * correctly aligned.
-   *
-   * @param topOrder                    the order of the nodes of the top graph.
-   * @param bottomOrder                 the order of the nodes of the top graph.
-   * @param curTopLevel                 the current level in the graph of the top graph.
-   * @param startIndexOfCurTopLevel     the starting index of the current level of the top graph.
-   * @param curBottomLevel              the current leve in the graph of the bottom graph.
-   * @param startIndexOfPrevBottomLevel the starting index of the previous level of the bottom
-   *                                    graph.
-   * @param topNode                     the overlapping node of the top graph.
-   * @param bottomNode                  the overlapping node of the bottom graph.
+   * Thread which can be used to order a subgraph and mark the overlapping nodes.
    */
-  private static void alignOverlappingNode(
-      ArrayList<GraphNodeOrder> topOrder, ArrayList<GraphNodeOrder> bottomOrder, int curTopLevel,
-      int startIndexOfCurTopLevel, int curBottomLevel, int startIndexOfPrevBottomLevel,
-      GraphNodeOrder topNode, GraphNodeOrder bottomNode) {
-    int startIndexOfCurBottomLevel = startIndexOfPrevBottomLevel;
-    while (bottomOrder.get(startIndexOfCurBottomLevel).getLevel() < curBottomLevel) {
-      ++startIndexOfCurBottomLevel;
+  private static class SubGraphOrderer extends Thread {
+
+    private final HashMap<Integer, GraphNodeOrder> mainGraphOrder;
+    private final OriginalGraph subGraph;
+    private final OverlapThread overlapThread;
+    private ArrayList<GraphNodeOrder> nodeOrder;
+
+    /**
+     * Create an instance of this class.
+     *
+     * @param mainGraphOrder a map containing the order of the main graph.
+     * @param subGraph       the subgraph.
+     * @param overlapThread  the thread which is checking which nodes are overlapping.
+     */
+    private SubGraphOrderer(HashMap<Integer, GraphNodeOrder> mainGraphOrder,
+        OriginalGraph subGraph, OverlapThread overlapThread) {
+      this.mainGraphOrder = mainGraphOrder;
+      this.subGraph = subGraph;
+      this.overlapThread = overlapThread;
     }
-    if (curTopLevel > curBottomLevel) {
-      int offset = curTopLevel - curBottomLevel;
-      for (int j = startIndexOfCurBottomLevel; j < bottomOrder.size(); j++) { // n squared !!!!!!!!!
-        bottomOrder.get(j).addPositionOffset(offset);
+
+    /**
+     * Wait till the thread completes its execution and get the ordered list of nodes.
+     *
+     * @return the list of ordered nodes.
+     */
+    public ArrayList<GraphNodeOrder> getNodeOrder() {
+      try {
+        this.join();
+      } catch (InterruptedException ex) {
+        Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
       }
-    } else if (curTopLevel < curBottomLevel) {
-      int offset = curBottomLevel - curTopLevel;
-      for (int j = startIndexOfCurTopLevel; j < topOrder.size(); j++) { // n squared !!!!!!!!!!!!!!!
-        topOrder.get(j).addPositionOffset(offset);
+      return nodeOrder;
+    }
+
+    /**
+     * Order the nodes of the subgraph.
+     *
+     * @param mainGraphOrder a map containing the order of the main graph.
+     * @param subGraph       the subgraph.
+     * @return the ordered subgraph.
+     */
+    private static ArrayList<GraphNodeOrder> orderNodes(
+        HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph subGraph) {
+      ArrayList<GraphNodeOrder> subGraphOrder = new ArrayList<>();
+      subGraph.getNodes().forEach((Integer id, Node node) -> {
+        int level = mainGraphOrder.get(id).getLevel();
+        subGraphOrder.add(new GraphNodeOrder(node, level));
+      });
+      return subGraphOrder;
+    }
+
+    /**
+     * Mark all of the overlapping nodes in the subgraph.
+     *
+     * @param overlappingNodes a map containing all of the overlapping nodes.
+     * @param nodeOrder        the ordered list of nodes of the subgraph.
+     */
+    private static void markOverlap(HashMap<Integer, AbstractNode> overlappingNodes,
+        ArrayList<GraphNodeOrder> nodeOrder) {
+      nodeOrder.forEach(graphNode -> {
+        graphNode.setOverlapping(overlappingNodes.containsKey(
+            graphNode.getNode().getId()));
+      });
+    }
+
+    /**
+     * Calculate the subgraph order and mark the overlapping nodes.
+     */
+    @Override
+    public void run() {
+      nodeOrder = orderNodes(mainGraphOrder, subGraph);
+      try {
+        overlapThread.join();
+        markOverlap(overlapThread.overlappedNodes, nodeOrder);
+      } catch (InterruptedException ex) {
+        Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
       }
     }
-    topNode.setUnmovable();
-    bottomNode.setUnmovable();
   }
 
   /**
@@ -262,66 +232,30 @@ public class CompareSubgraphs {
     }
 
     /**
+     * Get all of the nodes which are in both the top graph and the bottom graph.
+     *
+     * @param topGraph    the top graph.
+     * @param bottomGraph the bottom graph.
+     * @return the overlapping nodes.
+     */
+    private static HashMap<Integer, AbstractNode> calculateOverlappedNodes(OriginalGraph topGraph,
+        OriginalGraph bottomGraph) {
+      final HashMap<Integer, AbstractNode> overlap = new HashMap<>();
+      final HashMap<Integer, Node> bottomNodes = bottomGraph.getNodes();
+      topGraph.getNodes().forEach((Integer id, Node node) -> {
+        if (bottomNodes.containsKey(id)) {
+          overlap.put(id, node);
+        }
+      });
+      return overlap;
+    }
+
+    /**
      * Calculate the overlapping graph nodes.
      */
     @Override
     public void run() {
       overlappedNodes = calculateOverlappedNodes(firstGraph, secondGraph);
-      System.out.println("overlap done " + (System.nanoTime() - startTime));
-    }
-  }
-
-  /**
-   * Thread which can be used to order a graph.
-   */
-  private static class GraphOrdererThread extends Thread {
-
-    private ArrayList<GraphNodeOrder> orderedGraph;
-    private final OriginalGraph graph;
-    private final OverlapThread overlapThread;
-
-    /**
-     * Construct a graph orderer thread.
-     *
-     * @param graph         the graph to order.
-     * @param overlapThread the overlap thread which is calculating the overlapping graph nodes.
-     */
-    private GraphOrdererThread(OriginalGraph graph, OverlapThread overlapThread) {
-      this.graph = graph;
-      this.overlapThread = overlapThread;
-    }
-
-    /**
-     * Wait till the thread completes its execution and get the ordered graph.
-     *
-     * @return the ordered graph.
-     */
-    public ArrayList<GraphNodeOrder> getOrderedGraph() {
-      try {
-        this.join();
-      } catch (InterruptedException ex) {
-        Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      return orderedGraph;
-    }
-
-    /**
-     * Calculate the graph order.
-     */
-    @Override
-    public void run() {
-      orderedGraph = calculateGraphOrder(graph);
-      System.out.println("ordering done " + (System.nanoTime() - startTime));
-      try {
-        overlapThread.join();
-        orderedGraph.stream().forEach(graphNode -> {
-          graphNode.setOverlapping(overlapThread.overlappedNodes.containsKey(
-              graphNode.getNode().getId()));
-        });
-        System.out.println("set overlapped value done " + (System.nanoTime() - startTime));
-      } catch (InterruptedException ex) {
-        Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
-      }
     }
   }
 }

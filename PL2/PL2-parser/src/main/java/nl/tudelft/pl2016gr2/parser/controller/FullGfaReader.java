@@ -223,7 +223,7 @@ public class FullGfaReader {
    */
   public OriginalGraph getGraph() {
     if (originalGraph == null) {
-      originalGraph = new OriginalGraph(nodes, 1, genoms);
+      originalGraph = new OriginalGraph(nodes, genoms);
     }
     return originalGraph;
   }

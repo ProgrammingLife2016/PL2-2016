@@ -1,17 +1,18 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
-import static nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs.compareGraphs;
-
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs;
+import nl.tudelft.pl2016gr2.core.algorithms.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
@@ -24,6 +25,7 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -38,6 +40,8 @@ import java.util.logging.Logger;
  */
 public class RootLayoutController implements Initializable {
 
+  @FXML
+  private StackPane rootPane;
   @FXML
   private Pane treePane;
   @FXML
@@ -64,6 +68,9 @@ public class RootLayoutController implements Initializable {
   private boolean zoomOutButtonDisabled = true;
   private OriginalGraph graph;
 
+  private GraphOrdererThread mainGraphOrder;
+  private final DrawComparedGraphs drawGraphs = DrawComparedGraphs.loadView();
+
   /**
    * Initializes the controller class.
    *
@@ -76,7 +83,44 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    graph = new FullGfaReader("TB328.gfa").getGraph();
+    long start = System.nanoTime();
+    graph = new FullGfaReader("TB10.gfa").getGraph();
+    System.out.println("parse time: " + (System.nanoTime() - start));
+    printMem("parse");
+    mainGraphOrder = new GraphOrdererThread(graph);
+    mainGraphOrder.start();
+  }
+
+  /**
+   * Load this view.
+   *
+   * @return the controller of the loaded view.
+   */
+  public static RootLayoutController loadView() {
+    FXMLLoader loader = new FXMLLoader();
+    try {
+      loader.setLocation(RootLayoutController.class.getClassLoader()
+          .getResource("pages/RootLayout.fxml"));
+      loader.load();
+      return loader.<RootLayoutController>getController();
+    } catch (IOException ex) {
+      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
+  }
+
+  /**
+   * Get the pane of this view.
+   *
+   * @return the pane of this view.
+   */
+  public Region getPane() {
+    return rootPane;
+  }
+
+  private static void printMem(String str) {
+    System.out.println(str + " memory = " + (Runtime.getRuntime().totalMemory()
+        - Runtime.getRuntime().freeMemory()));
   }
 
   /**
@@ -86,29 +130,18 @@ public class RootLayoutController implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-    long start = System.nanoTime();
-    // ---
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 0),
         topGenomes);
     SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 1),
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-    // ---
-    topSubGraphThread.getSubGraph(); 
+    topSubGraphThread.getSubGraph();
     bottomSubGraphThread.getSubGraph();
-    System.out.println("split time: " + (System.nanoTime() - start));
-    start = System.nanoTime();
-    // ---
-    DrawComparedGraphs compareGraphs = new DrawComparedGraphs(graphPane);
     Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
-        = compareGraphs(topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    // ---
-    System.out.println("compare time: " + (System.nanoTime() - start));
-    start = System.nanoTime();
-    // ---
-    compareGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
-    System.out.println("draw time: " + (System.nanoTime() - start));
+        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
+            topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
+    drawGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
   }
 
   /**
@@ -162,12 +195,8 @@ public class RootLayoutController implements Initializable {
       if (mainPane.getItems().contains(graphPane)) {
         return;
       }
-      ScrollPane scrollpane = new ScrollPane();
-      graphPane.prefHeightProperty().bind(mainPane.heightProperty().add(-30));
-      scrollpane.setContent(graphPane);
-      scrollpane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
       mainPane.getItems().clear();
-      mainPane.getItems().add(scrollpane);
+      mainPane.getItems().add(drawGraphs.getGraphPane());
       zoomOutButtonDisabled = zoomOutButton.isDisabled();
       zoomOutButton.setDisable(true);
       mainPane.fireEvent(new GraphicsChangedEvent());

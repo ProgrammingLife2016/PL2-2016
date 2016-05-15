@@ -13,7 +13,7 @@ public class OriginalGraphTest extends GraphTest {
   @Override
   public GraphInterface getInstance() {
     OriginalGraph graph = new OriginalGraph();
-    ArrayList<String> ar = new ArrayList<String>();
+    ArrayList<String> ar = new ArrayList<>();
     ar.add("aba");
     Node n1 = new Node(2, 8, ar, 5);
     Node n2 = new Node(5, 8, null, 9);

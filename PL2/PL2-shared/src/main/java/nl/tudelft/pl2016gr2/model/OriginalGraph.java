@@ -1,35 +1,29 @@
 package nl.tudelft.pl2016gr2.model;
 
-import nl.tudelft.pl2016gr2.collectioninterfaces.GenomeIterator;
-import nl.tudelft.pl2016gr2.collectioninterfaces.IGenomeIterable;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
-public class OriginalGraph implements GraphInterface, IGenomeIterable {
+public class OriginalGraph implements GraphInterface/*, IGenomeIterable */ {
 
-  private HashMap<Integer, Node> nodes;
-  private int lowestId;
-  private ArrayList<Integer> rootNodes;
+  private final HashMap<Integer, Node> nodes;
+  private final ArrayList<Integer> rootNodes;
   private ArrayList<String> genoms;
 
   public OriginalGraph() {
     nodes = new HashMap<>();
-    lowestId = Integer.MAX_VALUE;
+    rootNodes = new ArrayList<>();
   }
 
   /**
-   * Construct an OriginalGraph.
+   * Construct an original graph.
    *
-   * @param nodes    the nodes.
-   * @param lowestId the lowest node id.
-   * @param genoms   the genoms.
+   * @param nodes  the nodes of the graph.
+   * @param genoms the genomes which are contained in the graph.
    */
-  public OriginalGraph(HashMap<Integer, Node> nodes, int lowestId, ArrayList<String> genoms) {
+  public OriginalGraph(HashMap<Integer, Node> nodes, ArrayList<String> genoms) {
     this.nodes = nodes;
-    this.lowestId = lowestId;
     this.genoms = genoms;
+    this.rootNodes = getAllRootNodes();
   }
 
   /**
@@ -46,6 +40,22 @@ public class OriginalGraph implements GraphInterface, IGenomeIterable {
     this.genoms = genoms;
   }
 
+  /**
+   * Get all of the root nodes (all nodes with 0 inlinks).
+   *
+   * @return all root nodes.
+   */
+  private ArrayList<Integer> getAllRootNodes() {
+    ArrayList<Integer> newRootNodes = new ArrayList<>();
+    nodes.forEach((Integer id, Node node) -> {
+      if (node.getInlinks().isEmpty()) {
+        newRootNodes.add(id);
+      }
+    });
+    return newRootNodes;
+  }
+
+  @Override
   public ArrayList<Integer> getRootNodes() {
     return rootNodes;
   }
@@ -89,18 +99,10 @@ public class OriginalGraph implements GraphInterface, IGenomeIterable {
   @Override
   public void addNode(AbstractNode node) {
     assert node instanceof Node;
-
-    int id = node.getId();
-    if (id < lowestId) {
-      lowestId = id;
+    nodes.put(node.getId(), (Node) node);
+    if (node.getInlinks().isEmpty()) {
+      rootNodes.add(node.getId());
     }
-
-    nodes.put(id, (Node) node);
-  }
-
-  @Override
-  public Node getRoot() {
-    return nodes.get(lowestId);
   }
 
   public HashMap<Integer, Node> getNodes() {
@@ -115,8 +117,8 @@ public class OriginalGraph implements GraphInterface, IGenomeIterable {
     this.genoms = gs;
   }
 
-  @Override
-  public Iterator<Node> iterator(String genome) {
-    return new GenomeIterator(this, genome);
-  }
+//  @Override
+//  public Iterator<Node> iterator(String genome) {
+//    return new GenomeIterator(this, genome);
+//  }
 }
