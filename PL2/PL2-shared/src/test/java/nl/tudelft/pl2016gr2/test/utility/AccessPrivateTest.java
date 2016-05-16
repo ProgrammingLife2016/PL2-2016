@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestAnnotationException;
-
 import org.junit.Test;
 
 /**
@@ -20,8 +19,7 @@ public class AccessPrivateTest {
   @Test
   public void privateMethodTest() {
     PrivateMemberClass instance = new PrivateMemberClass();
-    Object ret = AccessPrivate.callMethod("m_getNumber",
-        PrivateMemberClass.class, instance);
+    int ret = AccessPrivate.callMethod("m_getNumber", PrivateMemberClass.class, instance);
     assertEquals(5, ret);
   }
 
@@ -30,8 +28,7 @@ public class AccessPrivateTest {
    */
   @Test
   public void privateStaticMethodTest() {
-    Object ret = AccessPrivate.callMethod("m_getNumberStatic",
-        PrivateMemberClass.class, null);
+    int ret = AccessPrivate.callMethod("m_getNumberStatic", PrivateMemberClass.class, null);
     assertEquals(6, ret);
   }
 
@@ -40,9 +37,7 @@ public class AccessPrivateTest {
    */
   @Test
   public void privateStaticMethodWithParameterTest() {
-    Object ret
-        = AccessPrivate.callMethod("m_returnNumber",
-            PrivateMemberClass.class, null, 7, 8);
+    int ret = AccessPrivate.callMethod("m_returnNumber", PrivateMemberClass.class, null, 7, 8);
     assertEquals(15, ret);
   }
 
@@ -52,8 +47,7 @@ public class AccessPrivateTest {
   @Test
   public void privateFieldAccessTest() {
     PrivateMemberClass instance = new PrivateMemberClass();
-    Object ret = AccessPrivate.getFieldValue("f_testVar",
-        PrivateMemberClass.class, instance);
+    int ret = AccessPrivate.getFieldValue("f_testVar", PrivateMemberClass.class, instance);
     assertEquals(456, ret);
   }
 
@@ -62,8 +56,7 @@ public class AccessPrivateTest {
    */
   @Test
   public void privateStaticFieldAccessTest() {
-    Object ret = AccessPrivate.getFieldValue("f_staticTestVar",
-        PrivateMemberClass.class, null);
+    int ret = AccessPrivate.getFieldValue("f_staticTestVar", PrivateMemberClass.class, null);
     assertEquals(234, ret);
   }
 
@@ -76,7 +69,7 @@ public class AccessPrivateTest {
     String privateChangebleVar = "f_changeableTestVar";
     AccessPrivate.setFieldValue(privateChangebleVar,
         PrivateMemberClass.class, instance, -1);
-    assertEquals(-1, AccessPrivate.getFieldValue(privateChangebleVar,
+    assertEquals(-1, (int) AccessPrivate.getFieldValue(privateChangebleVar,
         PrivateMemberClass.class, instance));
   }
 
@@ -88,7 +81,7 @@ public class AccessPrivateTest {
     String privateChangebleVar = "f_changeableStaticTestVar";
     AccessPrivate.setFieldValue(privateChangebleVar,
         PrivateMemberClass.class, null, -2);
-    assertEquals(-2, AccessPrivate.getFieldValue(privateChangebleVar,
+    assertEquals(-2, (int) AccessPrivate.getFieldValue(privateChangebleVar,
         PrivateMemberClass.class, null));
   }
 
@@ -97,8 +90,7 @@ public class AccessPrivateTest {
    */
   @Test(expected = TestAnnotationException.class)
   public void setPrivateFinalFieldTest() {
-    AccessPrivate.setFieldValue("f_testVar", PrivateMemberClass.class,
-        null, -6);
+    AccessPrivate.setFieldValue("f_testVar", PrivateMemberClass.class, null, -6);
   }
 
   /**
@@ -106,7 +98,6 @@ public class AccessPrivateTest {
    */
   @Test(expected = TestAnnotationException.class)
   public void annotationExceptionTest() {
-    AccessPrivate.getFieldValue("NON_EXISTING_FIELD",
-        PrivateMemberClass.class, null);
+    AccessPrivate.getFieldValue("NON_EXISTING_FIELD", PrivateMemberClass.class, null);
   }
 }
