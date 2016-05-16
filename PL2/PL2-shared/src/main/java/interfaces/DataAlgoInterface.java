@@ -8,7 +8,7 @@ public interface DataAlgoInterface {
   
   /**
    * This method should return the node which has id as identifier.
-   * @param id the id of the node we want.
+   * @param identifier the id of the node we want.
    * @return The node which was requested
    */
   Node getNode(int identifier);
@@ -22,7 +22,7 @@ public interface DataAlgoInterface {
   
   /**
    * This method should return metadata of some Node.
-   * @param id the Id of the node we want to get metadata from.
+   * @param identifier the Id of the node we want to get metadata from.
    * @return A MetaData object. 
    */
   MetaData getMeta(Node identifier);

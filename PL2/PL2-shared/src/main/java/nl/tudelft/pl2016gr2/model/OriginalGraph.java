@@ -16,16 +16,17 @@ public class OriginalGraph implements GraphInterface {
 
   /**
    * Construct an OriginalGraph.
-   * @param nodes the nodes.
+   *
+   * @param nodes    the nodes.
    * @param lowestId the lowest node id.
-   * @param genoms the genoms.
+   * @param genoms   the genoms.
    */
   public OriginalGraph(HashMap<Integer, Node> nodes, int lowestId, ArrayList<String> genoms) {
     this.nodes = nodes;
     this.lowestId = lowestId;
     this.genoms = genoms;
   }
-  
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
