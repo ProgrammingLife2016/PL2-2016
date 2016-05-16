@@ -8,7 +8,7 @@ import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
-import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
+import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,10 +54,9 @@ public class Dnav extends Application {
    * @param controller the controller of the root layout.
    */
   private void insertData(RootLayoutController controller) {
-
     // abusing NWKReader class as this class' classloader can access the correct resource
     Reader reader = new InputStreamReader(
-        FullGfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 

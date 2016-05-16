@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.parser.controller;
 import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 
 /**
@@ -14,13 +14,24 @@ import org.junit.Test;
 public class GfaReaderTest {
 
   private static final String filename = "SMALL.gfa";
-  private static final int GRAPH_SIZE = 5;
 
   @Test
-  public void test() {
-    GfaReader fgr = new GfaReader(filename, GRAPH_SIZE);
-    OriginalGraph og = fgr.getGraph();
-    assertEquals(og.getNodes().size(), GRAPH_SIZE);
+  public void integrationTest() {
+    GfaReader reader = new GfaReader(filename);
+    OriginalGraph og = reader.read();
+    assertEquals(og.getGenoms().size(), 11);
+    assertEquals(og.getNode(3).getGenomes().size(), 1);
+  }
+
+  /**
+   * Test of read method, of class GfaReader.
+   */
+  @Test
+  public void testRead() {
+    GfaReader reader = new GfaReader(filename);
+    OriginalGraph actual = reader.read();
+    OriginalGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class, reader);
+    assertEquals(expected, actual);
   }
 
 }
