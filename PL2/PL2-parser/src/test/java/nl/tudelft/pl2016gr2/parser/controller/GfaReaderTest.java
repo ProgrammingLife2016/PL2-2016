@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.parser.controller;
 import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 
 /**
@@ -27,6 +28,10 @@ public class GfaReaderTest {
    */
   @Test
   public void testRead() {
+    GfaReader reader = new GfaReader(filename);
+    OriginalGraph actual = reader.read();
+    OriginalGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class, reader);
+    assertEquals(expected, actual);
   }
 
 }
