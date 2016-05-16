@@ -23,12 +23,6 @@ public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
   private int level;
 
   /**
-   * If this node can be moved to a different level. This is usefull if a node is aligned and may
-   * not be moved anymore.
-   */
-  private boolean unmovable = false;
-
-  /**
    * Construct a graph node order.
    *
    * @param node  the node.
@@ -40,22 +34,12 @@ public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
   }
 
   /**
-   * Make it impossible to move the node to a different level. This is usefull if a node is aligned
-   * and may not be moved anymore.
-   */
-  public void setUnmovable() {
-    unmovable = true;
-  }
-
-  /**
    * Add an offset to the current level of the node.
    *
    * @param offset the offset.
    */
   public void addPositionOffset(int offset) {
-    if (!unmovable) {
-      level += offset;
-    }
+    level += offset;
   }
 
   public int getLevel() {
