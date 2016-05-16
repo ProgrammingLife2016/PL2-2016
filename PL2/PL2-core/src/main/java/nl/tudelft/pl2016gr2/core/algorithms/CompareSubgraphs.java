@@ -7,6 +7,7 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,7 +42,7 @@ public class CompareSubgraphs {
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
     SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, overlapThread);
-    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph,
+    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, bottomGraph,
         overlapThread);
     overlapThread.start();
     topGraphOrderer.start();
@@ -65,29 +66,23 @@ public class CompareSubgraphs {
    */
   private static void removeEmptyLevels(ArrayList<GraphNodeOrder> topOrder,
       ArrayList<GraphNodeOrder> bottomOrder) {
-    ArrayList<Boolean> levelIsNotEmpty = new ArrayList<>();
+    int highestTopLevel = topOrder.get(topOrder.size() - 1).getLevel();
+    int highestBottomLevel = bottomOrder.get(bottomOrder.size() - 1).getLevel();
+    int highestLevel;
+    if (highestTopLevel > highestBottomLevel) {
+      highestLevel = highestTopLevel;
+    } else {
+      highestLevel = highestBottomLevel;
+    }
+    boolean[] levelIsNotEmpty = new boolean[highestLevel + 1];
     for (GraphNodeOrder topNode : topOrder) {
-      ensureSize(levelIsNotEmpty, topNode.getLevel() + 1);
-      levelIsNotEmpty.set(topNode.getLevel(), true);
+      levelIsNotEmpty[topNode.getLevel()] = true;
     }
     for (GraphNodeOrder bottomNode : bottomOrder) {
-      ensureSize(levelIsNotEmpty, bottomNode.getLevel() + 1);
-      levelIsNotEmpty.set(bottomNode.getLevel(), true);
+      levelIsNotEmpty[bottomNode.getLevel()] = true;
     }
     fillEmptyLevels(topOrder, levelIsNotEmpty);
     fillEmptyLevels(bottomOrder, levelIsNotEmpty);
-  }
-
-  /**
-   * Ensure that the size of the arraylist is correct (add false booleans if it isn't).
-   *
-   * @param levelIsNotEmpty the boolean arraylist.
-   * @param size            the minimum size of the arraylist.
-   */
-  private static void ensureSize(ArrayList<Boolean> levelIsNotEmpty, int size) {
-    while (levelIsNotEmpty.size() < size) {
-      levelIsNotEmpty.add(false);
-    }
   }
 
   /**
@@ -97,13 +92,13 @@ public class CompareSubgraphs {
    * @param levelIsNotEmpty an arraylist containing all of the graph levels which containg no nodes.
    */
   private static void fillEmptyLevels(ArrayList<GraphNodeOrder> nodeOrder,
-      ArrayList<Boolean> levelIsNotEmpty) {
+      boolean[] levelIsNotEmpty) {
     int curLevel = 0;
     int emptyLevels = 0;
     for (GraphNodeOrder node : nodeOrder) {
       if (node.getLevel() > curLevel) {
         for (int i = curLevel; i < node.getLevel(); i++) {
-          if (!levelIsNotEmpty.get(i)) {
+          if (!levelIsNotEmpty[i]) {
             ++emptyLevels;
           }
         }
@@ -188,6 +183,7 @@ public class CompareSubgraphs {
     @Override
     public void run() {
       nodeOrder = orderNodes(mainGraphOrder, subGraph);
+      Collections.sort(nodeOrder);
       try {
         overlapThread.join();
         markOverlap(overlapThread.overlappedNodes, nodeOrder);

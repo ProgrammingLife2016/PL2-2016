@@ -83,10 +83,7 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    long start = System.nanoTime();
-    graph = new FullGfaReader("TB10.gfa").getGraph();
-    System.out.println("parse time: " + (System.nanoTime() - start));
-    printMem("parse");
+    graph = new FullGfaReader("TB328.gfa").getGraph();
     mainGraphOrder = new GraphOrdererThread(graph);
     mainGraphOrder.start();
   }
@@ -116,11 +113,6 @@ public class RootLayoutController implements Initializable {
    */
   public Region getPane() {
     return rootPane;
-  }
-
-  private static void printMem(String str) {
-    System.out.println(str + " memory = " + (Runtime.getRuntime().totalMemory()
-        - Runtime.getRuntime().freeMemory()));
   }
 
   /**

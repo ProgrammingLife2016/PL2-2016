@@ -76,6 +76,6 @@ public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
 
   @Override
   public int compareTo(GraphNodeOrder other) {
-    return this.node.getId() - other.node.getId();
+    return this.level - other.level;
   }
 }

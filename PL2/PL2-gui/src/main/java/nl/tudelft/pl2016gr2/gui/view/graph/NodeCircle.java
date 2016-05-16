@@ -12,16 +12,19 @@ import javafx.scene.shape.Circle;
 public class NodeCircle extends Circle {
 
   private final DoubleProperty relativeHeight = new SimpleDoubleProperty();
+  private final double maxYOffset;
 
   /**
    * Construct a node circle.
    *
    * @param radius         the radius of the circle.
    * @param relativeHeight the relative height of the circle (compared to the height of the pane).
+   * @param maxYOffset     the maximum value by which this node may be offset (to above).
    */
-  public NodeCircle(double radius, double relativeHeight) {
+  public NodeCircle(double radius, double relativeHeight, double maxYOffset) {
     super(radius);
     this.relativeHeight.set(relativeHeight);
+    this.maxYOffset = maxYOffset;
   }
 
   /**
@@ -31,5 +34,14 @@ public class NodeCircle extends Circle {
    */
   public DoubleProperty getRelativeHeightProperty() {
     return relativeHeight;
+  }
+
+  /**
+   * Get the maximum y offset (to above).
+   *
+   * @return the maximum y offset (to above).
+   */
+  public double getMaxYOffset() {
+    return maxYOffset;
   }
 }
