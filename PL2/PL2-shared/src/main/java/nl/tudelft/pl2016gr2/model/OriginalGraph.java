@@ -2,17 +2,23 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
-public class OriginalGraph implements GraphInterface {
+public class OriginalGraph implements GraphInterface, Iterable<Node> {
 
   private HashMap<Integer, Node> nodes;
   private int lowestId;
   private ArrayList<Integer> rootNodes;
   private ArrayList<String> genoms;
 
+  /**
+   * Constructs an empty OriginalGraph.
+   */
   public OriginalGraph() {
     nodes = new HashMap<>();
     lowestId = Integer.MAX_VALUE;
+    rootNodes = new ArrayList<>();
+    genoms = new ArrayList<>();
   }
 
   /**
@@ -44,6 +50,25 @@ public class OriginalGraph implements GraphInterface {
 
   public ArrayList<Integer> getRootNodes() {
     return rootNodes;
+  }
+
+  /**
+   * Adds a <code>Node</code> to the root nodes of this graph.
+   * <p>
+   * If the node is not yet in the graph, the node will be added.
+   * </p>
+   *
+   * @param node The root node to add.
+   */
+  public void addRootNode(Node node) {
+    assert node.getInlinks().isEmpty() : "Tried adding a non-root node as root. NodeID = " + node
+        .getId();
+
+    if (!nodes.containsKey(node.getId())) {
+      nodes.put(node.getId(), node);
+    }
+
+    rootNodes.add(node.getId());
   }
 
   @Override
@@ -98,7 +123,7 @@ public class OriginalGraph implements GraphInterface {
   public Node getRoot() {
     return nodes.get(lowestId);
   }
-
+  
   public HashMap<Integer, Node> getNodes() {
     return nodes;
   }
@@ -111,4 +136,13 @@ public class OriginalGraph implements GraphInterface {
     this.genoms = gs;
   }
 
+  /**
+   * Iterates over the collection of nodes in the graph.
+   *
+   * @return An iterator over all nodes in the graph
+   */
+  @Override
+  public Iterator<Node> iterator() {
+    return nodes.values().iterator();
+  }
 }
