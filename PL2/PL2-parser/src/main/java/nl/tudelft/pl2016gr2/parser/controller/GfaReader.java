@@ -43,7 +43,7 @@ public class GfaReader {
   public OriginalGraph read() {
     if (originalGraph == null) {
       try {
-        read(fileName);
+        parse();
       } catch (IOException ex) {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
@@ -53,11 +53,9 @@ public class GfaReader {
   }
 
   /**
-   * Read a GFA file.
-   *
-   * @param fileName the name of the GFA file.
+   * Parse a GFA file.
    */
-  private void read(String fileName) throws IOException {
+  private void parse() throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(GfaReader.class
         .getClassLoader().getResourceAsStream(fileName)))) {
       br.readLine();
