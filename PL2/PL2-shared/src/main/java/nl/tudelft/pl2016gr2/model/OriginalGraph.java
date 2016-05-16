@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.model;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class OriginalGraph implements GraphInterface/*, IGenomeIterable */ {
+public class OriginalGraph implements GraphInterface {
 
   private final HashMap<Integer, Node> nodes;
   private final ArrayList<Integer> rootNodes;
@@ -116,9 +116,4 @@ public class OriginalGraph implements GraphInterface/*, IGenomeIterable */ {
   public void setGenoms(ArrayList<String> gs) {
     this.genoms = gs;
   }
-
-//  @Override
-//  public Iterator<Node> iterator(String genome) {
-//    return new GenomeIterator(this, genome);
-//  }
 }

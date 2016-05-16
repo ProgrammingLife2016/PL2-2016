@@ -8,12 +8,10 @@ import static org.mockito.Mockito.when;
 
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -65,7 +63,7 @@ public class NodeDensityHeatmapTest {
     nodeList.add(viewNode);
     NodeDensityHeatmap heatmap = Mockito.mock(NodeDensityHeatmap.class);
     AccessPrivate.setFieldValue("currentLeaves", NodeDensityHeatmap.class, heatmap, nodeList);
-    int maxChildren = (int) AccessPrivate.callMethod("getMaxChildren", NodeDensityHeatmap.class,
+    int maxChildren = AccessPrivate.callMethod("getMaxChildren", NodeDensityHeatmap.class,
         heatmap);
     assertEquals(10, maxChildren);
   }
@@ -76,8 +74,8 @@ public class NodeDensityHeatmapTest {
    */
   @Test
   public void testMapColor() {
-    Color c5 = (Color) AccessPrivate.callMethod("mapColor", NodeDensityHeatmap.class, null, 5, 10);
-    Color c6 = (Color) AccessPrivate.callMethod("mapColor", NodeDensityHeatmap.class, null, 6, 10);
+    Color c5 = AccessPrivate.callMethod("mapColor", NodeDensityHeatmap.class, null, 5, 10);
+    Color c6 = AccessPrivate.callMethod("mapColor", NodeDensityHeatmap.class, null, 6, 10);
     assertTrue(c5.getBrightness() > c6.getBrightness());
   }
 }

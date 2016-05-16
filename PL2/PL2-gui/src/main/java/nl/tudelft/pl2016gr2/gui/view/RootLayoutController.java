@@ -22,7 +22,7 @@ import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
+import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.IOException;
@@ -83,7 +83,7 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    graph = new FullGfaReader("TB328.gfa").getGraph();
+    graph = new GfaReader("TB328.gfa").read();
     mainGraphOrder = new GraphOrdererThread(graph);
     mainGraphOrder.start();
   }

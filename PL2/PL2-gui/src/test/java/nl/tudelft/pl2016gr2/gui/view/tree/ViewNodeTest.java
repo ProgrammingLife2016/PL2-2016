@@ -9,11 +9,9 @@ import javafx.animation.Timeline;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -155,8 +153,8 @@ public class ViewNodeTest {
    */
   @Test
   public void testDrawNodeTreeStructureFirstLevel() {
-    ArrayList<ViewNode> rootChildren
-        = (ArrayList) AccessPrivate.getFieldValue("children", ViewNode.class, viewNode);
+    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+        viewNode);
     assertEquals(2, rootChildren.size());
     assertEquals(leafR, rootChildren.get(0).getDataNode());
     assertEquals(leafL, rootChildren.get(1).getDataNode());
@@ -168,12 +166,12 @@ public class ViewNodeTest {
    */
   @Test
   public void testDrawNodeTreeStructureSecondLevel() {
-    ArrayList<ViewNode> rootChildren
-        = (ArrayList) AccessPrivate.getFieldValue("children", ViewNode.class, viewNode);
-    ArrayList<ViewNode> rightChildren
-        = (ArrayList) AccessPrivate.getFieldValue("children", ViewNode.class, rootChildren.get(0));
-    ArrayList<ViewNode> leftChildren
-        = (ArrayList) AccessPrivate.getFieldValue("children", ViewNode.class, rootChildren.get(1));
+    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children",
+        ViewNode.class, viewNode);
+    ArrayList<ViewNode> rightChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+        rootChildren.get(0));
+    ArrayList<ViewNode> leftChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+        rootChildren.get(1));
     assertEquals(0, rightChildren.size());
     assertEquals(0, leftChildren.size());
   }
@@ -194,8 +192,8 @@ public class ViewNodeTest {
    */
   @Test
   public void testZoomIn() {
-    ArrayList<ViewNode> rootChildren
-        = (ArrayList) AccessPrivate.getFieldValue("children", ViewNode.class, viewNode);
+    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+        viewNode);
     Timeline timeline = new Timeline();
     viewNode.zoomIn(rootChildren.get(1), timeline);
     assertEquals(3, timeline.getKeyFrames().size());
