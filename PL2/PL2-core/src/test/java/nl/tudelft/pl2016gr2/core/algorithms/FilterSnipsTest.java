@@ -27,7 +27,7 @@ public class FilterSnipsTest {
   @Before
   public void setup() {
     for (int i = 1; i <= 9; i++) {
-      Node node = new Node(i, 1, null, 0);
+      Node node = new Node(i, 1, new ArrayList<>(), 0);
       if (i == 1 || i == 4 || i == 7) {
         node.addOutlink(i + 1);
         node.addOutlink(i + 2);

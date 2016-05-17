@@ -72,4 +72,9 @@ public class Bubble extends AbstractNode {
     hash = 41 * hash + this.getId();
     return hash;
   }
+
+  @Override
+  public int getGenomesOverEdge(AbstractNode to) {
+    throw new UnsupportedOperationException("Not implemented yet.");
+  }
 }

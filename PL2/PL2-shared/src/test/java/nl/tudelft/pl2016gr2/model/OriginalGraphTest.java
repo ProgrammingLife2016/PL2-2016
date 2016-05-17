@@ -16,7 +16,7 @@ public class OriginalGraphTest extends GraphTest {
     ArrayList<String> ar = new ArrayList<>();
     ar.add("aba");
     Node n1 = new Node(2, 8, ar, 5);
-    Node n2 = new Node(5, 8, null, 9);
+    Node n2 = new Node(5, 8, new ArrayList<>(), 9);
     graph.addNode(n1);
     graph.addNode(n2);
     graph.setGenoms(ar);

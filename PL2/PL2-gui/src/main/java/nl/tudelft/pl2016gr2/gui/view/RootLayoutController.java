@@ -128,12 +128,12 @@ public class RootLayoutController implements Initializable {
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-    topSubGraphThread.getSubGraph();
-    bottomSubGraphThread.getSubGraph();
+    OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
+    OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
     Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
-        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
-            topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    drawGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
+        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
+            bottomSubgraph);
+    drawGraphs.drawGraphs(topSubgraph, bottomSubgraph, alignedGraphs.left, alignedGraphs.right);
   }
 
   /**
