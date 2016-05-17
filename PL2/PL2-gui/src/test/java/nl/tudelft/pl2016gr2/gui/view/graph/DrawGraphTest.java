@@ -1,12 +1,15 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import static org.mockito.Mockito.verify;
-
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * This class tests the {@link DrawGraph} class.
@@ -21,8 +24,10 @@ public class DrawGraphTest {
    */
   @Test
   public void testDrawGraph() {
-    Pane pane = Mockito.spy(new Pane());
-    new DrawGraph().drawGraph(pane);
+    Pane pane = spy(new Pane());
+    OriginalGraph graph = spy(new GfaReader("SMALL.gfa").read());
+
+    new DrawGraph().drawGraph(pane, graph);
     verify(pane, Mockito.atLeast(1)).getChildren();
   }
 

@@ -7,7 +7,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
-import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,10 +26,10 @@ public class DrawGraph {
    * Load and draw a graph in the given pane.
    *
    * @param pane the pane in which to draw the graph.
+   * @param graph the graph.
    */
-  public void drawGraph(Pane pane) {
+  public void drawGraph(Pane pane, OriginalGraph graph) {
     double paneHeight = 600.0;
-    OriginalGraph graph = new GfaReader("SMALL.gfa").read();
 
     HashMap<Integer, Node> nodes = graph.getNodes();
     HashMap<Integer, Circle> circles = drawNodes(pane, nodes);

@@ -14,6 +14,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 import java.util.Observable;
 
@@ -60,7 +61,6 @@ public class RootLayoutController {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    new DrawGraph().drawGraph(graphPane);
   }
 
   /**
@@ -114,12 +114,13 @@ public class RootLayoutController {
    *
    * @param root the root of the tree which has to be drawn.
    */
-  public void setData(IPhylogeneticTreeNode root) {
+  public void setData(IPhylogeneticTreeNode root, OriginalGraph graph) {
     assert treeManager == null;
     treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
     heatmapManager.initLeaves(treeManager.getCurrentLeaves());
     treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(treeManager.getCurrentLeaves());
     });
+    new DrawGraph().drawGraph(graphPane, graph);
   }
 }

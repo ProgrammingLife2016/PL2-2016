@@ -8,6 +8,7 @@ import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 
 import java.io.BufferedReader;
@@ -45,23 +46,40 @@ public class Dnav extends Application {
     primaryStage.show();
 
     RootLayoutController controller = loader.getController();
-    insertData(controller);
+
+    String treeFilename = "340tree.rooted.TKK.nwk";
+    String graphFilename = "SMALL.gfa";
+
+    insertData(controller, treeFilename, graphFilename);
   }
 
   /**
    * Load the data into the root layout.
    *
    * @param controller the controller of the root layout.
+   * @param treeFilename filename of the tree you want to load.
+   * @param graphFilename filename of the graph you want to load.
    */
-  private void insertData(RootLayoutController controller) {
+  private void insertData(RootLayoutController controller, String treeFilename, String graphFilename) {
+
     // abusing NWKReader class as this class' classloader can access the correct resource
     Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        GfaReader.class.getClassLoader().getResourceAsStream(treeFilename));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("340tree.rooted.TKK");
-    controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
+    String treeName;
+    int extensionOffset = treeFilename.lastIndexOf(".nwk");
+    if (extensionOffset > 0) {
+      treeName = treeFilename.substring(0, extensionOffset);
+    } else {
+      treeName = treeFilename;
+    }
+    tree = tp.tokenize(treeName);
+
+    OriginalGraph graph = new GfaReader(graphFilename).read();
+
+    controller.setData(new PhylogeneticTreeNode(tree.getRoot()), graph);
     try {
       reader.close();
     } catch (IOException ex) {
