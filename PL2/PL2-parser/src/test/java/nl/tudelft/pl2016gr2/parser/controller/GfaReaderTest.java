@@ -6,6 +6,8 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 
+import java.io.File;
+
 /**
  * This class tests the {@link GfaReader} class.
  *
@@ -17,7 +19,7 @@ public class GfaReaderTest {
 
   @Test
   public void integrationTest() {
-    GfaReader reader = new GfaReader(filename);
+    GfaReader reader = new GfaReader(new File(filename));
     OriginalGraph og = reader.read();
     assertEquals(og.getGenoms().size(), 11);
     assertEquals(og.getNode(3).getGenomes().size(), 1);
@@ -28,7 +30,7 @@ public class GfaReaderTest {
    */
   @Test
   public void testRead() {
-    GfaReader reader = new GfaReader(filename);
+    GfaReader reader = new GfaReader(new File(filename));
     OriginalGraph actual = reader.read();
     OriginalGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class, reader);
     assertEquals(expected, actual);

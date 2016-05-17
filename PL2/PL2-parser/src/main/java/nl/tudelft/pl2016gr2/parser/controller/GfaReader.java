@@ -5,6 +5,8 @@ import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -22,17 +24,17 @@ public class GfaReader {
   private static final int SHIFT_BY_BASE_10 = 10;
   private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
-  private final String fileName;
+  private final File file;
   @TestId(id = "originalGraph")
   private OriginalGraph originalGraph;
 
   /**
    * Creates a reader object and reads the gfa data from the filename.
    *
-   * @param fileName the name of the file to read.
+   * @param file the file to read.
    */
-  public GfaReader(String fileName) {
-    this.fileName = fileName;
+  public GfaReader(File file) {
+    this.file = file;
   }
 
   /**
@@ -56,8 +58,7 @@ public class GfaReader {
    * Parse a GFA file.
    */
   private void parse() throws IOException {
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(GfaReader.class
-        .getClassLoader().getResourceAsStream(fileName)))) {
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
       br.readLine();
       String line;
       while ((line = br.readLine()) != null) {

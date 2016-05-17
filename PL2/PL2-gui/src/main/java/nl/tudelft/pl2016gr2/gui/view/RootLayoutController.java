@@ -1,13 +1,21 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
@@ -16,7 +24,10 @@ import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Observable;
+import java.util.ResourceBundle;
 
 /**
  * FXML Controller class.
@@ -25,6 +36,8 @@ import java.util.Observable;
  */
 public class RootLayoutController implements Initializable {
 
+  @FXML
+  private Node rootLayoutNode;
   @FXML
   private Pane treePane;
   @FXML
@@ -45,6 +58,9 @@ public class RootLayoutController implements Initializable {
   private SplitPane mainPane;
   private final Pane graphPane = new Pane();
 
+  @FXML
+  private MenuItem menuFileOpen;
+
   private static RootLayoutController controller;
   private TreeManager treeManager;
   private HeatmapManager heatmapManager;
@@ -62,6 +78,26 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
+    initializeFileMenu();
+  }
+
+  private void initializeFileMenu() {
+    menuFileOpen.setOnAction(event -> {
+      try {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(getClass().getClassLoader().getResource("pages/FileChooser.fxml"));
+        Parent root = loader.load();
+
+        Stage popupStage = new Stage();
+        popupStage.setScene(new Scene(root));
+        popupStage.setTitle("Select files to load");
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(rootLayoutNode.getScene().getWindow());
+        popupStage.showAndWait();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 
   /**
@@ -114,6 +150,7 @@ public class RootLayoutController implements Initializable {
    * Set the data which has to be visualized.
    *
    * @param root the root of the tree which has to be drawn.
+   * @param graph the graph
    */
   public void setData(IPhylogeneticTreeNode root, OriginalGraph graph) {
     assert treeManager == null;

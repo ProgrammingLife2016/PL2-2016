@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import java.io.File;
+
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -25,7 +27,7 @@ public class DrawGraphTest {
   @Test
   public void testDrawGraph() {
     Pane pane = spy(new Pane());
-    OriginalGraph graph = spy(new GfaReader("SMALL.gfa").read());
+    OriginalGraph graph = spy(new GfaReader(new File("SMALL.gfa")).read());
 
     new DrawGraph().drawGraph(pane, graph);
     verify(pane, Mockito.atLeast(1)).getChildren();
