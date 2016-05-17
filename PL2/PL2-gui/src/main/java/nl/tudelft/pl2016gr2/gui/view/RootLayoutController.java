@@ -23,7 +23,7 @@ import java.util.Observable;
  *
  * @author Faris
  */
-public class RootLayoutController {
+public class RootLayoutController implements Initializable {
 
   @FXML
   private Pane treePane;
@@ -54,7 +54,8 @@ public class RootLayoutController {
   /**
    * Initializes the controller class.
    */
-  public void initialize() {
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
     assert (controller == null);
     controller = this;
     heatmapManager = new HeatmapManager(heatmapPane);
