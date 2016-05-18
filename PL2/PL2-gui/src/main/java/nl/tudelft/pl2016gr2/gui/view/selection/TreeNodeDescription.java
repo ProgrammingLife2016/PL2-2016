@@ -6,8 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 
-import java.util.ArrayList;
-
 /**
  * This class is used by tree nodes to offer a tree node description view to the selection manager.
  *
@@ -18,12 +16,13 @@ public class TreeNodeDescription implements ISelectionInfo {
   private final IPhylogeneticTreeNode treeNode;
   private final SelectionManager selectionManager;
   private final EventHandler<ActionEvent> buttonClicked = new EventHandler<ActionEvent>() {
-
     @Override
     public void handle(ActionEvent event) {
-      ArrayList<String> topGenomes = treeNode.getChild(0).getGenomes();
-      ArrayList<String> bottomGenomes = treeNode.getChild(1).getGenomes();
-      selectionManager.drawGraph(topGenomes, bottomGenomes);
+      IPhylogeneticTreeNode topNode = treeNode.getChild(0);
+      IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
+      selectionManager.setTopGraphNode(topNode);
+      selectionManager.setBottomGraphNode(bottomNode);
+      selectionManager.drawGraph(topNode.getGenomes(), bottomNode.getGenomes());
     }
   };
 

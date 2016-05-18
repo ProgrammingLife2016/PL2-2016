@@ -5,11 +5,14 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 
 import java.util.ArrayList;
@@ -28,6 +31,10 @@ public class SelectionManager {
   private DescriptionPane contentPane;
   private ISelectable selected;
   private Timeline timeline;
+
+  private final ObjectProperty<IPhylogeneticTreeNode> topGraphNode = new SimpleObjectProperty<>();
+  private final ObjectProperty<IPhylogeneticTreeNode> bottomGraphNode
+      = new SimpleObjectProperty<>();
 
   /**
    * Create a selection manager.
@@ -122,5 +129,31 @@ public class SelectionManager {
       curContentPane.clear();
     });
     timeline.play();
+  }
+
+  /**
+   * Set the IPhylogeneticTreeNode which is shown in the top graph.
+   *
+   * @param topNode the IPhylogeneticTreeNode which is shown in the top graph.
+   */
+  public void setTopGraphNode(IPhylogeneticTreeNode topNode) {
+    topGraphNode.set(topNode);
+  }
+
+  /**
+   * Set the IPhylogeneticTreeNode which is shown in the bottom graph.
+   *
+   * @param bottomNode the IPhylogeneticTreeNode which is shown in the bottom graph.
+   */
+  public void setBottomGraphNode(IPhylogeneticTreeNode bottomNode) {
+    bottomGraphNode.set(bottomNode);
+  }
+
+  public ObjectProperty<IPhylogeneticTreeNode> getTopGraphNode() {
+    return topGraphNode;
+  }
+
+  public ObjectProperty<IPhylogeneticTreeNode> getBottomGraphNode() {
+    return bottomGraphNode;
   }
 }

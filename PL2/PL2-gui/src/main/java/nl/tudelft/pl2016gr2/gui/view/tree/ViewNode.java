@@ -30,6 +30,8 @@ import java.util.ArrayList;
  */
 public class ViewNode extends Circle implements ISelectable {
 
+  private static final Color LEAF_COLOR = Color.BLACK;
+  private static final Color NODE_COLOR = Color.ALICEBLUE;
   private static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
@@ -59,10 +61,7 @@ public class ViewNode extends Circle implements ISelectable {
     this.area = graphArea;
     this.selectionManager = selectionManager;
 
-    double red = Math.abs(((dataNode.getChildCount() * 13) % 200) / 255d);
-    double green = Math.abs(((dataNode.getChildCount() * 34) % 200) / 255d);
-    double blue = Math.abs(((dataNode.getChildCount() * 88) % 200) / 255d);
-    this.setFill(new Color(red, green, blue, 1.0));
+    setDefaultColor();
 
     this.setCenterX(graphArea.getEndX() - this.getRadius());
     this.setCenterY(graphArea.getCenterY());
@@ -340,9 +339,9 @@ public class ViewNode extends Circle implements ISelectable {
   /**
    * Highlight the area of this node.
    *
-   * @param treePane the pane in which to draw the highlight area.
+   * @param treePane the pane in which to draw the highlightNode area.
    */
-  public void highlight(Pane treePane) {
+  public void highlightArea(Pane treePane) {
     highlightArea = new Rectangle(area.getStartX(), area.getStartY(), area.getWidth(),
         area.getHeight());
     highlightArea.setFill(Color.rgb(0, 0, 0, 0.075));
@@ -351,13 +350,85 @@ public class ViewNode extends Circle implements ISelectable {
   }
 
   /**
-   * Remove the highlight of the area of this node.
+   * Remove the highlightNode of the area of this node.
    *
-   * @param treePane the pane from which to remove the highlight area.
+   * @param treePane the pane from which to remove the highlightNode area.
    */
   public void removeHighlight(Pane treePane) {
     treePane.getChildren().remove(highlightArea);
     highlightArea = null;
+  }
+
+  /**
+   * Highlight the given node and its child nodes. First search for matches in any of the parent
+   * nodes, then search for matches in the child nodes.
+   *
+   * @param node  the node.
+   * @param color the color.
+   */
+  public void highlightNode(IPhylogeneticTreeNode node, Color color) {
+    IPhylogeneticTreeNode parent = dataNode;
+    while (parent.hasParent()) {
+      parent = parent.getParent();
+      if (parent.equals(node)) {
+        setRecursiveColor(color);
+        return;
+      }
+    }
+    highlightChildNode(node, color);
+  }
+
+  /**
+   * Highlight the given node and its child nodes. Only search for matches in the child nodes.
+   *
+   * @param node  the node.
+   * @param color the color.
+   */
+  private void highlightChildNode(IPhylogeneticTreeNode node, Color color) {
+    if (dataNode.equals(node)) {
+      setRecursiveColor(color);
+    } else {
+      for (ViewNode viewNode : children) {
+        viewNode.highlightNode(node, color);
+      }
+    }
+  }
+
+  /**
+   * Recursively set the color of this node and all child nodes to the given color.
+   *
+   * @param color the color.
+   */
+  private void setRecursiveColor(Color color) {
+    if (dataNode.getDirectChildCount() == 0) {
+      setFill(color.darker().darker());
+    } else {
+      setFill(color);
+      for (ViewNode viewNode : children) {
+        viewNode.setRecursiveColor(color);
+      }
+    }
+  }
+
+  /**
+   * Recursively set the color of this node and all child nodes to the default color.
+   */
+  public void removeHighlightColor() {
+    setDefaultColor();
+    for (ViewNode viewNode : children) {
+      viewNode.removeHighlightColor();
+    }
+  }
+
+  /**
+   * Set the default color of this node.
+   */
+  private void setDefaultColor() {
+    if (dataNode.getDirectChildCount() == 0) {
+      setFill(LEAF_COLOR);
+    } else {
+      setFill(NODE_COLOR);
+    }
   }
 
   @Override
