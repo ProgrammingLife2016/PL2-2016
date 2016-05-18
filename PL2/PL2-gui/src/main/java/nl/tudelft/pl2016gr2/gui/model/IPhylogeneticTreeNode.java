@@ -61,4 +61,10 @@ public interface IPhylogeneticTreeNode {
    * @return all of the genomes whic are present in this branch of the tree.
    */
   ArrayList<String> getGenomes();
+  
+  /**
+   * Get the length of the edge to this node.
+   * @return the length of the edge to this node.
+   */
+  double getEdgeLength();
 }

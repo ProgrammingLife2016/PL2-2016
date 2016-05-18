@@ -33,13 +33,16 @@ public class ViewNode extends Circle implements ISelectable {
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
+  private static final double MAX_EDGE_LENGTH = 200.0;
+  private static final double MIN_EDGE_LENGTH = 20.0;
+  private static final double EDGE_LENGTH_SCALAR = 3000.0;
 
   private final IPhylogeneticTreeNode dataNode;
   @TestId(id = "children")
   private final ArrayList<ViewNode> children = new ArrayList<>();
   private final Area area;
   private final SelectionManager selectionManager;
-  private boolean isLeaf = true;
+  private boolean isLeaf;
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -110,29 +113,69 @@ public class ViewNode extends Circle implements ISelectable {
    *
    * @param node             the node.
    * @param dataNode         the data node.
-   * @param graphArea        the graph area of the node.
+   * @param area             the graph area of the node.
    * @param graphPane        the pane in which to draw the node.
    * @param selectionManager the selection manager.
    */
-  private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area graphArea,
+  private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area area,
       Pane graphPane, SelectionManager selectionManager) {
-    double nextEndX = graphArea.getCenterX();
-    double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
+    if (dataNode.getDirectChildCount() == 0) {
+      node.isLeaf = true;
+      return;
+    }
+    if (!canDrawChildren(dataNode, area)) {
+      node.isLeaf = true;
+      drawElipsis(node, graphPane);
+      return;
+    }
+    double ySize = area.getHeight() / dataNode.getDirectChildCount();
     for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
       IPhylogeneticTreeNode childDataNode = dataNode.getChild(i);
-      double nextStartY = ySize * i + graphArea.getStartY();
+      double nextStartY = ySize * i + area.getStartY();
       double nextEndY = nextStartY + ySize;
-      Area childArea = new Area(graphArea.getStartX(), nextEndX, nextStartY, nextEndY);
+      double nextEndX = area.getEndX() - calculateEdgeLength(dataNode.getChild(i));
+      Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
       ViewNode child = drawNode(childDataNode, childArea, graphPane, selectionManager);
-      if (child == null) {
-        drawElipsis(node, graphPane);
-        node.isLeaf = true;
-        break;
-      }
-      node.isLeaf = false;
       node.children.add(child);
       drawEdge(node, child, graphPane);
     }
+  }
+
+  /**
+   * Check if there is enough room to draw all of the children.
+   *
+   * @param dataNode   the parent node.
+   * @param parentArea the area of the parent node.
+   * @return if all of the children can be drawn.
+   */
+  private static boolean canDrawChildren(IPhylogeneticTreeNode dataNode, Area parentArea) {
+    double ySize = parentArea.getHeight() / dataNode.getDirectChildCount();
+    for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
+      double nextStartY = ySize * i + parentArea.getStartY();
+      double nextEndY = nextStartY + ySize;
+      double nextEndX = parentArea.getEndX() - calculateEdgeLength(dataNode.getChild(i));
+      Area childArea = new Area(parentArea.getStartX(), nextEndX, nextStartY, nextEndY);
+      if (!(childArea.getWidth() > NODE_DIAMETER) || !(childArea.getHeight() > NODE_DIAMETER)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Calculate the length of the edge to the given node.
+   *
+   * @param treeNode the node.
+   * @return the length of the edge.
+   */
+  private static double calculateEdgeLength(IPhylogeneticTreeNode treeNode) {
+    double edgeLength = treeNode.getEdgeLength() * EDGE_LENGTH_SCALAR;
+    if (edgeLength < MIN_EDGE_LENGTH) {
+      return MIN_EDGE_LENGTH;
+    } else if (edgeLength > MAX_EDGE_LENGTH) {
+      return MAX_EDGE_LENGTH;
+    }
+    return edgeLength;
   }
 
   /**
@@ -161,8 +204,8 @@ public class ViewNode extends Circle implements ISelectable {
    */
   private static void drawElipsis(ViewNode node, Pane graphPane) {
     Line elipsis = new Line();
-    elipsis.startXProperty().bind(node.centerXProperty().add(-node.getRadius() * 2));
-    elipsis.endXProperty().bind(node.centerXProperty().add(-node.getRadius() * 4));
+    elipsis.startXProperty().bind(node.centerXProperty().add(-node.getRadius() * 1.25));
+    elipsis.endXProperty().bind(node.centerXProperty().add(-node.getRadius() * 2.5));
     elipsis.startYProperty().bind(node.centerYProperty());
     elipsis.endYProperty().bind(node.centerYProperty());
     elipsis.getStrokeDashArray().addAll(2d, 5d);
@@ -187,9 +230,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param timeline     the timeline which is used for the animation.
    */
   private void zoomIn(Area originalArea, Area zoomArea, Timeline timeline) {
-    double newX = getCenterX() - zoomArea.getStartX() + NODE_RADIUS;
-    newX = newX / zoomArea.getWidth() * originalArea.getWidth();
-    newX = newX - NODE_RADIUS + TreeManager.GRAPH_BORDER_OFFSET;
+    double newX = getCenterX() + originalArea.getEndX() - zoomArea.getEndX();
     double newY = getCenterY() - zoomArea.getStartY();
     newY = newY / zoomArea.getHeight() * originalArea.getHeight();
     newY += TreeManager.GRAPH_BORDER_OFFSET;
@@ -212,11 +253,11 @@ public class ViewNode extends Circle implements ISelectable {
    */
   public void zoomOut(Timeline timeline) {
     IPhylogeneticTreeNode newRoot = dataNode.getParent();
-    double nextEndX = area.getCenterX();
+    double nextEndX = area.getEndX() - calculateEdgeLength(dataNode);
     double ySize = area.getHeight() / newRoot.getDirectChildCount();
     double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + area.getStartY();
     double nextEndY = nextStartY + ySize;
-    Area newArea = new Area(this.area.getStartX(), nextEndX, nextStartY, nextEndY);
+    Area newArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
     zoomOut(this.area, newArea, timeline);
   }
 
@@ -229,9 +270,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param timeline     the timeline which is used for the animation.
    */
   private void zoomOut(Area originalArea, Area zoomArea, Timeline timeline) {
-    double newX = getCenterX() - originalArea.getStartX() + NODE_RADIUS;
-    newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.getStartX();
-    newX -= NODE_RADIUS;
+    double newX = getCenterX() + zoomArea.getEndX() - originalArea.getEndX();
     double newY = getCenterY() - originalArea.getStartY();
     newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.getStartY();
 
