@@ -60,7 +60,7 @@ public class ViewNode extends Circle implements ISelectable {
     double blue = Math.abs(((dataNode.getChildCount() * 88) % 200) / 255d);
     this.setFill(new Color(red, green, blue, 1.0));
 
-    this.setCenterX(this.getRadius() + graphArea.getStartX());
+    this.setCenterX(graphArea.getEndX() - this.getRadius());
     this.setCenterY(graphArea.getCenterY());
     initializeClickedEvent();
   }
@@ -116,13 +116,13 @@ public class ViewNode extends Circle implements ISelectable {
    */
   private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area graphArea,
       Pane graphPane, SelectionManager selectionManager) {
-    double nextStartX = graphArea.getCenterX();
+    double nextEndX = graphArea.getCenterX();
     double ySize = graphArea.getHeight() / dataNode.getDirectChildCount();
     for (int i = 0; i < dataNode.getDirectChildCount(); i++) {
       IPhylogeneticTreeNode childDataNode = dataNode.getChild(i);
       double nextStartY = ySize * i + graphArea.getStartY();
       double nextEndY = nextStartY + ySize;
-      Area childArea = new Area(nextStartX, graphArea.getEndX(), nextStartY, nextEndY);
+      Area childArea = new Area(graphArea.getStartX(), nextEndX, nextStartY, nextEndY);
       ViewNode child = drawNode(childDataNode, childArea, graphPane, selectionManager);
       if (child == null) {
         drawElipsis(node, graphPane);
@@ -161,8 +161,8 @@ public class ViewNode extends Circle implements ISelectable {
    */
   private static void drawElipsis(ViewNode node, Pane graphPane) {
     Line elipsis = new Line();
-    elipsis.startXProperty().bind(node.centerXProperty().add(node.getRadius() * 2));
-    elipsis.endXProperty().bind(node.centerXProperty().add(node.getRadius() * 4));
+    elipsis.startXProperty().bind(node.centerXProperty().add(-node.getRadius() * 2));
+    elipsis.endXProperty().bind(node.centerXProperty().add(-node.getRadius() * 4));
     elipsis.startYProperty().bind(node.centerYProperty());
     elipsis.endYProperty().bind(node.centerYProperty());
     elipsis.getStrokeDashArray().addAll(2d, 5d);
@@ -187,9 +187,9 @@ public class ViewNode extends Circle implements ISelectable {
    * @param timeline     the timeline which is used for the animation.
    */
   private void zoomIn(Area originalArea, Area zoomArea, Timeline timeline) {
-    double newX = getCenterX() - zoomArea.getStartX() - NODE_RADIUS;
+    double newX = getCenterX() - zoomArea.getStartX() + NODE_RADIUS;
     newX = newX / zoomArea.getWidth() * originalArea.getWidth();
-    newX += NODE_RADIUS + TreeManager.GRAPH_BORDER_OFFSET;
+    newX = newX - NODE_RADIUS + TreeManager.GRAPH_BORDER_OFFSET;
     double newY = getCenterY() - zoomArea.getStartY();
     newY = newY / zoomArea.getHeight() * originalArea.getHeight();
     newY += TreeManager.GRAPH_BORDER_OFFSET;
@@ -212,11 +212,11 @@ public class ViewNode extends Circle implements ISelectable {
    */
   public void zoomOut(Timeline timeline) {
     IPhylogeneticTreeNode newRoot = dataNode.getParent();
-    double nextStartX = area.getCenterX();
+    double nextEndX = area.getCenterX();
     double ySize = area.getHeight() / newRoot.getDirectChildCount();
     double nextStartY = ySize * newRoot.getChildIndex(this.dataNode) + area.getStartY();
     double nextEndY = nextStartY + ySize;
-    Area newArea = new Area(nextStartX, this.area.getEndX(), nextStartY, nextEndY);
+    Area newArea = new Area(this.area.getStartX(), nextEndX, nextStartY, nextEndY);
     zoomOut(this.area, newArea, timeline);
   }
 
@@ -229,9 +229,9 @@ public class ViewNode extends Circle implements ISelectable {
    * @param timeline     the timeline which is used for the animation.
    */
   private void zoomOut(Area originalArea, Area zoomArea, Timeline timeline) {
-    double newX = getCenterX() - originalArea.getStartX() - NODE_RADIUS;
+    double newX = getCenterX() - originalArea.getStartX() + NODE_RADIUS;
     newX = newX * zoomArea.getWidth() / originalArea.getWidth() + zoomArea.getStartX();
-    newX += NODE_RADIUS;
+    newX -= NODE_RADIUS;
     double newY = getCenterY() - originalArea.getStartY();
     newY = newY * zoomArea.getHeight() / originalArea.getHeight() + zoomArea.getStartY();
 

@@ -11,6 +11,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
@@ -138,6 +139,7 @@ public class DrawComparedGraphs implements Initializable {
     }
     drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
     drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+    mainPane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**
