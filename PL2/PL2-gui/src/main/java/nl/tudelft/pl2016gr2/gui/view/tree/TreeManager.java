@@ -1,9 +1,11 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -42,6 +44,7 @@ public class TreeManager implements Initializable {
   @TestId(id = "heatmapPane")
   private Pane heatmapPane;
   private ViewNode currentRoot;
+  private ViewNode currentHighlightedNode;
   private boolean isZooming = false;
   private final ArrayList<Observer> childLeaveObservers = new ArrayList<>();
   @TestId(id = "selectionManager")
@@ -77,6 +80,7 @@ public class TreeManager implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     initializeZoomEventHandler();
     initializeGraphSizeListeners();
+    initializeZoomAreaHighlighter();
     heatmapManager = new HeatmapManager(heatmapPane);
     this.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(getCurrentLeaves());
@@ -90,6 +94,39 @@ public class TreeManager implements Initializable {
    */
   public void loadTree(IPhylogeneticTreeNode root) {
     setRoot(root);
+  }
+
+  /**
+   * Initialize the mouse listeners which highlight the area which will be zoomed in on when the
+   * mouse scrolls.
+   */
+  private void initializeZoomAreaHighlighter() {
+    treePane.setOnMouseMoved((MouseEvent event) -> {
+      if (currentRoot == null || isZooming) {
+        return;
+      }
+      ViewNode toHighlight = currentRoot.getClosestParentNode(event.getX(), event.getY());
+      if (currentHighlightedNode != toHighlight) {
+        removeHighlight();
+        if (toHighlight != null) {
+          toHighlight.highlight(treePane);
+          currentHighlightedNode = toHighlight;
+        }
+      }
+    });
+    treePane.setOnMouseExited((MouseEvent event) -> {
+      removeHighlight();
+    });
+  }
+
+  /**
+   * Remove the highlighted area.
+   */
+  private void removeHighlight() {
+    if (currentHighlightedNode != null) {
+      currentHighlightedNode.removeHighlight(treePane);
+      currentHighlightedNode = null;
+    }
   }
 
   /**
@@ -116,6 +153,7 @@ public class TreeManager implements Initializable {
     if (isZooming || zoomedInNode == null || zoomedInNode.equals(currentRoot)) {
       return;
     }
+    removeHighlight();
     Timeline timeline = new Timeline();
     currentRoot.zoomIn(zoomedInNode, timeline);
     timeline.setOnFinished(e -> {
@@ -133,6 +171,7 @@ public class TreeManager implements Initializable {
     if (isZooming || !currentRoot.getDataNode().hasParent()) {
       return;
     }
+    removeHighlight();
     Timeline timeline = new Timeline();
     currentRoot.zoomOut(timeline);
     timeline.setOnFinished(event -> {

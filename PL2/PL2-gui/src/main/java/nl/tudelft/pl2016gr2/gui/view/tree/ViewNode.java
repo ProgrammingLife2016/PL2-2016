@@ -9,6 +9,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
@@ -332,6 +333,31 @@ public class ViewNode extends Circle implements ISelectable {
     } else {
       return null;
     }
+  }
+
+  private Rectangle highlightArea;
+
+  /**
+   * Highlight the area of this node.
+   *
+   * @param treePane the pane in which to draw the highlight area.
+   */
+  public void highlight(Pane treePane) {
+    highlightArea = new Rectangle(area.getStartX(), area.getStartY(), area.getWidth(),
+        area.getHeight());
+    highlightArea.setFill(Color.rgb(0, 0, 0, 0.075));
+    treePane.getChildren().add(highlightArea);
+    highlightArea.toBack();
+  }
+
+  /**
+   * Remove the highlight of the area of this node.
+   *
+   * @param treePane the pane from which to remove the highlight area.
+   */
+  public void removeHighlight(Pane treePane) {
+    treePane.getChildren().remove(highlightArea);
+    highlightArea = null;
   }
 
   @Override
