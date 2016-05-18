@@ -56,20 +56,6 @@ public class DrawComparedGraphs implements Initializable {
   private int amountOfLevels;
 
   /**
-   * Initialize the controller class.
-   *
-   * @param location  unused variable.
-   * @param resources unused variable.
-   */
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    mainPane.widthProperty().addListener(invalidate -> updateGraph());
-  }
-
-  /**
    * Load this view.
    *
    * @return the controller of the loaded view.
@@ -85,6 +71,20 @@ public class DrawComparedGraphs implements Initializable {
       Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
+  }
+
+  /**
+   * Initialize the controller class.
+   *
+   * @param location  unused variable.
+   * @param resources unused variable.
+   */
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
+    mainPane.widthProperty().addListener(invalidate -> updateGraph());
   }
 
   /**

@@ -3,32 +3,31 @@ package nl.tudelft.pl2016gr2.gui.view;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
+import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.core.algorithms.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
+import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Observable;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,33 +42,17 @@ public class RootLayoutController implements Initializable {
   @FXML
   private StackPane rootPane;
   @FXML
-  private Pane treePane;
-  @FXML
-  private Pane heatmapPane;
-  @FXML
   private Pane selectionDescriptionPane;
   @FXML
-  private Button zoomOutButton;
-  @FXML
-  private StackPane locationIdentifierPane;
-  @FXML
-  private Rectangle locationIdentifierRectangle;
-  @FXML
-  private ImageView treeIcon;
-  @FXML
-  private ImageView graphIcon;
-  @FXML
   private SplitPane mainPane;
-  private final Pane graphPane = new Pane();
 
   private TreeManager treeManager;
-  private HeatmapManager heatmapManager;
+  private Tree tree;
   private SelectionManager selectionManager;
-  private boolean zoomOutButtonDisabled = true;
   private OriginalGraph graph;
 
   private GraphOrdererThread mainGraphOrder;
-  private final DrawComparedGraphs drawGraphs = DrawComparedGraphs.loadView();
+  private DrawComparedGraphs drawGraphs;
 
   /**
    * Initializes the controller class.
@@ -79,13 +62,35 @@ public class RootLayoutController implements Initializable {
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    heatmapManager = new HeatmapManager(heatmapPane);
     initializeSelectionManager();
-    initializeTreeIcon();
-    initializeGraphIcon();
+    treeManager = TreeManager.loadView(selectionManager);
+    drawGraphs = DrawComparedGraphs.loadView();
+    mainPane.getItems().add(treeManager.getTreePane());
+    mainPane.getItems().add(drawGraphs.getGraphPane());
     graph = new GfaReader("TB328.gfa").read();
     mainGraphOrder = new GraphOrdererThread(graph);
     mainGraphOrder.start();
+    loadTree();
+  }
+
+  /**
+   * Load the data into the root layout.
+   *
+   * @param controller the controller of the root layout.
+   */
+  private void loadTree() {
+    Reader reader = new InputStreamReader(
+        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+    BufferedReader br = new BufferedReader(reader);
+    TreeParser tp = new TreeParser(br);
+
+    tree = tp.tokenize("340tree.rooted.TKK.nwk");
+    treeManager.loadTree(new PhylogeneticTreeNode(tree.getRoot()));
+    try {
+      reader.close();
+    } catch (IOException ex) {
+      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   /**
@@ -137,20 +142,6 @@ public class RootLayoutController implements Initializable {
   }
 
   /**
-   * Set the data which has to be visualized.
-   *
-   * @param root the root of the tree which has to be drawn.
-   */
-  public void setData(IPhylogeneticTreeNode root) {
-    assert treeManager == null;
-    treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
-    heatmapManager.initLeaves(treeManager.getCurrentLeaves());
-    treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
-      heatmapManager.setLeaves(treeManager.getCurrentLeaves());
-    });
-  }
-
-  /**
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
@@ -160,38 +151,6 @@ public class RootLayoutController implements Initializable {
         selectionManager.deselect();
         event.consume();
       }
-    });
-  }
-
-  /**
-   * Initialize the tree icon. When this icon is clicked, the tree will be shown.
-   */
-  private void initializeTreeIcon() {
-    treeIcon.setOnMouseClicked((MouseEvent event) -> {
-      if (mainPane.getItems().contains(treePane)) {
-        return;
-      }
-      mainPane.getItems().clear();
-      mainPane.getItems().addAll(treePane, heatmapPane);
-      mainPane.setDividerPositions(0.8);
-      zoomOutButton.setDisable(zoomOutButtonDisabled);
-      mainPane.fireEvent(new GraphicsChangedEvent());
-    });
-  }
-
-  /**
-   * Initialize the tree icon. When this icon is clicked, the tree will be shown.
-   */
-  private void initializeGraphIcon() {
-    graphIcon.setOnMouseClicked((MouseEvent event) -> {
-      if (mainPane.getItems().contains(graphPane)) {
-        return;
-      }
-      mainPane.getItems().clear();
-      mainPane.getItems().add(drawGraphs.getGraphPane());
-      zoomOutButtonDisabled = zoomOutButton.isDisabled();
-      zoomOutButton.setDisable(true);
-      mainPane.fireEvent(new GraphicsChangedEvent());
     });
   }
 
