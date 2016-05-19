@@ -43,7 +43,7 @@ public class SelectionManager {
     this.background = background;
 
     selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
-      if (selectionDescriptionPane.getChildren().size() == 0) {
+      if (selectionDescriptionPane.getChildren().isEmpty()) {
         selectionDescriptionPane.setVisible(false);
       } else {
         selectionDescriptionPane.setVisible(true);

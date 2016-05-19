@@ -93,6 +93,7 @@ public class ViewNodeTest {
     when(leafR.getParent()).thenReturn(root);
     when(leafR.getChildCount()).thenReturn(0);
     when(leafR.getDirectChildCount()).thenReturn(0);
+    when(leafR.getEdgeLength()).thenReturn(0.);
   }
 
   /**
@@ -107,6 +108,7 @@ public class ViewNodeTest {
     when(leafL.getChild(1)).thenReturn(leafLl);
     when(leafL.getChildIndex(leafLr)).thenReturn(0);
     when(leafL.getChildIndex(leafLl)).thenReturn(1);
+    when(leafL.getEdgeLength()).thenReturn(0.);
   }
 
   /**
@@ -117,6 +119,7 @@ public class ViewNodeTest {
     when(leafLr.getParent()).thenReturn(leafL);
     when(leafLr.getChildCount()).thenReturn(0);
     when(leafLr.getDirectChildCount()).thenReturn(0);
+    when(leafLr.getEdgeLength()).thenReturn(0.);
   }
 
   /**
@@ -127,6 +130,7 @@ public class ViewNodeTest {
     when(leafLl.getParent()).thenReturn(leafL);
     when(leafLl.getChildCount()).thenReturn(0);
     when(leafLl.getDirectChildCount()).thenReturn(0);
+    when(leafLl.getEdgeLength()).thenReturn(0.);
   }
 
   /**
@@ -236,7 +240,7 @@ public class ViewNodeTest {
    */
   @Test
   public void testGetClosestParentNode() {
-    assertEquals(leafL, viewNode.getClosestParentNode(40, 180).getDataNode());
+    assertEquals(leafL, viewNode.getClosestParentNode(10, 180).getDataNode());
   }
 
   /**

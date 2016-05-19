@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
@@ -71,11 +71,19 @@ public class TreeManagerTest {
    * Initialize a tree manager.
    */
   private void initializeTreeManager() {
-    SelectionManager selectionManager = new SelectionManager(null, new Pane(), new Pane());
-    Button zoomOutButton = new Button();
     Pane graphPane = new Pane();
     Scene scene = new Scene(graphPane, 500, 500);
-    treeManager = new TreeManager(graphPane, root, zoomOutButton, selectionManager);
+    treeManager = new TreeManager();
+    Pane largePane = new Pane();
+    largePane.setMinHeight(100.0);
+    largePane.setMinWidth(100.0);
+    AccessPrivate.setFieldValue("treePane", TreeManager.class, treeManager, largePane);
+    AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
+    AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
+    SelectionManager selectionManager = new SelectionManager(null, new Pane(), new Pane());
+    AccessPrivate.setFieldValue("selectionManager", TreeManager.class, treeManager,
+        selectionManager);
+    AccessPrivate.callMethod("setRoot", TreeManager.class, treeManager, root);
   }
 
   /**
@@ -153,7 +161,8 @@ public class TreeManagerTest {
    */
   @Test
   public void testGetCurrentLeaves() {
-    ArrayList<ViewNode> leaves = treeManager.getCurrentLeaves();
+    ArrayList<ViewNode> leaves = AccessPrivate.callMethod("getCurrentLeaves()", TreeManager.class,
+        treeManager);
     assertEquals(3, leaves.size());
     ArrayList<IPhylogeneticTreeNode> actualLeaves = new ArrayList<>();
     actualLeaves.add(leafR);

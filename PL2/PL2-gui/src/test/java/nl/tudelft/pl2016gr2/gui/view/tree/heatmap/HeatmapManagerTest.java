@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view.tree.heatmap;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,11 +25,8 @@ public class HeatmapManagerTest {
   @Test
   public void testInitLeaves() {
     HeatmapManager heatmapManager = new HeatmapManager(new Pane());
-    NodeDensityHeatmap densityMap = AccessPrivate.getFieldValue("densityMap", HeatmapManager.class, 
+    NodeDensityHeatmap densityMap = AccessPrivate.getFieldValue("densityMap", HeatmapManager.class,
         heatmapManager);
-    assertEquals(null, densityMap);
-    heatmapManager.initLeaves(new ArrayList<>());
-    densityMap = AccessPrivate.getFieldValue("densityMap", HeatmapManager.class, heatmapManager);
     ArrayList<ViewNode> leaves = AccessPrivate.getFieldValue("currentLeaves",
         NodeDensityHeatmap.class, densityMap);
     assertTrue(leaves.isEmpty());

@@ -97,4 +97,8 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
     return res;
   }
 
+  @Override
+  public double getEdgeLength() {
+    return node.weight;
+  }
 }

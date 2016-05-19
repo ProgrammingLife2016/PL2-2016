@@ -11,6 +11,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
@@ -58,20 +59,6 @@ public class DrawComparedGraphs implements Initializable {
   private int amountOfLevels;
 
   /**
-   * Initialize the controller class.
-   *
-   * @param location  unused variable.
-   * @param resources unused variable.
-   */
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    mainPane.widthProperty().addListener(invalidate -> updateGraph());
-  }
-
-  /**
    * Load this view.
    *
    * @return the controller of the loaded view.
@@ -87,6 +74,20 @@ public class DrawComparedGraphs implements Initializable {
       Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
+  }
+
+  /**
+   * Initialize the controller class.
+   *
+   * @param location  unused variable.
+   * @param resources unused variable.
+   */
+  @Override
+  public void initialize(URL location, ResourceBundle resources) {
+    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
+    mainPane.widthProperty().addListener(invalidate -> updateGraph());
   }
 
   /**
@@ -140,6 +141,7 @@ public class DrawComparedGraphs implements Initializable {
     }
     drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
     drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+    mainPane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**
