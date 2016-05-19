@@ -7,3 +7,10 @@ env:
         - SRCDIR=PL2
 
 script: cd $SRCDIR && mvn verify
+
+# use newer version of java
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
