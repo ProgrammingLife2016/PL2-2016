@@ -14,6 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
 
@@ -32,8 +33,7 @@ public class SelectionManager {
   private ISelectable selected;
   private Timeline timeline;
 
-  private final ObjectProperty<IPhylogeneticTreeNode> topGraphNode = new SimpleObjectProperty<>();
-  private final ObjectProperty<IPhylogeneticTreeNode> bottomGraphNode
+  private final ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> graphNodes
       = new SimpleObjectProperty<>();
 
   /**
@@ -132,28 +132,21 @@ public class SelectionManager {
   }
 
   /**
-   * Set the IPhylogeneticTreeNode which is shown in the top graph.
+   * Set the IPhylogeneticTreeNode which is shown in the top and bottom graph.
    *
-   * @param topNode the IPhylogeneticTreeNode which is shown in the top graph.
+   * @param topNode    the IPhylogeneticTreeNode which is shown in the top graph.
+   * @param bottomNode the IPhylogeneticTreeNode which is shown in the bottom graph.
    */
-  public void setTopGraphNode(IPhylogeneticTreeNode topNode) {
-    topGraphNode.set(topNode);
+  public void setShownGraphNodes(IPhylogeneticTreeNode topNode, IPhylogeneticTreeNode bottomNode) {
+    graphNodes.set(new Pair<>(topNode, bottomNode));
   }
 
   /**
-   * Set the IPhylogeneticTreeNode which is shown in the bottom graph.
+   * Get the IPhylogeneticTreeNode which is shown in the top and bottom graph.
    *
-   * @param bottomNode the IPhylogeneticTreeNode which is shown in the bottom graph.
+   * @return the IPhylogeneticTreeNode which is shown in the top and bottom graph.
    */
-  public void setBottomGraphNode(IPhylogeneticTreeNode bottomNode) {
-    bottomGraphNode.set(bottomNode);
-  }
-
-  public ObjectProperty<IPhylogeneticTreeNode> getTopGraphNode() {
-    return topGraphNode;
-  }
-
-  public ObjectProperty<IPhylogeneticTreeNode> getBottomGraphNode() {
-    return bottomGraphNode;
+  public ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> getShownGraphNodes() {
+    return graphNodes;
   }
 }

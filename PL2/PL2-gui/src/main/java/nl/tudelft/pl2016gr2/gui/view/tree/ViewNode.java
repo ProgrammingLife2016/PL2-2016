@@ -119,7 +119,7 @@ public class ViewNode extends Circle implements ISelectable {
    */
   private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area area,
       Pane graphPane, SelectionManager selectionManager) {
-    if (dataNode.getDirectChildCount() == 0) {
+    if (dataNode.isLeaf()) {
       node.isLeaf = true;
       return;
     }
@@ -339,7 +339,7 @@ public class ViewNode extends Circle implements ISelectable {
   /**
    * Highlight the area of this node.
    *
-   * @param treePane the pane in which to draw the highlightNode area.
+   * @param treePane the pane in which to draw the highlight area.
    */
   public void highlightArea(Pane treePane) {
     highlightArea = new Rectangle(area.getStartX(), area.getStartY(), area.getWidth(),
@@ -350,9 +350,9 @@ public class ViewNode extends Circle implements ISelectable {
   }
 
   /**
-   * Remove the highlightNode of the area of this node.
+   * Remove the highlight of the area of this node.
    *
-   * @param treePane the pane from which to remove the highlightNode area.
+   * @param treePane the pane from which to remove the highlight area.
    */
   public void removeHighlight(Pane treePane) {
     treePane.getChildren().remove(highlightArea);
@@ -388,8 +388,8 @@ public class ViewNode extends Circle implements ISelectable {
     if (dataNode.equals(node)) {
       setRecursiveColor(color);
     } else {
-      for (ViewNode viewNode : children) {
-        viewNode.highlightNode(node, color);
+      for (ViewNode child : children) {
+        child.highlightNode(node, color);
       }
     }
   }
@@ -400,12 +400,12 @@ public class ViewNode extends Circle implements ISelectable {
    * @param color the color.
    */
   private void setRecursiveColor(Color color) {
-    if (dataNode.getDirectChildCount() == 0) {
+    if (dataNode.isLeaf()) {
       setFill(color.darker().darker());
     } else {
       setFill(color);
-      for (ViewNode viewNode : children) {
-        viewNode.setRecursiveColor(color);
+      for (ViewNode child : children) {
+        child.setRecursiveColor(color);
       }
     }
   }
@@ -415,8 +415,8 @@ public class ViewNode extends Circle implements ISelectable {
    */
   public void removeHighlightColor() {
     setDefaultColor();
-    for (ViewNode viewNode : children) {
-      viewNode.removeHighlightColor();
+    for (ViewNode child : children) {
+      child.removeHighlightColor();
     }
   }
 
@@ -424,7 +424,7 @@ public class ViewNode extends Circle implements ISelectable {
    * Set the default color of this node.
    */
   private void setDefaultColor() {
-    if (dataNode.getDirectChildCount() == 0) {
+    if (dataNode.isLeaf()) {
       setFill(LEAF_COLOR);
     } else {
       setFill(NODE_COLOR);

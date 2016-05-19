@@ -80,9 +80,13 @@ public class TreeManagerTest {
     AccessPrivate.setFieldValue("treePane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
-    SelectionManager selectionManager = new SelectionManager(null, new Pane(), new Pane());
-    AccessPrivate.setFieldValue("selectionManager", TreeManager.class, treeManager,
-        selectionManager);
+    
+    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane(),
+        new Pane()));
+    mockedSelectionManager.setShownGraphNodes(root, root);
+    AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager, 
+        mockedSelectionManager);
+    mockedSelectionManager.setShownGraphNodes(root, root);
     AccessPrivate.callMethod("setRoot", TreeManager.class, treeManager, root);
   }
 
@@ -97,6 +101,7 @@ public class TreeManagerTest {
     when(root.getChild(1)).thenReturn(leafL);
     when(root.getChildIndex(leafR)).thenReturn(0);
     when(root.getChildIndex(leafL)).thenReturn(1);
+    when(root.isLeaf()).thenReturn(false);
   }
 
   /**
@@ -107,6 +112,7 @@ public class TreeManagerTest {
     when(leafR.getParent()).thenReturn(root);
     when(leafR.getChildCount()).thenReturn(0);
     when(leafR.getDirectChildCount()).thenReturn(0);
+    when(leafR.isLeaf()).thenReturn(true);
   }
 
   /**
@@ -121,6 +127,7 @@ public class TreeManagerTest {
     when(leafL.getChild(1)).thenReturn(leafLl);
     when(leafL.getChildIndex(leafLr)).thenReturn(0);
     when(leafL.getChildIndex(leafLl)).thenReturn(1);
+    when(leafL.isLeaf()).thenReturn(false);
   }
 
   /**
@@ -131,6 +138,7 @@ public class TreeManagerTest {
     when(leafLr.getParent()).thenReturn(leafL);
     when(leafLr.getChildCount()).thenReturn(0);
     when(leafLr.getDirectChildCount()).thenReturn(0);
+    when(leafLr.isLeaf()).thenReturn(true);
   }
 
   /**
@@ -141,6 +149,7 @@ public class TreeManagerTest {
     when(leafLl.getParent()).thenReturn(leafL);
     when(leafLl.getChildCount()).thenReturn(0);
     when(leafLl.getDirectChildCount()).thenReturn(0);
+    when(leafLl.isLeaf()).thenReturn(true);
   }
 
   /**

@@ -20,8 +20,7 @@ public class TreeNodeDescription implements ISelectionInfo {
     public void handle(ActionEvent event) {
       IPhylogeneticTreeNode topNode = treeNode.getChild(0);
       IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
-      selectionManager.setTopGraphNode(topNode);
-      selectionManager.setBottomGraphNode(bottomNode);
+      selectionManager.setShownGraphNodes(topNode, bottomNode);
       selectionManager.drawGraph(topNode.getGenomes(), bottomNode.getGenomes());
     }
   };

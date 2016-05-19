@@ -1,9 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -95,12 +92,10 @@ public class TreeManager implements Initializable {
    *
    * @param selectionManager the selection manager.
    */
+  @TestId(id = "setSelectionManager")
   private void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
-    selectionManager.getTopGraphNode().addListener(invalid -> {
-      colorSelectedGraphNodes();
-    });
-    selectionManager.getBottomGraphNode().addListener(invalid -> {
+    selectionManager.getShownGraphNodes().addListener(invalid -> {
       colorSelectedGraphNodes();
     });
   }
@@ -111,14 +106,10 @@ public class TreeManager implements Initializable {
   private void colorSelectedGraphNodes() {
     if (currentRoot != null) {
       currentRoot.removeHighlightColor();
-      if (selectionManager.getTopGraphNode().get() != null) {
-        currentRoot.highlightNode(selectionManager.getTopGraphNode().get(),
-            DrawComparedGraphs.TOP_GRAPH_COLOR);
-      }
-      if (selectionManager.getBottomGraphNode().get() != null) {
-        currentRoot.highlightNode(selectionManager.getBottomGraphNode().get(),
-            DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
-      }
+      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().left,
+          DrawComparedGraphs.TOP_GRAPH_COLOR);
+      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().right,
+          DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
     }
   }
 
@@ -132,7 +123,7 @@ public class TreeManager implements Initializable {
   }
 
   /**
-   * Initialize the mouse listeners which highlightNode the area which will be zoomed in on when the
+   * Initialize the mouse listeners which highlights the area which will be zoomed in on when the
    * mouse scrolls.
    */
   private void initializeZoomAreaHighlighter() {

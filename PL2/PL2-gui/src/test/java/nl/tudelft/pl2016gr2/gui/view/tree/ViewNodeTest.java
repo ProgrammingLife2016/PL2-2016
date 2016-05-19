@@ -83,6 +83,7 @@ public class ViewNodeTest {
     when(root.getChild(1)).thenReturn(leafL);
     when(root.getChildIndex(leafR)).thenReturn(0);
     when(root.getChildIndex(leafL)).thenReturn(1);
+    when(root.isLeaf()).thenReturn(false);
   }
 
   /**
@@ -94,6 +95,7 @@ public class ViewNodeTest {
     when(leafR.getChildCount()).thenReturn(0);
     when(leafR.getDirectChildCount()).thenReturn(0);
     when(leafR.getEdgeLength()).thenReturn(0.);
+    when(leafR.isLeaf()).thenReturn(true);
   }
 
   /**
@@ -109,6 +111,7 @@ public class ViewNodeTest {
     when(leafL.getChildIndex(leafLr)).thenReturn(0);
     when(leafL.getChildIndex(leafLl)).thenReturn(1);
     when(leafL.getEdgeLength()).thenReturn(0.);
+    when(leafL.isLeaf()).thenReturn(false);
   }
 
   /**
@@ -120,6 +123,7 @@ public class ViewNodeTest {
     when(leafLr.getChildCount()).thenReturn(0);
     when(leafLr.getDirectChildCount()).thenReturn(0);
     when(leafLr.getEdgeLength()).thenReturn(0.);
+    when(leafLr.isLeaf()).thenReturn(true);
   }
 
   /**
@@ -131,6 +135,7 @@ public class ViewNodeTest {
     when(leafLl.getChildCount()).thenReturn(0);
     when(leafLl.getDirectChildCount()).thenReturn(0);
     when(leafLl.getEdgeLength()).thenReturn(0.);
+    when(leafLl.isLeaf()).thenReturn(true);
   }
 
   /**
