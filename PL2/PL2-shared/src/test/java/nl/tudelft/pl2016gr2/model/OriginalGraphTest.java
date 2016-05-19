@@ -31,7 +31,7 @@ public class OriginalGraphTest extends GraphTest {
   
   @Test
   public void testGetGenoms() {
-    assertEquals(1, curGraph.getGenoms().size());
+    assertEquals(1, curGraph.getGenomes().size());
   }
   
   @Test

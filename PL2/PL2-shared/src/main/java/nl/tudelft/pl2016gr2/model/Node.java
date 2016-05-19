@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * Mainly a dataholder class which represents a Node.
@@ -13,7 +13,7 @@ public class Node extends Bubble {
 
   private double flow;
 
-  private HashMap<String, String> genomes;
+  private HashSet<String> genomes;
   private final int snips;
   private String bases = "";
   private int alignment;
@@ -57,7 +57,7 @@ public class Node extends Bubble {
   }
 
   public Collection<String> getGenomes() {
-    return genomes.values();
+    return genomes;
   }
 
   /**
@@ -71,7 +71,7 @@ public class Node extends Bubble {
     assert getOutlinks().contains(to.getId());
     int genomeCount = 0;
     for (String genome : getGenomes()) {
-      if (((Node) to).genomes.containsKey(genome)) {
+      if (((Node) to).genomes.contains(genome)) {
         genomeCount++;
       }
     }
@@ -84,9 +84,9 @@ public class Node extends Bubble {
    * @param genomes the genomes.
    */
   public final void setGenomes(Collection<String> genomes) {
-    this.genomes = new HashMap<>();
+    this.genomes = new HashSet<>();
     for (String genome : genomes) {
-      this.genomes.put(genome, genome);
+      this.genomes.add(genome);
     }
   }
 

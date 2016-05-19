@@ -5,10 +5,10 @@ package nl.tudelft.pl2016gr2.model;
  *
  * @author Faris
  */
-public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
+public class NodePosition implements Comparable<NodePosition> {
 
   /**
-   * The node of this GraphNodeOrder.
+   * The node of this NodePosition.
    */
   private final AbstractNode node;
 
@@ -28,7 +28,7 @@ public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
    * @param node  the node.
    * @param level the initial level of the node (depth in the graph).
    */
-  public GraphNodeOrder(AbstractNode node, int level) {
+  public NodePosition(AbstractNode node, int level) {
     this.node = node;
     this.level = level;
   }
@@ -59,7 +59,7 @@ public class GraphNodeOrder implements Comparable<GraphNodeOrder> {
   }
 
   @Override
-  public int compareTo(GraphNodeOrder other) {
+  public int compareTo(NodePosition other) {
     return this.level - other.level;
   }
 }
