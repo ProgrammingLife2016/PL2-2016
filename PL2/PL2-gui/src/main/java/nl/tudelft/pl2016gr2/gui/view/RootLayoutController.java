@@ -83,7 +83,7 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     initializeTreeIcon();
     initializeGraphIcon();
-    graph = new GfaReader("TB328.gfa").read();
+    graph = new GfaReader("TB10.gfa").read();
     mainGraphOrder = new GraphOrdererThread(graph);
     mainGraphOrder.start();
   }
@@ -122,9 +122,9 @@ public class RootLayoutController implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 0),
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
         topGenomes);
-    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 1),
+    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
