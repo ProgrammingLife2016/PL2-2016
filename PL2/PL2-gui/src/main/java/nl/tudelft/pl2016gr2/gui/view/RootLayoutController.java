@@ -17,7 +17,7 @@ import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -67,7 +67,7 @@ public class RootLayoutController implements Initializable {
     drawGraphs = DrawComparedGraphs.loadView();
     mainPane.getItems().add(treeManager.getTreePane());
     mainPane.getItems().add(drawGraphs.getGraphPane());
-    graph = new GfaReader("TB328.gfa").read();
+    graph = new GfaReader("TB10.gfa").read();
     mainGraphOrder = new GraphOrdererThread(graph);
     mainGraphOrder.start();
     loadTree();
@@ -80,11 +80,11 @@ public class RootLayoutController implements Initializable {
    */
   private void loadTree() {
     Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("340tree.rooted.TKK.nwk");
+    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
     treeManager.loadTree(new PhylogeneticTreeNode(tree.getRoot()));
     try {
       reader.close();
@@ -127,15 +127,15 @@ public class RootLayoutController implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 0),
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
         topGenomes);
-    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph, 1),
+    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
     OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
     OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
-    Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
+    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
             bottomSubgraph);
     drawGraphs.drawGraphs(topSubgraph, bottomSubgraph, alignedGraphs.left, alignedGraphs.right);

@@ -13,7 +13,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 import java.io.IOException;
@@ -47,13 +47,15 @@ public class DrawComparedGraphs implements Initializable {
   private static final double MIN_NODE_RADIUS = 5.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.3;
+  private static final double UNIT_INCREMENT_RATE = 1.0;
+  private static final double BLOCK_INCREMENT_RATE = 10.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
   private OriginalGraph topGraph;
   private OriginalGraph bottomGraph;
-  private ArrayList<GraphNodeOrder> topGraphOrder;
-  private ArrayList<GraphNodeOrder> bottomGraphOrder;
+  private ArrayList<NodePosition> topGraphOrder;
+  private ArrayList<NodePosition> bottomGraphOrder;
   private int amountOfLevels;
 
   /**
@@ -106,7 +108,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGraphOrder the order of the bottom graph.
    */
   public void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph,
-      ArrayList<GraphNodeOrder> topGraphOrder, ArrayList<GraphNodeOrder> bottomGraphOrder) {
+      ArrayList<NodePosition> topGraphOrder, ArrayList<NodePosition> bottomGraphOrder) {
     this.topGraph = topGraph;
     this.bottomGraph = bottomGraph;
     this.topGraphOrder = topGraphOrder;
@@ -118,8 +120,8 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       amountOfLevels = highestBottomLevel;
     }
-    scrollbar.setUnitIncrement(1.0 / amountOfLevels);
-    scrollbar.setBlockIncrement(10.0 / amountOfLevels);
+    scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
+    scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
     updateGraph();
   }
 
@@ -151,17 +153,17 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private static void drawGraph(Pane pane, ArrayList<GraphNodeOrder> graphOrder,
+  private static void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder,
       OriginalGraph graph, int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
     HashMap<Integer, NodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
-    ArrayList<GraphNodeOrder> levelNodes = new ArrayList<>();
+    ArrayList<NodePosition> levelNodes = new ArrayList<>();
     for (endIndex = startIndex; endIndex < graphOrder.size()
         && graphOrder.get(endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
-      GraphNodeOrder node = graphOrder.get(endIndex);
+      NodePosition node = graphOrder.get(endIndex);
       if (node.getLevel() == curLevel) {
         levelNodes.add(node);
       } else {
@@ -178,13 +180,14 @@ public class DrawComparedGraphs implements Initializable {
 
   /**
    * Calculates the starting index (where to start in the graph with drawing). Lowers the start
-   * index by 20 to keep some margin at the left of the screen (so the edges are drawn correctly)
+   * index by {@link #OFFSCREEN_DRAWN_LEVELS} to keep some margin at the left of the screen (so the
+   * edges are drawn correctly)
    *
    * @param graphOrder the graph node order.
    * @param startLevel the start level.
    * @return the start index.
    */
-  private static int calculateStartIndex(ArrayList<GraphNodeOrder> graphOrder, int startLevel) {
+  private static int calculateStartIndex(ArrayList<NodePosition> graphOrder, int startLevel) {
     int actualStartLevel = startLevel - OFFSCREEN_DRAWN_LEVELS;
     if (actualStartLevel < 0) {
       actualStartLevel = 0;
@@ -199,8 +202,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param level      the level to find.
    * @return the index of the first occurence of the level.
    */
-  private static int findStartIndexOfLevel(ArrayList<GraphNodeOrder> graphOrder, int level) {
-    GraphNodeOrder comparer = new GraphNodeOrder(null, level);
+  private static int findStartIndexOfLevel(ArrayList<NodePosition> graphOrder, int level) {
+    NodePosition comparer = new NodePosition(null, level);
     int index = Collections.binarySearch(graphOrder, comparer);
     while (index > 0 && graphOrder.get(index - 1).getLevel() == level) {
       --index;
@@ -222,9 +225,9 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level at which to start drawing nodes.
    */
   private static void drawNode(Pane pane, HashMap<Integer, NodeCircle> circleMap,
-      ArrayList<GraphNodeOrder> nodes, int level, int startLevel) {
+      ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
-      GraphNodeOrder graphNodeOrder = nodes.get(i);
+      NodePosition graphNodeOrder = nodes.get(i);
       AbstractNode node = graphNodeOrder.getNode();
       double relativeHeight = (i + 0.5) / nodes.size();
       NodeCircle circle = new NodeCircle(calculateNodeRadius(graphNodeOrder), relativeHeight,
@@ -244,21 +247,24 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Calculate the radius of the node. The readius depends on the amount of bases inside the node.
+   * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
+   * The mapping function from amount of bases to node radius is completely random (hence the magic
+   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
+   * function was found.
    *
    * @param node the node.
    * @return the radius.
    */
-  private static double calculateNodeRadius(GraphNodeOrder node) {
+  private static double calculateNodeRadius(NodePosition node) {
     int amountOfBases = node.getNode().getSequenceLength();
     double radius;
     if (amountOfBases > 1000) {
-      radius = Math.log(amountOfBases) * 4.0 - 17.0;
+      radius = Math.log(amountOfBases) * 4.0 - 17.0; // see javadoc
       if (radius > MAX_NODE_RADIUS) {
         return MAX_NODE_RADIUS;
       }
     } else {
-      radius = Math.log(amountOfBases) * 0.7 + 5.1;
+      radius = Math.log(amountOfBases) * 0.7 + 5.1; // see javadoc
       if (radius < MIN_NODE_RADIUS) {
         return MIN_NODE_RADIUS;
       }
@@ -277,7 +283,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap  a map which maps each node id to the circle which represents the node in the
    *                   user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<GraphNodeOrder> graphOrder,
+  private static void drawEdges(Pane pane, ArrayList<NodePosition> graphOrder,
       OriginalGraph graph, int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       AbstractNode node = graphOrder.get(i).getNode();
@@ -288,7 +294,7 @@ public class DrawComparedGraphs implements Initializable {
           continue;
         }
         Line edge = new Line();
-        edge.setStrokeWidth(calculateEdgeWidth(graph.getGenoms().size(), node,
+        edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
             graph.getNode(outlink)));
         pane.getChildren().add(edge);
         edge.startXProperty().bind(fromCircle.centerXProperty());
@@ -301,7 +307,9 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Calculate the edge width.
+   * Calculate the edge width. The amount of genomes over an edge to edge width mapping function is
+   * completely random (hence the magic numbers). It was created by drawing graphs of different
+   * functions, till a somewhat nice mapping function was found.
    *
    * @param maxGenomes the total amount of genomes in the graph.
    * @param from       the node from which the edge comes.
@@ -310,7 +318,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   public static double calculateEdgeWidth(int maxGenomes, AbstractNode from, AbstractNode to) {
     int genomesOverEdge = from.getGenomesOverEdge(to);
-    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8;
+    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8; // see javadoc
     if (edgeWith > MAX_EDGE_WIDTH) {
       return MAX_EDGE_WIDTH;
     } else if (edgeWith < MIN_EDGE_WIDTH) {
@@ -328,10 +336,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param endIndex   the index where to end in the graph.
    * @param circleMap  a map which maps each node id to a circle.
    */
-  private static void repositionOverlappingEdges(ArrayList<GraphNodeOrder> graphOrder,
+  private static void repositionOverlappingEdges(ArrayList<NodePosition> graphOrder,
       int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      GraphNodeOrder graphNode = graphOrder.get(i);
+      NodePosition graphNode = graphOrder.get(i);
       AbstractNode node = graphNode.getNode();
       NodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();

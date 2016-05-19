@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.test.utility;
+package nl.tudelft.pl2016gr2.thirdparty.testing.utility;
 
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
