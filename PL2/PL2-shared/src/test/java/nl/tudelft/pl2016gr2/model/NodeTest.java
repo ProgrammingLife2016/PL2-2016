@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 public class NodeTest {
@@ -20,10 +21,10 @@ public class NodeTest {
   public void setup() {
     String str1 = "ref1.fasta";
     String str2 = "ref2.fasta";
-    ArrayList<String> ar = new ArrayList<String>();
+    ArrayList<String> ar = new ArrayList<>();
     ar.add(str1);
     ar.add(str2);
-    node = new Node(3, 6, null, 5);
+    node = new Node(3, 6, new ArrayList<>(), 5);
     node.setGenomes(ar);
   }
 
@@ -60,7 +61,9 @@ public class NodeTest {
   
   @Test
   public void genomeTest() {
-    assertEquals("ref2.fasta", node.getGenomes().get(1));
+    Iterator<String> it = node.getGenomes().iterator();
+    it.next();
+    assertEquals("ref2.fasta", it.next());
   }
 
 }
