@@ -120,7 +120,17 @@ public class Dnav extends Application {
   private void insertData(RootLayoutController controller,
                           File treeFile,
                           File graphFile) throws FileNotFoundException {
-    // abusing NWKReader class as this class' classloader can access the correct resource
+
+    if (!treeFile.exists() || !treeFile.isFile()) {
+      Logger.getLogger(Dnav.class.getName()).log(Level.SEVERE, "Treefile does not exist or is not a file!");
+      return;
+    }
+
+    if (!treeFile.exists() || !treeFile.isFile()) {
+      Logger.getLogger(Dnav.class.getName()).log(Level.SEVERE, "Graphfile does not exist or is not a file!");
+      return;
+    }
+
     Reader reader = new InputStreamReader(new FileInputStream(treeFile));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
