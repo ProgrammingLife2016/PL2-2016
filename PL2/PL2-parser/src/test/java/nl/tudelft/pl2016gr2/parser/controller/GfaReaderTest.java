@@ -19,7 +19,7 @@ public class GfaReaderTest {
   public void integrationTest() {
     GfaReader reader = new GfaReader(filename);
     OriginalGraph og = reader.read();
-    assertEquals(og.getGenoms().size(), 11);
+    assertEquals(og.getGenomes().size(), 11);
     assertEquals(og.getNode(3).getGenomes().size(), 1);
   }
 

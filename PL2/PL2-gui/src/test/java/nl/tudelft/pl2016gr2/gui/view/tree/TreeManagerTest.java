@@ -71,7 +71,7 @@ public class TreeManagerTest {
    * Initialize a tree manager.
    */
   private void initializeTreeManager() {
-    SelectionManager selectionManager = new SelectionManager(new Pane(), new Pane());
+    SelectionManager selectionManager = new SelectionManager(null, new Pane(), new Pane());
     Button zoomOutButton = new Button();
     Pane graphPane = new Pane();
     Scene scene = new Scene(graphPane, 500, 500);

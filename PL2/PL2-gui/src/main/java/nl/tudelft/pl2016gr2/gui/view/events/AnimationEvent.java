@@ -14,7 +14,7 @@ import javafx.util.Duration;
  */
 public class AnimationEvent extends Event {
 
-  public static final EventType<AnimationEvent> ANIMATION_EVENT = new EventType(ANY, "ANIMATION");
+  public static final EventType<AnimationEvent> ANIMATION_EVENT = new EventType<>(ANY, "ANIMATION");
   private final Timeline timeline;
   private final Duration duration;
   private final double startX;

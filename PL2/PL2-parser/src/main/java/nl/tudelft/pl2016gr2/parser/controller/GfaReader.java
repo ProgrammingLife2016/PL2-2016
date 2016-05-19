@@ -47,7 +47,7 @@ public class GfaReader {
       } catch (IOException ex) {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
-      originalGraph = new OriginalGraph(nodes, 1, genomes);
+      originalGraph = new OriginalGraph(nodes, genomes);
     }
     return originalGraph;
   }

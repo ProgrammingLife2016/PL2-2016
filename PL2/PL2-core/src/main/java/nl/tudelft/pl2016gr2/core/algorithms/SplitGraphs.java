@@ -34,8 +34,8 @@ public class SplitGraphs {
   /**
    * Instantiates an algorithmic class on a <code>OriginalGraph</code>.
    * <p>
-   * When {@link #getSubgraph(Collection)} is called, the class will construct a new instance of
-   * the graph containing only the specified genomes.
+   * When {@link #getSubgraph(Collection)} is called, the class will construct a new instance of the
+   * graph containing only the specified genomes.
    * </p>
    *
    * @param mainGraph The graph to split
@@ -44,10 +44,9 @@ public class SplitGraphs {
     this.mainGraph = mainGraph;
   }
 
-
   /**
-   * Builds a subgraph of the <code>mainGraph</code> containing only the nodes that contain at
-   * least one of the specified <code>genomes</code>.
+   * Builds a subgraph of the <code>mainGraph</code> containing only the nodes that contain at least
+   * one of the specified <code>genomes</code>.
    *
    * @param genomes The genomes that should be included in the resulting graph
    * @return An <code>OriginalGraph</code> that is a subgraph of <code>mainGraph</code>
@@ -55,7 +54,7 @@ public class SplitGraphs {
    *                                genomes
    */
   public OriginalGraph getSubgraph(Collection<String> genomes) {
-    assert mainGraph.getGenoms().containsAll(genomes) : "Tried splitting graph on absent genomes";
+    assert mainGraph.getGenomes().containsAll(genomes) : "Tried splitting graph on absent genomes";
 
     HashSet<String> genomeSet = new HashSet<>(genomes);
     HashSet<Integer> nodeSet = findSubgraphNodes(genomeSet);
@@ -85,13 +84,12 @@ public class SplitGraphs {
     return nodeSet;
   }
 
-
   /**
    * Create a new graph, containing all of the nodes in the node map with the correct in/out links
    * and genome lists.
    * <p>
-   * This operation is performed in <code>O(n)</code> for <code>n</code> nodes.
-   * This method requires a {@link HashSet} to provide this time complexity.
+   * This operation is performed in <code>O(n)</code> for <code>n</code> nodes. This method requires
+   * a {@link HashSet} to provide this time complexity.
    * </p>
    *
    * @param nodeSet   The set containing the original nodes which are contained in the subgraph.
@@ -115,8 +113,8 @@ public class SplitGraphs {
   /**
    * Creates a copy of the <code>original</code> node and prunes irrelevant fields.
    * <p>
-   * The method returns a newly instantiated {@link Node} object that is identical,
-   * except for the {@link Node#genomes}, {@link Node#inLinks} and {@link Node#outLinks} fields.
+   * The method returns a newly instantiated {@link Node} object that is identical, except for the
+   * {@link Node#genomes}, {@link Node#inLinks} and {@link Node#outLinks} fields.
    * </p>
    * <p>
    * This operation is performed in <code>O(l+m)</code> for <code>l, m</code> genomes and links
@@ -143,8 +141,8 @@ public class SplitGraphs {
   }
 
   /**
-   * Builds a subset of inLinks that is the intersection of the nodes in the graph and the
-   * inLinks in the node.
+   * Builds a subset of inLinks that is the intersection of the nodes in the graph and the inLinks
+   * in the node.
    * <p>
    * This operation is performed in <code>O(m)</code> for <code>m</code> inLinks.
    * </p>
@@ -164,8 +162,8 @@ public class SplitGraphs {
   }
 
   /**
-   * Builds a subset of outLinks that is the intersection of the nodes in the graph and the
-   * outLinks in the node.
+   * Builds a subset of outLinks that is the intersection of the nodes in the graph and the outLinks
+   * in the node.
    * <p>
    * This operation is performed in <code>O(m)</code> for <code>m</code> outLinks.
    * </p>

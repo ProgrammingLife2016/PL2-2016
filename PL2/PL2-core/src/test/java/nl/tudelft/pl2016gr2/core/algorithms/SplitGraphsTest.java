@@ -50,7 +50,7 @@ public class SplitGraphsTest {
       genomeSet.add("testGen0" + i);
     }
     mockedGraph = mock(OriginalGraph.class);
-    when(mockedGraph.getGenoms()).thenReturn(genomeSet);
+    when(mockedGraph.getGenomes()).thenReturn(genomeSet);
     defInstance = new SplitGraphs(mockedGraph);
     setupIterator();
   }

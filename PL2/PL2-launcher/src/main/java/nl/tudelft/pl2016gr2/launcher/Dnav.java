@@ -1,7 +1,6 @@
 package nl.tudelft.pl2016gr2.launcher;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
@@ -35,17 +34,13 @@ public class Dnav extends Application {
    */
   @Override
   public void start(Stage primaryStage) throws IOException {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(getClass().getClassLoader().getResource("pages/RootLayout.fxml"));
-
-    Scene scene = new Scene(loader.load(), 1000, 800);
+    RootLayoutController rootLayout = RootLayoutController.loadView();
+    Scene scene = new Scene(rootLayout.getPane(), 1000, 800);
     primaryStage.setMinHeight(700);
     primaryStage.setMinWidth(600);
     primaryStage.setScene(scene);
     primaryStage.show();
-
-    RootLayoutController controller = loader.getController();
-    insertData(controller);
+    loadTree(rootLayout);
   }
 
   /**
@@ -53,14 +48,13 @@ public class Dnav extends Application {
    *
    * @param controller the controller of the root layout.
    */
-  private void insertData(RootLayoutController controller) {
-    // abusing NWKReader class as this class' classloader can access the correct resource
+  private void loadTree(RootLayoutController controller) {
     Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("340tree.rooted.TKK");
+    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
     controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
     try {
       reader.close();

@@ -20,7 +20,8 @@ public interface ISelectable {
   /**
    * Get the {@link ISelectionInfo}.
    *
+   * @param selectionManager the {@link SelectionManager} which is requesting the selection info.
    * @return the {@link ISelectionInfo}.
    */
-  ISelectionInfo getSelectionInfo();
+  ISelectionInfo getSelectionInfo(SelectionManager selectionManager);
 }
