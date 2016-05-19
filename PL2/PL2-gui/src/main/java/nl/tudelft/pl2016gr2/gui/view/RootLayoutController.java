@@ -16,7 +16,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Pair;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import nl.tudelft.pl2016gr2.core.FileGraphFactory;
+import nl.tudelft.pl2016gr2.core.FileTreeFactory;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawGraph;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -24,6 +29,7 @@ import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Observable;
@@ -67,6 +73,9 @@ public class RootLayoutController implements Initializable {
   private SelectionManager selectionManager;
   private boolean zoomOutButtonDisabled = true;
 
+  // keep reference to prevent GC
+  private Tree tree;
+
   /**
    * Initializes the controller class.
    */
@@ -86,14 +95,20 @@ public class RootLayoutController implements Initializable {
       try {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getClassLoader().getResource("pages/FileChooser.fxml"));
-        Parent root = loader.load();
 
-        Stage popupStage = new Stage();
-        popupStage.setScene(new Scene(root));
-        popupStage.setTitle("Select files to load");
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.initOwner(rootLayoutNode.getScene().getWindow());
-        popupStage.showAndWait();
+        Pair<FileChooserController, Stage> result =
+            FileChooserController.initialize(rootLayoutNode.getScene().getWindow());
+
+        result.getValue().showAndWait();
+
+        File treeFile = result.getKey().getTreeFile();
+        File graphFile = result.getKey().getGraphFile();
+
+        if (treeFile.exists() && graphFile.exists()) {
+          Tree tree = new FileTreeFactory(treeFile).getTree();
+          OriginalGraph graph = new FileGraphFactory(graphFile).getGraph();
+          setData(tree, graph);
+        }
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -149,12 +164,17 @@ public class RootLayoutController implements Initializable {
   /**
    * Set the data which has to be visualized.
    *
-   * @param root the root of the tree which has to be drawn.
+   * @param tree the tree which has to be drawn.
    * @param graph the graph
    */
-  public void setData(IPhylogeneticTreeNode root, OriginalGraph graph) {
+  public void setData(Tree tree, OriginalGraph graph) {
     assert treeManager == null;
-    treeManager = new TreeManager(treePane, root, zoomOutButton, selectionManager);
+    this.tree = tree;
+    treeManager = new TreeManager(
+        treePane,
+        new PhylogeneticTreeNode(tree.getRoot()),
+        zoomOutButton,
+        selectionManager);
     heatmapManager.initLeaves(treeManager.getCurrentLeaves());
     treeManager.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(treeManager.getCurrentLeaves());
