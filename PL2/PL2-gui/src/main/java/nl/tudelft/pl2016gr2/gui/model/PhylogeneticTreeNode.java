@@ -101,4 +101,9 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
   public double getEdgeLength() {
     return node.weight;
   }
+
+  @Override
+  public boolean isLeaf() {
+    return node.numberChildren() == 0;
+  }
 }

@@ -11,6 +11,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
@@ -40,7 +41,14 @@ public class DrawComparedGraphs implements Initializable {
   private Pane topPane;
   @FXML
   private ScrollBar scrollbar;
+  @FXML
+  private Rectangle topGraphIndicator;
+  @FXML
+  private Rectangle bottomGraphIndicator;
 
+  public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
+  public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
+  
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
   private static final double X_OFFSET = 50.0;
   private static final double MAX_NODE_RADIUS = 45.0;
@@ -86,6 +94,12 @@ public class DrawComparedGraphs implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
     bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    
+    topGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
+    topGraphIndicator.setFill(TOP_GRAPH_COLOR);
+    bottomGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
+    bottomGraphIndicator.setFill(BOTTOM_GRAPH_COLOR);
+    
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
     mainPane.widthProperty().addListener(invalidate -> updateGraph());
   }

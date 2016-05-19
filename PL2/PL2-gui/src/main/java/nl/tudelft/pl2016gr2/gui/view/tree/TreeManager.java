@@ -1,7 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -12,6 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
+import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -64,7 +64,7 @@ public class TreeManager implements Initializable {
           .getResource("pages/TreePane.fxml"));
       loader.load();
       TreeManager treeManager = loader.<TreeManager>getController();
-      treeManager.selectionManager = selectionManager;
+      treeManager.setSelectionManager(selectionManager);
       return treeManager;
     } catch (IOException ex) {
       Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -88,6 +88,32 @@ public class TreeManager implements Initializable {
   }
 
   /**
+   * Set the selection manager and initialize listeners to the selection manager.
+   *
+   * @param selectionManager the selection manager.
+   */
+  @TestId(id = "setSelectionManager")
+  private void setSelectionManager(SelectionManager selectionManager) {
+    this.selectionManager = selectionManager;
+    selectionManager.getShownGraphNodes().addListener(invalid -> {
+      colorSelectedGraphNodes();
+    });
+  }
+
+  /**
+   * Color the nodes which are shown in the graph pane.
+   */
+  private void colorSelectedGraphNodes() {
+    if (currentRoot != null) {
+      currentRoot.removeHighlightColor();
+      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().left,
+          DrawComparedGraphs.TOP_GRAPH_COLOR);
+      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().right,
+          DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+    }
+  }
+
+  /**
    * Load a new tree into the view.
    *
    * @param root the root of the tree.
@@ -97,7 +123,7 @@ public class TreeManager implements Initializable {
   }
 
   /**
-   * Initialize the mouse listeners which highlight the area which will be zoomed in on when the
+   * Initialize the mouse listeners which highlights the area which will be zoomed in on when the
    * mouse scrolls.
    */
   private void initializeZoomAreaHighlighter() {
@@ -109,7 +135,7 @@ public class TreeManager implements Initializable {
       if (currentHighlightedNode != toHighlight) {
         removeHighlight();
         if (toHighlight != null) {
-          toHighlight.highlight(treePane);
+          toHighlight.highlightArea(treePane);
           currentHighlightedNode = toHighlight;
         }
       }
@@ -208,6 +234,7 @@ public class TreeManager implements Initializable {
   private void setRoot(IPhylogeneticTreeNode root) {
     treePane.getChildren().clear();
     currentRoot = ViewNode.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
+    colorSelectedGraphNodes();
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
