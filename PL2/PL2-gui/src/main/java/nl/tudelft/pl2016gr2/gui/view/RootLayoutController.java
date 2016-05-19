@@ -20,7 +20,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -130,7 +130,7 @@ public class RootLayoutController implements Initializable {
     bottomSubGraphThread.start();
     topSubGraphThread.getSubGraph();
     bottomSubGraphThread.getSubGraph();
-    Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> alignedGraphs
+    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
             topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
     drawGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);

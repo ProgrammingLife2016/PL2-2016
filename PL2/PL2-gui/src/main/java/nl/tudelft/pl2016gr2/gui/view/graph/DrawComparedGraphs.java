@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,8 +45,8 @@ public class DrawComparedGraphs implements Initializable {
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
-  private ArrayList<GraphNodeOrder> topGraph;
-  private ArrayList<GraphNodeOrder> bottomGraph;
+  private ArrayList<NodePosition> topGraph;
+  private ArrayList<NodePosition> bottomGraph;
   private int amountOfLevels;
 
   /**
@@ -96,8 +96,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param topGraph    the top graph.
    * @param bottomGraph the bottom graph.
    */
-  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph,
-      ArrayList<GraphNodeOrder> bottomGraph) {
+  public void drawGraphs(ArrayList<NodePosition> topGraph,
+      ArrayList<NodePosition> bottomGraph) {
     this.topGraph = topGraph;
     this.bottomGraph = bottomGraph;
     int highestTopLevel = topGraph.get(topGraph.size() - 1).getLevel();
@@ -133,17 +133,17 @@ public class DrawComparedGraphs implements Initializable {
    * @param pane  the pane to draw the graph in.
    * @param graph the graph to draw.
    */
-  private static void drawGraph(Pane pane, ArrayList<GraphNodeOrder> graph, int startLevel,
+  private static void drawGraph(Pane pane, ArrayList<NodePosition> graph, int startLevel,
       int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graph, startLevel);
     HashMap<Integer, NodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
-    ArrayList<GraphNodeOrder> levelNodes = new ArrayList<>();
+    ArrayList<NodePosition> levelNodes = new ArrayList<>();
     for (endIndex = startIndex; endIndex < graph.size()
         && graph.get(endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
-      GraphNodeOrder node = graph.get(endIndex);
+      NodePosition node = graph.get(endIndex);
       if (node.getLevel() == curLevel) {
         levelNodes.add(node);
       } else {
@@ -166,7 +166,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the start level.
    * @return the start index.
    */
-  private static int calculateStartIndex(ArrayList<GraphNodeOrder> graph, int startLevel) {
+  private static int calculateStartIndex(ArrayList<NodePosition> graph, int startLevel) {
     int actualStartLevel = startLevel - OFFSCREEN_DRAWN_LEVELS;
     if (actualStartLevel < 0) {
       actualStartLevel = 0;
@@ -181,8 +181,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param level the level to find.
    * @return the index of the first occurence of the level.
    */
-  private static int findStartIndexOfLevel(ArrayList<GraphNodeOrder> graph, int level) {
-    GraphNodeOrder comparer = new GraphNodeOrder(null, level);
+  private static int findStartIndexOfLevel(ArrayList<NodePosition> graph, int level) {
+    NodePosition comparer = new NodePosition(null, level);
     int index = Collections.binarySearch(graph, comparer);
     while (index > 0 && graph.get(index - 1).getLevel() == level) {
       --index;
@@ -204,9 +204,9 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level at which to start drawing nodes.
    */
   private static void drawNode(Pane pane, HashMap<Integer, NodeCircle> circleMap,
-      ArrayList<GraphNodeOrder> nodes, int level, int startLevel) {
+      ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
-      GraphNodeOrder graphNodeOrder = nodes.get(i);
+      NodePosition graphNodeOrder = nodes.get(i);
       AbstractNode node = graphNodeOrder.getNode();
       double relativeHeight = (i + 0.5) / nodes.size();
       NodeCircle circle = new NodeCircle(NODE_RADIUS, relativeHeight, 0.5 / nodes.size());
@@ -234,7 +234,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap  a map which maps each node id to the circle which represents the node in the
    *                   user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<GraphNodeOrder> graph, int startIndex,
+  private static void drawEdges(Pane pane, ArrayList<NodePosition> graph, int startIndex,
       int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       AbstractNode node = graph.get(i).getNode();
@@ -264,10 +264,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param endIndex   the index where to end in the graph.
    * @param circleMap  a map which maps each node id to a circle.
    */
-  private static void repositionOverlappingEdges(ArrayList<GraphNodeOrder> graph, int startIndex,
+  private static void repositionOverlappingEdges(ArrayList<NodePosition> graph, int startIndex,
       int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      GraphNodeOrder graphNode = graph.get(i);
+      NodePosition graphNode = graph.get(i);
       AbstractNode node = graphNode.getNode();
       NodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();
