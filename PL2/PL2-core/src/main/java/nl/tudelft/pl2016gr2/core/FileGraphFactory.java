@@ -16,6 +16,11 @@ public class FileGraphFactory implements GraphFactory {
 
   @Override
   public OriginalGraph getGraph() {
-    return new GfaReader(file).read();
+    return getGfaReader().read();
   }
+
+  /*package*/ GfaReader getGfaReader() {
+    return new GfaReader(file);
+  }
+
 }

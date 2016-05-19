@@ -28,7 +28,10 @@ public class FileTreeFactory implements TreeFactory {
     if (!file.exists()) {
       throw new FileNotFoundException();
     }
+  }
 
+  /* package */ TreeParser getTreeParser(BufferedReader br) {
+    return new TreeParser(br);
   }
 
   @Override
@@ -40,7 +43,7 @@ public class FileTreeFactory implements TreeFactory {
       throw new RuntimeException("File not found, even though we checked in the constructor");
     }
     BufferedReader br = new BufferedReader(reader);
-    TreeParser tp = new TreeParser(br);
+    TreeParser tp = getTreeParser(br);
 
     Tree tree = tp.tokenize("Tree");
 
