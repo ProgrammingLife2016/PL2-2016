@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.Node;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -36,8 +36,8 @@ public class CompareSubgraphs {
    * @return a pair containing as left value the graph node order of the top graph and as left value
    *         the node graph order of the bottom graph.
    */
-  public static Pair<ArrayList<GraphNodeOrder>, ArrayList<GraphNodeOrder>> compareGraphs(
-      HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph topGraph,
+  public static Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> compareGraphs(
+      HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph topGraph,
       OriginalGraph bottomGraph) {
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
@@ -48,8 +48,8 @@ public class CompareSubgraphs {
     topGraphOrderer.start();
     bottomGraphOrderer.start();
 
-    ArrayList<GraphNodeOrder> orderedTopGraph = topGraphOrderer.getNodeOrder();
-    ArrayList<GraphNodeOrder> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
+    ArrayList<NodePosition> orderedTopGraph = topGraphOrderer.getNodeOrder();
+    ArrayList<NodePosition> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
 
     //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
     removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
@@ -64,8 +64,8 @@ public class CompareSubgraphs {
    * @param topOrder    the order of the top graph.
    * @param bottomOrder the order of the bottom graph.
    */
-  private static void removeEmptyLevels(ArrayList<GraphNodeOrder> topOrder,
-      ArrayList<GraphNodeOrder> bottomOrder) {
+  private static void removeEmptyLevels(ArrayList<NodePosition> topOrder,
+      ArrayList<NodePosition> bottomOrder) {
     int highestTopLevel = topOrder.get(topOrder.size() - 1).getLevel();
     int highestBottomLevel = bottomOrder.get(bottomOrder.size() - 1).getLevel();
     int highestLevel;
@@ -75,10 +75,10 @@ public class CompareSubgraphs {
       highestLevel = highestBottomLevel;
     }
     boolean[] levelIsNotEmpty = new boolean[highestLevel + 1];
-    for (GraphNodeOrder topNode : topOrder) {
+    for (NodePosition topNode : topOrder) {
       levelIsNotEmpty[topNode.getLevel()] = true;
     }
-    for (GraphNodeOrder bottomNode : bottomOrder) {
+    for (NodePosition bottomNode : bottomOrder) {
       levelIsNotEmpty[bottomNode.getLevel()] = true;
     }
     fillEmptyLevels(topOrder, levelIsNotEmpty);
@@ -91,11 +91,11 @@ public class CompareSubgraphs {
    * @param nodeOrder       the order of the nodes in the graph.
    * @param levelIsNotEmpty an arraylist containing all of the graph levels which containg no nodes.
    */
-  private static void fillEmptyLevels(ArrayList<GraphNodeOrder> nodeOrder,
+  private static void fillEmptyLevels(ArrayList<NodePosition> nodeOrder,
       boolean[] levelIsNotEmpty) {
     int curLevel = 0;
     int emptyLevels = 0;
-    for (GraphNodeOrder node : nodeOrder) {
+    for (NodePosition node : nodeOrder) {
       if (node.getLevel() > curLevel) {
         for (int i = curLevel; i < node.getLevel(); i++) {
           if (!levelIsNotEmpty[i]) {
@@ -113,10 +113,10 @@ public class CompareSubgraphs {
    */
   private static class SubGraphOrderer extends Thread {
 
-    private final HashMap<Integer, GraphNodeOrder> mainGraphOrder;
+    private final HashMap<Integer, NodePosition> mainGraphOrder;
     private final OriginalGraph subGraph;
     private final OverlapThread overlapThread;
-    private ArrayList<GraphNodeOrder> nodeOrder;
+    private ArrayList<NodePosition> nodeOrder;
 
     /**
      * Create an instance of this class.
@@ -125,7 +125,7 @@ public class CompareSubgraphs {
      * @param subGraph       the subgraph.
      * @param overlapThread  the thread which is checking which nodes are overlapping.
      */
-    private SubGraphOrderer(HashMap<Integer, GraphNodeOrder> mainGraphOrder,
+    private SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder,
         OriginalGraph subGraph, OverlapThread overlapThread) {
       this.mainGraphOrder = mainGraphOrder;
       this.subGraph = subGraph;
@@ -137,7 +137,7 @@ public class CompareSubgraphs {
      *
      * @return the list of ordered nodes.
      */
-    public ArrayList<GraphNodeOrder> getNodeOrder() {
+    public ArrayList<NodePosition> getNodeOrder() {
       try {
         this.join();
       } catch (InterruptedException ex) {
@@ -153,12 +153,12 @@ public class CompareSubgraphs {
      * @param subGraph       the subgraph.
      * @return the ordered subgraph.
      */
-    private static ArrayList<GraphNodeOrder> orderNodes(
-        HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph subGraph) {
-      ArrayList<GraphNodeOrder> subGraphOrder = new ArrayList<>();
+    private static ArrayList<NodePosition> orderNodes(
+        HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph subGraph) {
+      ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
       subGraph.getNodes().forEach((Integer id, Node node) -> {
         int level = mainGraphOrder.get(id).getLevel();
-        subGraphOrder.add(new GraphNodeOrder(node, level));
+        subGraphOrder.add(new NodePosition(node, level));
       });
       return subGraphOrder;
     }
@@ -170,7 +170,7 @@ public class CompareSubgraphs {
      * @param nodeOrder        the ordered list of nodes of the subgraph.
      */
     private static void markOverlap(HashMap<Integer, AbstractNode> overlappingNodes,
-        ArrayList<GraphNodeOrder> nodeOrder) {
+        ArrayList<NodePosition> nodeOrder) {
       nodeOrder.forEach(graphNode -> {
         graphNode.setOverlapping(overlappingNodes.containsKey(
             graphNode.getNode().getId()));
@@ -199,8 +199,8 @@ public class CompareSubgraphs {
   private static class OverlapThread extends Thread {
 
     private HashMap<Integer, AbstractNode> overlappedNodes;
-    private final OriginalGraph firstGraph;
-    private final OriginalGraph secondGraph;
+    private final OriginalGraph topGraph;
+    private final OriginalGraph bottomGraph;
 
     /**
      * Construct a overlap thread, which finds the overlapping nodes of the given graphs.
@@ -209,8 +209,8 @@ public class CompareSubgraphs {
      * @param secondGraph the second graph.
      */
     private OverlapThread(OriginalGraph firstGraph, OriginalGraph secondGraph) {
-      this.firstGraph = firstGraph;
-      this.secondGraph = secondGraph;
+      this.topGraph = firstGraph;
+      this.bottomGraph = secondGraph;
     }
 
     /**
@@ -234,8 +234,7 @@ public class CompareSubgraphs {
      * @param bottomGraph the bottom graph.
      * @return the overlapping nodes.
      */
-    private static HashMap<Integer, AbstractNode> calculateOverlappedNodes(OriginalGraph topGraph,
-        OriginalGraph bottomGraph) {
+    private HashMap<Integer, AbstractNode> calculateOverlappedNodes() {
       final HashMap<Integer, AbstractNode> overlap = new HashMap<>();
       final HashMap<Integer, Node> bottomNodes = bottomGraph.getNodes();
       topGraph.getNodes().forEach((Integer id, Node node) -> {
@@ -251,7 +250,7 @@ public class CompareSubgraphs {
      */
     @Override
     public void run() {
-      overlappedNodes = calculateOverlappedNodes(firstGraph, secondGraph);
+      overlappedNodes = calculateOverlappedNodes();
     }
   }
 }

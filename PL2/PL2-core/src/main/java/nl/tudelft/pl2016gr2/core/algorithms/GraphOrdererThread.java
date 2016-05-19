@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
+import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class GraphOrdererThread extends Thread {
 
-  private HashMap<Integer, GraphNodeOrder> orderedGraph;
+  private HashMap<Integer, NodePosition> orderedGraph;
   private final OriginalGraph graph;
 
   /**
@@ -39,8 +39,8 @@ public class GraphOrdererThread extends Thread {
    * @param graph the graph.
    * @return the node order.
    */
-  private static HashMap<Integer, GraphNodeOrder> calculateGraphOrder(OriginalGraph graph) {
-    HashMap<Integer, GraphNodeOrder> nodeOrder = new HashMap<>();
+  private static HashMap<Integer, NodePosition> calculateGraphOrder(OriginalGraph graph) {
+    HashMap<Integer, NodePosition> nodeOrder = new HashMap<>();
     HashMap<Integer, Integer> reachedCount = new HashMap<>();
     Set<Integer> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
@@ -52,7 +52,7 @@ public class GraphOrdererThread extends Thread {
         AbstractNode node = graph.getNode(nodeId);
         int count = reachedCount.getOrDefault(nodeId, 0);
         if (node.getInlinks().size() == count) {
-          nodeOrder.put(nodeId, new GraphNodeOrder(node, level));
+          nodeOrder.put(nodeId, new NodePosition(node, level));
           nextLevel.addAll(node.getOutlinks());
           addedOutLinks.add(node.getOutlinks());
         }
@@ -83,7 +83,7 @@ public class GraphOrdererThread extends Thread {
    *
    * @return a hashmap containing an id, node order mapping.
    */
-  public HashMap<Integer, GraphNodeOrder> getOrderedGraph() {
+  public HashMap<Integer, NodePosition> getOrderedGraph() {
     try {
       this.join();
     } catch (InterruptedException ex) {

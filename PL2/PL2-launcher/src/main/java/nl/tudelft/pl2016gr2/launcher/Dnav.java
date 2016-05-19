@@ -50,11 +50,11 @@ public class Dnav extends Application {
    */
   private void loadTree(RootLayoutController controller) {
     Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
+        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("340tree.rooted.TKK.nwk");
+    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
     controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
     try {
       reader.close();

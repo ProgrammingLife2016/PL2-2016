@@ -2,16 +2,22 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
-public class OriginalGraph implements GraphInterface {
+public class OriginalGraph implements GraphInterface, Iterable<Node> {
 
   private final HashMap<Integer, Node> nodes;
   private final ArrayList<Integer> rootNodes;
-  private ArrayList<String> genoms;
 
+  private ArrayList<String> genomes;
+
+  /**
+   * Constructs an empty OriginalGraph.
+   */
   public OriginalGraph() {
     nodes = new HashMap<>();
     rootNodes = new ArrayList<>();
+    genomes = new ArrayList<>();
   }
 
   /**
@@ -22,7 +28,7 @@ public class OriginalGraph implements GraphInterface {
    */
   public OriginalGraph(HashMap<Integer, Node> nodes, ArrayList<String> genoms) {
     this.nodes = nodes;
-    this.genoms = genoms;
+    this.genomes = genoms;
     this.rootNodes = getAllRootNodes();
   }
 
@@ -37,7 +43,7 @@ public class OriginalGraph implements GraphInterface {
       ArrayList<String> genoms) {
     this.nodes = nodes;
     this.rootNodes = rootNodes;
-    this.genoms = genoms;
+    this.genomes = genoms;
   }
 
   /**
@@ -58,6 +64,25 @@ public class OriginalGraph implements GraphInterface {
   @Override
   public ArrayList<Integer> getRootNodes() {
     return rootNodes;
+  }
+
+  /**
+   * Adds a <code>Node</code> to the root nodes of this graph.
+   * <p>
+   * If the node is not yet in the graph, the node will be added.
+   * </p>
+   *
+   * @param node The root node to add.
+   */
+  public void addRootNode(Node node) {
+    assert node.getInlinks().isEmpty() : "Tried adding a non-root node as root. NodeID = " + node
+        .getId();
+
+    if (!nodes.containsKey(node.getId())) {
+      nodes.put(node.getId(), node);
+    }
+
+    rootNodes.add(node.getId());
   }
 
   @Override
@@ -104,16 +129,26 @@ public class OriginalGraph implements GraphInterface {
       rootNodes.add(node.getId());
     }
   }
-
+  
   public HashMap<Integer, Node> getNodes() {
     return nodes;
   }
 
-  public ArrayList<String> getGenoms() {
-    return this.genoms;
+  public ArrayList<String> getGenomes() {
+    return this.genomes;
   }
 
-  public void setGenoms(ArrayList<String> gs) {
-    this.genoms = gs;
+  public void setGenoms(ArrayList<String> genomes) {
+    this.genomes = genomes;
+  }
+
+  /**
+   * Iterates over the collection of nodes in the graph.
+   *
+   * @return An iterator over all nodes in the graph
+   */
+  @Override
+  public Iterator<Node> iterator() {
+    return nodes.values().iterator();
   }
 }

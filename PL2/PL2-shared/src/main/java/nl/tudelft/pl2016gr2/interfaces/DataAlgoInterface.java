@@ -1,4 +1,4 @@
-package interfaces;
+package nl.tudelft.pl2016gr2.interfaces;
 
 import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.MetaData;
