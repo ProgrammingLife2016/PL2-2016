@@ -43,6 +43,7 @@ public class TreeManager implements Initializable {
   @FXML
   @TestId(id = "heatmapPane")
   private Pane heatmapPane;
+  @TestId(id = "currentRoot")
   private ViewNode currentRoot;
   private ViewNode currentHighlightedNode;
   private boolean isZooming = false;
@@ -104,7 +105,7 @@ public class TreeManager implements Initializable {
    * Color the nodes which are shown in the graph pane.
    */
   private void colorSelectedGraphNodes() {
-    if (currentRoot != null) {
+    if (currentRoot != null && selectionManager.getShownGraphNodes().get() != null) {
       currentRoot.removeHighlightColor();
       currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().left,
           DrawComparedGraphs.TOP_GRAPH_COLOR);

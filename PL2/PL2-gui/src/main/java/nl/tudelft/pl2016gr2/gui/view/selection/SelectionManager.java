@@ -14,6 +14,7 @@ import javafx.scene.layout.Region;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
@@ -29,7 +30,9 @@ public class SelectionManager {
   private final RootLayoutController rootLayoutController;
   private final Pane selectionDescriptionPane;
   private final Region background;
+  @TestId(id = "contentPane")
   private DescriptionPane contentPane;
+  @TestId(id = "selected")
   private ISelectable selected;
   private Timeline timeline;
 

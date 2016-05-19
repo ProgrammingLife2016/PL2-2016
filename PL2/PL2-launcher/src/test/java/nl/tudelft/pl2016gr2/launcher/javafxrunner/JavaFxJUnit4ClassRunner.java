@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.javafxrunner;
+package nl.tudelft.pl2016gr2.launcher.javafxrunner;
 
 import javafx.application.Platform;
 import org.junit.runner.notification.RunNotifier;
