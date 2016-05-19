@@ -23,6 +23,10 @@ import java.util.logging.Logger;
  */
 public class Dnav extends Application {
 
+  private static final double INITIAL_WINDOW_WIDTH = 1000d;
+  private static final double INITIAL_WINDOW_HEIGHT = 800d;
+  private static final double MINIMUM_WINDOW_WIDTH = 600d;
+  private static final double MINIMUM_WINDOW_HEIGHT = 700d;
   private Tree tree;
 
   /**
@@ -35,9 +39,9 @@ public class Dnav extends Application {
   @Override
   public void start(Stage primaryStage) throws IOException {
     RootLayoutController rootLayout = RootLayoutController.loadView();
-    Scene scene = new Scene(rootLayout.getPane(), 1000, 800);
-    primaryStage.setMinHeight(700);
-    primaryStage.setMinWidth(600);
+    Scene scene = new Scene(rootLayout.getPane(), INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+    primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
+    primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
     primaryStage.setScene(scene);
     primaryStage.show();
     loadTree(rootLayout);

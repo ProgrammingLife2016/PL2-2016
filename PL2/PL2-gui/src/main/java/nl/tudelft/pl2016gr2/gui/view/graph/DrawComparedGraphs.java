@@ -46,6 +46,8 @@ public class DrawComparedGraphs implements Initializable {
   private static final double MIN_NODE_RADIUS = 5.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.3;
+  private static final double UNIT_INCREMENT_RATE = 1.0;
+  private static final double BLOCK_INCREMENT_RATE = 10.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
@@ -117,8 +119,8 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       amountOfLevels = highestBottomLevel;
     }
-    scrollbar.setUnitIncrement(1.0 / amountOfLevels);
-    scrollbar.setBlockIncrement(10.0 / amountOfLevels);
+    scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
+    scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
     updateGraph();
   }
 
@@ -176,7 +178,8 @@ public class DrawComparedGraphs implements Initializable {
 
   /**
    * Calculates the starting index (where to start in the graph with drawing). Lowers the start
-   * index by 20 to keep some margin at the left of the screen (so the edges are drawn correctly)
+   * index by {@link #OFFSCREEN_DRAWN_LEVELS} to keep some margin at the left of the screen (so the
+   * edges are drawn correctly)
    *
    * @param graphOrder the graph node order.
    * @param startLevel the start level.
@@ -242,7 +245,10 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Calculate the radius of the node. The readius depends on the amount of bases inside the node.
+   * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
+   * The mapping function from amount of bases to node radius is completely random (hence the magic
+   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
+   * function was found.
    *
    * @param node the node.
    * @return the radius.
@@ -251,12 +257,12 @@ public class DrawComparedGraphs implements Initializable {
     int amountOfBases = node.getNode().getSequenceLength();
     double radius;
     if (amountOfBases > 1000) {
-      radius = Math.log(amountOfBases) * 4.0 - 17.0;
+      radius = Math.log(amountOfBases) * 4.0 - 17.0; // see javadoc
       if (radius > MAX_NODE_RADIUS) {
         return MAX_NODE_RADIUS;
       }
     } else {
-      radius = Math.log(amountOfBases) * 0.7 + 5.1;
+      radius = Math.log(amountOfBases) * 0.7 + 5.1; // see javadoc
       if (radius < MIN_NODE_RADIUS) {
         return MIN_NODE_RADIUS;
       }
@@ -299,7 +305,9 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Calculate the edge width.
+   * Calculate the edge width. The amount of genomes over an edge to edge width mapping function is
+   * completely random (hence the magic numbers). It was created by drawing graphs of different
+   * functions, till a somewhat nice mapping function was found.
    *
    * @param maxGenomes the total amount of genomes in the graph.
    * @param from       the node from which the edge comes.
@@ -308,7 +316,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   public static double calculateEdgeWidth(int maxGenomes, AbstractNode from, AbstractNode to) {
     int genomesOverEdge = from.getGenomesOverEdge(to);
-    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8;
+    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8; // see javadoc
     if (edgeWith > MAX_EDGE_WIDTH) {
       return MAX_EDGE_WIDTH;
     } else if (edgeWith < MIN_EDGE_WIDTH) {
