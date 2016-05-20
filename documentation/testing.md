@@ -72,7 +72,7 @@ Some parts of the gui module are very hard to test using automated tests and ver
   - How to test: Launch the application and zoom in or out on child nodes of the phylogenetic tree by scrolling while hovering over them (or to the right of them.).
 
 ### Launcher
-Currently the launcher module is not tested. The reason for this is that the launcher module doesn't implement any new functionality, since it only initializes other parts of the application. This module can thus not be unit tested. The actions performed by the launcher module will be tested using intergration tests in the other modules (in the near future), so there is no need to test this behavior again in the launcher module.
+The launcher module doesn't implement any new functionality, since it only initializes other parts of the application. This module can thus not be unit tested. The actions performed by the launcher module are tested using intergration tests in the other modules, so there is no need to test this behavior again in the launcher module. We have however added a single integration test to this module to make the report look a bit nicer.
 
 ### Parser
 None.
