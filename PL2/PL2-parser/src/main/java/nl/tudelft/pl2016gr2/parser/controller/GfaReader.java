@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 public class GfaReader {
 
   private static final int SHIFT_BY_BASE_10 = 10;
+  @TestId(id = "genomes")
   private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
   private final String fileName;
@@ -85,6 +86,7 @@ public class GfaReader {
    *
    * @param chars characters of the line.
    */
+  @TestId(id = "parseEdge")
   private void parseEdge(char[] chars) {
     int from = 0;
     int index = 2;
@@ -107,6 +109,7 @@ public class GfaReader {
    *
    * @param chars characters of the line.
    */
+  @TestId(id = "parseNode")
   private void parseNode(char[] chars) {
     int nodeId = 0;
     int index = 2;
@@ -131,7 +134,8 @@ public class GfaReader {
    * @param curIndex the current index; where the bases start in the line.
    * @return the new index, after reading the genomes.
    */
-  private int parseNodeBases(Node node, char[] chars, int curIndex) {
+  @TestId(id = "parseNodeBases")
+  private static int parseNodeBases(Node node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, '\t', 1);
     node.setBases(new String(chars, curIndex, index - curIndex));
@@ -146,7 +150,8 @@ public class GfaReader {
    * @param curIndex the current index; where the bases end in the line.
    * @return the new index, after reading the genomes.
    */
-  private int parseNodegenomes(Node node, char[] chars, int curIndex) {
+  @TestId(id = "parseNodegenomes")
+  private static int parseNodegenomes(Node node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, ':', 2);
     ++index;
@@ -171,7 +176,8 @@ public class GfaReader {
    * @param chars    the character array of the node line in the GFA file.
    * @param curIndex the current index; where the genomes end in the line.
    */
-  private void parseNodeOrientation(Node node, char[] chars, int curIndex) {
+  @TestId(id = "parseNodeOrientation")
+  private static void parseNodeOrientation(Node node, char[] chars, int curIndex) {
     int index = skipTillCharacter(chars, curIndex, '\t', 3);
     index = skipTillCharacter(chars, index, ':', 2) + 1;
     int orientation = 0;
@@ -187,6 +193,7 @@ public class GfaReader {
    *
    * @param chars the characters of the header.
    */
+  @TestId(id = "parseHeader")
   private void parseHeader(char[] chars) {
     int index = 0;
     index = skipTillCharacter(chars, index, ':', 2) + 1;
@@ -208,7 +215,8 @@ public class GfaReader {
    * @param amount     the amount of times to skip the character.
    * @return the index of the first occurence of the character after the given start index.
    */
-  private int skipTillCharacter(char[] chars, int startIndex, char ch, int amount) {
+  @TestId(id = "skipTillCharacter")
+  private static int skipTillCharacter(char[] chars, int startIndex, char ch, int amount) {
     int index = startIndex;
     for (int i = 0; i < amount; i++) {
       ++index;
@@ -225,6 +233,7 @@ public class GfaReader {
    * @param id the id of the node.
    * @return the node.
    */
+  @TestId(id = "getNode")
   private Node getNode(int id) {
     Node node = nodes.get(id);
     if (node == null) {
