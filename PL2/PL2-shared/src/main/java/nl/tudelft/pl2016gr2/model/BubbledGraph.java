@@ -29,7 +29,6 @@ public class BubbledGraph implements GraphInterface {
     if (id < lowestId) {
       lowestId = id;
     }
-
     nodes.put(id, node);
   }
 
@@ -39,6 +38,10 @@ public class BubbledGraph implements GraphInterface {
     ArrayList<Integer> res = new ArrayList<>();
     res.add(nodes.get(lowestId).getId());
     return res;
+  }
+  
+  public HashMap<Integer, AbstractNode> getNodes() {
+    return this.nodes;
   }
 
 }

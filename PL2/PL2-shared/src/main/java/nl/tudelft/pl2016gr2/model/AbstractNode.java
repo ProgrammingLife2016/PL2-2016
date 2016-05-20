@@ -8,6 +8,7 @@ public abstract class AbstractNode {
   private ArrayList<Integer> inLinks;
   private ArrayList<Integer> outLinks;
   private int sequenceLength;
+  private boolean inBubble = false;
 
   /**
    * Construct an abstract node.
@@ -69,6 +70,22 @@ public abstract class AbstractNode {
 
   public int getId() {
     return identifier;
+  }
+
+  /**
+   * Return inbubble.
+   * @return the inBubble
+   */
+  public boolean isInBubble() {
+    return inBubble;
+  }
+
+  /**
+   * Set inbubble.
+   * @param inBubble the inBubble to set
+   */
+  public void setInBubble(boolean inBubble) {
+    this.inBubble = inBubble;
   }
 
 }

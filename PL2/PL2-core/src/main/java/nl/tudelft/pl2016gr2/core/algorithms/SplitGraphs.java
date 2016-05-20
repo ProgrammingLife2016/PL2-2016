@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
+import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;

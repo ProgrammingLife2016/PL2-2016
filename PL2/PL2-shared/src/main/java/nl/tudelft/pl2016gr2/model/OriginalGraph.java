@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 public class OriginalGraph implements GraphInterface, Iterable<Node> {
 
-  private final HashMap<Integer, Node> nodes;
+  private final HashMap<Integer, AbstractNode> nodes;
   private final ArrayList<Integer> rootNodes;
 
   private ArrayList<String> genomes;
@@ -26,7 +26,7 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
    * @param nodes  the nodes of the graph.
    * @param genoms the genomes which are contained in the graph.
    */
-  public OriginalGraph(HashMap<Integer, Node> nodes, ArrayList<String> genoms) {
+  public OriginalGraph(HashMap<Integer, AbstractNode> nodes, ArrayList<String> genoms) {
     this.nodes = nodes;
     this.genomes = genoms;
     this.rootNodes = getAllRootNodes();
@@ -39,7 +39,7 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
    * @param rootNodes the root nodes (nodes without inlinks) of the graph.
    * @param genoms    the genomes which are contained in the graph.
    */
-  public OriginalGraph(HashMap<Integer, Node> nodes, ArrayList<Integer> rootNodes,
+  public OriginalGraph(HashMap<Integer, AbstractNode> nodes, ArrayList<Integer> rootNodes,
       ArrayList<String> genoms) {
     this.nodes = nodes;
     this.rootNodes = rootNodes;
@@ -53,7 +53,7 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
    */
   private ArrayList<Integer> getAllRootNodes() {
     ArrayList<Integer> newRootNodes = new ArrayList<>();
-    nodes.forEach((Integer id, Node node) -> {
+    nodes.forEach((Integer id, AbstractNode node) -> {
       if (node.getInlinks().isEmpty()) {
         newRootNodes.add(id);
       }
@@ -88,14 +88,14 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (Node node : nodes.values()) {
+    for (AbstractNode node : nodes.values()) {
       sb.append(node).append('\n');
     }
     return sb.toString();
   }
 
   @Override
-  public Node getNode(int id) {
+  public AbstractNode getNode(int id) {
     return nodes.get(id);
   }
 
@@ -105,9 +105,9 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
    * @param id the id of the node.
    * @return the nodes of the outlinks.
    */
-  public ArrayList<Node> getTargets(int id) {
+  public ArrayList<AbstractNode> getTargets(int id) {
     ArrayList<Integer> outLinks = nodes.get(id).getOutlinks();
-    ArrayList<Node> targets = new ArrayList<>();
+    ArrayList<AbstractNode> targets = new ArrayList<>();
 
     for (Integer outLink : outLinks) {
       targets.add(nodes.get(outLink));
@@ -130,7 +130,7 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
     }
   }
   
-  public HashMap<Integer, Node> getNodes() {
+  public HashMap<Integer, AbstractNode> getNodes() {
     return nodes;
   }
 

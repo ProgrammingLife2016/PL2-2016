@@ -41,7 +41,7 @@ public class FilterSnips {
 
     for (int i = 1; i <= graph.getSize(); i++) {
       if (!collapsedNodes.contains(i)) {
-        Node current = graph.getNode(i);
+        Node current = (Node) graph.getNode(i);
 
         if (isSnip(current)) {
           Node snip = makeSnip(current);
@@ -72,8 +72,8 @@ public class FilterSnips {
         collapsedNodes.add(outlink);
       }
 
-      Node intermediate = graph.getNode(current.getOutlinks().get(0));
-      Node end = graph.getNode(intermediate.getOutlinks().get(0));
+      Node intermediate = (Node) graph.getNode(current.getOutlinks().get(0));
+      Node end = (Node) graph.getNode(intermediate.getOutlinks().get(0));
       collapsedNodes.add(end.getId());
 
       snip = new Node(current.getId(), current.getSequenceLength() + 1 + end.getSequenceLength(),
@@ -98,7 +98,7 @@ public class FilterSnips {
   private boolean isSnip(Node snip) {
     ArrayList<Node> targets = new ArrayList<>();
     for (Integer outlink : snip.getOutlinks()) {
-      targets.add(graph.getNode(outlink));
+      targets.add((Node) graph.getNode(outlink));
     }
 
     return targets.size() == 2 && targets.get(0).getSequenceLength() == 1
@@ -118,7 +118,7 @@ public class FilterSnips {
   @TestId(id = "method_updateLinks")
   private void updateLinks(Node snip, int originalId) {
     for (Integer outlink : snip.getOutlinks()) {
-      Node out = graph.getNode(outlink);
+      Node out = (Node) graph.getNode(outlink);
       out.replaceInlink(originalId, snip.getId());
     }
   }

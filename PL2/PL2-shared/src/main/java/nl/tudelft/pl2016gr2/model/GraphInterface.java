@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface GraphInterface {
 
@@ -15,6 +16,6 @@ public interface GraphInterface {
    * @return the IDs of all root nodes.
    */
   ArrayList<Integer> getRootNodes();
-
-  // public HashMap<Integer, AbstractNode> getNodes();
+  
+  HashMap<Integer, AbstractNode> getNodes();
 }

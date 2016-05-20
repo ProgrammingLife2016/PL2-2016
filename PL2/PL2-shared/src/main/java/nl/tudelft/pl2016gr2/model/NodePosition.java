@@ -48,7 +48,7 @@ public class NodePosition implements Comparable<NodePosition> {
 
   public AbstractNode getNode() {
     return node;
-  }
+  }                                        
 
   public void setOverlapping(boolean overlapping) {
     this.overlapping = overlapping;

@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
+import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -235,11 +236,23 @@ public class GfaReader {
    */
   @TestId(id = "getNode")
   private Node getNode(int id) {
-    Node node = nodes.get(id);
+    AbstractNode node = nodes.get(id);
     if (node == null) {
       node = new Node(id, 1, new ArrayList<>(), 0);
       nodes.put(id, node);
     }
-    return node;
+    return (Node) nodes.get(id);
+  }
+
+  /**
+   * Method which returns the read graph.
+   *
+   * @return The graph.
+   */
+  public OriginalGraph getGraph() {
+    if (originalGraph == null) {
+      originalGraph = new OriginalGraph(nodes, genoms);
+    }
+    return originalGraph;
   }
 }

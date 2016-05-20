@@ -60,7 +60,7 @@ public class FilterSnipsTest {
     OriginalGraph filteredGraph = filter.filter();
 
     assertEquals(3, filteredGraph.getSize());
-    Node root = filteredGraph.getNode(filteredGraph.getRootNodes().get(0));
+    Node root = (Node) filteredGraph.getNode(filteredGraph.getRootNodes().get(0));
     assertEquals(1, root.getId());
     assertTrue(root.getOutlinks().contains(8));
     assertTrue(root.getOutlinks().contains(9));
