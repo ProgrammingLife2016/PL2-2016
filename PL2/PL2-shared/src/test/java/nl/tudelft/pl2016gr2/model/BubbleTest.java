@@ -1,13 +1,13 @@
 package nl.tudelft.pl2016gr2.model;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class BubbleTest {
 
@@ -60,7 +60,7 @@ public class BubbleTest {
   }
 
   @Test
-  public void testEquals1() {
+  public void testEqualsOne() {
     Bubble bubble1 = new Bubble(123, 5);
     Bubble bubble2 = new Bubble(123, 5);
 
@@ -68,7 +68,7 @@ public class BubbleTest {
   }
 
   @Test
-  public void testEquals2() {
+  public void testEqualsTwo() {
     Bubble bubble1 = new Bubble(123, 5);
     Bubble bubble2 = new Bubble(122, 7);
 
@@ -76,7 +76,7 @@ public class BubbleTest {
   }
 
   @Test
-  public void testEquals3() {
+  public void testEqualsThree() {
     Bubble bubble = new Bubble(123, 5);
     Object obj = new Object();
 

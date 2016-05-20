@@ -51,27 +51,27 @@ public class NodeTest {
   }
 
   @Test
-  public void testEquals1() {
+  public void testEqualsOne() {
     assertTrue(node.equals(new Node(3, 6, new ArrayList<>(), 5)));
   }
 
   @Test
-  public void testEquals2() {
+  public void testEqualsTwo() {
     assertFalse(node.equals(new Node(2, 7, new ArrayList<>(), 5)));
   }
 
   @Test
-  public void testEquals3() {
+  public void testEqualsThree() {
     assertFalse(node.equals(new Object()));
   }
 
   @Test
-  public void testHashCode1() {
+  public void testHashCodeOne() {
     assertEquals(node.hashCode(), new Node(3, 6, new ArrayList<>(), 5).hashCode());
   }
 
   @Test
-  public void testGetGenomesOverEdge1() {
+  public void testGetGenomesOverEdgeOne() {
 
     node.addOutlink(2);
 
@@ -79,7 +79,7 @@ public class NodeTest {
   }
 
   @Test
-  public void testGetGenomesOverEdge2() {
+  public void testGetGenomesOverEdgeTwo() {
     ArrayList<String> ar = new ArrayList<>();
     ar.add("ref1.fasta");
 
@@ -92,7 +92,7 @@ public class NodeTest {
   }
 
   @Test
-  public void testGetGenomesOverEdge3() {
+  public void testGetGenomesOverEdgeThree() {
     ArrayList<String> ar = new ArrayList<>();
     ar.add("ref1.fasta");
     ar.add("ref2.fasta");
