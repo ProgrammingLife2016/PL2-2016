@@ -1,6 +1,8 @@
 package nl.tudelft.pl2016gr2.model;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,10 +46,65 @@ public class NodeTest {
   
   @Test
   public void toStringTest() {
-    assertEquals(node.toString(), 
+    assertEquals(node.toString(),
         "id: 3 sequencelength: 6 inlinks: [] outlinks: [] snips: 5, id: 3, flow: 0.0");
   }
-  
+
+  @Test
+  public void testEquals1() {
+    assertTrue(node.equals(new Node(3, 6, new ArrayList<>(), 5)));
+  }
+
+  @Test
+  public void testEquals2() {
+    assertFalse(node.equals(new Node(2, 7, new ArrayList<>(), 5)));
+  }
+
+  @Test
+  public void testEquals3() {
+    assertFalse(node.equals(new Object()));
+  }
+
+  @Test
+  public void testHashCode1() {
+    assertEquals(node.hashCode(), new Node(3, 6, new ArrayList<>(), 5).hashCode());
+  }
+
+  @Test
+  public void testGetGenomesOverEdge1() {
+
+    node.addOutlink(2);
+
+    assertEquals(0, node.getGenomesOverEdge(new Node(2, 0, new ArrayList<>(), 0)));
+  }
+
+  @Test
+  public void testGetGenomesOverEdge2() {
+    ArrayList<String> ar = new ArrayList<>();
+    ar.add("ref1.fasta");
+
+    Node otherNode = new Node(2, 0, new ArrayList<>(), 0);
+    otherNode.setGenomes(ar);
+
+    node.addOutlink(2);
+
+    assertEquals(1, node.getGenomesOverEdge(otherNode));
+  }
+
+  @Test
+  public void testGetGenomesOverEdge3() {
+    ArrayList<String> ar = new ArrayList<>();
+    ar.add("ref1.fasta");
+    ar.add("ref2.fasta");
+
+    Node otherNode = new Node(2, 0, new ArrayList<>(), 0);
+    otherNode.setGenomes(ar);
+
+    node.addOutlink(2);
+
+    assertEquals(2, node.getGenomesOverEdge(otherNode));
+  }
+
   @Test
   public void getSnipsTest() {
     assertEquals(5, node.getSnips());
