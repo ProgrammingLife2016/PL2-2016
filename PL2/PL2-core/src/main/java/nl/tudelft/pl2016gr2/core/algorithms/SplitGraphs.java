@@ -107,6 +107,7 @@ public class SplitGraphs {
         newGraph.addRootNode(newNode);
       }
     });
+    newGraph.setGenoms(new ArrayList<>(genomeSet));
     return newGraph;
   }
 
