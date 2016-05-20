@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 
-public class AbstractNode {
+public abstract class AbstractNode {
 
   private final int identifier;
   private ArrayList<Integer> inLinks;
@@ -21,6 +21,8 @@ public class AbstractNode {
     this.inLinks = new ArrayList<>();
     this.outLinks = new ArrayList<>();
   }
+  
+  public abstract int getGenomesOverEdge(AbstractNode to);
 
   @Override
   public String toString() {

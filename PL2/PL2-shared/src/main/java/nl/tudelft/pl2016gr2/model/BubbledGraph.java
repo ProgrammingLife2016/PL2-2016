@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class BubbledGraph implements GraphInterface {
@@ -33,8 +34,11 @@ public class BubbledGraph implements GraphInterface {
   }
 
   @Override
-  public AbstractNode getRoot() {
-    return nodes.get(lowestId);
+  public ArrayList<Integer> getRootNodes() {
+    // TODO: fix this. (must be able to handle multiple root nodes)
+    ArrayList<Integer> res = new ArrayList<>();
+    res.add(nodes.get(lowestId).getId());
+    return res;
   }
 
 }

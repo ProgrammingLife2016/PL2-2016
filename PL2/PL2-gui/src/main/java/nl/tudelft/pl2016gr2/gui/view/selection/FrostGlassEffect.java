@@ -24,9 +24,6 @@ public class FrostGlassEffect {
   private final InvalidationListener sizeChangeListener = (Observable observable) -> {
     redrawImage();
   };
-  private final InvalidationListener translationListener = (Observable observable) -> {
-    repositionImage();
-  };
   private final EventHandler<GraphicsChangedEvent> graphicsChangedHandler = event -> {
     redrawImage();
   };
@@ -49,7 +46,6 @@ public class FrostGlassEffect {
     background.addEventHandler(GraphicsChangedEvent.GRAPHICS_CHANGED_EVENT, graphicsChangedHandler);
     background.getScene().widthProperty().addListener(sizeChangeListener);
     background.getScene().heightProperty().addListener(sizeChangeListener);
-    container.translateXProperty().addListener(translationListener);
   }
 
   /**
@@ -95,6 +91,5 @@ public class FrostGlassEffect {
         graphicsChangedHandler);
     background.getScene().widthProperty().removeListener(sizeChangeListener);
     background.getScene().heightProperty().removeListener(sizeChangeListener);
-    container.translateXProperty().removeListener(translationListener);
   }
 }

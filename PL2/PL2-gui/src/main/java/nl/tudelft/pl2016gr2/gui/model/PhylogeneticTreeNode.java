@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -83,4 +84,26 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
     return hash;
   }
 
+  @Override
+  public ArrayList<String> getGenomes() {
+    ArrayList<String> res = new ArrayList<>();
+    if (node.isLeaf()) {
+      res.add(node.label);
+    } else {
+      for (int i = 0; i < node.numberChildren(); i++) {
+        res.addAll(new PhylogeneticTreeNode(node.getChild(i)).getGenomes());
+      }
+    }
+    return res;
+  }
+
+  @Override
+  public double getEdgeLength() {
+    return node.weight;
+  }
+
+  @Override
+  public boolean isLeaf() {
+    return node.numberChildren() == 0;
+  }
 }

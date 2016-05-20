@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class MetaDataTest {
   
   private MetaData md;
@@ -14,7 +16,7 @@ public class MetaDataTest {
    */
   @Before
   public void setup() {
-    MetaData meta = new MetaData(new Node(5, 4, null, 2), 
+    MetaData meta = new MetaData(new Node(5, 4, new ArrayList<>(), 2), 
         "aactgttagcatagctcctagatcgtctcgatagcaagccatactgca", 1);
     this.md = meta;
   }
@@ -34,7 +36,7 @@ public class MetaDataTest {
   
   @Test
   public void nodeTest() {
-    Node no = new Node(3, 2, null, 1);
+    Node no = new Node(3, 2, new ArrayList<>(), 1);
     md.setNode(no);
     assertEquals(no, md.getNode());
   }

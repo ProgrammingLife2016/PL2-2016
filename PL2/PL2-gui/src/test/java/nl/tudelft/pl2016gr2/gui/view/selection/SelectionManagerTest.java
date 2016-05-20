@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import org.mockito.Mockito;
  *
  * @author Faris
  */
-@RunWith(JavaFxJUnit4ClassRunner.class)
+@RunWith(JavaFxIntegrationTestRunner.class)
 public class SelectionManagerTest {
 
   private SelectionManager selectionManager;
@@ -30,11 +30,11 @@ public class SelectionManagerTest {
   public void initializeVariables() {
     Pane pane = new Pane();
     Scene scene = new Scene(pane);
-    selectionManager = new SelectionManager(pane, pane);
+    selectionManager = new SelectionManager(null, pane, pane);
     selectable = Mockito.mock(ISelectable.class);
     ISelectionInfo selectionInfo = Mockito.mock(ISelectionInfo.class);
 
-    when(selectable.getSelectionInfo()).thenReturn(selectionInfo);
+    when(selectable.getSelectionInfo(selectionManager)).thenReturn(selectionInfo);
     when(selectionInfo.getNode()).thenReturn(new Pane());
   }
 

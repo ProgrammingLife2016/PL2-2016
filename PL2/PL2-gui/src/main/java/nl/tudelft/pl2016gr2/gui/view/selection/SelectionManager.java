@@ -5,11 +5,19 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.util.Duration;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import nl.tudelft.pl2016gr2.util.Pair;
+
+import java.util.ArrayList;
 
 /**
  * This class manages the currently selected node. It makes sure the correct data is displayed and
@@ -19,24 +27,33 @@ import javafx.util.Duration;
  */
 public class SelectionManager {
 
+  private final RootLayoutController rootLayoutController;
   private final Pane selectionDescriptionPane;
   private final Region background;
+  @TestId(id = "contentPane")
   private DescriptionPane contentPane;
+  @TestId(id = "selected")
   private ISelectable selected;
   private Timeline timeline;
+
+  private final ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> graphNodes
+      = new SimpleObjectProperty<>();
 
   /**
    * Create a selection manager.
    *
+   * @param rootLayoutController     the root layout controller class.
    * @param selectionDescriptionPane the pane in which to draw information about selected items.
    * @param background               the background pane which is positioned behind the description.
    */
-  public SelectionManager(Pane selectionDescriptionPane, Region background) {
+  public SelectionManager(RootLayoutController rootLayoutController, Pane selectionDescriptionPane,
+      Region background) {
+    this.rootLayoutController = rootLayoutController;
     this.selectionDescriptionPane = selectionDescriptionPane;
     this.background = background;
 
     selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
-      if (selectionDescriptionPane.getChildren().size() == 0) {
+      if (selectionDescriptionPane.getChildren().isEmpty()) {
         selectionDescriptionPane.setVisible(false);
       } else {
         selectionDescriptionPane.setVisible(true);
@@ -70,6 +87,10 @@ public class SelectionManager {
     }
   }
 
+  protected void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+    rootLayoutController.drawGraph(topGenomes, bottomGenomes);
+  }
+
   /**
    * Set the content of the selection description pane.
    *
@@ -77,7 +98,7 @@ public class SelectionManager {
    */
   private void createDescription(ISelectable selected) {
     createNewContentPane();
-    Node description = selected.getSelectionInfo().getNode();
+    Node description = selected.getSelectionInfo(this).getNode();
     contentPane.getChildren().add(description);
     contentPane.setOpacity(0);
     timeline = new Timeline();
@@ -111,5 +132,24 @@ public class SelectionManager {
       curContentPane.clear();
     });
     timeline.play();
+  }
+
+  /**
+   * Set the IPhylogeneticTreeNode which is shown in the top and bottom graph.
+   *
+   * @param topNode    the IPhylogeneticTreeNode which is shown in the top graph.
+   * @param bottomNode the IPhylogeneticTreeNode which is shown in the bottom graph.
+   */
+  public void setShownGraphNodes(IPhylogeneticTreeNode topNode, IPhylogeneticTreeNode bottomNode) {
+    graphNodes.set(new Pair<>(topNode, bottomNode));
+  }
+
+  /**
+   * Get the IPhylogeneticTreeNode which is shown in the top and bottom graph.
+   *
+   * @return the IPhylogeneticTreeNode which is shown in the top and bottom graph.
+   */
+  public ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> getShownGraphNodes() {
+    return graphNodes;
   }
 }

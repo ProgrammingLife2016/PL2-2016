@@ -14,7 +14,7 @@ import javafx.event.EventType;
 public class GraphicsChangedEvent extends Event {
 
   public static final EventType<GraphicsChangedEvent> GRAPHICS_CHANGED_EVENT
-      = new EventType(ANY, "GRAPHICS_CHANGED");
+      = new EventType<>(ANY, "GRAPHICS_CHANGED");
 
   /**
    * Create a new graphics changed event.

@@ -7,18 +7,17 @@ import static org.junit.Assert.assertTrue;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 
 public class FilterSnipsTest {
-  
+
   private OriginalGraph graph = new OriginalGraph();
-  
+
   /**
-   * Make graph.
+   * Make graph. 
     //
     //    - 2 -       - 5 -       - 8
     // 1 -      - 4 -       - 7 - 
@@ -28,7 +27,7 @@ public class FilterSnipsTest {
   @Before
   public void setup() {
     for (int i = 1; i <= 9; i++) {
-      Node node = new Node(i, 1, null, 0);
+      Node node = new Node(i, 1, new ArrayList<>(), 0);
       if (i == 1 || i == 4 || i == 7) {
         node.addOutlink(i + 1);
         node.addOutlink(i + 2);
@@ -53,18 +52,15 @@ public class FilterSnipsTest {
   }
 
   /**
-   * Test filter method. The resulting graph should have 3 nodes:
-   *    - 8
-   * 1 -
-   *    - 9
+   * Test filter method. The resulting graph should have 3 nodes: - 8 1 - - 9
    */
   @Test
   public void testFilter() {
     FilterSnips filter = new FilterSnips(graph);
     OriginalGraph filteredGraph = filter.filter();
-    
+
     assertEquals(3, filteredGraph.getSize());
-    Node root = filteredGraph.getRoot();
+    Node root = filteredGraph.getNode(filteredGraph.getRootNodes().get(0));
     assertEquals(1, root.getId());
     assertTrue(root.getOutlinks().contains(8));
     assertTrue(root.getOutlinks().contains(9));
@@ -72,78 +68,72 @@ public class FilterSnipsTest {
     assertEquals(graph.getNode(8), filteredGraph.getNode(8));
     assertEquals(graph.getNode(9), filteredGraph.getNode(9));
   }
-  
+
   /**
-   * Test method make snip for node 1. It should merge all nodes between 1 and 7 into
-   * one node.
+   * Test method make snip for node 1. It should merge all nodes between 1 and 7 into one node.
    */
   @Test
   public void testMakeSnip() {
     FilterSnips filter = new FilterSnips(graph);
-    Node snip = (Node)AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, 
-        filter, graph.getNode(1));
+    Node snip = AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, filter,
+        graph.getNode(1));
 
     assertEquals(2, snip.getOutlinks().size());
     assertTrue(snip.getOutlinks().contains(8));
     assertTrue(snip.getOutlinks().contains(9));
-    
+
     assertEquals(0, snip.getInlinks().size());
-    
+
     assertEquals(1, snip.getId());
     assertEquals(2, snip.getSnips());
   }
-  
+
   /**
-   * Test method make snip for node 4. It should merge all nodes between 4 and 7 into 
-   * one node.
+   * Test method make snip for node 4. It should merge all nodes between 4 and 7 into one node.
    */
   @Test
   public void testMakeSnipNodeFour() {
     FilterSnips filter = new FilterSnips(graph);
-    Node snip = (Node)AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, 
-        filter, graph.getNode(4));
+    Node snip = AccessPrivate.callMethod("method_makeSnip", FilterSnips.class, filter, 
+        graph.getNode(4));
 
     assertEquals(2, snip.getOutlinks().size());
     assertTrue(snip.getOutlinks().contains(8));
     assertTrue(snip.getOutlinks().contains(9));
-    
+
     assertEquals(2, snip.getInlinks().size());
     assertTrue(snip.getInlinks().contains(2));
     assertTrue(snip.getInlinks().contains(3));
-    
+
     assertEquals(4, snip.getId());
     assertEquals(1, snip.getSnips());
   }
-  
+
   /**
-   * Test method is snip for node 1 (which is a snip). So the method should
-   * return true.
+   * Test method is snip for node 1 (which is a snip). So the method should return true.
    */
   @Test
   public void testIsSnipTrue() {
     FilterSnips filter = new FilterSnips(graph);
-    Object ret = AccessPrivate.callMethod("method_isSnip", FilterSnips.class, 
-        filter, graph.getNode(1));
-    assertTrue((boolean)ret);
+    boolean ret = AccessPrivate.callMethod("method_isSnip", FilterSnips.class, filter, 
+        graph.getNode(1));
+    assertTrue(ret);
   }
-  
+
   /**
-   * Test method is snip for node 2 (which is not a snip). So the method should
-   * return false.
+   * Test method is snip for node 2 (which is not a snip). So the method should return false.
    */
   @Test
   public void testIsSnipFalse() {
     FilterSnips filter = new FilterSnips(graph);
-    Object ret = AccessPrivate.callMethod("method_isSnip", FilterSnips.class, 
-        filter, graph.getNode(2));
-    assertFalse((boolean)ret);
+    boolean ret = AccessPrivate.callMethod("method_isSnip", FilterSnips.class, filter, 
+        graph.getNode(2));
+    assertFalse(ret);
   }
-  
-  
+
   /**
-   * Test method update links. The outlinks of node 1 are set to 5 and 6,
-   * to pretend it is a snip from node 1 to 4. So the inlink of node 5 and 6,
-   * which is 4 now, should be changed to 1.
+   * Test method update links. The outlinks of node 1 are set to 5 and 6, to pretend it is a snip
+   * from node 1 to 4. So the inlink of node 5 and 6, which is 4 now, should be changed to 1.
    */
   @Test
   public void testUpdateLinks() {
