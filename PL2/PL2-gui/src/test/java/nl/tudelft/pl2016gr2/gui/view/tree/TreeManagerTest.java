@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
@@ -25,7 +25,7 @@ import java.util.Observable;
  *
  * @author Faris
  */
-@RunWith(JavaFxJUnit4ClassRunner.class)
+@RunWith(JavaFxIntegrationTestRunner.class)
 public class TreeManagerTest {
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

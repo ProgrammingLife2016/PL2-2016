@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.launcher.javafxrunner;
 
 import javafx.stage.Stage;
+import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.launcher.Dnav;
 
 import java.io.IOException;
@@ -15,12 +16,15 @@ import java.util.logging.Logger;
  * Coppied from: http://awhite.blogspot.nl/2013/04/javafx-junit-testing.html This is the application
  * which starts JavaFx. It is controlled through the startJavaFx() method.
  */
-public class JavaFxJUnit4Application extends Dnav {
+public class JavaFxRealApplication extends Dnav {
 
   /**
    * The lock that guarantees that only one JavaFX thread will be started.
    */
   private static final ReentrantLock LOCK = new ReentrantLock();
+
+  public static Stage primaryStage;
+  public static RootLayoutController rootLayout;
 
   /**
    * Started flag.
@@ -36,7 +40,7 @@ public class JavaFxJUnit4Application extends Dnav {
       if (!started.get()) {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-          JavaFxJUnit4Application.launch();
+          JavaFxRealApplication.launch();
         });
         while (!started.get()) {
           Thread.yield();
@@ -57,7 +61,7 @@ public class JavaFxJUnit4Application extends Dnav {
     try {
       super.start(stage);
     } catch (IOException ex) {
-      Logger.getLogger(JavaFxJUnit4Application.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(JavaFxRealApplication.class.getName()).log(Level.SEVERE, null, ex);
     }
     started.set(Boolean.TRUE);
   }

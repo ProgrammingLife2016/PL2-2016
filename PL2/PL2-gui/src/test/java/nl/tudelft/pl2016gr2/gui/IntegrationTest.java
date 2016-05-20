@@ -1,5 +1,4 @@
-package nl.tudelft.pl2016gr2.launcher;
-
+package nl.tudelft.pl2016gr2.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -10,6 +9,8 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxRealApplication;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.DescriptionPane;
@@ -17,7 +18,6 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
-import nl.tudelft.pl2016gr2.launcher.javafxrunner.JavaFxJUnit4ClassRunner;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import java.util.ArrayList;
  *
  * @author Faris
  */
-@RunWith(JavaFxJUnit4ClassRunner.class)
+@RunWith(JavaFxIntegrationTestRunner.class)
 public class IntegrationTest {
 
   private static final MouseEvent SOME_MOUSE_EVENT = new MouseEvent(null, 0, 0, 0, 0,
@@ -96,11 +96,12 @@ public class IntegrationTest {
   }
 
   private static Stage getPrimaryStage() {
-    return AccessPrivate.getFieldValue("primaryStage", Dnav.class, null);
+    return JavaFxRealApplication.primaryStage;
+    
   }
 
   private static RootLayoutController getRootLayoutController() {
-    return AccessPrivate.getFieldValue("rootLayout", Dnav.class, null);
+    return JavaFxRealApplication.rootLayout;
   }
 
   private static SelectionManager getSelectionManager() {
