@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.gui.view.selection;
 import static org.junit.Assert.assertEquals;
 
 import javafx.scene.control.TextArea;
-import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
  *
  * @author Faris
  */
-@RunWith(JavaFxJUnit4ClassRunner.class)
+@RunWith(JavaFxIntegrationTestRunner.class)
 public class TextDescriptionTest {
 
   /**

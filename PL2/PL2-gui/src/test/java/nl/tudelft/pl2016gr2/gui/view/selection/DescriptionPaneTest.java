@@ -6,7 +6,7 @@ import static org.mockito.Mockito.verify;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
-import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxJUnit4ClassRunner;
+import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import org.mockito.Mockito;
  *
  * @author Faris
  */
-@RunWith(JavaFxJUnit4ClassRunner.class)
+@RunWith(JavaFxIntegrationTestRunner.class)
 public class DescriptionPaneTest {
 
   /**

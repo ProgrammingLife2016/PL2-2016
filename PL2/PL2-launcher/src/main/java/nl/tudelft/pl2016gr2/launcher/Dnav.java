@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
 
@@ -19,21 +20,29 @@ public class Dnav extends Application {
   private static final double MINIMUM_WINDOW_WIDTH = 600d;
   private static final double MINIMUM_WINDOW_HEIGHT = 700d;
 
+  @TestId(id = "primaryStage")
+  private static Stage primaryStage;
+  @TestId(id = "rootLayout")
+  private static RootLayoutController rootLayout;
+
   /**
    * Start the application. This method is automatically called by JavaFX when the API is
    * initialized, after the call to launch(args) in the main method.
    *
-   * @param primaryStage the primary stage of the application.
+   * @param stage the primary stage of the application.
    * @throws java.io.IOException this exception occurs when the fxml isn't found.
    */
   @Override
-  public void start(Stage primaryStage) throws IOException {
-    RootLayoutController rootLayout = RootLayoutController.loadView();
+  public void start(Stage stage) throws IOException {
+    primaryStage = stage;
+    rootLayout = RootLayoutController.loadView();
     Scene scene = new Scene(rootLayout.getPane(), INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
     primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
     primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
     primaryStage.setScene(scene);
-    primaryStage.show();
+    if (!Boolean.getBoolean("test")) {
+      primaryStage.show();
+    }
   }
 
   /**

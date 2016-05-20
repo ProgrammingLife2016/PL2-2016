@@ -16,6 +16,7 @@ import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
 import java.net.URL;
@@ -62,8 +63,11 @@ public class DrawComparedGraphs implements Initializable {
 
   private OriginalGraph topGraph;
   private OriginalGraph bottomGraph;
+  @TestId(id = "topGraphOrder")
   private ArrayList<NodePosition> topGraphOrder;
+  @TestId(id = "bottomGraphOrder")
   private ArrayList<NodePosition> bottomGraphOrder;
+  @TestId(id = "amountOfLevels")
   private int amountOfLevels;
 
   /**

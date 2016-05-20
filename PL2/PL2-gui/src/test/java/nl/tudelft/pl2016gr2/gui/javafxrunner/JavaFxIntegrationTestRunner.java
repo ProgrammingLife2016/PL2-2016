@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * runChild() is called for each test that is run. By wrapping each call in the Platform.runLater()
  * this ensures that the request is executed on the JavaFx thread.
  */
-public class JavaFxJUnit4ClassRunner extends BlockJUnit4ClassRunner {
+public class JavaFxIntegrationTestRunner extends BlockJUnit4ClassRunner {
 
   /**
    * Constructs a new JavaFxJUnit4ClassRunner with the given parameters.
@@ -24,10 +24,11 @@ public class JavaFxJUnit4ClassRunner extends BlockJUnit4ClassRunner {
    * @param clazz The class that is to be run with this Runner
    * @throws InitializationError Thrown by the BlockJUnit4ClassRunner in the super()
    */
-  public JavaFxJUnit4ClassRunner(final Class<?> clazz) throws InitializationError {
+  public JavaFxIntegrationTestRunner(final Class<?> clazz) throws InitializationError {
     super(clazz);
+    System.setProperty("test", "true");
     if (!isTravisBuild()) {
-      JavaFxJUnit4Application.startJavaFx();
+      JavaFxRealApplication.startJavaFx();
     }
   }
 
@@ -38,13 +39,13 @@ public class JavaFxJUnit4ClassRunner extends BlockJUnit4ClassRunner {
     }
     final CountDownLatch latch = new CountDownLatch(1);
     Platform.runLater(() -> {
-      JavaFxJUnit4ClassRunner.super.runChild(method, notifier);
+      JavaFxIntegrationTestRunner.super.runChild(method, notifier);
       latch.countDown();
     });
     try {
       latch.await();
     } catch (InterruptedException ex) {
-      Logger.getLogger(JavaFxJUnit4ClassRunner.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(JavaFxIntegrationTestRunner.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 

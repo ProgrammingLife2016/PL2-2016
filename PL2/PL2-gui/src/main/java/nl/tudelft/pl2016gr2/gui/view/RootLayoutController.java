@@ -20,6 +20,7 @@ import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.BufferedReader;
@@ -46,12 +47,15 @@ public class RootLayoutController implements Initializable {
   @FXML
   private SplitPane mainPane;
 
+  @TestId(id = "treeManager")
   private TreeManager treeManager;
   private Tree tree;
+  @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
   private OriginalGraph graph;
 
   private GraphOrdererThread mainGraphOrder;
+  @TestId(id = "drawGraphs")
   private DrawComparedGraphs drawGraphs;
 
   /**
