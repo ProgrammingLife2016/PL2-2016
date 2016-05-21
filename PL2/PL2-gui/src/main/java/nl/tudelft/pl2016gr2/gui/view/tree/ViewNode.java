@@ -4,7 +4,11 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -66,6 +70,7 @@ public class ViewNode extends Circle implements ISelectable {
     this.setCenterX(graphArea.getEndX() - this.getRadius());
     this.setCenterY(graphArea.getCenterY());
     initializeClickedEvent();
+    initializeDragEvent();
   }
 
   /**
@@ -74,6 +79,29 @@ public class ViewNode extends Circle implements ISelectable {
   private void initializeClickedEvent() {
     setOnMouseClicked((MouseEvent event) -> {
       selectionManager.select(this);
+      event.consume();
+    });
+  }
+
+  /**
+   * Initialize a drag event initializer.
+   */
+  private void initializeDragEvent() {
+    setOnDragDetected((MouseEvent event) -> {
+      StringBuilder genomeStringBuilder = new StringBuilder();
+      for (String genome : dataNode.getGenomes()) {
+        genomeStringBuilder.append(genome).append('\n');
+      }
+      genomeStringBuilder.deleteCharAt(genomeStringBuilder.length() - 1);
+      
+      ClipboardContent clipboard = new ClipboardContent();
+      clipboard.putString(genomeStringBuilder.toString());
+      Dragboard dragboard = startDragAndDrop(TransferMode.ANY);
+      dragboard.setContent(clipboard);
+      
+      SnapshotParameters snapshotParams = new SnapshotParameters();
+      snapshotParams.setFill(Color.TRANSPARENT);
+      dragboard.setDragView(snapshot(snapshotParams, null));
       event.consume();
     });
   }
@@ -433,10 +461,14 @@ public class ViewNode extends Circle implements ISelectable {
 
   @Override
   public void select() {
+    setScaleX(1.75);
+    setScaleY(1.75);
   }
 
   @Override
   public void deselect() {
+    setScaleX(1.0);
+    setScaleY(1.0);
   }
 
   @Override

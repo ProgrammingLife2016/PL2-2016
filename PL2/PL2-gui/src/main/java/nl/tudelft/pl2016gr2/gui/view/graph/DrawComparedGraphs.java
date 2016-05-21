@@ -5,6 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -12,11 +15,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
+import nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs;
+import nl.tudelft.pl2016gr2.core.algorithms.GraphOrdererThread;
+import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
+import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +59,7 @@ public class DrawComparedGraphs implements Initializable {
 
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
-  
+
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
   private static final double X_OFFSET = 50.0;
   private static final double MAX_NODE_RADIUS = 45.0;
@@ -69,6 +79,9 @@ public class DrawComparedGraphs implements Initializable {
   private ArrayList<NodePosition> bottomGraphOrder;
   @TestId(id = "amountOfLevels")
   private int amountOfLevels;
+
+  private GraphOrdererThread mainGraphOrder;
+  private OriginalGraph mainGraph;
 
   /**
    * Load this view.
@@ -98,14 +111,37 @@ public class DrawComparedGraphs implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
     bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    
+
     topGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
     topGraphIndicator.setFill(TOP_GRAPH_COLOR);
     bottomGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
     bottomGraphIndicator.setFill(BOTTOM_GRAPH_COLOR);
-    
+
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
     mainPane.widthProperty().addListener(invalidate -> updateGraph());
+
+    initializeDragEvent();
+  }
+
+  /**
+   * Initialize a drag event receiver.
+   */
+  private void initializeDragEvent() {
+    mainPane.setOnDragOver((DragEvent event) -> {
+      if (event.getDragboard().hasString()) {
+        event.acceptTransferModes(TransferMode.ANY);
+      }
+      event.consume();
+    });
+    mainPane.setOnDragDropped((DragEvent event) -> {
+      Dragboard dragboard = event.getDragboard();
+      if (dragboard.hasString()) {
+        System.out.println(dragboard.getString());
+        System.out.println("");
+        event.setDropCompleted(true);
+        event.consume();
+      }
+    });
   }
 
   /**
@@ -118,6 +154,28 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
+   * Draw two subgraphs.
+   *
+   * @param topGenomes    the genomes of the top graph.
+   * @param bottomGenomes the genomes of the bottom graph.
+   */
+  public void drawGraphs(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
+        topGenomes);
+    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
+        bottomGenomes);
+    topSubGraphThread.start();
+    bottomSubGraphThread.start();
+    OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
+    OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
+    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
+        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
+            bottomSubgraph);
+    drawGraphs(topSubgraph, bottomSubgraph, alignedGraphs.left, alignedGraphs.right);
+  }
+
+  /**
    * Draw two graphs to compare.
    *
    * @param topGraph         the top graph.
@@ -125,7 +183,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param topGraphOrder    the order of the top graph.
    * @param bottomGraphOrder the order of the bottom graph.
    */
-  public void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph,
+  private void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph,
       ArrayList<NodePosition> topGraphOrder, ArrayList<NodePosition> bottomGraphOrder) {
     this.topGraph = topGraph;
     this.bottomGraph = bottomGraph;
@@ -141,6 +199,17 @@ public class DrawComparedGraphs implements Initializable {
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
     scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
     updateGraph();
+  }
+
+  /**
+   * Load a new main graph.
+   *
+   * @param filename the filename of the graph.
+   */
+  public void loadMainGraph(String filename) {
+    mainGraph = new GfaReader(filename).read();
+    mainGraphOrder = new GraphOrdererThread(mainGraph);
+    mainGraphOrder.start();
   }
 
   /**
@@ -394,5 +463,49 @@ public class DrawComparedGraphs implements Initializable {
     label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
+  }
+
+  /**
+   * Thread which is used to get a graph of a subset of the genomes from a graph.
+   */
+  private class SplitGraphsThread extends Thread {
+
+    private OriginalGraph subGraph;
+    private final SplitGraphs splitGraphs;
+    private final ArrayList<String> genomes;
+
+    /**
+     * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
+     * the given genomes.
+     *
+     * @param splitGraphs a {@link SplitGraphs} object.
+     * @param genomes     the list of genomes which must be present in the subgraph.
+     */
+    private SplitGraphsThread(SplitGraphs splitGraphs, ArrayList<String> genomes) {
+      this.splitGraphs = splitGraphs;
+      this.genomes = genomes;
+    }
+
+    /**
+     * Wait till the thread completes its execution and get the subgraph.
+     *
+     * @return the subgraph.
+     */
+    public OriginalGraph getSubGraph() {
+      try {
+        this.join();
+      } catch (InterruptedException ex) {
+        Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return subGraph;
+    }
+
+    /**
+     * Subtract a subgraph from the given graph, containing all of the given genomes.
+     */
+    @Override
+    public void run() {
+      subGraph = splitGraphs.getSubgraph(genomes);
+    }
   }
 }
