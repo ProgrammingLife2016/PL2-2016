@@ -1,9 +1,12 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -15,10 +18,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.core.algorithms.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
+import nl.tudelft.pl2016gr2.core.algorithms.SubGraphOrderer;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
@@ -31,9 +34,13 @@ import nl.tudelft.pl2016gr2.util.Pair;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,9 +54,9 @@ public class DrawComparedGraphs implements Initializable {
   @FXML
   private AnchorPane mainPane;
   @FXML
-  private Pane bottomPane;
-  @FXML
   private Pane topPane;
+  @FXML
+  private Pane bottomPane;
   @FXML
   private ScrollBar scrollbar;
   @FXML
@@ -77,6 +84,8 @@ public class DrawComparedGraphs implements Initializable {
   private ArrayList<NodePosition> topGraphOrder;
   @TestId(id = "bottomGraphOrder")
   private ArrayList<NodePosition> bottomGraphOrder;
+  private Set<String> topGraphGenomes = new HashSet<>();
+  private Set<String> bottomGraphGenomes = new HashSet<>();
   @TestId(id = "amountOfLevels")
   private int amountOfLevels;
 
@@ -102,6 +111,15 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
+   * Get the pane in which the graphs are drawn.
+   *
+   * @return the pane in which the graphs are drawn.
+   */
+  public Region getGraphPane() {
+    return mainPane;
+  }
+
+  /**
    * Initialize the controller class.
    *
    * @param location  unused variable.
@@ -109,7 +127,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    updateGraphSize();
     bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
 
     topGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
@@ -120,24 +138,25 @@ public class DrawComparedGraphs implements Initializable {
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
     mainPane.widthProperty().addListener(invalidate -> updateGraph());
 
-    initializeDragEvent();
+    initializeTopDragEvent();
+    initializeBottomDragEvent();
   }
 
   /**
-   * Initialize a drag event receiver.
+   * Initialize a drag event receiver for the top pane.
    */
-  private void initializeDragEvent() {
-    mainPane.setOnDragOver((DragEvent event) -> {
+  private void initializeTopDragEvent() {
+    topPane.setOnDragOver((DragEvent event) -> {
       if (event.getDragboard().hasString()) {
         event.acceptTransferModes(TransferMode.ANY);
       }
       event.consume();
     });
-    mainPane.setOnDragDropped((DragEvent event) -> {
+    topPane.setOnDragDropped((DragEvent event) -> {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
-        System.out.println(dragboard.getString());
-        System.out.println("");
+        Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
+        handleGenomesDropped(genomes, event, topGraphGenomes, bottomGraphGenomes);
         event.setDropCompleted(true);
         event.consume();
       }
@@ -145,21 +164,182 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Get the pane in which the graphs are drawn.
-   *
-   * @return the pane in which the graphs are drawn.
+   * Initialize a drag event receiver for the bottom pane.
    */
-  public Region getGraphPane() {
-    return mainPane;
+  private void initializeBottomDragEvent() {
+    bottomPane.setOnDragOver((DragEvent event) -> {
+      if (event.getDragboard().hasString()) {
+        event.acceptTransferModes(TransferMode.ANY);
+      }
+      event.consume();
+    });
+    bottomPane.setOnDragDropped((DragEvent event) -> {
+      Dragboard dragboard = event.getDragboard();
+      if (dragboard.hasString()) {
+        Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
+        handleGenomesDropped(genomes, event, bottomGraphGenomes, topGraphGenomes);
+        event.setDropCompleted(true);
+        event.consume();
+      }
+    });
   }
 
   /**
-   * Draw two subgraphs.
+   * Handle the event which occurs when a set of genomes is dropped on one of the panes.
+   *
+   * @param genomes        the genomes which are dropped.
+   * @param dragEvent      the drag event.
+   * @param genomeMap      the map containing the genomes of the pane which the drop event occured
+   *                       on.
+   * @param otherGenomeMap the map containing the genomes of other pane (on which the drop event
+   *                       didn't occur).
+   */
+  @SuppressWarnings("fallthrough")
+  private void handleGenomesDropped(Collection<String> genomes, DragEvent dragEvent,
+      Set<String> genomeMap, Set<String> otherGenomeMap) {
+    ContextMenu contextMenu = new ContextMenu();
+
+    switch (getDrawnGraphs()) {
+      case 0:
+        topGraphGenomes.addAll(genomes);
+        redrawGraphs();
+        break;
+      case 1:
+        contextMenu.getItems().add(createNewGraphMenuItem(genomes, otherGenomeMap));
+      /* intended fall through */
+      case 2:
+        contextMenu.getItems().add(createClearAndAddMenuItem(genomes, genomeMap));
+        contextMenu.getItems().add(createAddToExistingMenuItem(genomes, genomeMap));
+        contextMenu.show(mainPane, dragEvent.getScreenX(), dragEvent.getScreenY());
+        break;
+      default:
+        throw new AssertionError();
+    }
+  }
+
+  /**
+   * Get the amount of drawn graphs.
+   *
+   * @return the amount of drawn graphs.
+   */
+  private int getDrawnGraphs() {
+    int drawnGraphs = 0;
+    if (!topGraphGenomes.isEmpty()) {
+      drawnGraphs++;
+      if (!bottomGraphGenomes.isEmpty()) {
+        drawnGraphs++;
+      }
+    }
+    return drawnGraphs;
+  }
+
+  /**
+   * Create a menu item with the text "add to new graph" which performs the action when it is
+   * clicked.
+   *
+   * @param genomes        the list of genomes.
+   * @param otherGenomeMap the genome map of the other graph.
+   * @return the menu item.
+   */
+  private MenuItem createNewGraphMenuItem(Collection<String> genomes,
+      Set<String> otherGenomeMap) {
+    MenuItem newGraphItem = new MenuItem("add to new graph");
+    newGraphItem.setOnAction((ActionEvent event) -> {
+      otherGenomeMap.addAll(genomes);
+      redrawGraphs();
+    });
+    return newGraphItem;
+  }
+
+  /**
+   * Create a menu item with the text "clear graph and add", which performs the action when it is
+   * clicked.
+   *
+   * @param genomes   the list of genomes.
+   * @param genomeMap the genome map of the graph.
+   * @return the menu item.
+   */
+  private MenuItem createClearAndAddMenuItem(Collection<String> genomes,
+      Set<String> genomeMap) {
+    MenuItem clearAndAddItem = new MenuItem("clear graph and add");
+    clearAndAddItem.setOnAction((ActionEvent event) -> {
+      genomeMap.clear();
+      genomeMap.addAll(genomes);
+      redrawGraphs();
+    });
+    return clearAndAddItem;
+  }
+
+  /**
+   * Create a menu item with the text "add to existing graph", which performs the action when it is
+   * clicked.
+   *
+   * @param genomes   the list of genomes.
+   * @param genomeMap the genome map of the graph.
+   * @return the menu item.
+   */
+  private MenuItem createAddToExistingMenuItem(Collection<String> genomes,
+      Set<String> genomeMap) {
+    MenuItem addToExistingItem = new MenuItem("add to existing graph");
+    addToExistingItem.setOnAction((ActionEvent event) -> {
+      genomeMap.addAll(genomes);
+      redrawGraphs();
+    });
+    return addToExistingItem;
+  }
+
+  /**
+   * Redraw the graphs.
+   */
+  private void redrawGraphs() {
+    switch (getDrawnGraphs()) {
+      case 2:
+        compareTwoGraphs(topGraphGenomes, bottomGraphGenomes);
+        break;
+      case 1:
+        drawOnlyTopGraph(topGraphGenomes);
+        break;
+      default:
+        topPane.getChildren().clear();
+        bottomPane.getChildren().clear();
+        updateGraphSize();
+    }
+  }
+
+  /**
+   * Draw the given collection of genomes in the top graph.
+   *
+   * @param genomes the collection of genomes.
+   */
+  private void drawOnlyTopGraph(Collection<String> genomes) {
+    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
+        genomes);
+    topSubGraphThread.start();
+    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(),
+        topSubGraphThread.getSubGraph());
+    graphOrder.start();
+    this.topGraph = topSubGraphThread.getSubGraph();
+    this.topGraphOrder = graphOrder.getNodeOrder();
+    CompareSubgraphs.removeEmptyLevels(topGraphOrder);
+    for (NodePosition nodePosition : topGraphOrder) {
+      nodePosition.setOverlapping(true);
+    }
+    amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
+    scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
+    scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
+    updateGraphSize();
+    updateGraph();
+  }
+
+  /**
+   * Draw and compare two subgraphs of genomes.
    *
    * @param topGenomes    the genomes of the top graph.
    * @param bottomGenomes the genomes of the bottom graph.
    */
-  public void drawGraphs(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+  public void compareTwoGraphs(Collection<String> topGenomes, Collection<String> bottomGenomes) {
+    topGraphGenomes = new HashSet<>(topGenomes);
+    bottomGraphGenomes = new HashSet<>(bottomGenomes);
 
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
@@ -169,6 +349,7 @@ public class DrawComparedGraphs implements Initializable {
     bottomSubGraphThread.start();
     OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
     OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
+
     Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
             bottomSubgraph);
@@ -198,6 +379,7 @@ public class DrawComparedGraphs implements Initializable {
     }
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
     scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
+    updateGraphSize();
     updateGraph();
   }
 
@@ -216,9 +398,6 @@ public class DrawComparedGraphs implements Initializable {
    * Update the graph by redrawing it.
    */
   private void updateGraph() {
-    if (topGraphOrder == null || bottomGraphOrder == null) {
-      return;
-    }
     double viewPosition = scrollbar.getValue();
     double graphWidth = mainPane.getWidth();
     int levelsToDraw = (int) (graphWidth / X_OFFSET);
@@ -226,9 +405,28 @@ public class DrawComparedGraphs implements Initializable {
     if (startLevel < 0) {
       startLevel = 0;
     }
-    drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
-    drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+
+    if (topGraphOrder != null) {
+      drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
+    }
+    if (bottomGraphOrder != null) {
+      drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+    }
     mainPane.fireEvent(new GraphicsChangedEvent());
+  }
+
+  /**
+   * Update the size of the graphs. Show both graphs if 2 graphs are drawn, otherwise only show the
+   * top graph and resize it to fit the whole screen.
+   */
+  private void updateGraphSize() {
+    if (getDrawnGraphs() < 2) {
+      topPane.prefHeightProperty().bind(mainPane.heightProperty());
+      bottomPane.setVisible(false);
+    } else {
+      topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+      bottomPane.setVisible(true);
+    }
   }
 
   /**
@@ -472,7 +670,7 @@ public class DrawComparedGraphs implements Initializable {
 
     private OriginalGraph subGraph;
     private final SplitGraphs splitGraphs;
-    private final ArrayList<String> genomes;
+    private final Collection<String> genomes;
 
     /**
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
@@ -481,7 +679,7 @@ public class DrawComparedGraphs implements Initializable {
      * @param splitGraphs a {@link SplitGraphs} object.
      * @param genomes     the list of genomes which must be present in the subgraph.
      */
-    private SplitGraphsThread(SplitGraphs splitGraphs, ArrayList<String> genomes) {
+    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<String> genomes) {
       this.splitGraphs = splitGraphs;
       this.genomes = genomes;
     }

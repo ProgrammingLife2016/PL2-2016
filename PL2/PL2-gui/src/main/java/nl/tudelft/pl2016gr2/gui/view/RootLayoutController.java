@@ -121,7 +121,7 @@ public class RootLayoutController implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-    drawGraphs.drawGraphs(topGenomes, bottomGenomes);
+    drawGraphs.compareTwoGraphs(topGenomes, bottomGenomes);
   }
 
   /**

@@ -54,9 +54,10 @@ public class SplitGraphs {
    *                                genomes
    */
   public OriginalGraph getSubgraph(Collection<String> genomes) {
-    assert mainGraph.getGenomes().containsAll(genomes) : "Tried splitting graph on absent genomes";
-
     HashSet<String> genomeSet = new HashSet<>(genomes);
+    assert mainGraph.getGenomes().containsAll(genomeSet) :
+        "Tried splitting graph on absent genomes";
+
     HashSet<Integer> nodeSet = findSubgraphNodes(genomeSet);
     return createNewGraph(nodeSet, genomeSet);
   }
