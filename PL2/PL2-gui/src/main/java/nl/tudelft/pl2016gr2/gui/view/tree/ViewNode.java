@@ -215,6 +215,7 @@ public class ViewNode extends Circle implements ISelectable {
    */
   private static void drawEdge(ViewNode parent, ViewNode child, Pane graphPane) {
     Line edge = new Line();
+    edge.setSmooth(true);
     edge.startXProperty().bind(parent.centerXProperty());
     edge.startYProperty().bind(parent.centerYProperty());
     edge.endXProperty().bind(child.centerXProperty());

@@ -5,9 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.SplitPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 public class RootLayoutController implements Initializable {
 
   @FXML
-  private StackPane rootPane;
+  private AnchorPane rootPane;
   @FXML
   private Pane selectionDescriptionPane;
   @FXML
@@ -63,7 +63,11 @@ public class RootLayoutController implements Initializable {
     drawGraphs = DrawComparedGraphs.loadView();
     drawGraphs.loadMainGraph("TB10.gfa");
     mainPane.getItems().add(treeManager.getTreePane());
-    mainPane.getItems().add(drawGraphs.getGraphPane());
+
+    Region graphRegion = drawGraphs.getGraphPane();
+    mainPane.getItems().add(graphRegion);
+    graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
+    mainPane.setDividerPosition(0, 0.35);
     loadTree();
   }
 

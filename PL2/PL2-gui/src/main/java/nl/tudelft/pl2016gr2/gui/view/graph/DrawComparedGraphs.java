@@ -8,6 +8,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
@@ -63,16 +64,23 @@ public class DrawComparedGraphs implements Initializable {
   private Rectangle topGraphIndicator;
   @FXML
   private Rectangle bottomGraphIndicator;
+  @FXML
+  private ImageView deleteBottomGraphImage;
+  @FXML
+  private Pane topGraphIndicationArea;
+  @FXML
+  private Pane bottomGraphIndicationArea;
 
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
 
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
-  private static final double X_OFFSET = 50.0;
+  private static final double NODE_X_OFFSET = 50.0;
   private static final double MAX_NODE_RADIUS = 45.0;
   private static final double MIN_NODE_RADIUS = 5.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.3;
+  private static final double SCROLL_BAR_HEIGHT = 20.0;
   private static final double UNIT_INCREMENT_RATE = 1.0;
   private static final double BLOCK_INCREMENT_RATE = 10.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
@@ -128,11 +136,16 @@ public class DrawComparedGraphs implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     updateGraphSize();
-    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+    topGraphIndicationArea.prefHeightProperty().bind(topPane.prefHeightProperty());
+    bottomPane.prefHeightProperty().bind(
+        mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
+    bottomGraphIndicationArea.prefHeightProperty().bind(bottomPane.prefHeightProperty());
+    bottomGraphIndicationArea.visibleProperty().bind(bottomPane.visibleProperty());
 
-    topGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
+    topGraphIndicator.heightProperty().bind(topPane.prefHeightProperty());
     topGraphIndicator.setFill(TOP_GRAPH_COLOR);
-    bottomGraphIndicator.heightProperty().bind(mainPane.heightProperty().divide(2.0));
+    bottomGraphIndicator.heightProperty().bind(bottomPane.prefHeightProperty());
+    bottomGraphIndicator.visibleProperty().bind(bottomPane.visibleProperty());
     bottomGraphIndicator.setFill(BOTTOM_GRAPH_COLOR);
 
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
@@ -400,7 +413,7 @@ public class DrawComparedGraphs implements Initializable {
   private void updateGraph() {
     double viewPosition = scrollbar.getValue();
     double graphWidth = mainPane.getWidth();
-    int levelsToDraw = (int) (graphWidth / X_OFFSET);
+    int levelsToDraw = (int) (graphWidth / NODE_X_OFFSET);
     int startLevel = (int) ((amountOfLevels - levelsToDraw + 2) * viewPosition);
     if (startLevel < 0) {
       startLevel = 0;
@@ -421,11 +434,14 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void updateGraphSize() {
     if (getDrawnGraphs() < 2) {
-      topPane.prefHeightProperty().bind(mainPane.heightProperty());
+      topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT));
       bottomPane.setVisible(false);
+      deleteBottomGraphImage.setVisible(false);
     } else {
-      topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
+      topPane.prefHeightProperty().bind(
+          mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
       bottomPane.setVisible(true);
+      deleteBottomGraphImage.setVisible(true);
     }
   }
 
@@ -524,7 +540,7 @@ public class DrawComparedGraphs implements Initializable {
       } else {
         circle.setFill(NO_OVERLAP_COLOR);
       }
-      circle.setCenterX(X_OFFSET * (level + 1 - startLevel));
+      circle.setCenterX(NODE_X_OFFSET * (level + 1 - startLevel));
       circle.centerYProperty().bind(pane.heightProperty().multiply(
           circle.getRelativeHeightProperty()));
       addLabel(pane, circle, node.getId());
@@ -579,6 +595,7 @@ public class DrawComparedGraphs implements Initializable {
           continue;
         }
         Line edge = new Line();
+        edge.setSmooth(true);
         edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
             graph.getNode(outlink)));
         pane.getChildren().add(edge);
@@ -601,7 +618,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param to         the node to which the edge goes.
    * @return the edge width.
    */
-  public static double calculateEdgeWidth(int maxGenomes, AbstractNode from, AbstractNode to) {
+  private static double calculateEdgeWidth(int maxGenomes, AbstractNode from, AbstractNode to) {
     int genomesOverEdge = from.getGenomesOverEdge(to);
     double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8; // see javadoc
     if (edgeWith > MAX_EDGE_WIDTH) {
@@ -628,23 +645,33 @@ public class DrawComparedGraphs implements Initializable {
       AbstractNode node = graphNode.getNode();
       NodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();
-      while (true) {
+      while (calculateSameHeightNodes(node, circle, circleMap) >= 2) {
         subtract /= 2.0;
-        int sameHeight = 0;
-        for (Integer inLink : node.getInlinks()) {
-          NodeCircle parent = circleMap.get(inLink);
-          if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
-              circle.getRelativeHeightProperty().doubleValue()) == 0) {
-            ++sameHeight;
-          }
-        }
-        if (sameHeight < 2) {
-          break;
-        }
         circle.getRelativeHeightProperty().set(
             circle.getRelativeHeightProperty().doubleValue() - subtract);
       }
     }
+  }
+
+  /**
+   * Calculate the amount of nodes which are drawn at the same height as the given node.
+   *
+   * @param node      the given node.
+   * @param circle    the circle which represents the node.
+   * @param circleMap the map containing all other circles.
+   * @return the amount of found nodes (circles) which are at the same height.
+   */
+  private static int calculateSameHeightNodes(AbstractNode node, NodeCircle circle,
+      HashMap<Integer, NodeCircle> circleMap) {
+    int sameHeight = 0;
+    for (Integer inLink : node.getInlinks()) {
+      NodeCircle parent = circleMap.get(inLink);
+      if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
+          circle.getRelativeHeightProperty().doubleValue()) == 0) {
+        ++sameHeight;
+      }
+    }
+    return sameHeight;
   }
 
   /**
@@ -661,6 +688,18 @@ public class DrawComparedGraphs implements Initializable {
     label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
+  }
+
+  /**
+   * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
+   * the fxml file (using reflection), so it appears to be unused to code quality tools. For this
+   * reason the suppress warning "unused" annotation is used.
+   */
+  @FXML
+  @SuppressWarnings("unused")
+  private void deleteBottomGraph() {
+    bottomGraphGenomes.clear();
+    redrawGraphs();
   }
 
   /**
@@ -689,7 +728,7 @@ public class DrawComparedGraphs implements Initializable {
      *
      * @return the subgraph.
      */
-    public OriginalGraph getSubGraph() {
+    private OriginalGraph getSubGraph() {
       try {
         this.join();
       } catch (InterruptedException ex) {

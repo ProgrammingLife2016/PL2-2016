@@ -19,37 +19,33 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 
-<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
+<AnchorPane fx:id="rootPane" pickOnBounds="false" prefHeight="700.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
    <children>
-      <AnchorPane pickOnBounds="false" prefHeight="200.0" prefWidth="200.0">
-         <children>
-            <SplitPane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
-            <Pane fx:id="selectionDescriptionPane" prefHeight="600.0" prefWidth="400.0" visible="false" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0" />
-            <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
-                  </items>
-                </Menu>
-                  <Menu mnemonicParsing="false" text="Settings">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                    </items>
-                  </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
-         </children>
-      </AnchorPane>
+      <SplitPane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+      <Pane fx:id="selectionDescriptionPane" prefHeight="600.0" prefWidth="400.0" visible="false" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0" />
+      <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <menus>
+            <Menu mnemonicParsing="false" text="File">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Close" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Delete" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Settings">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="Action 1" />
+               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+         </menus>
+      </MenuBar>
    </children>
-</StackPane>
+</AnchorPane>
