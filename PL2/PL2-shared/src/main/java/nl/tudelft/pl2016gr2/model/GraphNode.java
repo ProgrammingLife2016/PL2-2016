@@ -108,6 +108,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * Adds the specified ID to the set of in-edges of this <code>GraphNode</code>.
    *
    * @param identifier The identifier of the in-edge to add to this <code>GraphNode</code>.
+   * @param identifier The identifier of the in-edge to add to this <code>GraphNode</code>.
+   *                   >>>>>>> Add GraphNode Interface
    * @deprecated This method delivers suboptimal performance. Use {@link #setInEdges(Collection)}
    */
   void addInEdge(int identifier);
