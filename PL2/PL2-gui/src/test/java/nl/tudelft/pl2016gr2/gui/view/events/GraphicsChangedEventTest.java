@@ -2,11 +2,11 @@ package nl.tudelft.pl2016gr2.gui.view.events;
 
 import static org.junit.Assert.assertEquals;
 
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import org.junit.Test;
 
 /**
- * This class tests the {@link ViewNode} class.
+ * This class tests the {@link TreeNodeCircle} class.
  *
  * @author Faris
  */

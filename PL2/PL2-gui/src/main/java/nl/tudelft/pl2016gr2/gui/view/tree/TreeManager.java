@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
+import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,8 +11,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -44,13 +45,15 @@ public class TreeManager implements Initializable {
   @TestId(id = "heatmapPane")
   private Pane heatmapPane;
   @TestId(id = "currentRoot")
-  private ViewNode currentRoot;
-  private ViewNode currentHighlightedNode;
+  private TreeNodeCircle currentRoot;
+  private TreeNodeCircle currentHighlightedNode;
   private boolean isZooming = false;
   private final ArrayList<Observer> childLeaveObservers = new ArrayList<>();
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
   private HeatmapManager heatmapManager;
+
+  private IPhylogeneticTreeRoot rootNode;
 
   /**
    * Load and initialize the view.
@@ -96,22 +99,22 @@ public class TreeManager implements Initializable {
   @TestId(id = "setSelectionManager")
   private void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
-    selectionManager.getShownGraphNodes().addListener(invalid -> {
-      colorSelectedGraphNodes();
-    });
-  }
-
-  /**
-   * Color the nodes which are shown in the graph pane.
-   */
-  private void colorSelectedGraphNodes() {
-    if (currentRoot != null && selectionManager.getShownGraphNodes().get() != null) {
-      currentRoot.removeHighlightColor();
-      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().left,
-          DrawComparedGraphs.TOP_GRAPH_COLOR);
-      currentRoot.highlightNode(selectionManager.getShownGraphNodes().get().right,
-          DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
-    }
+    selectionManager.getBottomGraphGenomes().addListener(
+        (SetChangeListener.Change<? extends String> change) -> {
+          if (change.wasAdded()) {
+            rootNode.setDrawnInBottom(change.getElementAdded(), true);
+          } else {
+            rootNode.setDrawnInBottom(change.getElementRemoved(), false);
+          }
+        });
+    selectionManager.getTopGraphGenomes().addListener(
+        (SetChangeListener.Change<? extends String> change) -> {
+          if (change.wasAdded()) {
+            rootNode.setDrawnInTop(change.getElementAdded(), true);
+          } else {
+            rootNode.setDrawnInTop(change.getElementRemoved(), false);
+          }
+        });
   }
 
   /**
@@ -119,7 +122,8 @@ public class TreeManager implements Initializable {
    *
    * @param root the root of the tree.
    */
-  public void loadTree(IPhylogeneticTreeNode root) {
+  public void loadTree(IPhylogeneticTreeRoot root) {
+    rootNode = root;
     setRoot(root);
   }
 
@@ -132,7 +136,7 @@ public class TreeManager implements Initializable {
       if (currentRoot == null || isZooming) {
         return;
       }
-      ViewNode toHighlight = currentRoot.getClosestParentNode(event.getX(), event.getY());
+      TreeNodeCircle toHighlight = currentRoot.getClosestParentNode(event.getX(), event.getY());
       if (currentHighlightedNode != toHighlight) {
         removeHighlight();
         if (toHighlight != null) {
@@ -176,7 +180,7 @@ public class TreeManager implements Initializable {
    *
    * @param zoomedInNode the node to zoom in on.
    */
-  private void zoomIn(ViewNode zoomedInNode) {
+  private void zoomIn(TreeNodeCircle zoomedInNode) {
     if (isZooming || zoomedInNode == null || zoomedInNode.equals(currentRoot)) {
       return;
     }
@@ -232,10 +236,9 @@ public class TreeManager implements Initializable {
    * @param root the root of the part of the tree which should be shown.
    */
   @TestId(id = "setRoot")
-  private void setRoot(IPhylogeneticTreeNode root) {
+  public void setRoot(IPhylogeneticTreeNode root) {
     treePane.getChildren().clear();
-    currentRoot = ViewNode.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
-    colorSelectedGraphNodes();
+    currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
@@ -298,7 +301,7 @@ public class TreeManager implements Initializable {
    * @return the currently displayed leaf nodes.
    */
   @TestId(id = "getCurrentLeaves()")
-  private ArrayList<ViewNode> getCurrentLeaves() {
+  private ArrayList<TreeNodeCircle> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
   }
 }

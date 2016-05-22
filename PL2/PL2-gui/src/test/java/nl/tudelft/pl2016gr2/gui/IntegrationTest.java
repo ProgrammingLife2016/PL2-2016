@@ -18,11 +18,10 @@ import nl.tudelft.pl2016gr2.gui.view.selection.DescriptionPane;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 
 /**
  * This class performs integration tests on the user interface. It clicks through windows and checks
@@ -49,7 +48,8 @@ public class IntegrationTest {
    */
   @Test
   public void selectTreeNodeTest() {
-    ViewNode root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class, getTreeManager());
+    TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
+        getTreeManager());
     root.getOnMouseClicked().handle(SOME_MOUSE_EVENT);
     SelectionManager selectionManager = getSelectionManager();
     ISelectable selected = AccessPrivate.getFieldValue("selected", SelectionManager.class,
@@ -78,7 +78,8 @@ public class IntegrationTest {
    * Click through the application, select a tree node and click the "compare children" button.
    */
   private void drawGraph() {
-    ViewNode root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class, getTreeManager());
+    TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
+        getTreeManager());
     root.getOnMouseClicked().handle(new MouseEvent(null, 0, 0, 0, 0, MouseButton.NONE, 0, true,
         true, true, true, true, true, true, true, true, true, null));
     SelectionManager selectionManager = getSelectionManager();

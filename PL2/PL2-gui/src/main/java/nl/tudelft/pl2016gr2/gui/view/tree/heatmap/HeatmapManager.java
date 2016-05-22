@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.tree.heatmap;
 
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ public class HeatmapManager {
    *
    * @param currentLeaves the new leaves.
    */
-  public void setLeaves(ArrayList<ViewNode> currentLeaves) {
+  public void setLeaves(ArrayList<TreeNodeCircle> currentLeaves) {
     densityMap.onChange(currentLeaves);
   }
 }

@@ -10,7 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
@@ -60,7 +60,7 @@ public class RootLayoutController implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
     treeManager = TreeManager.loadView(selectionManager);
-    drawGraphs = DrawComparedGraphs.loadView();
+    drawGraphs = DrawComparedGraphs.loadView(selectionManager);
     drawGraphs.loadMainGraph("TB10.gfa");
     mainPane.getItems().add(treeManager.getTreePane());
 
@@ -83,7 +83,7 @@ public class RootLayoutController implements Initializable {
     TreeParser tp = new TreeParser(br);
 
     tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
-    treeManager.loadTree(new PhylogeneticTreeNode(tree.getRoot()));
+    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
     try {
       reader.close();
     } catch (IOException ex) {
