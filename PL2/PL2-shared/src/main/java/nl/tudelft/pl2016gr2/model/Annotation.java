@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.Date;
 
+@SuppressWarnings("AbbreviationAsWordInName")
 public class Annotation {
 
   public String specimenID;

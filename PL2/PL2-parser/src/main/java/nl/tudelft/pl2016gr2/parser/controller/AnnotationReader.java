@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class AnnotationReader {
 
   private static final Logger logger = Logger.getLogger(AnnotationReader.class.getName());
@@ -26,6 +27,7 @@ public class AnnotationReader {
     this.file = file;
   }
 
+  @SuppressWarnings("checkstyle:MethodLength")
   private Annotation readRow(Row row) {
     Iterator<Cell> iterator = row.cellIterator();
 
@@ -58,7 +60,6 @@ public class AnnotationReader {
     parseGenotypicDSTPattern(annotation, iterator.next());
 
     return annotation;
-
   }
 
   private void parseSpecimenID(Annotation annotation, Cell cell) {
