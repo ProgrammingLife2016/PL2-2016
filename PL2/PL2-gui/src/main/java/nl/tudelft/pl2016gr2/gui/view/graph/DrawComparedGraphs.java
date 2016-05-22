@@ -94,9 +94,10 @@ public class DrawComparedGraphs implements Initializable {
   public static DrawComparedGraphs loadView() {
     FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(DrawComparedGraphs.class.getClassLoader().getResource("pages/CompareGraphsPane.fxml"));
+      loader.setLocation(
+          DrawComparedGraphs.class.getClassLoader().getResource("pages/CompareGraphsPane.fxml"));
       loader.load();
-      return loader.<DrawComparedGraphs> getController();
+      return loader.<DrawComparedGraphs>getController();
     } catch (IOException ex) {
       Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -140,7 +141,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGraph
    *          the bottom graph.
    */
-  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph, ArrayList<GraphNodeOrder> bottomGraph) {
+  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph, 
+      ArrayList<GraphNodeOrder> bottomGraph) {
     this.topGraph = topGraph;
     this.bottomGraph = bottomGraph;
     this.topGraphOrder = topGraphOrder;
@@ -184,7 +186,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param graph
    *          the graph to draw.
    */
-  private static void drawGraph(Pane pane, ArrayList<GraphNodeOrder> graph, int startLevel, int endLevel) {
+  private static void drawGraph(Pane pane, ArrayList<GraphNodeOrder> graph, 
+      int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
     HashMap<Integer, NodeCircle> circleMap = new HashMap<>();
@@ -278,8 +281,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel
    *          the level at which to start drawing nodes.
    */
-  private static void drawNode(Pane pane, HashMap<Integer, NodeCircle> circleMap, ArrayList<GraphNodeOrder> nodes,
-      int level, int startLevel) {
+  private static void drawNode(Pane pane, HashMap<Integer, NodeCircle> circleMap, 
+      ArrayList<GraphNodeOrder> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
       AbstractNode node = graphNodeOrder.getNode();
@@ -290,13 +293,18 @@ public class DrawComparedGraphs implements Initializable {
       circleMap.put(node.getId(), circle);
       if (graphNodeOrder.getNode().isInBubble()) {
         circle.setFill(Color.PURPLE);
+      } else if (graphNodeOrder.getNode().isPoint()) {
+        circle.setFill(Color.YELLOW);
+      } else if (graphNodeOrder.getNode().isInDel()) {
+        circle.setFill(Color.BLUE);
       } else if (graphNodeOrder.isOverlapping()) {
         circle.setFill(OVERLAP_COLOR);
       } else {
         circle.setFill(NO_OVERLAP_COLOR);
       }
       circle.setCenterX(X_OFFSET * (level + 1 - startLevel));
-      circle.centerYProperty().bind(pane.heightProperty().multiply(circle.getRelativeHeightProperty()));
+      circle.centerYProperty().bind(pane.heightProperty().multiply(
+          circle.getRelativeHeightProperty()));
       addLabel(pane, circle, node.getId());
     }
   }
@@ -342,8 +350,8 @@ public class DrawComparedGraphs implements Initializable {
    *          a map which maps each node id to the circle which represents the
    *          node in the user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<GraphNodeOrder> graph, int startIndex, int endIndex,
-      HashMap<Integer, NodeCircle> circleMap) {
+  private static void drawEdges(Pane pane, ArrayList<GraphNodeOrder> graph, 
+      int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       AbstractNode node = graphOrder.get(i).getNode();
       Circle fromCircle = circleMap.get(node.getId());
@@ -380,8 +388,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap
    *          a map which maps each node id to a circle.
    */
-  private static void repositionOverlappingEdges(ArrayList<GraphNodeOrder> graph, int startIndex, int endIndex,
-      HashMap<Integer, NodeCircle> circleMap) {
+  private static void repositionOverlappingEdges(ArrayList<GraphNodeOrder> graph, 
+      int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       NodePosition graphNode = graphOrder.get(i);
       AbstractNode node = graphNode.getNode();
@@ -400,7 +408,8 @@ public class DrawComparedGraphs implements Initializable {
         if (sameHeight < 2) {
           break;
         }
-        circle.getRelativeHeightProperty().set(circle.getRelativeHeightProperty().doubleValue() - subtract);
+        circle.getRelativeHeightProperty().set(
+            circle.getRelativeHeightProperty().doubleValue() - subtract);
       }
     }
   }

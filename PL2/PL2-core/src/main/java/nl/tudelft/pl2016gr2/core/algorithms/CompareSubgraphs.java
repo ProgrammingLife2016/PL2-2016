@@ -1,12 +1,9 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.AbstractNode;
-<<<<<<< HEAD
-=======
 import nl.tudelft.pl2016gr2.model.GraphBubbleOrder;
 import nl.tudelft.pl2016gr2.model.GraphInterface;
 import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
->>>>>>> Algo works, needs refactoring
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
@@ -28,11 +25,6 @@ import java.util.logging.Logger;
  * @author Faris
  */
 public class CompareSubgraphs {
-
-  private static HashMap<Integer, Integer> topLocation = new HashMap<Integer, Integer>();
-  private static HashMap<Integer, Integer> bottomLocation = new HashMap<Integer, Integer>();
-  private static HashMap<Integer, GraphNodeOrder> overlap = new HashMap<>();
-  private static HashMap<Integer, Integer> visitedNodes = new HashMap<>();
 
   /**
    * This is a class with only static methods, so let no one make an instance of it.
@@ -67,53 +59,31 @@ public class CompareSubgraphs {
     ArrayList<NodePosition> orderedTopGraph = topGraphOrderer.getNodeOrder();
     ArrayList<NodePosition> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
 
-    // Deze moet nog in een aparte functie
-    for (int i = 0; i < orderedTopGraph.size(); i++) {
-      GraphNodeOrder nodeOrder = orderedTopGraph.get(i);
-      AbstractNode node = nodeOrder.getNode();
-      topLocation.put(node.getId(), i);
-    }
-
-    // Deze moet nog in een aparte functie (net zoals hierboven)
-    for (int i = 0; i < orderedBottomGraph.size(); i++) {
-      GraphNodeOrder nodeOrder = orderedBottomGraph.get(i);
-      AbstractNode node = nodeOrder.getNode();
-      bottomLocation.put(node.getId(), i);
-    }
-
     // alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
     removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
 
-    makeBubbles(orderedTopGraph, topGraph, topLocation);
-    makeBubbles(orderedBottomGraph, bottomGraph, bottomLocation);
-
-    // makeBubbles(orderedTopGraph);
-    // makeBubbles(orderedBottomGraph);
+    initStraightInDel(orderedTopGraph, topGraph);
+    initStraightInDel(orderedBottomGraph, bottomGraph);
+    
     // todo: recolapse bubble from the graphs
     // todo: check if nodes are really overlapping (taking into account the bubbles)
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
   }
+  
+  private static void initStraightInDel(ArrayList<GraphNodeOrder> orderedGraph, 
+      GraphInterface graph) {
+    HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
+    for (int i = 0; i < orderedGraph.size(); i++) {
+      GraphNodeOrder nodeOrder = orderedGraph.get(i);
+      AbstractNode node = nodeOrder.getNode();
+      location.put(node.getId(), i);
+    }
+    findStraightInDel(orderedGraph, graph, location);
+  }
 
-  // private static void makeBubbles(OriginalGraph graph) {
-  // ArrayList<Integer> rootNodes = graph.getRootNodes();
-  // for (Integer i : rootNodes) {
-  // initBfs(graph, i);
-  // }
-  // }
-  //
-  // private static void initBfs(OriginalGraph graph, int root) {
-  // Queue<AbstractNode> queue = new LinkedList<>();
-  // AbstractNode first = graph.getNode(root);
-  // queue.add(first);
-  // while (!visitedNodes.containsKey(first.getId()) && !queue.isEmpty()) {
-  // AbstractNode node = queue.poll();
-  // visitedNodes.put(node.getId(), 1);
-  //
-  // }
-  // }
-
-  private static void makeBubbles(ArrayList<GraphNodeOrder> orderedGraph, GraphInterface graph,
-      HashMap<Integer, Integer> location) {
+  @SuppressWarnings("checkstyle:methodlength")
+  private static void findStraightInDel(ArrayList<GraphNodeOrder> orderedGraph, 
+      GraphInterface graph, HashMap<Integer, Integer> location) {
     Set<AbstractNode> visited = new HashSet<AbstractNode>();
     for (int i = 0; i < orderedGraph.size(); i++) {
       GraphNodeOrder order = orderedGraph.get(i);
@@ -121,99 +91,67 @@ public class CompareSubgraphs {
       if (!visited.contains(node)) {
         int oldLevel = order.getLevel();
         int newLevel = order.getLevel();
+        boolean oldOverlap = order.isOverlapping();
+        boolean newOverlap = order.isOverlapping();
         GraphBubbleOrder bubble = null;
-        // De eerste node wordt nu 2x toegevoegd
-        while (order.isOverlapping() && node.getOutlinks().size() == 1 && newLevel <= oldLevel + 1
+        while (oldOverlap == newOverlap 
+            && node.getOutlinks().size() == 1 
+            && node.getInlinks().size() <= 1
+            && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
+          //De visited hierboven kan wrs weg omdat het niet voor kan komen
           if (bubble == null) {
             bubble = new GraphBubbleOrder(node, oldLevel);
-            bubble.setOverlapping(true);
+            bubble.setOverlapping(oldOverlap);
+          } else {
+            bubble.addNode(node);
           }
           visited.add(node);
-          if (node.getInlinks().size() <= 1) {
-            bubble.addNode(node);
-            node.setInBubble(true);
-          }
+          node.setInBubble(true);
           node = graph.getNode(node.getOutlinks().get(0));
           order = orderedGraph.get(location.get(node.getId()));
           oldLevel = newLevel;
           newLevel = order.getLevel();
+          oldOverlap = newOverlap;
+          newOverlap = order.isOverlapping();
         }
         if (bubble != null) {
-          bubble.getNodes().remove(0);
-          //System.out.println(bubble.size());
           if (bubble.size() == 1) {
+            //Een bubble van size 1 is een in/del of point mutation, 
+            //die kunnen we hier dus gelijk filteren.
             bubble.getNodes().get(0).setInBubble(false);
+            checkInDel(bubble, graph);
           }
           orderedGraph.set(i, bubble);
         } else {
           node.setInBubble(false);
           bubble = new GraphBubbleOrder(node, oldLevel);
-          bubble.setOverlapping(order.isOverlapping());
+          bubble.setOverlapping(oldOverlap);
           orderedGraph.set(i, bubble);
         }
       }
     }
   }
-
-  /**
-   * Method to make bubbles from straight sequences in graph which are all in the other graph and
-   * where the levels of straight nodes only differ by one.
-   * 
-   * @param orderedGraph
-   *          An ordered graph in which we would like to find bubbles.
-   */
-  // private static void makeBubbles(ArrayList<GraphNodeOrder> orderedGraph) {
-  // int count = 0;
-  // GraphBubbleOrder bubble = null;
-  // while (count + 1 < orderedGraph.size()) {
-  // GraphNodeOrder firstNode = orderedGraph.get(count);
-  // int firstLevel = firstNode.getLevel();
-  // if (bubble == null) {
-  // bubble = new GraphBubbleOrder(firstNode.getNode(), firstLevel);
-  // }
-  // GraphNodeOrder secondNode = orderedGraph.get(count + 1);
-  // int secondLevel = secondNode.getLevel();
-  // if (firstLevel + 1 == secondLevel) {
-  // //Het verschil in level is 1, dus we kunnen potentieel een bubble maken
-  // if (count + 2 < orderedGraph.size()) {
-  // if (orderedGraph.get(count + 2).getLevel() != secondLevel) {
-  // //De node heeft maar 1 child
-  // if (firstNode.isOverlapping() && secondNode.isOverlapping()) {
-  // bubble.addNode(secondNode.getNode());
-  // GraphNodeOrder inBubble = new GraphNodeOrder(new Node(9999, 3, null, 4),
-  // orderedGraph.get(count).getLevel());
-  // orderedGraph.set(count, inBubble);
-  // } else {
-  // bubble.setOverlapping(firstNode.isOverlapping());
-  // orderedGraph.set(count, bubble);
-  // bubble = null;
-  // }
-  // } else {
-  // bubble.setOverlapping(firstNode.isOverlapping());
-  // orderedGraph.set(count, bubble);
-  // bubble = null;
-  // }
-  // } else {
-  // if (firstNode.isOverlapping() && secondNode.isOverlapping()) {
-  // bubble.addNode(secondNode.getNode());
-  // GraphNodeOrder inBubble = new GraphNodeOrder(new Node(9999, 3, null, 4),
-  // orderedGraph.get(count).getLevel());
-  // orderedGraph.set(count, inBubble);
-  // } else {
-  // bubble.setOverlapping(firstNode.isOverlapping());
-  // orderedGraph.set(count, bubble);
-  // bubble = null;
-  // }
-  // }
-  // } else {
-  // bubble.setOverlapping(firstNode.isOverlapping());
-  // orderedGraph.set(count, bubble);
-  // bubble = null;
-  // }
-  // count++;
-  // }
-  // }
+  
+  private static void checkInDel(GraphBubbleOrder bubble, GraphInterface graph) {
+    AbstractNode nodeInBubble = bubble.getNodes().get(0);
+    if (nodeInBubble.getInlinks().size() == 0 || nodeInBubble.getOutlinks().size() == 0) {
+      return;
+    }
+    AbstractNode parent = graph.getNode(nodeInBubble.getInlinks().get(0));
+    AbstractNode child = graph.getNode(nodeInBubble.getOutlinks().get(0));
+    ArrayList<Integer> parentOutlinks = parent.getOutlinks();
+    boolean isInDel = false;
+    for (int i = 0; i < parentOutlinks.size(); i++) {
+      AbstractNode node = graph.getNode(parentOutlinks.get(i));
+      if (node == child) {
+        isInDel = true;
+      }
+    }
+    if (isInDel) {
+      nodeInBubble.setInDel(true);
+    }
+  }
 
   /**
    * Remove any level (graph depth level) which contains no nodes.
@@ -289,13 +227,8 @@ public class CompareSubgraphs {
      * @param overlapThread
      *          the thread which is checking which nodes are overlapping.
      */
-<<<<<<< HEAD
     private SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder,
         OriginalGraph subGraph, OverlapThread overlapThread) {
-=======
-    private SubGraphOrderer(HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph subGraph,
-        OverlapThread overlapThread) {
->>>>>>> Algo works, needs refactoring
       this.mainGraphOrder = mainGraphOrder;
       this.subGraph = subGraph;
       this.overlapThread = overlapThread;
@@ -324,17 +257,10 @@ public class CompareSubgraphs {
      *          the subgraph.
      * @return the ordered subgraph.
      */
-<<<<<<< HEAD
     private static ArrayList<NodePosition> orderNodes(
         HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph subGraph) {
       ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
       subGraph.getNodes().forEach((Integer id, Node node) -> {
-=======
-    private static ArrayList<GraphNodeOrder> orderNodes(
-        HashMap<Integer, GraphNodeOrder> mainGraphOrder, OriginalGraph subGraph) {
-      ArrayList<GraphNodeOrder> subGraphOrder = new ArrayList<>();
-      subGraph.getNodes().forEach((Integer id, AbstractNode node) -> {
->>>>>>> Algo works, needs refactoring
         int level = mainGraphOrder.get(id).getLevel();
         subGraphOrder.add(new NodePosition(node, level));
       });

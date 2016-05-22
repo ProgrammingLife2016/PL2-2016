@@ -9,6 +9,8 @@ public abstract class AbstractNode {
   private ArrayList<Integer> outLinks;
   private int sequenceLength;
   private boolean inBubble = false;
+  private boolean point = false;
+  private boolean inDel = false;
 
   /**
    * Construct an abstract node.
@@ -88,4 +90,19 @@ public abstract class AbstractNode {
     this.inBubble = inBubble;
   }
 
+  public boolean isPoint() {
+    return point;
+  }
+
+  public void setPoint(boolean point) {
+    this.point = point;
+  }
+
+  public boolean isInDel() {
+    return inDel;
+  }
+
+  public void setInDel(boolean inDel) {
+    this.inDel = inDel;
+  }
 }

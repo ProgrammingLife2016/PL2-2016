@@ -32,12 +32,16 @@
         <module name="FileTabCharacter">
             <property name="eachLine" value="true"/>
         </module>
-
+        
+    <!-- Added by Cas because of an algorithm with a methodlenght om 50 -->
+	<module name="SuppressWarningsFilter" />
+	
     <module name="TreeWalker">
         <!--    START   Custom additions    -->
         <module name="MethodLength">
             <property name="max" value="25"/>
         </module>
+        <module name="SuppressWarningsHolder" />
         <!--    END     Custom additions    -->
 
         <module name="OuterTypeFilename"/>
