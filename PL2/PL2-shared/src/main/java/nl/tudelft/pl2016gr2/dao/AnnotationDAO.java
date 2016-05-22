@@ -32,6 +32,11 @@ public class AnnotationDAO {
 
   private HashMap<String, Annotation> annotations = new HashMap<>();
 
+  /**
+   * Simple constructor for the DAO.
+   *
+   * @param annotations A collection of annotations you want to be avaiable via this DAO.
+   */
   public AnnotationDAO(Collection<Annotation> annotations) {
     annotations.forEach(annotation ->
         this.annotations.put(annotation.specimenID, annotation)

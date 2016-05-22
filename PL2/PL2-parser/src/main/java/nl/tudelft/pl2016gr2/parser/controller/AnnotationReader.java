@@ -176,6 +176,13 @@ public class AnnotationReader {
     annotation.genotypicDSTPattern = cell.getStringCellValue();
   }
 
+  /**
+   * Reads the file given in the constructor and returns a list of {@link Annotation}s.
+   *
+   * @return The list.
+   * @throws IOException on io erros
+   * @throws InvalidFormatException when the given file is not the proper format.
+   */
   public List<Annotation> read() throws IOException, InvalidFormatException {
     Workbook wb = WorkbookFactory.create(file);
     Sheet sheet = wb.getSheetAt(wb.getActiveSheetIndex());

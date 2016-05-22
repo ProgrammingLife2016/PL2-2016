@@ -2,6 +2,16 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.Date;
 
+/**
+ * POJO for the Annotations found in the metadata.xlsx.
+ *
+ * <p>
+ *   One consideration is to make enums/actual classes for several
+ *   properties to give more functionality. An example is to have
+ *   cyclic references to easily lookup other annotations with the
+ *   same property.
+ * </p>
+ */
 @SuppressWarnings("AbbreviationAsWordInName")
 public class Annotation {
 
