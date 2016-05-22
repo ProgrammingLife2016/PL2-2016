@@ -19,11 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import nl.tudelft.pl2016gr2.core.algorithms.CompareSubgraphs;
-import nl.tudelft.pl2016gr2.core.algorithms.GraphOrdererThread;
-import nl.tudelft.pl2016gr2.core.algorithms.SplitGraphs;
-import nl.tudelft.pl2016gr2.core.algorithms.SubGraphOrderer;
-import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
@@ -86,19 +84,19 @@ public class DrawComparedGraphs implements Initializable {
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
-  private OriginalGraph topGraph;
-  private OriginalGraph bottomGraph;
-  @TestId(id = "topGraphOrder")
-  private ArrayList<NodePosition> topGraphOrder;
-  @TestId(id = "bottomGraphOrder")
-  private ArrayList<NodePosition> bottomGraphOrder;
+  @TestId(id = "topGraph")
+  private OrderedGraph topGraph;
+  @TestId(id = "bottomGraph")
+  private OrderedGraph bottomGraph;
   private Set<String> topGraphGenomes = new HashSet<>();
   private Set<String> bottomGraphGenomes = new HashSet<>();
   @TestId(id = "amountOfLevels")
   private int amountOfLevels;
-
+  
   private GraphOrdererThread mainGraphOrder;
   private OriginalGraph mainGraph;
+
+  private ContextMenu contextMenu;
 
   /**
    * Load this view.
@@ -136,9 +134,29 @@ public class DrawComparedGraphs implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     updateGraphSize();
-    topGraphIndicationArea.prefHeightProperty().bind(topPane.prefHeightProperty());
     bottomPane.prefHeightProperty().bind(
         mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
+
+    initializeIndicatorLayout();
+    initializeTopDragEvent();
+    initializeBottomDragEvent();
+
+    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
+    mainPane.widthProperty().addListener(invalidate -> updateGraph());
+    mainPane.setOnMouseClicked(event -> {
+      if (contextMenu != null) {
+        contextMenu.hide();
+        contextMenu = null;
+      }
+    });
+  }
+
+  /**
+   * Initialize the layout (position, size, visibility, etc) of all of the indicators (view objects
+   * which only give static information and don't have any functionality).
+   */
+  private void initializeIndicatorLayout() {
+    topGraphIndicationArea.prefHeightProperty().bind(topPane.prefHeightProperty());
     bottomGraphIndicationArea.prefHeightProperty().bind(bottomPane.prefHeightProperty());
     bottomGraphIndicationArea.visibleProperty().bind(bottomPane.visibleProperty());
 
@@ -147,12 +165,6 @@ public class DrawComparedGraphs implements Initializable {
     bottomGraphIndicator.heightProperty().bind(bottomPane.prefHeightProperty());
     bottomGraphIndicator.visibleProperty().bind(bottomPane.visibleProperty());
     bottomGraphIndicator.setFill(BOTTOM_GRAPH_COLOR);
-
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    mainPane.widthProperty().addListener(invalidate -> updateGraph());
-
-    initializeTopDragEvent();
-    initializeBottomDragEvent();
   }
 
   /**
@@ -210,7 +222,7 @@ public class DrawComparedGraphs implements Initializable {
   @SuppressWarnings("fallthrough")
   private void handleGenomesDropped(Collection<String> genomes, DragEvent dragEvent,
       Set<String> genomeMap, Set<String> otherGenomeMap) {
-    ContextMenu contextMenu = new ContextMenu();
+    contextMenu = new ContextMenu();
 
     switch (getDrawnGraphs()) {
       case 0:
@@ -291,7 +303,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createAddToExistingMenuItem(Collection<String> genomes,
+  private  MenuItem createAddToExistingMenuItem(Collection<String> genomes,
       Set<String> genomeMap) {
     MenuItem addToExistingItem = new MenuItem("add to existing graph");
     addToExistingItem.setOnAction((ActionEvent event) -> {
@@ -310,7 +322,7 @@ public class DrawComparedGraphs implements Initializable {
         compareTwoGraphs(topGraphGenomes, bottomGraphGenomes);
         break;
       case 1:
-        drawOnlyTopGraph(topGraphGenomes);
+        drawOneGraph(topGraphGenomes);
         break;
       default:
         topPane.getChildren().clear();
@@ -324,19 +336,10 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param genomes the collection of genomes.
    */
-  private void drawOnlyTopGraph(Collection<String> genomes) {
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
-        genomes);
-    topSubGraphThread.start();
-    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(),
-        topSubGraphThread.getSubGraph());
-    graphOrder.start();
-    this.topGraph = topSubGraphThread.getSubGraph();
-    this.topGraphOrder = graphOrder.getNodeOrder();
-    CompareSubgraphs.removeEmptyLevels(topGraphOrder);
-    for (NodePosition nodePosition : topGraphOrder) {
-      nodePosition.setOverlapping(true);
-    }
+  private void drawOneGraph(Collection<String> genomes) {
+    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
+    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
+
     amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
     scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
@@ -354,35 +357,20 @@ public class DrawComparedGraphs implements Initializable {
     topGraphGenomes = new HashSet<>(topGenomes);
     bottomGraphGenomes = new HashSet<>(bottomGenomes);
 
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
-        topGenomes);
-    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
-        bottomGenomes);
-    topSubGraphThread.start();
-    bottomSubGraphThread.start();
-    OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
-    OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
-
-    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
-        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
-            bottomSubgraph);
-    drawGraphs(topSubgraph, bottomSubgraph, alignedGraphs.left, alignedGraphs.right);
+    Pair<OrderedGraph, OrderedGraph> compareRes
+        = SubgraphAlgorithmManager.compareTwoGraphs(topGenomes, bottomGenomes, mainGraph,
+            mainGraphOrder);
+    this.topGraph = compareRes.left;
+    this.bottomGraph = compareRes.right;
+    drawTwoGraphs();
   }
 
   /**
    * Draw two graphs to compare.
-   *
-   * @param topGraph         the top graph.
-   * @param bottomGraph      the bottom graph
-   * @param topGraphOrder    the order of the top graph.
-   * @param bottomGraphOrder the order of the bottom graph.
    */
-  private void drawGraphs(OriginalGraph topGraph, OriginalGraph bottomGraph,
-      ArrayList<NodePosition> topGraphOrder, ArrayList<NodePosition> bottomGraphOrder) {
-    this.topGraph = topGraph;
-    this.bottomGraph = bottomGraph;
-    this.topGraphOrder = topGraphOrder;
-    this.bottomGraphOrder = bottomGraphOrder;
+  private void drawTwoGraphs() {
+    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
+    ArrayList<NodePosition> bottomGraphOrder = bottomGraph.getGraphOrder();
     int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
     if (highestTopLevel > highestBottomLevel) {
@@ -419,11 +407,13 @@ public class DrawComparedGraphs implements Initializable {
       startLevel = 0;
     }
 
-    if (topGraphOrder != null) {
-      drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
+    if (topGraph != null) {
+      drawGraph(topPane, topGraph.getGraphOrder(), topGraph.getSubgraph(), startLevel,
+          startLevel + levelsToDraw);
     }
-    if (bottomGraphOrder != null) {
-      drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+    if (bottomGraph != null) {
+      drawGraph(bottomPane, bottomGraph.getGraphOrder(), bottomGraph.getSubgraph(), startLevel,
+          startLevel + levelsToDraw);
     }
     mainPane.fireEvent(new GraphicsChangedEvent());
   }
@@ -700,49 +690,5 @@ public class DrawComparedGraphs implements Initializable {
   private void deleteBottomGraph() {
     bottomGraphGenomes.clear();
     redrawGraphs();
-  }
-
-  /**
-   * Thread which is used to get a graph of a subset of the genomes from a graph.
-   */
-  private class SplitGraphsThread extends Thread {
-
-    private OriginalGraph subGraph;
-    private final SplitGraphs splitGraphs;
-    private final Collection<String> genomes;
-
-    /**
-     * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
-     * the given genomes.
-     *
-     * @param splitGraphs a {@link SplitGraphs} object.
-     * @param genomes     the list of genomes which must be present in the subgraph.
-     */
-    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<String> genomes) {
-      this.splitGraphs = splitGraphs;
-      this.genomes = genomes;
-    }
-
-    /**
-     * Wait till the thread completes its execution and get the subgraph.
-     *
-     * @return the subgraph.
-     */
-    private OriginalGraph getSubGraph() {
-      try {
-        this.join();
-      } catch (InterruptedException ex) {
-        Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      return subGraph;
-    }
-
-    /**
-     * Subtract a subgraph from the given graph, containing all of the given genomes.
-     */
-    @Override
-    public void run() {
-      subGraph = splitGraphs.getSubgraph(genomes);
-    }
   }
 }
