@@ -1,0 +1,203 @@
+package nl.tudelft.pl2016gr2.parser.controller;
+
+import nl.tudelft.pl2016gr2.model.Annotation;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class AnnotationReader {
+
+  private static final Logger logger = Logger.getLogger(AnnotationReader.class.getName());
+
+  private final File file;
+
+  public AnnotationReader(File file) {
+    this.file = file;
+  }
+
+  private Annotation readRow(Row row) {
+    Iterator<Cell> iterator = row.cellIterator();
+
+    Annotation annotation = new Annotation();
+
+    parseSpecimenID(annotation, iterator.next());
+    parseAge(annotation, iterator.next());
+    parseSex(annotation, iterator.next());
+    parseHIVStatus(annotation, iterator.next());
+    parseCohort(annotation, iterator.next());
+    parseDateOfCollection(annotation, iterator.next());
+    parseStudyGeographicDistrict(annotation, iterator.next());
+    parseSpecimenType(annotation, iterator.next());
+    parseMicroscopySmearStatus(annotation, iterator.next());
+    iterator.next(); // swallow specimenId column
+    parseDNAIsolation(annotation, iterator.next());
+    parsePhenotypicDSTPattern(annotation, iterator.next());
+    parseCapreomycin(annotation, iterator.next());
+    parseEthambutol(annotation, iterator.next());
+    parseEthionamide(annotation, iterator.next());
+    parseIsoniazid(annotation, iterator.next());
+    parseKanamycin(annotation, iterator.next());
+    iterator.next(); // swallow specimenId column
+    parsePyrazinamide(annotation, iterator.next());
+    parseOfloxacin(annotation, iterator.next());
+    parseRifampin(annotation, iterator.next());
+    parseStreptomycin(annotation, iterator.next());
+    parseDigitalSpoligotype(annotation, iterator.next());
+    parseLineage(annotation, iterator.next());
+    parseGenotypicDSTPattern(annotation, iterator.next());
+
+    return annotation;
+
+  }
+
+  private void parseSpecimenID(Annotation annotation, Cell cell) {
+    annotation.specimenID = cell.getStringCellValue();
+  }
+
+  private void parseAge(Annotation annotation, Cell cell) {
+    if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
+      annotation.age = new Double(cell.getNumericCellValue()).intValue();
+    } else {
+      annotation.age = null;
+    }
+  }
+
+  private void parseSex(Annotation annotation, Cell cell) {
+    if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+      annotation.sex = Annotation.Sex.valueOf(cell.getStringCellValue());
+    } else {
+      annotation.sex = Annotation.Sex.unknown;
+    }
+  }
+
+  private void parseHIVStatus(Annotation annotation, Cell cell) {
+    annotation.hivStatus = Annotation.Status.valueOf(cell.getStringCellValue());
+  }
+
+  private void parseCohort(Annotation annotation, Cell cell) {
+    annotation.cohort = cell.getStringCellValue();
+  }
+
+  private void parseDateOfCollection(Annotation annotation, Cell cell) {
+    logger.log(Level.INFO,
+        String.format("Species %s with dateCell %s",annotation.specimenID, cell.toString()));
+    // toString seems to return the correct "Date" string, but the cell claims to be
+    // a numeric value that is certainly not an unix timestamp
+    // annotation.dateOfCollection = cell.getDateCellValue();
+    // annotation.dateOfCollection = new Date(cell.getNumericCellValue());
+  }
+
+  private void parseStudyGeographicDistrict(Annotation annotation, Cell cell) {
+    annotation.studyGeographicDistrict = cell.getStringCellValue();
+  }
+
+  private void parseSpecimenType(Annotation annotation, Cell cell) {
+    annotation.specimenType = cell.getStringCellValue();
+  }
+
+  private void parseMicroscopySmearStatus(Annotation annotation, Cell cell) {
+    annotation.microscopySmearStatus = Annotation.Status.valueOf(cell.getStringCellValue());
+  }
+
+  private void parseDNAIsolation(Annotation annotation, Cell cell) {
+    switch (cell.getStringCellValue()) {
+      case "single colony":
+        annotation.dnaIsolation = Annotation.Isolation.Single;
+        break;
+      case "non-single colony":
+        annotation.dnaIsolation = Annotation.Isolation.NonSingle;
+        break;
+      default:
+        throw new RuntimeException("DNA isolation not \"single colony\" or \"non-single colony\"");
+    }
+  }
+
+  private void parsePhenotypicDSTPattern(Annotation annotation, Cell cell) {
+    annotation.phenotypicDSTPattern = cell.getStringCellValue();
+  }
+
+  private void parseCapreomycin(Annotation annotation, Cell cell) {
+    annotation.capreomycin = cell.getStringCellValue();
+  }
+
+  private void parseEthambutol(Annotation annotation, Cell cell) {
+    annotation.ethambutol = cell.getStringCellValue();
+  }
+
+  private void parseEthionamide(Annotation annotation, Cell cell) {
+    annotation.ethionamide = cell.getStringCellValue();
+  }
+
+  private void parseIsoniazid(Annotation annotation, Cell cell) {
+    annotation.isoniazid = cell.getStringCellValue();
+  }
+
+  private void parseKanamycin(Annotation annotation, Cell cell) {
+    annotation.kanamycin = cell.getStringCellValue();
+  }
+
+  private void parsePyrazinamide(Annotation annotation, Cell cell) {
+    annotation.pyrazinamide = cell.getStringCellValue();
+  }
+
+  private void parseOfloxacin(Annotation annotation, Cell cell) {
+    annotation.ofloxacin = cell.getStringCellValue();
+  }
+
+  private void parseRifampin(Annotation annotation, Cell cell) {
+    annotation.rifampin = cell.getStringCellValue();
+  }
+
+  private void parseStreptomycin(Annotation annotation, Cell cell) {
+    annotation.streptomycin = cell.getStringCellValue();
+  }
+
+  private void parseDigitalSpoligotype(Annotation annotation, Cell cell) {
+    annotation.digitalSpoligotype = cell.getStringCellValue();
+  }
+
+  private void parseLineage(Annotation annotation, Cell cell) {
+    annotation.lineage = cell.getStringCellValue();
+  }
+
+  private void parseGenotypicDSTPattern(Annotation annotation, Cell cell) {
+    annotation.genotypicDSTPattern = cell.getStringCellValue();
+  }
+
+  public List<Annotation> read() throws IOException, InvalidFormatException {
+    Workbook wb = WorkbookFactory.create(file);
+    Sheet sheet = wb.getSheetAt(wb.getActiveSheetIndex());
+    List<Annotation> out = new ArrayList<>();
+    long startTime = System.currentTimeMillis();
+
+    for (Row row : sheet) {
+      // skip "header" rows
+      // Also makes sure that the row isn't empty
+      // in our first given file the last row is non-null but
+      // does not actually contain data.
+      Cell firstCell = row.getCell(row.getFirstCellNum());
+      if (firstCell.getCellType() == Cell.CELL_TYPE_STRING
+          && !firstCell.getStringCellValue().equals("Specimen ID")) {
+        out.add(readRow(row));
+      }
+    }
+    long stopTime = System.currentTimeMillis();
+    logger.log(Level.INFO, String.format("Took %d milliseconds to read %d annotations",
+        stopTime - startTime,
+        out.size()));
+    return out;
+
+  }
+
+}
