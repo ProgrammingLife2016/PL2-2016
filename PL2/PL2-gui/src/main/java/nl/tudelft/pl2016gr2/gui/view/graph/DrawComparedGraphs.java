@@ -251,11 +251,14 @@ public class DrawComparedGraphs implements Initializable {
         redrawGraphs();
         break;
       case 1:
-        contextMenu.getItems().add(createNewGraphMenuItem(genomes, otherGenomeMap));
+        contextMenu.getItems().add(createCreateNewGraphMenuItem(genomes, otherGenomeMap));
       /* intended fall through */
       case 2:
-        contextMenu.getItems().add(createClearAndAddMenuItem(genomes, genomeMap));
-        contextMenu.getItems().add(createAddToExistingMenuItem(genomes, genomeMap));
+        contextMenu.getItems().add(createClearAndAddToGraphMenuItem(genomes, genomeMap));
+        contextMenu.getItems().add(createAddToExistingGraphMenuItem(genomes, genomeMap));
+        if (!Collections.disjoint(genomes, genomeMap)) {
+          contextMenu.getItems().add(createRemoveFromGraphMenuItem(genomes, genomeMap));
+        }
         contextMenu.show(mainPane, dragEvent.getScreenX(), dragEvent.getScreenY());
         break;
       default:
@@ -287,7 +290,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param otherGenomeMap the genome map of the other graph.
    * @return the menu item.
    */
-  private MenuItem createNewGraphMenuItem(Collection<String> genomes,
+  private MenuItem createCreateNewGraphMenuItem(Collection<String> genomes,
       Set<String> otherGenomeMap) {
     MenuItem newGraphItem = new MenuItem("add to new graph");
     newGraphItem.setOnAction((ActionEvent event) -> {
@@ -305,7 +308,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createClearAndAddMenuItem(Collection<String> genomes,
+  private MenuItem createClearAndAddToGraphMenuItem(Collection<String> genomes,
       Set<String> genomeMap) {
     MenuItem clearAndAddItem = new MenuItem("clear graph and add");
     clearAndAddItem.setOnAction((ActionEvent event) -> {
@@ -324,7 +327,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createAddToExistingMenuItem(Collection<String> genomes,
+  private MenuItem createAddToExistingGraphMenuItem(Collection<String> genomes,
       Set<String> genomeMap) {
     MenuItem addToExistingItem = new MenuItem("add to existing graph");
     addToExistingItem.setOnAction((ActionEvent event) -> {
@@ -332,6 +335,24 @@ public class DrawComparedGraphs implements Initializable {
       redrawGraphs();
     });
     return addToExistingItem;
+  }
+
+  /**
+   * Create a menu item with the text "remove from graph", which performs the action when it is
+   * clicked.
+   *
+   * @param genomes   the list of genomes.
+   * @param genomeMap the genome map of the graph.
+   * @return the menu item.
+   */
+  private MenuItem createRemoveFromGraphMenuItem(Collection<String> genomes,
+      Set<String> genomeMap) {
+    MenuItem newGraphItem = new MenuItem("remove from graph");
+    newGraphItem.setOnAction((ActionEvent event) -> {
+      genomeMap.removeAll(genomes);
+      redrawGraphs();
+    });
+    return newGraphItem;
   }
 
   /**
