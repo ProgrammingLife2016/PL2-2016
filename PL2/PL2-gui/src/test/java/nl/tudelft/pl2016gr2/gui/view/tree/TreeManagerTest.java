@@ -82,8 +82,7 @@ public class TreeManagerTest {
     AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
 
-    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane(),
-        new Pane()));
+    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane()));
     mockedSelectionManager.getBottomGraphGenomes().addAll(root.getGenomes());
     mockedSelectionManager.getTopGraphGenomes().addAll(root.getGenomes());
     AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager,

@@ -10,7 +10,6 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -28,7 +27,6 @@ public class SelectionManager {
 
   private final RootLayoutController rootLayoutController;
   private final Pane selectionDescriptionPane;
-  private final Region background;
   @TestId(id = "contentPane")
   private DescriptionPane contentPane;
   @TestId(id = "selected")
@@ -44,13 +42,11 @@ public class SelectionManager {
    *
    * @param rootLayoutController     the root layout controller class.
    * @param selectionDescriptionPane the pane in which to draw information about selected items.
-   * @param background               the background pane which is positioned behind the description.
    */
-  public SelectionManager(RootLayoutController rootLayoutController, Pane selectionDescriptionPane,
-      Region background) {
+  public SelectionManager(RootLayoutController rootLayoutController,
+      Pane selectionDescriptionPane) {
     this.rootLayoutController = rootLayoutController;
     this.selectionDescriptionPane = selectionDescriptionPane;
-    this.background = background;
 
     selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
       if (selectionDescriptionPane.getChildren().isEmpty()) {
@@ -112,7 +108,7 @@ public class SelectionManager {
    * Create a new content pane.
    */
   private void createNewContentPane() {
-    contentPane = new DescriptionPane(background, selectionDescriptionPane);
+    contentPane = new DescriptionPane(selectionDescriptionPane);
   }
 
   /**
@@ -129,7 +125,6 @@ public class SelectionManager {
     timeline.setOnFinished((ActionEvent event) -> {
       curContentPane.getChildren().clear();
       selectionDescriptionPane.getChildren().remove(curContentPane);
-      curContentPane.clear();
     });
     timeline.play();
   }

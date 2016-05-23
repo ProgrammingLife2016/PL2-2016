@@ -132,7 +132,7 @@ public class RootLayoutController implements Initializable {
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(this, selectionDescriptionPane, mainPane);
+    selectionManager = new SelectionManager(this, selectionDescriptionPane);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();

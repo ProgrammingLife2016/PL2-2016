@@ -23,7 +23,6 @@ import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
-import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
@@ -446,7 +445,6 @@ public class DrawComparedGraphs implements Initializable {
       drawGraph(bottomPane, bottomGraph.getGraphOrder(), bottomGraph.getSubgraph(), startLevel,
           startLevel + levelsToDraw);
     }
-    mainPane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**

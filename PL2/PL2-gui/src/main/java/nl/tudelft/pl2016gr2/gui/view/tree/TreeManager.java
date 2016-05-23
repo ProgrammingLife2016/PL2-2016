@@ -12,7 +12,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.gui.view.events.GraphicsChangedEvent;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -242,7 +241,6 @@ public class TreeManager implements Initializable {
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
-    treePane.fireEvent(new GraphicsChangedEvent());
   }
 
   /**
