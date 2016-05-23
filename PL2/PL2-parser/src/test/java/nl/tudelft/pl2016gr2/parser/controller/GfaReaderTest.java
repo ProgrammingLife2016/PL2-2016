@@ -111,8 +111,8 @@
 //   */
 //  @Test
 //  public void testParseNodeOrientation() {
-//    char[] chars = ("CRD:Z:MT_H37RV_BRD_V5.ref.fasta\tCRDCTG:Z:MT_H37RV_BRD_V5\tCTG:Z:NZ_KK327777.1"
-//        + ";NZ_KK350906.1;NZ_KK327775.1;MT_H37RV_BRD_V5;NZ_KK350895.1\tSTART:Z:371").toCharArray();
+//  char[] chars = ("CRD:Z:MT_H37RV_BRD_V5.ref.fasta\tCRDCTG:Z:MT_H37RV_BRD_V5\tCTG:Z:NZ_KK327777.1"
+//      + ";NZ_KK350906.1;NZ_KK327775.1;MT_H37RV_BRD_V5;NZ_KK350895.1\tSTART:Z:371").toCharArray();
 //    Node nodeSpy = Mockito.spy(new Node(0, 0, new ArrayList<>(), 0));
 //    AccessPrivate.callMethod("parseNodeOrientation", GfaReader.class, null, nodeSpy, chars, 0);
 //    verify(nodeSpy, times(1)).setAlignment(371);
@@ -136,7 +136,7 @@
 //  @Test
 //  public void testSkipTillCharacter() {
 //    char[] chars = "four:four::".toCharArray();
-//    int toSkip = AccessPrivate.callMethod("skipTillCharacter", GfaReader.class, null, chars, 2, ':',
+//  int toSkip = AccessPrivate.callMethod("skipTillCharacter", GfaReader.class, null, chars, 2, ':',
 //        2);
 //    assertEquals(9, toSkip);
 //  }

@@ -64,7 +64,7 @@
 //    @SuppressWarnings("unchecked") // Necessary when mocking generic types
 //    Iterator<Node> mockedIterator = mock(Iterator.class);
 //
-//    Node firstNode = mockNode(new String[] {genomeSet.get(0), genomeSet.get(1)}, new Integer[] {3},
+//   Node firstNode = mockNode(new String[] {genomeSet.get(0), genomeSet.get(1)}, new Integer[] {3},
 //        new Integer[] {3}, 0);
 //    Node secondNode = mockNode(new String[] {genomeSet.get(1)}, new Integer[] {0, 1, 3},
 //        new Integer[] {0, 1, 3}, 1);

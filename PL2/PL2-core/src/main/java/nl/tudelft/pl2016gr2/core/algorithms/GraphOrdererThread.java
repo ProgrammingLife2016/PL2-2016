@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.model.AbstractNode;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +19,14 @@ import java.util.logging.Logger;
 public class GraphOrdererThread extends Thread {
 
   private HashMap<Integer, NodePosition> orderedGraph;
-  private final OriginalGraph graph;
+  private final SequenceGraph graph;
 
   /**
    * Construct a graph orderer thread.
    *
    * @param graph the graph to order.
    */
-  public GraphOrdererThread(OriginalGraph graph) {
+  public GraphOrdererThread(SequenceGraph graph) {
     this.graph = graph;
   }
 
@@ -39,7 +39,7 @@ public class GraphOrdererThread extends Thread {
    * @param graph the graph.
    * @return the node order.
    */
-  private static HashMap<Integer, NodePosition> calculateGraphOrder(OriginalGraph graph) {
+  private static HashMap<Integer, NodePosition> calculateGraphOrder(SequenceGraph graph) {
     HashMap<Integer, NodePosition> nodeOrder = new HashMap<>();
     HashMap<Integer, Integer> reachedCount = new HashMap<>();
     Set<Integer> currentLevel = new HashSet<>();
@@ -49,12 +49,12 @@ public class GraphOrdererThread extends Thread {
       Set<Integer> nextLevel = new HashSet<>();
       ArrayList<ArrayList<Integer>> addedOutLinks = new ArrayList<>();
       for (Integer nodeId : currentLevel) {
-        AbstractNode node = graph.getNode(nodeId);
+        GraphNode node = graph.getNode(nodeId);
         int count = reachedCount.getOrDefault(nodeId, 0);
-        if (node.getInlinks().size() == count) {
+        if (node.getInEdges().size() == count) {
           nodeOrder.put(nodeId, new NodePosition(node, level));
-          nextLevel.addAll(node.getOutlinks());
-          addedOutLinks.add(node.getOutlinks());
+          nextLevel.addAll(node.getOutEdges());
+          addedOutLinks.add(new ArrayList<>(node.getOutEdges()));
         }
       }
       updateReachedCount(reachedCount, addedOutLinks);
@@ -64,16 +64,16 @@ public class GraphOrdererThread extends Thread {
   }
 
   /**
-   * Update the reached count according to the outlinks which have been iterated over.
+   * Update the reached count according to the out edges which have been iterated over.
    *
    * @param reachedCount  the reached count map.
    * @param addedOutLinks the outlinks which have been iterated over.
    */
   private static void updateReachedCount(HashMap<Integer, Integer> reachedCount,
       ArrayList<ArrayList<Integer>> addedOutLinks) {
-    for (ArrayList<Integer> outlinks : addedOutLinks) {
-      for (Integer outlink : outlinks) {
-        reachedCount.put(outlink, reachedCount.getOrDefault(outlink, 0) + 1);
+    for (ArrayList<Integer> outEdges : addedOutLinks) {
+      for (Integer outEdge : outEdges) {
+        reachedCount.put(outEdge, reachedCount.getOrDefault(outEdge, 0) + 1);
       }
     }
   }

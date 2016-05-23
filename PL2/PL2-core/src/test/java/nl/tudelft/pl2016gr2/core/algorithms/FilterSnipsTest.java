@@ -142,7 +142,7 @@
 //    outlinks.add(6);
 //    FilterSnips filter = new FilterSnips(graph);
 //    graph.getNode(1).setOutlinks(outlinks);
-//    AccessPrivate.callMethod("method_updateLinks", FilterSnips.class, filter, graph.getNode(1), 4);
+//  AccessPrivate.callMethod("method_updateLinks", FilterSnips.class, filter, graph.getNode(1), 4);
 //    assertEquals(1, graph.getNode(5).getInlinks().get(0).intValue());
 //    assertEquals(1, graph.getNode(6).getInlinks().get(0).intValue());
 //  }
