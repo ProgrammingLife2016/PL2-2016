@@ -13,7 +13,9 @@ import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.FilterSnips;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.Bubble;
+import nl.tudelft.pl2016gr2.model.CustomTree;
 import nl.tudelft.pl2016gr2.model.GraphInterface;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
 import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
@@ -37,11 +39,11 @@ public class DrawGraph {
 
   private static final double X_OFFSET = 50.0;
   private Pane pane;
-  private Tree tree;
   private OriginalGraph graph;
   private FilterBubbles filterBubbles;
   private GraphInterface bubbledGraph;
-
+  private IPhylogeneticTreeNode treeRoot;
+  private Tree tree;
   /**
    * Load and draw a graph in the given pane.
    *
@@ -62,24 +64,30 @@ public class DrawGraph {
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    Tree tree = tp.tokenize("10tree_custom.rooted.TKK");
+    tree = tp.tokenize("10tree_custom.rooted.TKK");
     
     FilterSnips filterSnips = new FilterSnips(graph);
     graph = filterSnips.filter();
     
-    filterBubbles = 
-        new FilterBubbles(graph);
+    filterBubbles = new FilterBubbles(graph);
     
     startTime = System.currentTimeMillis();
-    bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+    IPhylogeneticTreeNode node1 = new CustomTree("leaf1");
+    IPhylogeneticTreeNode node2 = new CustomTree("leaf2");
+    IPhylogeneticTreeNode node3 = new CustomTree("leaf3");
+    IPhylogeneticTreeNode node4 = new CustomTree("leaf4");
+    //IPhylogeneticTreeNode node5 = new CustomTree("leaf5");
+    IPhylogeneticTreeNode parent1 = new CustomTree(node1, node2, false);
+    IPhylogeneticTreeNode parent2 = new CustomTree(parent1, node3, false);
+    //IPhylogeneticTreeNode parent3 = new CustomTree(node4, node5, false);
+    IPhylogeneticTreeNode root = new CustomTree(parent2, node4, false);
+    
+    treeRoot = new PhylogeneticTreeNode(tree.getRoot());
+    bubbledGraph = filterBubbles.filter(treeRoot);
+    //bubbledGraph = graph;
+
     endTime = System.currentTimeMillis();
     System.out.println("The filtering took" + ((double)(endTime - startTime) / 1000.0d) + "secconds to run");
-    
-    //bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8742), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8974), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8975), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8976), bubbledGraph);
-//    bubbledGraph = filterBubbles.zoom((Bubble)bubbledGraph.getNode(8977), bubbledGraph);
 
     // END OF CODE THAT HAS TO GO OUT
     redraw(bubbledGraph);
@@ -90,14 +98,12 @@ public class DrawGraph {
    */
   private void tempZoomIn(AbstractNode node) {
     if (node instanceof Node) {
+      bubbledGraph.print();
       System.out.println("Not a bubble.");
       return;
     }
-    System.out.println("Zooming in on: " + node);
     Bubble bubble = (Bubble) node;
-
-    //FilterBubbles filterBubbles = new FilterBubbles(graph);
-    //GraphInterface bubbledGraph = filterBubbles.filter(new PhylogeneticTreeNode(tree.getRoot()));
+    System.out.println("Zooming in on: " + bubble);
 
     bubbledGraph = filterBubbles.zoom(bubble, bubbledGraph);
     redraw(bubbledGraph);
@@ -162,10 +168,6 @@ public class DrawGraph {
         Line edge = new Line();
         edge.startXProperty().bind(fromCircle.centerXProperty());
         edge.startYProperty().bind(fromCircle.centerYProperty());
-        if (toCircle == null) {
-          System.out.println("Id: " + id);
-          System.out.println("Outlink: " + outLink);
-        }
         edge.endXProperty().bind(toCircle.centerXProperty());
         edge.endYProperty().bind(toCircle.centerYProperty());
         pane.getChildren().add(edge);
@@ -296,10 +298,6 @@ public class DrawGraph {
           int sameHeight = 0;
           for (Integer inLink : node.getInlinks()) {
             Circle parent = circles.get(inLink);
-            if (parent == null) {
-              System.out.println(node);
-              System.out.println(inLink);
-            }
             if (Double.compare(parent.getCenterY(), centerY) == 0) {
               ++sameHeight;
             }

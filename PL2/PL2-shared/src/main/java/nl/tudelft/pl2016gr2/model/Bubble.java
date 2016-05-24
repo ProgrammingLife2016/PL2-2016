@@ -23,6 +23,12 @@ public class Bubble extends AbstractNode {
     super(id, sequenceLength);
   }
   
+  @Override
+  public String toString() {
+    String leaves = treeNode != null ? treeNode.getLeaves().toString() : "no phylo";
+    return super.toString() + " | " + nestedNodes + ", phylo node: " + leaves;
+  }
+  
   public void setTreeNode(IPhylogeneticTreeNode treeNode) {
     this.treeNode = treeNode;
   }

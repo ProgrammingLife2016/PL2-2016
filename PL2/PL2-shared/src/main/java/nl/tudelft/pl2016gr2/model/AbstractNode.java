@@ -24,7 +24,7 @@ public abstract class AbstractNode {
 
   @Override
   public String toString() {
-    return "id: " + id + " sequencelength: " + sequenceLength + " inlinks: " + getInlinks()
+    return "id: " + id + " inlinks: " + getInlinks()
         + " outlinks: " + getOutlinks();
   }
 

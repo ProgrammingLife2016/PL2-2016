@@ -30,7 +30,7 @@ public class Node extends Bubble {
 
   @Override
   public String toString() {
-    return super.toString() + " snips: " + snips;
+    return super.toString() + " " + this.genomes;
   }
   
   @Override
