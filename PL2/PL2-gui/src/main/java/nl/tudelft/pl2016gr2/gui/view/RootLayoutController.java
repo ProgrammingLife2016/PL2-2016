@@ -18,7 +18,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -52,7 +52,7 @@ public class RootLayoutController implements Initializable {
   private Tree tree;
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
-  private OriginalGraph graph;
+  private SequenceGraph graph;
 
   private GraphOrdererThread mainGraphOrder;
   @TestId(id = "drawGraphs")
@@ -79,8 +79,6 @@ public class RootLayoutController implements Initializable {
 
   /**
    * Load the data into the root layout.
-   *
-   * @param controller the controller of the root layout.
    */
   private void loadTree() {
     Reader reader = new InputStreamReader(
@@ -137,8 +135,8 @@ public class RootLayoutController implements Initializable {
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-    OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
-    OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
+    SequenceGraph topSubgraph = topSubGraphThread.getSubGraph();
+    SequenceGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
     Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
             bottomSubgraph);
@@ -163,7 +161,7 @@ public class RootLayoutController implements Initializable {
    */
   private class SplitGraphsThread extends Thread {
 
-    private OriginalGraph subGraph;
+    private SequenceGraph subGraph;
     private final SplitGraphs splitGraphs;
     private final ArrayList<String> genomes;
 
@@ -184,7 +182,7 @@ public class RootLayoutController implements Initializable {
      *
      * @return the subgraph.
      */
-    public OriginalGraph getSubGraph() {
+    public SequenceGraph getSubGraph() {
       try {
         this.join();
       } catch (InterruptedException ex) {
