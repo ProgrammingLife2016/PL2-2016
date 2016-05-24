@@ -125,7 +125,7 @@ public class GfaReader {
     Node node = getNode(nodeId);
 
     index = parseNodeBases(node, chars, index);
-    index = parseNodegenomes(node, chars, index);
+    parseNodegenomes(node, chars, index);
   }
 
   /**
@@ -153,7 +153,7 @@ public class GfaReader {
    * @return the new index, after reading the genomes.
    */
   @TestId(id = "parseNodegenomes")
-  private static int parseNodegenomes(GraphNode node, char[] chars, int curIndex) {
+  private static void parseNodegenomes(GraphNode node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, ':', 2);
     ++index;
@@ -168,7 +168,6 @@ public class GfaReader {
       startIndex = index + 1;
     }
     nodeGens.forEach(node::addGenome);
-    return index;
   }
 
   /**
