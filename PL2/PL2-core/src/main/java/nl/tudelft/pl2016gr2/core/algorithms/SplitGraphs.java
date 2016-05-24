@@ -132,8 +132,8 @@ public class SplitGraphs {
     GraphNode newNode = original.copy();
 
     pruneGenomes(original, genomeSet).forEach(newNode::addGenome);
-    pruneInLinks(original, nodeSet).forEach(newNode::addInEdge);
-    pruneOutLinks(original, nodeSet).forEach(newNode::addOutEdge);
+    newNode.setInEdges(pruneInLinks(original, nodeSet));
+    newNode.setOutEdges(pruneOutLinks(original, nodeSet));
 
     return newNode;
   }
