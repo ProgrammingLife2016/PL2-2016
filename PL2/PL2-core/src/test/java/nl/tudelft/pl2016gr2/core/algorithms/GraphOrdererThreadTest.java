@@ -2,9 +2,11 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 
 import static org.junit.Assert.assertEquals;
 
+import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.StringSequenceNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,24 +30,16 @@ public class GraphOrdererThreadTest {
    */
   @Before
   public void initializeNodes() {
-    ArrayList<Integer> links = new ArrayList<>();
-    nodea = new Node(0, 1, new ArrayList<>(), 0);
-    links.add(1);
-    nodea.setOutlinks(links);
-    nodeb = new Node(1, 1, new ArrayList<>(), 0);
-    links = new ArrayList<>();
-    links.add(0);
-    nodeb.setInlinks(links);
-    links = new ArrayList<>();
-    links.add(2);
-    links.add(3);
-    nodeb.setOutlinks(links);
-    nodec = new Node(2, 1, new ArrayList<>(), 0);
-    noded = new Node(3, 1, new ArrayList<>(), 0);
-    links = new ArrayList<>();
-    links.add(1);
-    nodec.setInlinks(links);
-    noded.setInlinks(links);
+    nodea = new StringSequenceNode(0);
+    nodea.addOutEdge(1);
+    nodeb = new StringSequenceNode(1);
+    nodeb.addInEdge(0);
+    nodeb.addOutEdge(2);
+    nodeb.addOutEdge(3);
+    nodec = new StringSequenceNode(2);
+    noded = new StringSequenceNode(3);
+    nodec.addInEdge(1);
+    noded.addInEdge(1);
   }
 
   /**
@@ -61,7 +55,7 @@ public class GraphOrdererThreadTest {
 
     ArrayList<Integer> rootNodes = new ArrayList<>();
     rootNodes.add(0);
-    OriginalGraph graph = new OriginalGraph(nodes, rootNodes, new ArrayList<>());
+    SequenceGraph graph = new HashGraph(nodes, rootNodes, new ArrayList<>());
     GraphOrdererThread orderer = new GraphOrdererThread(graph);
     orderer.start();
     HashMap<Integer, NodePosition> orderedGraph = orderer.getOrderedGraph();

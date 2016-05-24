@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.util.Pair;
 import org.junit.Test;
@@ -23,7 +23,7 @@ public class CompareSubgraphsTest {
    */
   @Test
   public void testCompareGraphs() {
-    OriginalGraph graph = new GfaReader("SMALL.gfa").read();
+    SequenceGraph graph = new GfaReader("SMALL.gfa").read();
     GraphOrdererThread thread = new GraphOrdererThread(graph);
     thread.start();
     HashMap<Integer, NodePosition> mainGraphOrder = thread.getOrderedGraph();
@@ -32,8 +32,8 @@ public class CompareSubgraphsTest {
     topGenomes.add("TKK_02_0005.fasta");
     ArrayList<String> bottomGenomes = new ArrayList<>();
     bottomGenomes.add("TKK_02_0008.fasta");
-    OriginalGraph topGraph = new SplitGraphs(graph).getSubgraph(topGenomes);
-    OriginalGraph bottomGraph = new SplitGraphs(graph).getSubgraph(bottomGenomes);
+    SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(topGenomes);
+    SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(bottomGenomes);
 
     Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> res
         = CompareSubgraphs.compareGraphs(mainGraphOrder, topGraph, bottomGraph);
