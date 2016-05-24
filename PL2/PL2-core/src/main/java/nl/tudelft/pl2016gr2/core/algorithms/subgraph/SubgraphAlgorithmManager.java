@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class SubgraphAlgorithmManager {
    *         value the ordered graph of the bottom subgraph.
    */
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<String> topGenomes,
-      Collection<String> bottomGenomes, OriginalGraph mainGraph,
+      Collection<String> bottomGenomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
@@ -63,7 +63,7 @@ public class SubgraphAlgorithmManager {
    * @param mainGraphOrder the order of the main graph.
    * @return the ordered graph.
    */
-  public static OrderedGraph alignOneGraph(Collection<String> genomes, OriginalGraph mainGraph,
+  public static OrderedGraph alignOneGraph(Collection<String> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
@@ -84,7 +84,7 @@ public class SubgraphAlgorithmManager {
    */
   private static class SplitGraphsThread extends Thread {
 
-    private OriginalGraph subGraph;
+    private SequenceGraph subGraph;
     private final SplitGraphs splitGraphs;
     private final Collection<String> genomes;
 
@@ -105,7 +105,7 @@ public class SubgraphAlgorithmManager {
      *
      * @return the subgraph.
      */
-    private OriginalGraph getSubGraph() {
+    private SequenceGraph getSubGraph() {
       try {
         this.join();
       } catch (InterruptedException ex) {

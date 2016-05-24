@@ -43,7 +43,6 @@ public class RootLayoutController implements Initializable {
 
   @TestId(id = "treeManager")
   private TreeManager treeManager;
-  private Tree tree;
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
 
@@ -73,8 +72,6 @@ public class RootLayoutController implements Initializable {
 
   /**
    * Load the data into the root layout.
-   *
-   * @param controller the controller of the root layout.
    */
   private void loadTree() {
     Reader reader = new InputStreamReader(
@@ -82,7 +79,7 @@ public class RootLayoutController implements Initializable {
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
+    Tree tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
     treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
     try {
       reader.close();

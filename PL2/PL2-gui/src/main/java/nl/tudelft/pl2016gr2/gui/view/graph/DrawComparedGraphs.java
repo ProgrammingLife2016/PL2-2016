@@ -24,9 +24,9 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.AbstractNode;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -94,7 +94,7 @@ public class DrawComparedGraphs implements Initializable {
   private int amountOfLevels;
 
   private GraphOrdererThread mainGraphOrder;
-  private OriginalGraph mainGraph;
+  private SequenceGraph mainGraph;
 
   private ContextMenu contextMenu;
 
@@ -107,8 +107,8 @@ public class DrawComparedGraphs implements Initializable {
   public static DrawComparedGraphs loadView(SelectionManager selectionManager) {
     FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(DrawComparedGraphs.class.getClassLoader()
-          .getResource("pages/CompareGraphsPane.fxml"));
+      loader.setLocation(
+          DrawComparedGraphs.class.getClassLoader().getResource("pages/CompareGraphsPane.fxml"));
       loader.load();
       DrawComparedGraphs controller = loader.<DrawComparedGraphs>getController();
       controller.setSelectionManager(selectionManager);
@@ -494,16 +494,16 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private static void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder,
-      OriginalGraph graph, int startLevel, int endLevel) {
+  private static void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph
+      graph, int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
     HashMap<Integer, GraphNodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
     ArrayList<NodePosition> levelNodes = new ArrayList<>();
-    for (endIndex = startIndex; endIndex < graphOrder.size()
-        && graphOrder.get(endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
+    for (endIndex = startIndex; endIndex < graphOrder.size() && graphOrder.get(
+        endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
       NodePosition node = graphOrder.get(endIndex);
       if (node.getLevel() == curLevel) {
         levelNodes.add(node);
@@ -569,7 +569,7 @@ public class DrawComparedGraphs implements Initializable {
       ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
-      AbstractNode node = graphNodeOrder.getNode();
+      GraphNode node = graphNodeOrder.getNode();
       double relativeHeight = (i + 0.5) / nodes.size();
       GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
           relativeHeight, 0.5 / nodes.size());
@@ -590,14 +590,15 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
    * The mapping function from amount of bases to node radius is completely random (hence the magic
-   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
+   * numbers). It was created by drawing graphs of different functions, till a somewhat nice
+   * mapping
    * function was found.
    *
    * @param node the node.
    * @return the radius.
    */
   private static double calculateNodeRadius(NodePosition node) {
-    int amountOfBases = node.getNode().getSequenceLength();
+    int amountOfBases = node.getNode().size();
     double radius;
     if (amountOfBases > 1000) {
       radius = Math.log(amountOfBases) * 4.0 - 17.0; // see javadoc
@@ -625,12 +626,12 @@ public class DrawComparedGraphs implements Initializable {
    *                   user interface.
    */
   private static void drawEdges(Pane pane, ArrayList<NodePosition> graphOrder,
-      OriginalGraph graph, int startIndex, int endIndex,
+      SequenceGraph graph, int startIndex, int endIndex,
       HashMap<Integer, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      AbstractNode node = graphOrder.get(i).getNode();
+      GraphNode node = graphOrder.get(i).getNode();
       Circle fromCircle = circleMap.get(node.getId());
-      for (Integer outlink : node.getOutlinks()) {
+      for (Integer outlink : node.getOutEdges()) {
         Circle toCircle = circleMap.get(outlink);
         if (toCircle == null) {
           continue;
@@ -659,8 +660,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param to         the node to which the edge goes.
    * @return the edge width.
    */
-  private static double calculateEdgeWidth(int maxGenomes, AbstractNode from, AbstractNode to) {
-    int genomesOverEdge = from.getGenomesOverEdge(to);
+  private static double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
+    int genomesOverEdge = from.getGenomesOverEdge(to).size();
     double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8; // see javadoc
     if (edgeWith > MAX_EDGE_WIDTH) {
       return MAX_EDGE_WIDTH;
@@ -683,7 +684,7 @@ public class DrawComparedGraphs implements Initializable {
       int startIndex, int endIndex, HashMap<Integer, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       NodePosition graphNode = graphOrder.get(i);
-      AbstractNode node = graphNode.getNode();
+      GraphNode node = graphNode.getNode();
       GraphNodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();
       while (calculateSameHeightNodes(node, circle, circleMap) >= 2) {
@@ -702,10 +703,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap the map containing all other circles.
    * @return the amount of found nodes (circles) which are at the same height.
    */
-  private static int calculateSameHeightNodes(AbstractNode node, GraphNodeCircle circle,
+  private static int calculateSameHeightNodes(GraphNode node, GraphNodeCircle circle,
       HashMap<Integer, GraphNodeCircle> circleMap) {
     int sameHeight = 0;
-    for (Integer inLink : node.getInlinks()) {
+    for (Integer inLink : node.getInEdges()) {
       GraphNodeCircle parent = circleMap.get(inLink);
       if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
           circle.getRelativeHeightProperty().doubleValue()) == 0) {

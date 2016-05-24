@@ -9,15 +9,15 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * This class is an adapter class which maps the methods of the
- * net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode class to the interface which is needed by
- * our application.
+ * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed
+ * values of the newick parser {@link TreeNode}.
  *
  * @author Faris
  */
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<PhylogeneticTreeNode> {
 
-  private final TreeNode node;
+  private final String label;
+  private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
 
@@ -38,8 +38,10 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param parent the parent of this phylogenetic tree node.
    */
   protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
-    this.node = node;
+    this.label = node.label;
+    this.weight = node.weight;
     this.parent = parent;
+
     if (node.numberChildren() == 2) {
       children = new PhylogeneticTreeNode[2];
       children[0] = new PhylogeneticTreeNode(node.getChild(0), this);
@@ -96,7 +98,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   public ArrayList<String> getGenomes() {
     ArrayList<String> res = new ArrayList<>();
     if (isLeaf()) {
-      res.add(node.label);
+      res.add(label);
     } else {
       for (PhylogeneticTreeNode child : children) {
         res.addAll(child.getGenomes());
@@ -107,7 +109,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
 
   @Override
   public double getEdgeLength() {
-    return node.weight;
+    return weight;
   }
 
   @Override
@@ -172,7 +174,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   protected String getLabel() {
     assert isLeaf();
-    return node.label;
+    return label;
   }
 
   /**

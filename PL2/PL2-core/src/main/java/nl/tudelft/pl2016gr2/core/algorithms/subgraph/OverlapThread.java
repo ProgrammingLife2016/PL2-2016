@@ -1,8 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.AbstractNode;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -13,9 +12,9 @@ import java.util.logging.Logger;
  */
 public class OverlapThread extends Thread {
 
-  private HashMap<Integer, AbstractNode> overlappedNodes;
-  private final OriginalGraph topGraph;
-  private final OriginalGraph bottomGraph;
+  private HashMap<Integer, GraphNode> overlappedNodes;
+  private final SequenceGraph topGraph;
+  private final SequenceGraph bottomGraph;
 
   /**
    * Construct a overlap thread, which finds the overlapping nodes of the given graphs.
@@ -23,7 +22,7 @@ public class OverlapThread extends Thread {
    * @param firstGraph  the first graph.
    * @param secondGraph the second graph.
    */
-  public OverlapThread(OriginalGraph firstGraph, OriginalGraph secondGraph) {
+  public OverlapThread(SequenceGraph firstGraph, SequenceGraph secondGraph) {
     this.topGraph = firstGraph;
     this.bottomGraph = secondGraph;
   }
@@ -33,7 +32,7 @@ public class OverlapThread extends Thread {
    *
    * @return the overlapping nodes of the graphs.
    */
-  public HashMap<Integer, AbstractNode> getOverlappedNodes() {
+  public HashMap<Integer, GraphNode> getOverlappedNodes() {
     try {
       this.join();
     } catch (InterruptedException ex) {
@@ -49,14 +48,13 @@ public class OverlapThread extends Thread {
    * @param bottomGraph the bottom graph.
    * @return the overlapping nodes.
    */
-  private HashMap<Integer, AbstractNode> calculateOverlappedNodes() {
-    final HashMap<Integer, AbstractNode> overlap = new HashMap<>();
-    final HashMap<Integer, Node> bottomNodes = bottomGraph.getNodes();
-    topGraph.getNodes().forEach((Integer id, Node node) -> {
-      if (bottomNodes.containsKey(id)) {
-        overlap.put(id, node);
+  private HashMap<Integer, GraphNode> calculateOverlappedNodes() {
+    final HashMap<Integer, GraphNode> overlap = new HashMap<>();
+    for (GraphNode graphNode : topGraph) {
+      if (bottomGraph.contains(graphNode.getId())) {
+        overlap.put(graphNode.getId(), graphNode);
       }
-    });
+    }
     return overlap;
   }
 
