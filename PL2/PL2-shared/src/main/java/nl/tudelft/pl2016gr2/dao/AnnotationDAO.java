@@ -39,7 +39,7 @@ public class AnnotationDAO {
    */
   public AnnotationDAO(Collection<Annotation> annotations) {
     annotations.forEach(annotation ->
-        this.annotations.put(annotation.specimenID, annotation)
+        this.annotations.put(annotation.specimenId, annotation)
     );
   }
 

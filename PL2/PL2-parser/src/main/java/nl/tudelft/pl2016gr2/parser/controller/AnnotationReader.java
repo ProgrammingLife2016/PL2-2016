@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class AnnotationReader {
 
   private static final Logger logger = Logger.getLogger(AnnotationReader.class.getName());
@@ -27,13 +26,29 @@ public class AnnotationReader {
     this.file = file;
   }
 
+  /**
+   * This method reads a single row of the sheet.
+   *
+   * <p>
+   *   This method will subsequently call various methods in this class
+   *   to parse a single column, on a whole parsing a whole line.
+   * </p>
+   * @param row the row to parse.
+   * @return A single {@link Annotation} object that the given row represents.
+   */
+  /*
+   * There are many columns in the annotation file so this method is
+   * exceptionally long, because it needs a number of method calls for each column.
+   * As this number exceeds the MethodLength restriction of our CheckStyle
+   * this method Suppresses its warnings.
+   */
   @SuppressWarnings("checkstyle:MethodLength")
   private Annotation readRow(Row row) {
     Iterator<Cell> iterator = row.cellIterator();
 
     Annotation annotation = new Annotation();
 
-    parseSpecimenID(annotation, iterator.next());
+    parseSpecimenId(annotation, iterator.next());
     parseAge(annotation, iterator.next());
     parseSex(annotation, iterator.next());
     parseHIVStatus(annotation, iterator.next());
@@ -62,15 +77,13 @@ public class AnnotationReader {
     return annotation;
   }
 
-  private void parseSpecimenID(Annotation annotation, Cell cell) {
-    annotation.specimenID = cell.getStringCellValue();
+  private void parseSpecimenId(Annotation annotation, Cell cell) {
+    annotation.specimenId = cell.getStringCellValue();
   }
 
   private void parseAge(Annotation annotation, Cell cell) {
     if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC) {
-      annotation.age = new Double(cell.getNumericCellValue()).intValue();
-    } else {
-      annotation.age = null;
+      annotation.age = (int)cell.getNumericCellValue();
     }
   }
 
@@ -82,6 +95,7 @@ public class AnnotationReader {
     }
   }
 
+  @SuppressWarnings("AbbreviationAsWordInName")
   private void parseHIVStatus(Annotation annotation, Cell cell) {
     annotation.hivStatus = Annotation.Status.valueOf(cell.getStringCellValue());
   }
@@ -92,7 +106,7 @@ public class AnnotationReader {
 
   private void parseDateOfCollection(Annotation annotation, Cell cell) {
     logger.log(Level.INFO,
-        String.format("Species %s with dateCell %s",annotation.specimenID, cell.toString()));
+        String.format("Species %s with dateCell %s",annotation.specimenId, cell.toString()));
     // toString seems to return the correct "Date" string, but the cell claims to be
     // a numeric value that is certainly not an unix timestamp
     // annotation.dateOfCollection = cell.getDateCellValue();
@@ -111,6 +125,7 @@ public class AnnotationReader {
     annotation.microscopySmearStatus = Annotation.Status.valueOf(cell.getStringCellValue());
   }
 
+  @SuppressWarnings("AbbreviationAsWordInName")
   private void parseDNAIsolation(Annotation annotation, Cell cell) {
     switch (cell.getStringCellValue()) {
       case "single colony":
@@ -124,6 +139,7 @@ public class AnnotationReader {
     }
   }
 
+  @SuppressWarnings("AbbreviationAsWordInName")
   private void parsePhenotypicDSTPattern(Annotation annotation, Cell cell) {
     annotation.phenotypicDSTPattern = cell.getStringCellValue();
   }
@@ -172,6 +188,7 @@ public class AnnotationReader {
     annotation.lineage = cell.getStringCellValue();
   }
 
+  @SuppressWarnings("AbbreviationAsWordInName")
   private void parseGenotypicDSTPattern(Annotation annotation, Cell cell) {
     annotation.genotypicDSTPattern = cell.getStringCellValue();
   }

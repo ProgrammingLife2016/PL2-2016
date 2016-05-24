@@ -12,10 +12,9 @@ import java.util.Date;
  *   same property.
  * </p>
  */
-@SuppressWarnings("AbbreviationAsWordInName")
 public class Annotation {
 
-  public String specimenID;
+  public String specimenId;
 
   public Integer age;
 
@@ -36,6 +35,7 @@ public class Annotation {
 
   public Isolation dnaIsolation;
 
+  @SuppressWarnings("AbbreviationAsWordInName")
   public String phenotypicDSTPattern;
 
   // consider introducing an enum?
@@ -71,6 +71,7 @@ public class Annotation {
   public String lineage;
 
   // consider introducing an enum?
+  @SuppressWarnings("AbbreviationAsWordInName")
   public String genotypicDSTPattern;
 
   // TODO: Tugela Ferry vs. non-Tugela Ferry XDR
@@ -97,7 +98,7 @@ public class Annotation {
   public String toString() {
     return String.format(
         "<%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s>",
-        specimenID, age, sex, hivStatus, cohort,
+        specimenId, age, sex, hivStatus, cohort,
         dateOfCollection, studyGeographicDistrict,
         specimenType, microscopySmearStatus, dnaIsolation,
         phenotypicDSTPattern, capreomycin, ethambutol,
