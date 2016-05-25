@@ -11,7 +11,7 @@ import java.util.HashSet;
  */
 public class StringSequenceNode extends AbstractNode {
 
-  private String sequence;
+  private BaseSequence sequence;
   private HashSet<String> genomes;
   private ArrayList<Integer> inEdges;
   private ArrayList<Integer> outEdges;
@@ -34,7 +34,7 @@ public class StringSequenceNode extends AbstractNode {
    * @param identifier The identifier of the node
    * @param sequence   The DNA sequence that this node holds
    */
-  public StringSequenceNode(int identifier, String sequence) {
+  public StringSequenceNode(int identifier, BaseSequence sequence) {
     super(identifier);
     this.sequence = sequence;
     genomes = new HashSet<>();
@@ -49,7 +49,7 @@ public class StringSequenceNode extends AbstractNode {
    * @param sequence   The DNA sequence that this node holds
    * @param genomes    The genomes that go through this node
    */
-  public StringSequenceNode(int identifier, String sequence, Collection<String> genomes) {
+  public StringSequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes) {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new HashSet<>(genomes);
@@ -69,7 +69,7 @@ public class StringSequenceNode extends AbstractNode {
    * @param inEdges    The IDs of the nodes that are direct predecessors of this node
    * @param outEdges   The IDs of the nodes that are direct successors of this node
    */
-  public StringSequenceNode(int identifier, String sequence, Collection<String> genomes,
+  public StringSequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes,
       Collection<Integer> inEdges, Collection<Integer> outEdges) {
     super(identifier);
     this.sequence = sequence;
@@ -81,13 +81,13 @@ public class StringSequenceNode extends AbstractNode {
   }
 
   @Override
-  public void setSequence(String sequence) {
+  public void setSequence(BaseSequence sequence) {
     this.sequence = sequence;
   }
 
   @Override
   public String getSequence() {
-    return sequence;
+    return sequence.getBaseSequence();
   }
 
   /**
@@ -175,6 +175,6 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public GraphNode copy() {
-    return new StringSequenceNode(this.getId(), this.getSequence());
+    return new StringSequenceNode(this.getId(), this.sequence);
   }
 }

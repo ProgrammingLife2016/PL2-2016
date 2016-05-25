@@ -91,7 +91,8 @@ public class GfaReaderTest {
     char[] chars = "S\t2\tAGACACCACAACCGACAACGACGAGATTGATGAC\t".toCharArray();
     Node nodeSpy = Mockito.spy(new StringSequenceNode(0));
     AccessPrivate.callMethod("parseNodeBases", GfaReader.class, null, nodeSpy, chars, 4);
-    verify(nodeSpy, times(1)).setSequence("AGACACCACAACCGACAACGACGAGATTGATGAC");
+    verify(nodeSpy, times(1)).setSequence(Mockito.any());
+    assertEquals("AGACACCACAACCGACAACGACGAGATTGATGAC", nodeSpy.getSequence());
   }
 
   /**

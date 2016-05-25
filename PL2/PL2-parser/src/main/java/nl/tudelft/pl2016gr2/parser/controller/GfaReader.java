@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
+import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
@@ -140,7 +141,7 @@ public class GfaReader {
   private static int parseNodeBases(Node node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, '\t', 1);
-    node.setSequence(new String(chars, curIndex, index - curIndex));
+    node.setSequence(new BaseSequence(chars, curIndex, index));
     return index;
   }
 
