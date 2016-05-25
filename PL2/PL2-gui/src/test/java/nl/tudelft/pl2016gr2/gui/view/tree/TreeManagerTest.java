@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -80,13 +81,12 @@ public class TreeManagerTest {
     AccessPrivate.setFieldValue("treePane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
-    
-    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane(),
-        new Pane()));
-    mockedSelectionManager.setShownGraphNodes(root, root);
-    AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager, 
+
+    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane()));
+    mockedSelectionManager.getBottomGraphGenomes().addAll(root.getGenomes());
+    mockedSelectionManager.getTopGraphGenomes().addAll(root.getGenomes());
+    AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager,
         mockedSelectionManager);
-    mockedSelectionManager.setShownGraphNodes(root, root);
     AccessPrivate.callMethod("setRoot", TreeManager.class, treeManager, root);
   }
 
@@ -102,6 +102,8 @@ public class TreeManagerTest {
     when(root.getChildIndex(leafR)).thenReturn(0);
     when(root.getChildIndex(leafL)).thenReturn(1);
     when(root.isLeaf()).thenReturn(false);
+    when(root.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(root.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -113,6 +115,8 @@ public class TreeManagerTest {
     when(leafR.getChildCount()).thenReturn(0);
     when(leafR.getDirectChildCount()).thenReturn(0);
     when(leafR.isLeaf()).thenReturn(true);
+    when(leafR.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafR.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -128,6 +132,8 @@ public class TreeManagerTest {
     when(leafL.getChildIndex(leafLr)).thenReturn(0);
     when(leafL.getChildIndex(leafLl)).thenReturn(1);
     when(leafL.isLeaf()).thenReturn(false);
+    when(leafL.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(leafL.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
@@ -139,6 +145,8 @@ public class TreeManagerTest {
     when(leafLr.getChildCount()).thenReturn(0);
     when(leafLr.getDirectChildCount()).thenReturn(0);
     when(leafLr.isLeaf()).thenReturn(true);
+    when(leafLr.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLr.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
@@ -150,6 +158,8 @@ public class TreeManagerTest {
     when(leafLl.getChildCount()).thenReturn(0);
     when(leafLl.getDirectChildCount()).thenReturn(0);
     when(leafLl.isLeaf()).thenReturn(true);
+    when(leafLl.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLl.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
@@ -170,8 +180,8 @@ public class TreeManagerTest {
    */
   @Test
   public void testGetCurrentLeaves() {
-    ArrayList<ViewNode> leaves = AccessPrivate.callMethod("getCurrentLeaves()", TreeManager.class,
-        treeManager);
+    ArrayList<TreeNodeCircle> leaves = AccessPrivate.callMethod("getCurrentLeaves()",
+        TreeManager.class, treeManager);
     assertEquals(3, leaves.size());
     ArrayList<IPhylogeneticTreeNode> actualLeaves = new ArrayList<>();
     actualLeaves.add(leafR);

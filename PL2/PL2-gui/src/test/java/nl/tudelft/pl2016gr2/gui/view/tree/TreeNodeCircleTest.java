@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -22,12 +23,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.ArrayList;
 
 /**
- * This class tests the {@link ViewNode} class.
+ * This class tests the {@link TreeNodeCircle} class.
  *
  * @author Faris
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ViewNodeTest {
+public class TreeNodeCircleTest {
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* The tree is initialized in the @Before method as follows: */
@@ -54,7 +55,7 @@ public class ViewNodeTest {
 
   @Mock
   private SelectionManager selectionManager;
-  private ViewNode viewNode;
+  private TreeNodeCircle viewNode;
   private final Area area = new Area(0, 50, 100, 200);
   private Pane graphPaneSpy;
 
@@ -69,7 +70,7 @@ public class ViewNodeTest {
     mockLeafLr();
     mockLeafLl();
     graphPaneSpy = Mockito.spy(new Pane());
-    viewNode = ViewNode.drawNode(root, area, graphPaneSpy, selectionManager);
+    viewNode = TreeNodeCircle.drawNode(root, area, graphPaneSpy, selectionManager);
   }
 
   /**
@@ -84,6 +85,8 @@ public class ViewNodeTest {
     when(root.getChildIndex(leafR)).thenReturn(0);
     when(root.getChildIndex(leafL)).thenReturn(1);
     when(root.isLeaf()).thenReturn(false);
+    when(root.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(root.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -96,6 +99,8 @@ public class ViewNodeTest {
     when(leafR.getDirectChildCount()).thenReturn(0);
     when(leafR.getEdgeLength()).thenReturn(0.);
     when(leafR.isLeaf()).thenReturn(true);
+    when(leafR.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafR.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -112,6 +117,8 @@ public class ViewNodeTest {
     when(leafL.getChildIndex(leafLl)).thenReturn(1);
     when(leafL.getEdgeLength()).thenReturn(0.);
     when(leafL.isLeaf()).thenReturn(false);
+    when(leafL.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(leafL.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
@@ -124,6 +131,8 @@ public class ViewNodeTest {
     when(leafLr.getDirectChildCount()).thenReturn(0);
     when(leafLr.getEdgeLength()).thenReturn(0.);
     when(leafLr.isLeaf()).thenReturn(true);
+    when(leafLr.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLr.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
@@ -136,10 +145,12 @@ public class ViewNodeTest {
     when(leafLl.getDirectChildCount()).thenReturn(0);
     when(leafLl.getEdgeLength()).thenReturn(0.);
     when(leafLl.isLeaf()).thenReturn(true);
+    when(leafLl.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLl.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
   }
 
   /**
-   * Test of getDataNode method, of class ViewNode.
+   * Test of getDataNode method, of class TreeNodeCircle.
    */
   @Test
   public void testGetDataNode() {
@@ -147,9 +158,9 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of drawRootNode method, of class ViewNode. This method is executed in the @Before, here we
-   * will only test if it was done correctly. Tests if the 3 nodes, 2 edges and 1 elipsis are drawn
-   * in the given pane.
+   * Test of drawRootNode method, of class TreeNodeCircle. This method is executed in the @Before,
+   * here we will only test if it was done correctly. Tests if the 3 nodes, 2 edges and 1 elipsis
+   * are drawn in the given pane.
    */
   @Test
   public void testDrawNode() {
@@ -157,12 +168,14 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of drawRootNode method, of class ViewNode. This method is executed in the @Before, here we
-   * will only test if it was done correctly. Tests if the drawn tree contains the correct nodes.
+   * Test of drawRootNode method, of class TreeNodeCircle. This method is executed in the @Before,
+   * here we will only test if it was done correctly. Tests if the drawn tree contains the correct
+   * nodes.
    */
   @Test
   public void testDrawNodeTreeStructureFirstLevel() {
-    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+    ArrayList<TreeNodeCircle> rootChildren = AccessPrivate.getFieldValue("children",
+        TreeNodeCircle.class,
         viewNode);
     assertEquals(2, rootChildren.size());
     assertEquals(leafR, rootChildren.get(0).getDataNode());
@@ -170,16 +183,19 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of drawRootNode method, of class ViewNode. This method is executed in the @Before, here we
-   * will only test if it was done correctly. Tests if the drawn tree contains the correct nodes.
+   * Test of drawRootNode method, of class TreeNodeCircle. This method is executed in the @Before,
+   * here we will only test if it was done correctly. Tests if the drawn tree contains the correct
+   * nodes.
    */
   @Test
   public void testDrawNodeTreeStructureSecondLevel() {
-    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children",
-        ViewNode.class, viewNode);
-    ArrayList<ViewNode> rightChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+    ArrayList<TreeNodeCircle> rootChildren = AccessPrivate.getFieldValue("children",
+        TreeNodeCircle.class, viewNode);
+    ArrayList<TreeNodeCircle> rightChildren = AccessPrivate.getFieldValue("children",
+        TreeNodeCircle.class,
         rootChildren.get(0));
-    ArrayList<ViewNode> leftChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+    ArrayList<TreeNodeCircle> leftChildren = AccessPrivate.getFieldValue("children",
+        TreeNodeCircle.class,
         rootChildren.get(1));
     assertEquals(0, rightChildren.size());
     assertEquals(0, leftChildren.size());
@@ -195,13 +211,14 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of zoomIn method, of class ViewNode. This is mostly based on animation, so we will only
-   * verify that the correct amount of circles is animated.See the testing document in the
+   * Test of zoomIn method, of class TreeNodeCircle. This is mostly based on animation, so we will
+   * only verify that the correct amount of circles is animated.See the testing document in the
    * documentation folder for an explanation about this and other special cases.
    */
   @Test
   public void testZoomIn() {
-    ArrayList<ViewNode> rootChildren = AccessPrivate.getFieldValue("children", ViewNode.class,
+    ArrayList<TreeNodeCircle> rootChildren = AccessPrivate.getFieldValue("children",
+        TreeNodeCircle.class,
         viewNode);
     Timeline timeline = new Timeline();
     viewNode.zoomIn(rootChildren.get(1), timeline);
@@ -209,20 +226,20 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of zoomOut method, of class ViewNode. This is mostly based on animation, so we will only
-   * verify that the correct amount of circles is animated. See the testing document in the
+   * Test of zoomOut method, of class TreeNodeCircle. This is mostly based on animation, so we will
+   * only verify that the correct amount of circles is animated. See the testing document in the
    * documentation folder for an explanation about this and other special cases.
    */
   @Test
   public void testZoomOut() {
     Timeline timeline = new Timeline();
-    ViewNode zoomLeafL = ViewNode.drawNode(leafL, area, graphPaneSpy, selectionManager);
+    TreeNodeCircle zoomLeafL = TreeNodeCircle.drawNode(leafL, area, graphPaneSpy, selectionManager);
     zoomLeafL.zoomOut(timeline);
     assertEquals(3, timeline.getKeyFrames().size());
   }
 
   /**
-   * Test of getGraphArea method, of class ViewNode.
+   * Test of getGraphArea method, of class TreeNodeCircle.
    */
   @Test
   public void testGetGraphArea() {
@@ -230,18 +247,18 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of getCurrentLeaves method, of class ViewNode.
+   * Test of getCurrentLeaves method, of class TreeNodeCircle.
    */
   @Test
   public void testGetCurrentLeaves() {
-    ArrayList<ViewNode> viewLeaves = viewNode.getCurrentLeaves();
+    ArrayList<TreeNodeCircle> viewLeaves = viewNode.getCurrentLeaves();
     assertEquals(2, viewLeaves.size());
     assertEquals(leafR, viewLeaves.get(0).getDataNode());
     assertEquals(leafL, viewLeaves.get(1).getDataNode());
   }
 
   /**
-   * Test of getClosestParentNode method, of class ViewNode.
+   * Test of getClosestParentNode method, of class TreeNodeCircle.
    */
   @Test
   public void testGetClosestParentNode() {
@@ -249,7 +266,7 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of select method, of class ViewNode.
+   * Test of select method, of class TreeNodeCircle.
    */
   @Test
   public void testSelect() {
@@ -257,7 +274,7 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of deselect method, of class ViewNode.
+   * Test of deselect method, of class TreeNodeCircle.
    */
   @Test
   public void testDeselect() {
@@ -265,7 +282,7 @@ public class ViewNodeTest {
   }
 
   /**
-   * Test of getSelectionInfo method, of class ViewNode.
+   * Test of getSelectionInfo method, of class TreeNodeCircle.
    */
   @Test
   public void testGetSelectionInfo() {

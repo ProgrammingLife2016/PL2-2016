@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;

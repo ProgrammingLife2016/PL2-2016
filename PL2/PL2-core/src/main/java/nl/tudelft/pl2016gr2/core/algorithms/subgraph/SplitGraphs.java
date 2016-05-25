@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.HashGraph;
@@ -57,9 +57,10 @@ public class SplitGraphs {
    *                                genomes
    */
   public SequenceGraph getSubgraph(Collection<String> genomes) {
-    assert mainGraph.getGenomes().containsAll(genomes) : "Tried splitting graph on absent genomes";
-
     HashSet<String> genomeSet = new HashSet<>(genomes);
+    assert mainGraph.getGenomes().containsAll(genomeSet) :
+        "Tried splitting graph on absent genomes";
+
     HashSet<Integer> nodeSet = findSubgraphNodes(genomeSet);
     return createNewGraph(nodeSet, genomeSet);
   }
