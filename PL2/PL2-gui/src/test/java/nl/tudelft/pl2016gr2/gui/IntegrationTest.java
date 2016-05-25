@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxRealApplication;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
@@ -17,13 +18,10 @@ import nl.tudelft.pl2016gr2.gui.view.selection.DescriptionPane;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
-import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.util.ArrayList;
 
 /**
  * This class performs integration tests on the user interface. It clicks through windows and checks
@@ -50,7 +48,8 @@ public class IntegrationTest {
    */
   @Test
   public void selectTreeNodeTest() {
-    ViewNode root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class, getTreeManager());
+    TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
+        getTreeManager());
     root.getOnMouseClicked().handle(SOME_MOUSE_EVENT);
     SelectionManager selectionManager = getSelectionManager();
     ISelectable selected = AccessPrivate.getFieldValue("selected", SelectionManager.class,
@@ -67,19 +66,20 @@ public class IntegrationTest {
     int drawnLevels = AccessPrivate.getFieldValue("amountOfLevels", DrawComparedGraphs.class,
         getDrawComparedGraphs());
     assertTrue(drawnLevels > 0);
-    ArrayList<NodePosition> topGraphOrder = AccessPrivate.getFieldValue("topGraphOrder",
+    OrderedGraph topGraph = AccessPrivate.getFieldValue("topGraph",
         DrawComparedGraphs.class, getDrawComparedGraphs());
-    ArrayList<NodePosition> bottomGraphOrder = AccessPrivate.getFieldValue("bottomGraphOrder",
+    OrderedGraph bottomGraph = AccessPrivate.getFieldValue("bottomGraph",
         DrawComparedGraphs.class, getDrawComparedGraphs());
-    assertTrue(topGraphOrder.size() > 0);
-    assertTrue(bottomGraphOrder.size() > 0);
+    assertTrue(topGraph.getGraphOrder().size() > 0);
+    assertTrue(bottomGraph.getGraphOrder().size() > 0);
   }
 
   /**
    * Click through the application, select a tree node and click the "compare children" button.
    */
   private void drawGraph() {
-    ViewNode root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class, getTreeManager());
+    TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
+        getTreeManager());
     root.getOnMouseClicked().handle(new MouseEvent(null, 0, 0, 0, 0, MouseButton.NONE, 0, true,
         true, true, true, true, true, true, true, true, true, null));
     SelectionManager selectionManager = getSelectionManager();
@@ -97,7 +97,6 @@ public class IntegrationTest {
 
   private static Stage getPrimaryStage() {
     return JavaFxRealApplication.primaryStage;
-    
   }
 
   private static RootLayoutController getRootLayoutController() {

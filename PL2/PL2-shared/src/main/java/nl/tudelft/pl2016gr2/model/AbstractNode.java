@@ -1,108 +1,71 @@
 package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
-public abstract class AbstractNode {
+/**
+ * Aides in implementing the <code>Node</code> interface by implementing methods that should have
+ * the same behaviour for all nodes.
+ * <p>
+ * This node only has an ID. it defers all other fields, such as in edges and out edges to its
+ * implementations.
+ * </p>
+ *
+ * @author Wouter Smit
+ */
+public abstract class AbstractNode implements Node {
 
   private final int identifier;
-  private ArrayList<Integer> inLinks;
-  private ArrayList<Integer> outLinks;
-  private int sequenceLength;
-  private boolean inBubble = false;
-  private boolean point = false;
-  private boolean inDel = false;
 
   /**
-   * Construct an abstract node.
+   * Construct a bare abstract node with an ID.
    *
-   * @param iden             the id of the node.
-   * @param sequenceLength the sequence length of the node.
+   * @param identifier the id of the node.
    */
-  public AbstractNode(int iden, int sequenceLength) {
-    this.identifier = iden;
-    this.sequenceLength = sequenceLength;
-    this.inLinks = new ArrayList<>();
-    this.outLinks = new ArrayList<>();
+  public AbstractNode(int identifier) {
+    this.identifier = identifier;
   }
-  
-  public abstract int getGenomesOverEdge(AbstractNode to);
 
   @Override
-  public String toString() {
-    return "id: " + identifier + " sequencelength: " + sequenceLength + " inlinks: " + inLinks
-        + " outlinks: " + outLinks;
-  }
-
-  public void replaceInlink(int oldLink, int newLink) {
-    inLinks.remove((Integer) oldLink);
-    inLinks.add(newLink);
-  }
-
-  public void addInlink(int inlink) {
-    inLinks.add(inlink);
-  }
-
-  public ArrayList<Integer> getInlinks() {
-    return inLinks;
-  }
-
-  public void setInlinks(ArrayList<Integer> inlinks) {
-    this.inLinks = inlinks;
-  }
-
-  public void addOutlink(int outlink) {
-    outLinks.add(outlink);
-  }
-
-  public ArrayList<Integer> getOutlinks() {
-    return outLinks;
-  }
-
-  public void setOutlinks(ArrayList<Integer> outlinks) {
-    this.outLinks = outlinks;
-  }
-
-  public int getSequenceLength() {
-    return sequenceLength;
-  }
-
-  public void setSequenceLength(int length) {
-    sequenceLength = length;
-  }
-
   public int getId() {
     return identifier;
   }
 
-  /**
-   * Return inbubble.
-   * @return the inBubble
-   */
-  public boolean isInBubble() {
-    return inBubble;
+  @Override
+  public boolean hasChildren() {
+    return false;
+  }
+
+  @Override
+  public Collection<Integer> getChildren() {
+    return null;
   }
 
   /**
-   * Set inbubble.
-   * @param inBubble the inBubble to set
+   * Returns the length of the sequence in this node.
+   *
+   * @return The sequence length
    */
-  public void setInBubble(boolean inBubble) {
-    this.inBubble = inBubble;
+  @Override
+  public int size() {
+    return getSequence().length();
   }
 
-  public boolean isPoint() {
-    return point;
+
+  @Override
+  public Collection<String> getGenomesOverEdge(GraphNode node) {
+    assert getOutEdges().contains(
+        node.getId()) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
+        + "not a direct successor. This = " + this.getId();
+
+    Collection<String> genomes = new ArrayList<>();
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
+        ::add);
+    return genomes;
   }
 
-  public void setPoint(boolean point) {
-    this.point = point;
-  }
-
-  public boolean isInDel() {
-    return inDel;
-  }
-
-  public void setInDel(boolean inDel) {
-    this.inDel = inDel;
+  @Override
+  public String toString() {
+    return "id: " + identifier;
   }
 }

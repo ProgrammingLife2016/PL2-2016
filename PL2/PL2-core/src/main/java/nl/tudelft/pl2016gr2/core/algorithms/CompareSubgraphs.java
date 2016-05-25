@@ -1,11 +1,12 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.model.AbstractNode;
+//import nl.tudelft.pl2016gr2.model.AbstractNode;
+//import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.GraphBubbleOrder;
-import nl.tudelft.pl2016gr2.model.GraphInterface;
-import nl.tudelft.pl2016gr2.model.Node;
+import nl.tudelft.pl2016gr2.model.GraphNode;
+//import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
@@ -44,8 +45,8 @@ public class CompareSubgraphs {
    *         value the node graph order of the bottom graph.
    */
   public static Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> compareGraphs(
-      HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph topGraph,
-      OriginalGraph bottomGraph) {
+      HashMap<Integer, NodePosition> mainGraphOrder, SequenceGraph topGraph,
+      SequenceGraph bottomGraph) {
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
     SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, overlapThread);
@@ -63,42 +64,40 @@ public class CompareSubgraphs {
 
     initStraightInDel(orderedTopGraph, topGraph);
     initStraightInDel(orderedBottomGraph, bottomGraph);
-    
+
     // todo: recolapse bubble from the graphs
     // todo: check if nodes are really overlapping (taking into account the bubbles)
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
   }
-  
-  private static void initStraightInDel(ArrayList<NodePosition> orderedGraph, 
-      GraphInterface graph) {
+
+  private static void initStraightInDel(ArrayList<NodePosition> orderedGraph,
+      SequenceGraph graph) {
     HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
     for (int i = 0; i < orderedGraph.size(); i++) {
       NodePosition nodeOrder = orderedGraph.get(i);
-      AbstractNode node = nodeOrder.getNode();
+      GraphNode node = nodeOrder.getNode();
       location.put(node.getId(), i);
     }
     findStraightInDel(orderedGraph, graph, location);
   }
 
   @SuppressWarnings("checkstyle:methodlength")
-  private static void findStraightInDel(ArrayList<NodePosition> orderedGraph, 
-      GraphInterface graph, HashMap<Integer, Integer> location) {
-    Set<AbstractNode> visited = new HashSet<AbstractNode>();
+  private static void findStraightInDel(ArrayList<NodePosition> orderedGraph, SequenceGraph graph,
+      HashMap<Integer, Integer> location) {
+    Set<GraphNode> visited = new HashSet<GraphNode>();
     for (int i = 0; i < orderedGraph.size(); i++) {
       NodePosition order = orderedGraph.get(i);
-      AbstractNode node = order.getNode();
+      GraphNode node = order.getNode();
       if (!visited.contains(node)) {
         int oldLevel = order.getLevel();
         int newLevel = order.getLevel();
         boolean oldOverlap = order.isOverlapping();
         boolean newOverlap = order.isOverlapping();
         GraphBubbleOrder bubble = null;
-        while (oldOverlap == newOverlap 
-            && node.getOutlinks().size() == 1 
-            && node.getInlinks().size() <= 1
-            && newLevel <= oldLevel + 1
+        while (oldOverlap == newOverlap && node.getOutEdges().size() == 1
+            && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
-          //De visited hierboven kan wrs weg omdat het niet voor kan komen
+          // De visited hierboven kan wrs weg omdat het niet voor kan komen
           if (bubble == null) {
             bubble = new GraphBubbleOrder(node, oldLevel);
             bubble.setOverlapping(oldOverlap);
@@ -107,7 +106,7 @@ public class CompareSubgraphs {
           }
           visited.add(node);
           node.setInBubble(true);
-          node = graph.getNode(node.getOutlinks().get(0));
+          node = graph.getNode(node.getOutEdges().get(0));
           order = orderedGraph.get(location.get(node.getId()));
           oldLevel = newLevel;
           newLevel = order.getLevel();
@@ -116,8 +115,8 @@ public class CompareSubgraphs {
         }
         if (bubble != null) {
           if (bubble.size() == 1) {
-            //Een bubble van size 1 is een in/del of point mutation, 
-            //die kunnen we hier dus gelijk filteren.
+            // Een bubble van size 1 is een in/del of point mutation,
+            // die kunnen we hier dus gelijk filteren.
             bubble.getNodes().get(0).setInBubble(false);
             checkInDel(bubble, graph);
           }
@@ -131,18 +130,18 @@ public class CompareSubgraphs {
       }
     }
   }
-  
-  private static void checkInDel(GraphBubbleOrder bubble, GraphInterface graph) {
-    AbstractNode nodeInBubble = bubble.getNodes().get(0);
-    if (nodeInBubble.getInlinks().size() == 0 || nodeInBubble.getOutlinks().size() == 0) {
+
+  private static void checkInDel(GraphBubbleOrder bubble, SequenceGraph graph) {
+    GraphNode nodeInBubble = bubble.getNodes().get(0);
+    if (nodeInBubble.getInEdges().size() == 0 || nodeInBubble.getOutEdges().size() == 0) {
       return;
     }
-    AbstractNode parent = graph.getNode(nodeInBubble.getInlinks().get(0));
-    AbstractNode child = graph.getNode(nodeInBubble.getOutlinks().get(0));
-    ArrayList<Integer> parentOutlinks = parent.getOutlinks();
+    GraphNode parent = graph.getNode(((ArrayList<Integer>) nodeInBubble.getInEdges()).get(0));
+    GraphNode child = graph.getNode(((ArrayList<Integer>) nodeInBubble.getOutEdges()).get(0));
+    ArrayList<Integer> parentOutlinks = (ArrayList<Integer>) parent.getOutEdges();
     boolean isInDel = false;
     for (int i = 0; i < parentOutlinks.size(); i++) {
-      AbstractNode node = graph.getNode(parentOutlinks.get(i));
+      GraphNode node = graph.getNode(parentOutlinks.get(i));
       if (node == child) {
         isInDel = true;
       }
@@ -212,7 +211,7 @@ public class CompareSubgraphs {
   private static class SubGraphOrderer extends Thread {
 
     private final HashMap<Integer, NodePosition> mainGraphOrder;
-    private final OriginalGraph subGraph;
+    private final SequenceGraph subGraph;
     private final OverlapThread overlapThread;
     private ArrayList<NodePosition> nodeOrder;
 
@@ -226,8 +225,8 @@ public class CompareSubgraphs {
      * @param overlapThread
      *          the thread which is checking which nodes are overlapping.
      */
-    private SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder,
-        OriginalGraph subGraph, OverlapThread overlapThread) {
+    private SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder, SequenceGraph subGraph,
+        OverlapThread overlapThread) {
       this.mainGraphOrder = mainGraphOrder;
       this.subGraph = subGraph;
       this.overlapThread = overlapThread;
@@ -256,10 +255,10 @@ public class CompareSubgraphs {
      *          the subgraph.
      * @return the ordered subgraph.
      */
-    private static ArrayList<NodePosition> orderNodes(
-        HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph subGraph) {
+    private static ArrayList<NodePosition> orderNodes(HashMap<Integer, NodePosition> mainGraphOrder,
+        SequenceGraph subGraph) {
       ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
-      subGraph.getNodes().forEach((Integer id, AbstractNode node) -> {
+      subGraph.getNodes().forEach((Integer id, GraphNode node) -> {
         int level = mainGraphOrder.get(id).getLevel();
         subGraphOrder.add(new NodePosition(node, level));
       });
@@ -274,7 +273,7 @@ public class CompareSubgraphs {
      * @param nodeOrder
      *          the ordered list of nodes of the subgraph.
      */
-    private static void markOverlap(HashMap<Integer, AbstractNode> overlappingNodes,
+    private static void markOverlap(HashMap<Integer, GraphNode> overlappingNodes,
         ArrayList<NodePosition> nodeOrder) {
       nodeOrder.forEach(graphNode -> {
         graphNode.setOverlapping(overlappingNodes.containsKey(graphNode.getNode().getId()));
@@ -302,9 +301,9 @@ public class CompareSubgraphs {
    */
   private static class OverlapThread extends Thread {
 
-    private HashMap<Integer, AbstractNode> overlappedNodes;
-    private final OriginalGraph topGraph;
-    private final OriginalGraph bottomGraph;
+    private HashMap<Integer, GraphNode> overlappedNodes;
+    private final SequenceGraph topGraph;
+    private final SequenceGraph bottomGraph;
 
     /**
      * Construct a overlap thread, which finds the overlapping nodes of the given graphs.
@@ -314,7 +313,7 @@ public class CompareSubgraphs {
      * @param secondGraph
      *          the second graph.
      */
-    private OverlapThread(OriginalGraph firstGraph, OriginalGraph secondGraph) {
+    private OverlapThread(SequenceGraph firstGraph, SequenceGraph secondGraph) {
       this.topGraph = firstGraph;
       this.bottomGraph = secondGraph;
     }
@@ -324,7 +323,7 @@ public class CompareSubgraphs {
      *
      * @return the overlapping nodes of the graphs.
      */
-    public HashMap<Integer, AbstractNode> getOverlappedNodes() {
+    public HashMap<Integer, GraphNode> getOverlappedNodes() {
       try {
         this.join();
       } catch (InterruptedException ex) {
@@ -342,10 +341,10 @@ public class CompareSubgraphs {
      *          the bottom graph.
      * @return the overlapping nodes.
      */
-    private HashMap<Integer, AbstractNode> calculateOverlappedNodes() {
-      final HashMap<Integer, AbstractNode> overlap = new HashMap<>();
-      final HashMap<Integer, AbstractNode> bottomNodes = bottomGraph.getNodes();
-      topGraph.getNodes().forEach((Integer id, AbstractNode node) -> {
+    private HashMap<Integer, GraphNode> calculateOverlappedNodes() {
+      final HashMap<Integer, GraphNode> overlap = new HashMap<>();
+      final HashMap<Integer, GraphNode> bottomNodes = bottomGraph.getNodes();
+      topGraph.getNodes().forEach((Integer id, GraphNode node) -> {
         if (bottomNodes.containsKey(id)) {
           overlap.put(id, node);
         }

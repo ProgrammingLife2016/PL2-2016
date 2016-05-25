@@ -10,7 +10,7 @@ public class NodePosition implements Comparable<NodePosition> {
   /**
    * The node of this NodePosition.
    */
-  private final AbstractNode node;
+  private final GraphNode node;
 
   /**
    * If this node is overlapping with a node from the other graph.
@@ -28,7 +28,7 @@ public class NodePosition implements Comparable<NodePosition> {
    * @param node  the node.
    * @param level the initial level of the node (depth in the graph).
    */
-  public NodePosition(AbstractNode node, int level) {
+  public NodePosition(GraphNode node, int level) {
     this.node = node;
     this.level = level;
   }
@@ -46,7 +46,7 @@ public class NodePosition implements Comparable<NodePosition> {
     return level;
   }
 
-  public AbstractNode getNode() {
+  public GraphNode getNode() {
     return node;
   }                                        
 

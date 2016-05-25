@@ -5,7 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import javafx.scene.layout.Pane;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,7 +27,7 @@ public class HeatmapManagerTest {
     HeatmapManager heatmapManager = new HeatmapManager(new Pane());
     NodeDensityHeatmap densityMap = AccessPrivate.getFieldValue("densityMap", HeatmapManager.class,
         heatmapManager);
-    ArrayList<ViewNode> leaves = AccessPrivate.getFieldValue("currentLeaves",
+    ArrayList<TreeNodeCircle> leaves = AccessPrivate.getFieldValue("currentLeaves",
         NodeDensityHeatmap.class, densityMap);
     assertTrue(leaves.isEmpty());
   }
@@ -40,7 +40,7 @@ public class HeatmapManagerTest {
     HeatmapManager heatmapManager = new HeatmapManager(new Pane());
     NodeDensityHeatmap densityMap = Mockito.mock(NodeDensityHeatmap.class);
     AccessPrivate.setFieldValue("densityMap", HeatmapManager.class, heatmapManager, densityMap);
-    ArrayList<ViewNode> leaves = new ArrayList<>();
+    ArrayList<TreeNodeCircle> leaves = new ArrayList<>();
     heatmapManager.setLeaves(leaves);
     verify(densityMap, times(1)).onChange(leaves);
   }

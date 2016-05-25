@@ -4,20 +4,20 @@ import java.util.ArrayList;
 
 public class GraphBubbleOrder extends NodePosition {
   
-  private ArrayList<AbstractNode> nodes;
+  private ArrayList<GraphNode> nodes;
 
   /**
    * Create an object used to display bubbles.
    * @param node the first node in the bubble
    * @param level The original level of the bubble.
    */
-  public GraphBubbleOrder(AbstractNode node, int level) {
+  public GraphBubbleOrder(GraphNode node, int level) {
     super(node, level);
-    nodes = new ArrayList<AbstractNode>();
+    nodes = new ArrayList<GraphNode>();
     nodes.add(node);
   }
   
-  public void addNode(AbstractNode node) {
+  public void addNode(GraphNode node) {
     nodes.add(node);
   }  
   
@@ -25,7 +25,7 @@ public class GraphBubbleOrder extends NodePosition {
     return nodes.size();
   }
   
-  public ArrayList<AbstractNode> getNodes() {
+  public ArrayList<GraphNode> getNodes() {
     return this.nodes;
   }
 

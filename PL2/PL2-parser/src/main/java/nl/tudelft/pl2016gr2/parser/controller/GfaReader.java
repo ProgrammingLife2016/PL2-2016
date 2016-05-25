@@ -1,8 +1,11 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
 import nl.tudelft.pl2016gr2.model.AbstractNode;
+import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.StringSequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
@@ -26,7 +29,7 @@ public class GfaReader {
   private final HashMap<Integer, AbstractNode> nodes = new HashMap<>();
   private final String fileName;
   @TestId(id = "originalGraph")
-  private OriginalGraph originalGraph;
+  private SequenceGraph originalGraph;
 
   /**
    * Creates a reader object and reads the gfa data from the filename.
@@ -42,14 +45,14 @@ public class GfaReader {
    *
    * @return the read graph.
    */
-  public OriginalGraph read() {
+  public SequenceGraph read() {
     if (originalGraph == null) {
       try {
         parse();
       } catch (IOException ex) {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
-      originalGraph = new OriginalGraph(nodes, genomes);
+      originalGraph = new HashGraph(nodes, genomes);
     }
     return originalGraph;
   }
@@ -58,8 +61,8 @@ public class GfaReader {
    * Parse a GFA file.
    */
   private void parse() throws IOException {
-    try (BufferedReader br = new BufferedReader(new InputStreamReader(GfaReader.class
-        .getClassLoader().getResourceAsStream(fileName)))) {
+    try (BufferedReader br = new BufferedReader(
+        new InputStreamReader(GfaReader.class.getClassLoader().getResourceAsStream(fileName)))) {
       br.readLine();
       String line;
       while ((line = br.readLine()) != null) {
@@ -101,8 +104,8 @@ public class GfaReader {
       to *= SHIFT_BY_BASE_10;
       to += chars[index++] - '0';
     }
-    getNode(to).addInlink(from);
-    getNode(from).addOutlink(to);
+    getNode(to).addInEdge(from);
+    getNode(from).addOutEdge(to);
   }
 
   /**
@@ -123,8 +126,7 @@ public class GfaReader {
     Node node = getNode(nodeId);
 
     index = parseNodeBases(node, chars, index);
-    index = parseNodegenomes(node, chars, index);
-    parseNodeOrientation(node, chars, index);
+    parseNodegenomes(node, chars, index);
   }
 
   /**
@@ -139,7 +141,7 @@ public class GfaReader {
   private static int parseNodeBases(Node node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, '\t', 1);
-    node.setBases(new String(chars, curIndex, index - curIndex));
+    node.setSequence(new String(chars, curIndex, index - curIndex));
     return index;
   }
 
@@ -152,7 +154,7 @@ public class GfaReader {
    * @return the new index, after reading the genomes.
    */
   @TestId(id = "parseNodegenomes")
-  private static int parseNodegenomes(Node node, char[] chars, int curIndex) {
+  private static void parseNodegenomes(GraphNode node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, ':', 2);
     ++index;
@@ -166,27 +168,7 @@ public class GfaReader {
       nodeGens.add(new String(chars, startIndex, index - startIndex));
       startIndex = index + 1;
     }
-    node.setGenomes(nodeGens);
-    return index;
-  }
-
-  /**
-   * Parse the orientation of a node.
-   *
-   * @param node     the node of which the orientation is read.
-   * @param chars    the character array of the node line in the GFA file.
-   * @param curIndex the current index; where the genomes end in the line.
-   */
-  @TestId(id = "parseNodeOrientation")
-  private static void parseNodeOrientation(Node node, char[] chars, int curIndex) {
-    int index = skipTillCharacter(chars, curIndex, '\t', 3);
-    index = skipTillCharacter(chars, index, ':', 2) + 1;
-    int orientation = 0;
-    while (index < chars.length) {
-      orientation *= SHIFT_BY_BASE_10;
-      orientation += chars[index++] - '0';
-    }
-    node.setAlignment(orientation);
+    nodeGens.forEach(node::addGenome);
   }
 
   /**
@@ -238,21 +220,9 @@ public class GfaReader {
   private Node getNode(int id) {
     AbstractNode node = nodes.get(id);
     if (node == null) {
-      node = new Node(id, 1, new ArrayList<>(), 0);
+      node = new StringSequenceNode(id);
       nodes.put(id, node);
     }
     return (Node) nodes.get(id);
-  }
-
-  /**
-   * Method which returns the read graph.
-   *
-   * @return The graph.
-   */
-  public OriginalGraph getGraph() {
-    if (originalGraph == null) {
-      originalGraph = new OriginalGraph(nodes, genomes);
-    }
-    return originalGraph;
   }
 }

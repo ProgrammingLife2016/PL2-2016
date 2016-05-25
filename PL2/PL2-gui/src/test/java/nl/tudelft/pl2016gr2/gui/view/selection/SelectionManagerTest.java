@@ -30,7 +30,7 @@ public class SelectionManagerTest {
   public void initializeVariables() {
     Pane pane = new Pane();
     Scene scene = new Scene(pane);
-    selectionManager = new SelectionManager(null, pane, pane);
+    selectionManager = new SelectionManager(null, pane);
     selectable = Mockito.mock(ISelectable.class);
     ISelectionInfo selectionInfo = Mockito.mock(ISelectionInfo.class);
 

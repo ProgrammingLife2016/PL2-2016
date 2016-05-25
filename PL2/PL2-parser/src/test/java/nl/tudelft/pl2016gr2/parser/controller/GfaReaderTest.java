@@ -6,7 +6,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.OriginalGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.StringSequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class GfaReaderTest {
    */
   @Test
   public void integrationTest() {
-    OriginalGraph og = gfaReader.read();
+    SequenceGraph og = gfaReader.read();
     assertEquals(og.getGenomes().size(), 11);
     assertEquals(((Node) og.getNode(3)).getGenomes().size(), 1);
   }
@@ -47,8 +48,8 @@ public class GfaReaderTest {
    */
   @Test
   public void testRead() {
-    OriginalGraph actual = gfaReader.read();
-    OriginalGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class,
+    SequenceGraph actual = gfaReader.read();
+    SequenceGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class,
         gfaReader);
     assertEquals(expected, actual);
   }
@@ -60,12 +61,12 @@ public class GfaReaderTest {
   public void testParseEdge() {
     char[] chars = "L\t2\t+\t3\t+\t0M".toCharArray();
     AccessPrivate.callMethod("parseEdge", GfaReader.class, gfaReader, chars);
-    Node node2 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 2);
-    Node node3 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
-    assertEquals(1, node2.getOutlinks().size());
-    assertEquals(3, (long) node2.getOutlinks().get(0));
-    assertEquals(1, node3.getInlinks().size());
-    assertEquals(2, (long) node3.getInlinks().get(0));
+    StringSequenceNode node2 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 2);
+    StringSequenceNode node3 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
+    assertEquals(1, node2.getOutEdges().size());
+    assertEquals(3, (long) node2.getOutEdges().iterator().next());
+    assertEquals(1, node3.getInEdges().size());
+    assertEquals(2, (long) node3.getInEdges().iterator().next());
   }
 
   /**
@@ -77,8 +78,7 @@ public class GfaReaderTest {
         + "CRDCTG:Z:NZ_KK327777.1\tCTG:Z:NZ_KK327777.1\tSTART:Z:1451").toCharArray();
     AccessPrivate.callMethod("parseNode", GfaReader.class, gfaReader, chars);
     Node node = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
-    assertEquals("C", node.getBases());
-    assertEquals(1451, node.getAlignment());
+    assertEquals("C", node.getSequence());
     assertEquals(1, node.getGenomes().size());
     assertEquals("TKK_02_0008.fasta", node.getGenomes().iterator().next());
   }
@@ -89,9 +89,9 @@ public class GfaReaderTest {
   @Test
   public void testParseNodeBases() {
     char[] chars = "S\t2\tAGACACCACAACCGACAACGACGAGATTGATGAC\t".toCharArray();
-    Node nodeSpy = Mockito.spy(new Node(0, 0, new ArrayList<>(), 0));
+    Node nodeSpy = Mockito.spy(new StringSequenceNode(0));
     AccessPrivate.callMethod("parseNodeBases", GfaReader.class, null, nodeSpy, chars, 4);
-    verify(nodeSpy, times(1)).setBases("AGACACCACAACCGACAACGACGAGATTGATGAC");
+    verify(nodeSpy, times(1)).setSequence("AGACACCACAACCGACAACGACGAGATTGATGAC");
   }
 
   /**
@@ -100,22 +100,10 @@ public class GfaReaderTest {
   @Test
   public void testParseNodeGenomes() {
     char[] chars = "\t*\tORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0005.fasta;\t".toCharArray();
-    Node node = new Node(0, 0, new ArrayList<>(), 0);
+    Node node = new StringSequenceNode(0);
     AccessPrivate.callMethod("parseNodegenomes", GfaReader.class, null, node, chars, 1);
     assertTrue(node.getGenomes().contains("MT_H37RV_BRD_V5.ref.fasta"));
     assertTrue(node.getGenomes().contains("TKK_02_0005.fasta"));
-  }
-
-  /**
-   * Test of parseNodeOrientation method, of class GfaReader.
-   */
-  @Test
-  public void testParseNodeOrientation() {
-    char[] chars = ("CRD:Z:MT_H37RV_BRD_V5.ref.fasta\tCRDCTG:Z:MT_H37RV_BRD_V5\tCTG:Z:NZ_KK327777.1"
-        + ";NZ_KK350906.1;NZ_KK327775.1;MT_H37RV_BRD_V5;NZ_KK350895.1\tSTART:Z:371").toCharArray();
-    Node nodeSpy = Mockito.spy(new Node(0, 0, new ArrayList<>(), 0));
-    AccessPrivate.callMethod("parseNodeOrientation", GfaReader.class, null, nodeSpy, chars, 0);
-    verify(nodeSpy, times(1)).setAlignment(371);
   }
 
   /**
