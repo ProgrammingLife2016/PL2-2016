@@ -38,7 +38,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param parent the parent of this phylogenetic tree node.
    */
   protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
-    this.label = node.label;
     this.weight = node.weight;
     this.parent = parent;
 
@@ -48,6 +47,12 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
       children[1] = new PhylogeneticTreeNode(node.getChild(1), this);
     } else { // leaf node
       children = null;
+    }
+
+    if (node.numberChildren() == 0) {
+      this.label = node.label.split("\\.", 2)[0];
+    } else {
+      label = null;
     }
   }
 

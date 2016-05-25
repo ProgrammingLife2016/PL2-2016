@@ -125,7 +125,7 @@ public class GfaReader {
     Node node = getNode(nodeId);
 
     index = parseNodeBases(node, chars, index);
-    parseNodegenomes(node, chars, index);
+    parseNodeGenomes(node, chars, index);
   }
 
   /**
@@ -153,7 +153,7 @@ public class GfaReader {
    * @return the new index, after reading the genomes.
    */
   @TestId(id = "parseNodegenomes")
-  private static void parseNodegenomes(GraphNode node, char[] chars, int curIndex) {
+  private static void parseNodeGenomes(GraphNode node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, ':', 2);
     ++index;
@@ -161,10 +161,13 @@ public class GfaReader {
     ArrayList<String> nodeGens = new ArrayList<>();
     while (chars[index] != '\t') {
       ++index;
-      while (chars[index] != ';' && chars[index] != '\t') {
+      while (chars[index] != '.' && chars[index] != ';' && chars[index] != '\t') {
         ++index;
       }
       nodeGens.add(new String(chars, startIndex, index - startIndex));
+      while (chars[index] != ';' && chars[index] != '\t') {
+        ++index;
+      }
       startIndex = index + 1;
     }
     nodeGens.forEach(node::addGenome);
@@ -181,8 +184,13 @@ public class GfaReader {
     index = skipTillCharacter(chars, index, ':', 2) + 1;
     int start = index;
     while (index < chars.length) {
-      index = skipTillCharacter(chars, index, ';', 1);
+      while (chars[index] != '.' && chars[index] != ';') {
+        ++index;
+      }
       genomes.add(new String(chars, start, index - start));
+      while (chars[index] != ';') {
+        ++index;
+      }
       start = index + 1;
       index += 2;
     }

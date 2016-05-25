@@ -29,9 +29,9 @@ public class CompareSubgraphsTest {
     HashMap<Integer, NodePosition> mainGraphOrder = thread.getOrderedGraph();
 
     ArrayList<String> topGenomes = new ArrayList<>();
-    topGenomes.add("TKK_02_0005.fasta");
+    topGenomes.add("TKK_02_0005");
     ArrayList<String> bottomGenomes = new ArrayList<>();
-    bottomGenomes.add("TKK_02_0008.fasta");
+    bottomGenomes.add("TKK_02_0008");
     SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(topGenomes);
     SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(bottomGenomes);
 
