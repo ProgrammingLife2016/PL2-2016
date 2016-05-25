@@ -1,10 +1,11 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
+import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.StringSequenceNode;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
@@ -140,7 +141,7 @@ public class GfaReader {
   private static int parseNodeBases(Node node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, '\t', 1);
-    node.setSequence(new String(chars, curIndex, index - curIndex));
+    node.setSequence(new BaseSequence(chars, curIndex, index));
     return index;
   }
 
@@ -219,7 +220,7 @@ public class GfaReader {
   private Node getNode(int id) {
     Node node = nodes.get(id);
     if (node == null) {
-      node = new StringSequenceNode(id);
+      node = new SequenceNode(id);
       nodes.put(id, node);
     }
     return node;

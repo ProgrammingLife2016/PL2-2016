@@ -8,9 +8,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.StringSequenceNode;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Rule;
@@ -78,7 +79,6 @@ public class SplitGraphsTest {
     when(mockedGraph.getNode(0)).thenReturn(firstNode);
     when(mockedGraph.getNode(1)).thenReturn(secondNode);
     when(mockedGraph.getNode(3)).thenReturn(thirdNode);
-    //whem(firstNode.copy())
   }
 
   /**
@@ -91,8 +91,8 @@ public class SplitGraphsTest {
    */
   private GraphNode createNode(String[] genomes, Integer[] inLinks, Integer[] outLinks,
       int identifier) {
-    return new StringSequenceNode(
-        identifier, "ACTG", Arrays.asList(genomes), Arrays.asList(inLinks),
+    return new SequenceNode(
+        identifier, new BaseSequence("ACTG"), Arrays.asList(genomes), Arrays.asList(inLinks),
         Arrays.asList(outLinks));
   }
 
