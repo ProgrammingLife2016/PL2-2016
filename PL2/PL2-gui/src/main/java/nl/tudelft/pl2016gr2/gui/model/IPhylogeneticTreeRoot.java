@@ -12,16 +12,16 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    * = false) the top graph.
    *
    * @param genome  the genome which has been added or removed.
-   * @param isAdded if the given genome is added or removed.
+   * @param isDrawn if the given genome is added or removed.
    */
-  void setDrawnInTop(String genome, boolean isAdded);
+  void setDrawnInTop(String genome, boolean isDrawn);
 
   /**
    * Notify the tree root that a genome has been added to (isDrawn = true), or removed from (isDrawn
    * = false) the bottom graph.
    *
    * @param genome  the genome which has been added or removed.
-   * @param isAdded if the given genome is added or removed.
+   * @param isDrawn if the given genome is added or removed.
    */
-  void setDrawnInBottom(String genome, boolean isAdded);
+  void setDrawnInBottom(String genome, boolean isDrawn);
 }

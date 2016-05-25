@@ -28,12 +28,12 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   }
 
   @Override
-  public void setDrawnInTop(String genome, boolean isAdded) {
-    genomeToTreeMap.get(genome).setDrawnInTop(isAdded);
+  public void setDrawnInTop(String genome, boolean isDrawn) {
+    genomeToTreeMap.get(genome).setDrawnInTop(isDrawn);
   }
 
   @Override
-  public void setDrawnInBottom(String genome, boolean isAdded) {
-    genomeToTreeMap.get(genome).setDrawnInBottom(isAdded);
+  public void setDrawnInBottom(String genome, boolean isDrawn) {
+    genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
   }
 }

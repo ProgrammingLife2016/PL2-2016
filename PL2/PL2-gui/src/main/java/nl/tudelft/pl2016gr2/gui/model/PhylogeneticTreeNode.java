@@ -42,11 +42,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     this.weight = node.weight;
     this.parent = parent;
 
-    if (node.numberChildren() == 2) {
+    if (node.numberChildren() == 2) { // node with children
       children = new PhylogeneticTreeNode[2];
       children[0] = new PhylogeneticTreeNode(node.getChild(0), this);
       children[1] = new PhylogeneticTreeNode(node.getChild(1), this);
-    } else {
+    } else { // leaf node
       children = null;
     }
   }

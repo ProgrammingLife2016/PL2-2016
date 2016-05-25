@@ -123,7 +123,7 @@ public class TreeManager implements Initializable {
    */
   public void loadTree(IPhylogeneticTreeRoot root) {
     rootNode = root;
-    setRoot(root);
+    setCurrentRoot(root);
   }
 
   /**
@@ -187,7 +187,7 @@ public class TreeManager implements Initializable {
     Timeline timeline = new Timeline();
     currentRoot.zoomIn(zoomedInNode, timeline);
     timeline.setOnFinished(e -> {
-      setRoot(zoomedInNode.getDataNode());
+      setCurrentRoot(zoomedInNode.getDataNode());
       isZooming = false;
     });
     isZooming = true;
@@ -205,7 +205,7 @@ public class TreeManager implements Initializable {
     Timeline timeline = new Timeline();
     currentRoot.zoomOut(timeline);
     timeline.setOnFinished(event -> {
-      setRoot(currentRoot.getDataNode().getParent());
+      setCurrentRoot(currentRoot.getDataNode().getParent());
       isZooming = false;
     });
     isZooming = true;
@@ -219,12 +219,12 @@ public class TreeManager implements Initializable {
   private void initializeGraphSizeListeners() {
     treePane.heightProperty().addListener((observable, oldVal, newVal) -> {
       if (currentRoot != null) {
-        setRoot(currentRoot.getDataNode());
+        setCurrentRoot(currentRoot.getDataNode());
       }
     });
     treePane.widthProperty().addListener((observable, oldVal, newVal) -> {
       if (currentRoot != null) {
-        setRoot(currentRoot.getDataNode());
+        setCurrentRoot(currentRoot.getDataNode());
       }
     });
   }
@@ -235,7 +235,7 @@ public class TreeManager implements Initializable {
    * @param root the root of the part of the tree which should be shown.
    */
   @TestId(id = "setRoot")
-  public void setRoot(IPhylogeneticTreeNode root) {
+  private void setCurrentRoot(IPhylogeneticTreeNode root) {
     treePane.getChildren().clear();
     currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
     childLeaveObservers.forEach((Observer observer) -> {
