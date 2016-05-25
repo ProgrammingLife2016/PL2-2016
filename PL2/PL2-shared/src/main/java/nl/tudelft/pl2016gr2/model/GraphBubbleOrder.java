@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.ArrayList;
 
-public class GraphBubbleOrder extends GraphNodeOrder {
+public class GraphBubbleOrder extends NodePosition {
   
   private ArrayList<AbstractNode> nodes;
 

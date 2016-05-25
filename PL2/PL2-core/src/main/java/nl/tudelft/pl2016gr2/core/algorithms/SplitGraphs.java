@@ -73,9 +73,9 @@ public class SplitGraphs {
    */
   private HashSet<Integer> findSubgraphNodes(HashSet<String> genomeSet) {
     HashSet<Integer> nodeSet = new HashSet<>();
-    Iterator<Node> nodeIterator = mainGraph.iterator();
+    Iterator<AbstractNode> nodeIterator = mainGraph.iterator();
     nodeIterator.forEachRemaining(node -> {
-      for (String genome : node.getGenomes()) {
+      for (String genome : ((Node) node).getGenomes()) {
         if (genomeSet.contains(genome)) {
           nodeSet.add(node.getId());
           break;
@@ -100,7 +100,7 @@ public class SplitGraphs {
   private OriginalGraph createNewGraph(HashSet<Integer> nodeSet, HashSet<String> genomeSet) {
     OriginalGraph newGraph = new OriginalGraph();
     nodeSet.forEach(nodeId -> {
-      Node originalNode = mainGraph.getNode(nodeId);
+      Node originalNode = (Node) mainGraph.getNode(nodeId);
       Node newNode = pruneNode(originalNode, genomeSet, nodeSet);
       newGraph.addNode(newNode);
 

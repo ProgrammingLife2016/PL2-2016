@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-public class OriginalGraph implements GraphInterface, Iterable<Node> {
+public class OriginalGraph implements GraphInterface, Iterable<AbstractNode> {
 
   private final HashMap<Integer, AbstractNode> nodes;
   private final ArrayList<Integer> rootNodes;
@@ -148,7 +148,7 @@ public class OriginalGraph implements GraphInterface, Iterable<Node> {
    * @return An iterator over all nodes in the graph
    */
   @Override
-  public Iterator<Node> iterator() {
+  public Iterator<AbstractNode> iterator() {
     return nodes.values().iterator();
   }
 }

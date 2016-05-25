@@ -23,7 +23,7 @@ public class GfaReader {
   private static final int SHIFT_BY_BASE_10 = 10;
   @TestId(id = "genomes")
   private final ArrayList<String> genomes = new ArrayList<>();
-  private final HashMap<Integer, Node> nodes = new HashMap<>();
+  private final HashMap<Integer, AbstractNode> nodes = new HashMap<>();
   private final String fileName;
   @TestId(id = "originalGraph")
   private OriginalGraph originalGraph;
@@ -251,7 +251,7 @@ public class GfaReader {
    */
   public OriginalGraph getGraph() {
     if (originalGraph == null) {
-      originalGraph = new OriginalGraph(nodes, genoms);
+      originalGraph = new OriginalGraph(nodes, genomes);
     }
     return originalGraph;
   }

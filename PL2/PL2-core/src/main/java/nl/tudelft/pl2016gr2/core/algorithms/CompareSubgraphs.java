@@ -3,7 +3,6 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 import nl.tudelft.pl2016gr2.model.AbstractNode;
 import nl.tudelft.pl2016gr2.model.GraphBubbleOrder;
 import nl.tudelft.pl2016gr2.model.GraphInterface;
-import nl.tudelft.pl2016gr2.model.GraphNodeOrder;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.OriginalGraph;
@@ -70,11 +69,11 @@ public class CompareSubgraphs {
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
   }
   
-  private static void initStraightInDel(ArrayList<GraphNodeOrder> orderedGraph, 
+  private static void initStraightInDel(ArrayList<NodePosition> orderedGraph, 
       GraphInterface graph) {
     HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
     for (int i = 0; i < orderedGraph.size(); i++) {
-      GraphNodeOrder nodeOrder = orderedGraph.get(i);
+      NodePosition nodeOrder = orderedGraph.get(i);
       AbstractNode node = nodeOrder.getNode();
       location.put(node.getId(), i);
     }
@@ -82,11 +81,11 @@ public class CompareSubgraphs {
   }
 
   @SuppressWarnings("checkstyle:methodlength")
-  private static void findStraightInDel(ArrayList<GraphNodeOrder> orderedGraph, 
+  private static void findStraightInDel(ArrayList<NodePosition> orderedGraph, 
       GraphInterface graph, HashMap<Integer, Integer> location) {
     Set<AbstractNode> visited = new HashSet<AbstractNode>();
     for (int i = 0; i < orderedGraph.size(); i++) {
-      GraphNodeOrder order = orderedGraph.get(i);
+      NodePosition order = orderedGraph.get(i);
       AbstractNode node = order.getNode();
       if (!visited.contains(node)) {
         int oldLevel = order.getLevel();
@@ -260,7 +259,7 @@ public class CompareSubgraphs {
     private static ArrayList<NodePosition> orderNodes(
         HashMap<Integer, NodePosition> mainGraphOrder, OriginalGraph subGraph) {
       ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
-      subGraph.getNodes().forEach((Integer id, Node node) -> {
+      subGraph.getNodes().forEach((Integer id, AbstractNode node) -> {
         int level = mainGraphOrder.get(id).getLevel();
         subGraphOrder.add(new NodePosition(node, level));
       });

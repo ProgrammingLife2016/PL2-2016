@@ -61,30 +61,12 @@ public class DrawComparedGraphs implements Initializable {
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
-  private OriginalGraph topGraph;
-  private OriginalGraph bottomGraph;
   @TestId(id = "topGraphOrder")
   private ArrayList<NodePosition> topGraphOrder;
   @TestId(id = "bottomGraphOrder")
   private ArrayList<NodePosition> bottomGraphOrder;
   @TestId(id = "amountOfLevels")
   private int amountOfLevels;
-
-  /**
-   * Initialize the controller class.
-   *
-   * @param location
-   *          unused variable.
-   * @param resources
-   *          unused variable.
-   */
-  @Override
-  public void initialize(URL location, ResourceBundle resources) {
-    topPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    bottomPane.prefHeightProperty().bind(mainPane.heightProperty().divide(2.0));
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    mainPane.widthProperty().addListener(invalidate -> updateGraph());
-  }
 
   /**
    * Load this view.
@@ -141,12 +123,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGraph
    *          the bottom graph.
    */
-  public void drawGraphs(ArrayList<GraphNodeOrder> topGraph, 
-      ArrayList<GraphNodeOrder> bottomGraph) {
-    this.topGraph = topGraph;
-    this.bottomGraph = bottomGraph;
-    this.topGraphOrder = topGraphOrder;
-    this.bottomGraphOrder = bottomGraphOrder;
+  public void drawGraphs(ArrayList<NodePosition> topGraph, 
+      ArrayList<NodePosition> bottomGraph) {
+    this.topGraphOrder = topGraph;
+    this.bottomGraphOrder = bottomGraph;
     int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
     if (highestTopLevel > highestBottomLevel) {
@@ -173,8 +153,8 @@ public class DrawComparedGraphs implements Initializable {
     if (startLevel < 0) {
       startLevel = 0;
     }
-    drawGraph(topPane, topGraphOrder, topGraph, startLevel, startLevel + levelsToDraw);
-    drawGraph(bottomPane, bottomGraphOrder, bottomGraph, startLevel, startLevel + levelsToDraw);
+    drawGraph(topPane, topGraphOrder, startLevel, startLevel + levelsToDraw);
+    drawGraph(bottomPane, bottomGraphOrder, startLevel, startLevel + levelsToDraw);
     mainPane.fireEvent(new GraphicsChangedEvent());
   }
 
@@ -186,17 +166,17 @@ public class DrawComparedGraphs implements Initializable {
    * @param graph
    *          the graph to draw.
    */
-  private static void drawGraph(Pane pane, ArrayList<GraphNodeOrder> graph, 
+  private static void drawGraph(Pane pane, ArrayList<NodePosition> graph, 
       int startLevel, int endLevel) {
     pane.getChildren().clear();
-    int startIndex = calculateStartIndex(graphOrder, startLevel);
+    int startIndex = calculateStartIndex(graph, startLevel);
     HashMap<Integer, NodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
     ArrayList<NodePosition> levelNodes = new ArrayList<>();
-    for (endIndex = startIndex; endIndex < graphOrder.size()
-        && graphOrder.get(endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
-      NodePosition node = graphOrder.get(endIndex);
+    for (endIndex = startIndex; endIndex < graph.size()
+        && graph.get(endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
+      NodePosition node = graph.get(endIndex);
       if (node.getLevel() == curLevel) {
         levelNodes.add(node);
       } else {
@@ -207,28 +187,17 @@ public class DrawComparedGraphs implements Initializable {
       }
     }
     drawNode(pane, circleMap, levelNodes, curLevel, startLevel);
-    repositionOverlappingEdges(graphOrder, startIndex, endIndex, circleMap);
-    drawEdges(pane, graphOrder, graph, startIndex, endIndex, circleMap);
+    repositionOverlappingEdges(graph, startIndex, endIndex, circleMap);
+    drawEdges(pane, graph, startIndex, endIndex, circleMap);
   }
 
   /**
-<<<<<<< HEAD
    * Calculates the starting index (where to start in the graph with drawing). Lowers the start
    * index by {@link #OFFSCREEN_DRAWN_LEVELS} to keep some margin at the left of the screen (so the
    * edges are drawn correctly)
    *
    * @param graphOrder the graph node order.
    * @param startLevel the start level.
-=======
-   * Calculates the starting index (where to start in the graph with drawing).
-   * Lowers the start index by 20 to keep some margin at the left of the screen
-   * (so the edges are drawn correctly)
-   *
-   * @param graph
-   *          the graph.
-   * @param startLevel
-   *          the start level.
->>>>>>> Algo works, needs refactoring
    * @return the start index.
    */
   private static int calculateStartIndex(ArrayList<NodePosition> graphOrder, int startLevel) {
@@ -243,15 +212,8 @@ public class DrawComparedGraphs implements Initializable {
    * Finds the first node with the given level in log(n) time (graph must be
    * sorted by level).
    *
-<<<<<<< HEAD
    * @param graphOrder the graph node order in which to search.
-   * @param level      the level to find.
-=======
-   * @param graph
-   *          the graph in which to search.
-   * @param level
-   *          the level to find.
->>>>>>> Algo works, needs refactoring
+   * @param level the level to find.
    * @return the index of the first occurence of the level.
    */
   private static int findStartIndexOfLevel(ArrayList<NodePosition> graphOrder, int level) {
@@ -282,7 +244,7 @@ public class DrawComparedGraphs implements Initializable {
    *          the level at which to start drawing nodes.
    */
   private static void drawNode(Pane pane, HashMap<Integer, NodeCircle> circleMap, 
-      ArrayList<GraphNodeOrder> nodes, int level, int startLevel) {
+      ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
       AbstractNode node = graphNodeOrder.getNode();
@@ -350,10 +312,10 @@ public class DrawComparedGraphs implements Initializable {
    *          a map which maps each node id to the circle which represents the
    *          node in the user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<GraphNodeOrder> graph, 
+  private static void drawEdges(Pane pane, ArrayList<NodePosition> graph, 
       int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      AbstractNode node = graphOrder.get(i).getNode();
+      AbstractNode node = graph.get(i).getNode();
       Circle fromCircle = circleMap.get(node.getId());
       for (Integer outlink : node.getOutlinks()) {
         Circle toCircle = circleMap.get(outlink);
@@ -361,8 +323,8 @@ public class DrawComparedGraphs implements Initializable {
           continue;
         }
         Line edge = new Line();
-        edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
-            graph.getNode(outlink)));
+        //        edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
+        //            graph.getNode(outlink)));
         pane.getChildren().add(edge);
         edge.startXProperty().bind(fromCircle.centerXProperty());
         edge.startYProperty().bind(fromCircle.centerYProperty());
@@ -388,10 +350,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap
    *          a map which maps each node id to a circle.
    */
-  private static void repositionOverlappingEdges(ArrayList<GraphNodeOrder> graph, 
+  private static void repositionOverlappingEdges(ArrayList<NodePosition> graph, 
       int startIndex, int endIndex, HashMap<Integer, NodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      NodePosition graphNode = graphOrder.get(i);
+      NodePosition graphNode = graph.get(i);
       AbstractNode node = graphNode.getNode();
       NodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();

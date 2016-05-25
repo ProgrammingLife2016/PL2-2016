@@ -142,7 +142,7 @@ public class RootLayoutController implements Initializable {
     Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
             bottomSubgraph);
-    drawGraphs.drawGraphs(topSubgraph, bottomSubgraph, alignedGraphs.left, alignedGraphs.right);
+    drawGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
   }
 
   /**

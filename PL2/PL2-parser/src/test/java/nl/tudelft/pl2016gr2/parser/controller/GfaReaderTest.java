@@ -39,7 +39,7 @@ public class GfaReaderTest {
   public void integrationTest() {
     OriginalGraph og = gfaReader.read();
     assertEquals(og.getGenomes().size(), 11);
-    assertEquals(og.getNode(3).getGenomes().size(), 1);
+    assertEquals(((Node) og.getNode(3)).getGenomes().size(), 1);
   }
 
   /**
