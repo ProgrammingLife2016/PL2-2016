@@ -7,7 +7,7 @@ import static org.mockito.Mockito.verify;
 
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.StringSequenceNode;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,8 +61,8 @@ public class GfaReaderTest {
   public void testParseEdge() {
     char[] chars = "L\t2\t+\t3\t+\t0M".toCharArray();
     AccessPrivate.callMethod("parseEdge", GfaReader.class, gfaReader, chars);
-    StringSequenceNode node2 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 2);
-    StringSequenceNode node3 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
+    SequenceNode node2 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 2);
+    SequenceNode node3 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
     assertEquals(1, node2.getOutEdges().size());
     assertEquals(3, (long) node2.getOutEdges().iterator().next());
     assertEquals(1, node3.getInEdges().size());
@@ -89,7 +89,7 @@ public class GfaReaderTest {
   @Test
   public void testParseNodeBases() {
     char[] chars = "S\t2\tAGACACCACAACCGACAACGACGAGATTGATGAC\t".toCharArray();
-    Node nodeSpy = Mockito.spy(new StringSequenceNode(0));
+    Node nodeSpy = Mockito.spy(new SequenceNode(0));
     AccessPrivate.callMethod("parseNodeBases", GfaReader.class, null, nodeSpy, chars, 4);
     verify(nodeSpy, times(1)).setSequence(Mockito.any());
     assertEquals("AGACACCACAACCGACAACGACGAGATTGATGAC", nodeSpy.getSequence());
@@ -101,7 +101,7 @@ public class GfaReaderTest {
   @Test
   public void testParseNodeGenomes() {
     char[] chars = "\t*\tORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0005.fasta;\t".toCharArray();
-    Node node = new StringSequenceNode(0);
+    Node node = new SequenceNode(0);
     AccessPrivate.callMethod("parseNodegenomes", GfaReader.class, null, node, chars, 1);
     assertTrue(node.getGenomes().contains("MT_H37RV_BRD_V5.ref.fasta"));
     assertTrue(node.getGenomes().contains("TKK_02_0005.fasta"));

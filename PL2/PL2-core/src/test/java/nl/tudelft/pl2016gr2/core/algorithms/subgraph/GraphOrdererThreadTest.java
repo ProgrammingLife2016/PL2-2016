@@ -6,7 +6,7 @@ import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.StringSequenceNode;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,14 +30,14 @@ public class GraphOrdererThreadTest {
    */
   @Before
   public void initializeNodes() {
-    nodea = new StringSequenceNode(0);
+    nodea = new SequenceNode(0);
     nodea.addOutEdge(1);
-    nodeb = new StringSequenceNode(1);
+    nodeb = new SequenceNode(1);
     nodeb.addInEdge(0);
     nodeb.addOutEdge(2);
     nodeb.addOutEdge(3);
-    nodec = new StringSequenceNode(2);
-    noded = new StringSequenceNode(3);
+    nodec = new SequenceNode(2);
+    noded = new SequenceNode(3);
     nodec.addInEdge(1);
     noded.addInEdge(1);
   }
