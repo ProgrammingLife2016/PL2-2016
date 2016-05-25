@@ -3,9 +3,10 @@ package nl.tudelft.pl2016gr2.model;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 /**
- * This is a container class for the bases of a genome. It efficiently encodes the ATCG and N
- * (unknown) bases as bits in an array of integers, so fewer memory is needed than when using a
- * simple String.
+ * This class represents a DNA sequence. It efficiently encodes the ATCG and N (unknown) bases as
+ * bits in an array of integers, so fewer memory is needed than when using a simple String. The
+ * stored bases are immutable (just like a String) and it is possible to retrieve a String of the
+ * stored bases by calling the <code>getBaseSequence()</code> method.
  *
  * @author Faris
  */
@@ -25,7 +26,8 @@ public class BaseSequence {
   private final int[] bases;
 
   /**
-   * Create a base sequence.
+   * Create a base sequence. The characters in the String may only have one of the following values:
+   * A, T, C, G, N (otherwise an AssertionError will be thrown).
    *
    * @param bases the sequence of bases.
    */
@@ -34,7 +36,9 @@ public class BaseSequence {
   }
 
   /**
-   * Create a base sequence.
+   * Create a base sequence. This constructor is made for the parser (as the parser parses an array
+   * of characters). The characters in the array between the startIndex and endIndex may only have
+   * one of the following values: A, T, C, G, N (otherwise an AssertionError will be thrown).
    *
    * @param bases      an array containing the sequence of bases.
    * @param startIndex the index in the array where the bases start.
@@ -68,7 +72,8 @@ public class BaseSequence {
   }
 
   /**
-   * Get a single encoded base.
+   * Get a single encoded base. If there is no base present at given index the END_OF_BASES value
+   * will be returned to indicate that all bases have been read.
    *
    * @param arrayIndex the index in the array of the base.
    * @param bitIndex   the index of the starting bit of the base in the array.
