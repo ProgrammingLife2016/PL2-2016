@@ -14,9 +14,11 @@ public class BubbledGraph implements GraphInterface {
   
   @Override
   public void print() {
+    System.out.println("GRAPH ------------------------------");
     for (AbstractNode node : nodes.values()) {
       System.out.println(node);
     }
+    System.out.println("-------------------------------------");
   }
 
   @Override
@@ -89,11 +91,15 @@ public class BubbledGraph implements GraphInterface {
     nodes.remove(node.getId());
     
     for (Integer inlink : node.getInlinks()) {
-      nodes.get(inlink).getOutlinks().remove((Integer)node.getId());
+      if (nodes.containsKey(inlink)) {
+        nodes.get(inlink).getOutlinks().remove((Integer)node.getId());
+      }
     }
     
     for (Integer outlink : node.getOutlinks()) {
-      nodes.get(outlink).getInlinks().remove((Integer)node.getId());
+      if (nodes.containsKey(outlink)) {
+        nodes.get(outlink).getInlinks().remove((Integer)node.getId());
+      }
     }
   }
 

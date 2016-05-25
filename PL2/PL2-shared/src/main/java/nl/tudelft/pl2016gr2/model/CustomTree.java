@@ -10,18 +10,25 @@ public class CustomTree implements IPhylogeneticTreeNode {
   private String label;
   private IPhylogeneticTreeNode child1;
   private IPhylogeneticTreeNode child2;
+  public IPhylogeneticTreeNode parent;
   private boolean isRoot;
   
   public CustomTree(String label) {
     this.label = label;
     isLeaf = true;
+    isRoot = false;
   }
   
   public CustomTree(IPhylogeneticTreeNode child1, IPhylogeneticTreeNode child2, boolean isRoot) {
     this.child1 = child1;
+    CustomTree customChild = (CustomTree) child1;
+    customChild.parent = this;
     this.child2 = child2;
+    CustomTree customChild2 = (CustomTree) child2;
+    customChild2.parent = this;
     isLeaf = false;
     this.isRoot = isRoot;
+    
   }
   
   @Override
@@ -46,7 +53,7 @@ public class CustomTree implements IPhylogeneticTreeNode {
 
   @Override
   public IPhylogeneticTreeNode getParent() {
-    return null;
+    return parent;
   }
 
   @Override

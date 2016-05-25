@@ -29,8 +29,22 @@ public class Bubble extends AbstractNode {
     return super.toString() + " | " + nestedNodes + ", phylo node: " + leaves;
   }
   
+  @Override
+  public Bubble copyAll() {
+    Bubble bubble = new Bubble(getId(), getSequenceLength());
+    bubble.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
+    bubble.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
+    bubble.setTreeNode(treeNode);
+    bubble.setNestedNodes(nestedNodes);
+    return bubble;
+  }
+  
   public void setTreeNode(IPhylogeneticTreeNode treeNode) {
     this.treeNode = treeNode;
+  }
+  
+  public void setNestedNodes(ArrayList<Integer> nested) {
+    this.nestedNodes = nested;
   }
   
   public IPhylogeneticTreeNode getTreeNode() {

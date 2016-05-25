@@ -18,7 +18,7 @@ public class AlgoRunner {
   public static final String FILENAME = "TB10.gfa";
   public static final int GRAPH_SIZE = 8728;
   //public static final String FILENAME = "FilterTest2.gfa";
-  //public static final int GRAPH_SIZE = 9;
+  //public static final int GRAPH_SIZE = 10;
   //public static final int GRAPH_SIZE = 94258;
   //public static final int GRAPH_SIZE = 11;
 

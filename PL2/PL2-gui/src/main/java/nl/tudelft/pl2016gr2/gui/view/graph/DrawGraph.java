@@ -4,6 +4,7 @@ import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.FILENAME;
 import static nl.tudelft.pl2016gr2.core.algorithms.AlgoRunner.GRAPH_SIZE;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -76,11 +77,11 @@ public class DrawGraph {
     IPhylogeneticTreeNode node2 = new CustomTree("leaf2");
     IPhylogeneticTreeNode node3 = new CustomTree("leaf3");
     IPhylogeneticTreeNode node4 = new CustomTree("leaf4");
-    //IPhylogeneticTreeNode node5 = new CustomTree("leaf5");
+    IPhylogeneticTreeNode node5 = new CustomTree("leaf5");
     IPhylogeneticTreeNode parent1 = new CustomTree(node1, node2, false);
     IPhylogeneticTreeNode parent2 = new CustomTree(parent1, node3, false);
-    //IPhylogeneticTreeNode parent3 = new CustomTree(node4, node5, false);
-    IPhylogeneticTreeNode root = new CustomTree(parent2, node4, false);
+    IPhylogeneticTreeNode parent3 = new CustomTree(parent2, node4, false);
+    IPhylogeneticTreeNode root = new CustomTree(parent3, node5, true);
     
     treeRoot = new PhylogeneticTreeNode(tree.getRoot());
     bubbledGraph = filterBubbles.filter(treeRoot);
@@ -98,7 +99,6 @@ public class DrawGraph {
    */
   private void tempZoomIn(AbstractNode node) {
     if (node instanceof Node) {
-      bubbledGraph.print();
       System.out.println("Not a bubble.");
       return;
     }
@@ -106,6 +106,17 @@ public class DrawGraph {
     System.out.println("Zooming in on: " + bubble);
 
     bubbledGraph = filterBubbles.zoom(bubble, bubbledGraph);
+    redraw(bubbledGraph);
+  }
+  
+  private void tempZoomOut(AbstractNode node) {
+    if (node instanceof Node) {
+      System.out.println("Not a bubble.");
+      return;
+    }
+    Bubble bubble = (Bubble) node;
+    System.out.println("Zooming out on: " + bubble);
+    bubbledGraph = filterBubbles.zoomOut(bubble.getTreeNode(), bubble, bubbledGraph);
     redraw(bubbledGraph);
   }
 
@@ -148,7 +159,11 @@ public class DrawGraph {
       circle.setOnMouseClicked((MouseEvent event) -> {
         tempZoomIn(node);
       });
+      circle.setOnScroll((ScrollEvent event) -> {
+        tempZoomOut(node);
+      });
     });
+    
     return circles;
   }
 

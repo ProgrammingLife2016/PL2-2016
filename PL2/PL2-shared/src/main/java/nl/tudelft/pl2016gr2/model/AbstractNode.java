@@ -32,6 +32,8 @@ public abstract class AbstractNode {
     inLinks.remove((Integer) oldLink);
     inLinks.add(newLink);
   }
+  
+  public abstract AbstractNode copyAll();
 
   public void addInlink(int inlink) {
     inLinks.add(inlink);
