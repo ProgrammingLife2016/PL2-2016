@@ -634,7 +634,7 @@ public class DrawComparedGraphs implements Initializable {
         GraphNode thisNode = graphNodeOrder.getNode();
         if (thisNode instanceof Bubble) {
           Bubble bubble = (Bubble) thisNode;
-          curGraph = filter.zoom(bubble, curGraph);
+          curGraph = filter.zoomIn(bubble, curGraph);
           drawOneGraph(new ArrayList<>());
         }
       });
@@ -642,9 +642,7 @@ public class DrawComparedGraphs implements Initializable {
         GraphNode thisNode = graphNodeOrder.getNode();
         if (thisNode instanceof Bubble) {
           Bubble bubble = (Bubble) thisNode;
-          BubblePhyloVisitor visitor = new BubblePhyloVisitor();
-          bubble.accept(visitor);
-          curGraph = filter.zoomOut(visitor.getTreeNode(), bubble, curGraph);
+          curGraph = filter.zoomOut(bubble, curGraph);
           drawOneGraph(new ArrayList<>());
         }
       });
