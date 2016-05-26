@@ -623,19 +623,13 @@ public class DrawComparedGraphs implements Initializable {
       // TODO : REMOVE THIS CODE
       circle.setOnMouseClicked(event -> {
         GraphNode thisNode = graphNodeOrder.getNode();
-        if (thisNode instanceof Bubble) {
-          Bubble bubble = (Bubble) thisNode;
-          curGraph = filter.zoomIn(bubble, curGraph);
-          drawOneGraph(new ArrayList<>());
-        }
+        curGraph = filter.zoomIn(thisNode, curGraph);
+        drawOneGraph(new ArrayList<>());
       });
       circle.setOnScroll(event -> {
         GraphNode thisNode = graphNodeOrder.getNode();
-        if (thisNode instanceof Bubble) {
-          Bubble bubble = (Bubble) thisNode;
-          curGraph = filter.zoomOut(bubble, curGraph);
-          drawOneGraph(new ArrayList<>());
-        }
+        curGraph = filter.zoomOut(thisNode, curGraph);
+        drawOneGraph(new ArrayList<>());
       });
       ///////////////////
       pane.getChildren().add(circle);

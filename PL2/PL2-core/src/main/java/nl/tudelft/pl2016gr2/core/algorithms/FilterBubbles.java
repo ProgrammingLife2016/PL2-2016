@@ -41,24 +41,34 @@ public class FilterBubbles {
   }
   
   /**
-   * Zooms out on this bubble in the given graph. 
-   * @param bubble bubble to zoom out on
+   * Zooms out on this node, if it's a bubble, in the given graph. 
+   * @param node bubble to zoom out on
    * @param graph the graph
    * @return a zoomed out graph
    */
-  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
-    return zoomOut.zoomOut(bubble, graph);
+  public SequenceGraph zoomOut(GraphNode node, SequenceGraph graph) {
+    if (!node.hasChildren()) {
+      return graph;
+    } else {
+      Bubble bubble = (Bubble) node;
+      return zoomOut.zoomOut(bubble, graph);
+    }
   }
   
   /**
-   * Zooms in on this bubble, by going down a level in the phylogenetic tree.
-   * @param bubble the bubble to zoom in on
+   * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
+   * @param node the node to zoom in on
    * @param graph the graph
    * @return a zoomed in graph
    */
-  public SequenceGraph zoomIn(Bubble bubble, SequenceGraph graph) {
-    mutationId++;
-    return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);
+  public SequenceGraph zoomIn(GraphNode node, SequenceGraph graph) {
+    if (!node.hasChildren()) {
+      return graph;
+    } else {
+      Bubble bubble = (Bubble) node;
+      mutationId++;
+      return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);
+    }
   }
   
   /**
