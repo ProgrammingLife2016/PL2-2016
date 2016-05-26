@@ -1,16 +1,8 @@
 package nl.tudelft.pl2016gr2.model;
 
-/**
- * This class is used to decide the order of the nodes in the graph.
- *
- * @author Faris
- */
-public class NodePosition implements Position {
-
-  /**
-   * The node of this NodePosition.
-   */
-  private final GraphNode node;
+public class BubblePosition implements Position {
+  
+  private SemanticBubble bubble;
 
   /**
    * If this node is overlapping with a node from the other graph.
@@ -21,16 +13,15 @@ public class NodePosition implements Position {
    * The level of this node (the depth in the graph.
    */
   private int level;
-
-  /**
-   * Construct a graph node order.
-   *
-   * @param node  the node.
-   * @param level the initial level of the node (depth in the graph).
-   */
-  public NodePosition(GraphNode node, int level) {
-    this.node = node;
+  
+  public BubblePosition(SemanticBubble node, int level) {
     this.level = level;
+    this.setBubble(node);
+    this.overlapping = false;
+  }
+  
+  public int size() {
+    return this.bubble.size();
   }
 
   /**
@@ -44,11 +35,7 @@ public class NodePosition implements Position {
 
   public int getLevel() {
     return level;
-  }
-
-  public GraphNode getNode() {
-    return node;
-  }                                        
+  }                               
 
   public void setOverlapping(boolean overlapping) {
     this.overlapping = overlapping;
@@ -58,8 +45,24 @@ public class NodePosition implements Position {
     return overlapping;
   }
 
+  /**
+   * @return the bubble
+   */
+  public SemanticBubble getBubble() {
+    return bubble;
+  }
+
+  /**
+   * @param node the bubble to set
+   */
+  public void setBubble(SemanticBubble node) {
+    this.bubble = node;
+  }
+
   @Override
   public int compareTo(Position other) {
-    return this.level - other.getLevel();
+   return this.level - other.getLevel();
   }
+  
+
 }

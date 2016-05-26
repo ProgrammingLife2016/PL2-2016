@@ -26,6 +26,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.model.Position;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -380,7 +381,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void drawOneGraph(Collection<String> genomes) {
     topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
-    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
+    ArrayList<Position> topGraphOrder = topGraph.getGraphOrder();
 
     amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
@@ -420,8 +421,8 @@ public class DrawComparedGraphs implements Initializable {
    * Draw two graphs to compare.
    */
   private void drawTwoGraphs() {
-    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
-    ArrayList<NodePosition> bottomGraphOrder = bottomGraph.getGraphOrder();
+    ArrayList<Position> topGraphOrder = topGraph.getGraphOrder();
+    ArrayList<Position> bottomGraphOrder = bottomGraph.getGraphOrder();
     int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
     if (highestTopLevel > highestBottomLevel) {
@@ -493,17 +494,17 @@ public class DrawComparedGraphs implements Initializable {
    * @param graph
    *          the graph to draw.
    */
-  private static void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph
+  private static void drawGraph(Pane pane, ArrayList<Position> arrayList, SequenceGraph
       graph, int startLevel, int endLevel) {
     pane.getChildren().clear();
-    int startIndex = calculateStartIndex(graphOrder, startLevel);
+    int startIndex = calculateStartIndex(arrayList, startLevel);
     HashMap<Integer, GraphNodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
     ArrayList<NodePosition> levelNodes = new ArrayList<>();
-    for (endIndex = startIndex; endIndex < graphOrder.size() && graphOrder.get(
+    for (endIndex = startIndex; endIndex < arrayList.size() && arrayList.get(
         endIndex).getLevel() <= endLevel + OFFSCREEN_DRAWN_LEVELS; endIndex++) {
-      NodePosition node = graphOrder.get(endIndex);
+      NodePosition node = (NodePosition) arrayList.get(endIndex);
       if (node.getLevel() == curLevel) {
         levelNodes.add(node);
       } else {
@@ -514,8 +515,8 @@ public class DrawComparedGraphs implements Initializable {
       }
     }
     drawNode(pane, circleMap, levelNodes, curLevel, startLevel);
-    repositionOverlappingEdges(graphOrder, startIndex, endIndex, circleMap);
-    drawEdges(pane, graphOrder, graph, startIndex, endIndex, circleMap);
+    repositionOverlappingEdges(arrayList, startIndex, endIndex, circleMap);
+    drawEdges(pane, arrayList, graph, startIndex, endIndex, circleMap);
   }
 
   /**
@@ -523,30 +524,30 @@ public class DrawComparedGraphs implements Initializable {
    * index by {@link #OFFSCREEN_DRAWN_LEVELS} to keep some margin at the left of the screen (so the
    * edges are drawn correctly)
    *
-   * @param graphOrder the graph node order.
+   * @param arrayList the graph node order.
    * @param startLevel the start level.
    * @return the start index.
    */
-  private static int calculateStartIndex(ArrayList<NodePosition> graphOrder, int startLevel) {
+  private static int calculateStartIndex(ArrayList<Position> arrayList, int startLevel) {
     int actualStartLevel = startLevel - OFFSCREEN_DRAWN_LEVELS;
     if (actualStartLevel < 0) {
       actualStartLevel = 0;
     }
-    return findStartIndexOfLevel(graphOrder, actualStartLevel);
+    return findStartIndexOfLevel(arrayList, actualStartLevel);
   }
 
   /**
    * Finds the first node with the given level in log(n) time (graph must be
    * sorted by level).
    *
-   * @param graphOrder the graph node order in which to search.
+   * @param arrayList the graph node order in which to search.
    * @param level the level to find.
    * @return the index of the first occurence of the level.
    */
-  private static int findStartIndexOfLevel(ArrayList<NodePosition> graphOrder, int level) {
+  private static int findStartIndexOfLevel(ArrayList<Position> arrayList, int level) {
     NodePosition comparer = new NodePosition(null, level);
-    int index = Collections.binarySearch(graphOrder, comparer);
-    while (index > 0 && graphOrder.get(index - 1).getLevel() == level) {
+    int index = Collections.binarySearch(arrayList, comparer);
+    while (index > 0 && arrayList.get(index - 1).getLevel() == level) {
       --index;
     }
     if (index < 0) {
@@ -580,13 +581,13 @@ public class DrawComparedGraphs implements Initializable {
           relativeHeight, 0.5 / nodes.size());
       pane.getChildren().add(circle);
       circleMap.put(node.getId(), circle);
-      /*if (graphNodeOrder.getNode().isInBubble()) {
+      if (graphNodeOrder.getNode().isInBubble()) {
         circle.setFill(Color.PURPLE);
       } else if (graphNodeOrder.getNode().isPoint()) {
         circle.setFill(Color.YELLOW);
       } else if (graphNodeOrder.getNode().isInDel()) {
         circle.setFill(Color.BLUE);
-      } else*/ if (graphNodeOrder.isOverlapping()) {
+      }  else if (graphNodeOrder.isOverlapping()) {
         circle.setFill(OVERLAP_COLOR);
       } else {
         circle.setFill(NO_OVERLAP_COLOR);
@@ -640,11 +641,12 @@ public class DrawComparedGraphs implements Initializable {
    *          a map which maps each node id to the circle which represents the
    *          node in the user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<NodePosition> graphOrder,
+  private static void drawEdges(Pane pane, ArrayList<Position> arrayList,
       SequenceGraph graph, int startIndex, int endIndex,
       HashMap<Integer, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      GraphNode node = graphOrder.get(i).getNode();
+      NodePosition np = (NodePosition) arrayList.get(i);
+      GraphNode node = np.getNode();
       Circle fromCircle = circleMap.get(node.getId());
       for (Integer outlink : node.getOutEdges()) {
         Circle toCircle = circleMap.get(outlink);
@@ -701,10 +703,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap
    *          a map which maps each node id to a circle.
    */
-  private static void repositionOverlappingEdges(ArrayList<NodePosition> graphOrder,
+  private static void repositionOverlappingEdges(ArrayList<Position> arrayList,
       int startIndex, int endIndex, HashMap<Integer, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      NodePosition graphNode = graphOrder.get(i);
+      NodePosition graphNode = (NodePosition) arrayList.get(i);
       GraphNode node = graphNode.getNode();
       GraphNodeCircle circle = circleMap.get(node.getId());
       double subtract = circle.getMaxYOffset();
@@ -762,7 +764,6 @@ public class DrawComparedGraphs implements Initializable {
    * reason the suppress warning "unused" annotation is used.
    */
   @FXML
-  @SuppressWarnings("unused")
   private void deleteBottomGraph() {
     bottomGraphGenomes.clear();
     redrawGraphs();

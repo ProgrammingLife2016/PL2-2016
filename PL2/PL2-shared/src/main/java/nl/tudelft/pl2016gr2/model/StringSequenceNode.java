@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -11,6 +13,9 @@ import java.util.HashSet;
  */
 public class StringSequenceNode extends AbstractNode {
 
+  private boolean isInBubble = false;
+  private boolean isInDel = false;
+  private boolean isPoint = false;
   private String sequence;
   private HashSet<String> genomes;
   private ArrayList<Integer> inEdges;
@@ -176,5 +181,40 @@ public class StringSequenceNode extends AbstractNode {
   @Override
   public GraphNode copy() {
     return new StringSequenceNode(this.getId(), this.getSequence());
+  }
+
+  @Override
+  public void setInBubble(boolean bool) {
+    this.isInBubble = bool;
+  }
+
+  @Override
+  public void accept(NodeVisitor visitor) {
+    // TODO Auto-generated method stub    
+  }
+
+  @Override
+  public void setInDel(boolean bool) {
+    this.isInDel = bool;
+  }
+
+  @Override
+  public boolean isInDel() {
+    return this.isInDel;
+  }
+
+  @Override
+  public void setPoint(boolean bool) {
+    this.isPoint = bool;
+  }
+
+  @Override
+  public boolean isPoint() {
+    return this.isPoint;
+  }
+
+  @Override
+  public boolean isInBubble() {
+    return this.isInBubble;
   }
 }

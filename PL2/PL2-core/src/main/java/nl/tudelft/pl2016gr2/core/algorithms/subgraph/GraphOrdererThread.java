@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.model.Position;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class GraphOrdererThread extends Thread {
 
-  private HashMap<Integer, NodePosition> orderedGraph;
+  private HashMap<Integer, Position> orderedGraph;
   private final SequenceGraph graph;
 
   /**
@@ -39,8 +40,8 @@ public class GraphOrdererThread extends Thread {
    * @param graph the graph.
    * @return the node order.
    */
-  private static HashMap<Integer, NodePosition> calculateGraphOrder(SequenceGraph graph) {
-    HashMap<Integer, NodePosition> nodeOrder = new HashMap<>();
+  private static HashMap<Integer, Position> calculateGraphOrder(SequenceGraph graph) {
+    HashMap<Integer, Position> nodeOrder = new HashMap<>();
     HashMap<Integer, Integer> reachedCount = new HashMap<>();
     Set<Integer> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
@@ -83,7 +84,7 @@ public class GraphOrdererThread extends Thread {
    *
    * @return a hashmap containing an id, node order mapping.
    */
-  public HashMap<Integer, NodePosition> getOrderedGraph() {
+  public HashMap<Integer, Position> getOrderedGraph() {
     try {
       this.join();
     } catch (InterruptedException ex) {

@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.model.Position;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -43,11 +44,11 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     bottomSubGraphThread.start();
 
-    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
+    Pair<ArrayList<Position>, ArrayList<Position>> alignedGraphs
         = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
             topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    ArrayList<NodePosition> topGraphOrder = alignedGraphs.left;
-    ArrayList<NodePosition> bottomGraphOrder = alignedGraphs.right;
+    ArrayList<Position> topGraphOrder = alignedGraphs.left;
+    ArrayList<Position> bottomGraphOrder = alignedGraphs.right;
 
     OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
     OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
@@ -72,8 +73,8 @@ public class SubgraphAlgorithmManager {
         topSubGraphThread.getSubGraph());
     graphOrder.start();
 
-    CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
-    for (NodePosition nodePosition : graphOrder.getNodeOrder()) {
+    //CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
+    for (Position nodePosition : graphOrder.getNodeOrder()) {
       nodePosition.setOverlapping(true);
     }
     return new OrderedGraph(topSubGraphThread.getSubGraph(), graphOrder.getNodeOrder());

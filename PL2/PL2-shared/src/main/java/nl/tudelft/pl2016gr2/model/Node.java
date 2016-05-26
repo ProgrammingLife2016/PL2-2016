@@ -20,4 +20,8 @@ public interface Node extends GraphNode {
    * @return The sequence of this node
    */
   String getSequence();
+  
+  void setInBubble(boolean bool);
+  
+  boolean isInBubble();
 }

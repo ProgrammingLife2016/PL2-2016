@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Test of class {@link CompareSubgraphs}.
+ * Test of class {@link CompareSubgraphsOld}.
  *
  * @author Faris
  */
@@ -36,7 +36,7 @@ public class CompareSubgraphsTest {
     SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(bottomGenomes);
 
     Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> res
-        = CompareSubgraphs.compareGraphs(mainGraphOrder, topGraph, bottomGraph);
+        = CompareSubgraphsOld.compareGraphs(mainGraphOrder, topGraph, bottomGraph);
     assertEquals(4, res.left.size());
     assertEquals(4, res.right.size());
   }
