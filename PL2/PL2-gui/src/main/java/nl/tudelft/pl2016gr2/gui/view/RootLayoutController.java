@@ -17,13 +17,17 @@ import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -74,10 +78,11 @@ public class RootLayoutController implements
   /**
    * Load the data into the root layout.
    *
-   * @param tree the tree you want to load
+   * @param tree the loaded tree.
+   * @param annotations the loaded annotations.
    */
-  public void loadTree(Tree tree) {
-    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
+  public void loadTree(Tree tree, List<Annotation> annotations) {
+    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot(), annotations));
   }
 
   /**
@@ -152,14 +157,14 @@ public class RootLayoutController implements
 
       if (graph != null && tree != null) {
         loadGraph(graph);
-        loadTree(tree);
+        loadTree(tree, new AnnotationReader(metadataFile).read());
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE,
             "tree or graph was null");
       }
-    } catch (IOException e) {
-      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+    } catch (IOException | InvalidFormatException ex) {
+      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 

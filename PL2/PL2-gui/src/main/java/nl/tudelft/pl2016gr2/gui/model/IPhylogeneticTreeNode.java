@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 
@@ -93,4 +94,11 @@ public interface IPhylogeneticTreeNode {
    * @return the drawn in bottom property
    */
   BooleanProperty getDrawnInBottomProperty();
+
+  /**
+   * Get the lineage color of this node.
+   *
+   * @return the lineage color of this node.
+   */
+  Color getLineageColor();
 }

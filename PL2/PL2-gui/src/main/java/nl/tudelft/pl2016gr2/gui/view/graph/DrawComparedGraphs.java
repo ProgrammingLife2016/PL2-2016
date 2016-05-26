@@ -440,9 +440,24 @@ public class DrawComparedGraphs implements Initializable {
    * @param graph the graph.
    */
   public void loadMainGraph(SequenceGraph graph) {
+    clear();
     mainGraph = graph;
     mainGraphOrder = new GraphOrdererThread(mainGraph);
     mainGraphOrder.start();
+  }
+  
+  /**
+   * Clear the content of the class.
+   */
+  private void clear() {
+    topGraphGenomes.clear();
+    bottomGraphGenomes.clear();
+    topPane.getChildren().clear();
+    bottomPane.getChildren().clear();
+    bottomGraph = null;
+    topGraph = null;
+    updateGraphSize();
+    updateGraph();
   }
 
   /**
