@@ -76,7 +76,8 @@ public class FilterBubbles {
    * current node of the tree, which correspond to a certain genome. The filtered graph then only 
    * shows nodes that have all these genomes going through them, and shows mutation nodes in between
    * these.
-   * @return : a filtered graph.
+   * @param treeRoot the root of the tree.
+   * @return a filtered graph.
    */
   public SequenceGraph filter(IPhylogeneticTreeNode treeRoot) {
     SequenceGraph filteredGraph = new HashGraph();

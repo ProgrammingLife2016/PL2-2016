@@ -20,28 +20,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
-import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
-import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -382,52 +372,50 @@ public class DrawComparedGraphs implements Initializable {
         updateGraphSize();
     }
   }
-  
-  //TODO : REMOVE
-  private Tree tree;
-  private IPhylogeneticTreeRoot treeRoot;
-  private FilterBubbles filter;
-  private SequenceGraph curGraph;
-  
-  private void loadTree() {
-     Reader reader = new InputStreamReader(
-         GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
-     BufferedReader br = new BufferedReader(reader);
-     TreeParser tp = new TreeParser(br);
-     
-     tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
-     treeRoot = new PhylogeneticTreeRoot(tree.getRoot());
-   }
 
+//  //TODO : REMOVE
+//  private Tree tree;
+//  private IPhylogeneticTreeRoot treeRoot;
+//  private FilterBubbles filter;
+//  private SequenceGraph curGraph;
+//
+//  private void loadTree() {
+//    Reader reader = new InputStreamReader(
+//        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
+//    BufferedReader br = new BufferedReader(reader);
+//    TreeParser tp = new TreeParser(br);
+//
+//    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
+//    treeRoot = new PhylogeneticTreeRoot(tree.getRoot());
+//  }
   /**
    * Draw the given collection of genomes in the top graph.
    *
    * @param genomes the collection of genomes.
    */
   private void drawOneGraph(Collection<String> genomes) {
-//    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
-//    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
-    
-    // TODO : remove
-    if (treeRoot == null) {
-      loadTree();
-    }
-    if (filter == null) {
-      filter = new FilterBubbles(mainGraph);
-    }
-    
-    if (curGraph == null) {
-      curGraph = mainGraph;
-      curGraph = filter.filter(treeRoot);
-    }
-    
-    GraphOrdererThread o = new GraphOrdererThread(curGraph);
-    o.start();
-    ArrayList<NodePosition> topGraphOrder = new ArrayList(o.getOrderedGraph().values());
-    Collections.sort(topGraphOrder); 
-    topGraph = new OrderedGraph(curGraph, topGraphOrder);
-    // END OF CHANGED CODE
+    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
+    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
 
+//    // TODO : remove
+//    if (treeRoot == null) {
+//      loadTree();
+//    }
+//    if (filter == null) {
+//      filter = new FilterBubbles(mainGraph);
+//    }
+//
+//    if (curGraph == null) {
+//      curGraph = mainGraph;
+//      curGraph = filter.filter(treeRoot);
+//    }
+//
+//    GraphOrdererThread o = new GraphOrdererThread(curGraph);
+//    o.start();
+//    ArrayList<NodePosition> topGraphOrder = new ArrayList(o.getOrderedGraph().values());
+//    Collections.sort(topGraphOrder);
+//    topGraph = new OrderedGraph(curGraph, topGraphOrder);
+//    // END OF CHANGED CODE
     amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
     scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
@@ -442,13 +430,13 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void compareTwoGraphs(Collection<String> topGenomes, Collection<String> bottomGenomes) {
-    drawOneGraph(mainGraph.getGenomes());
-    //    topGraphGenomes.clear();
-//    topGraphGenomes.addAll(topGenomes);
-//    bottomGraphGenomes.clear();
-//    bottomGraphGenomes.addAll(bottomGenomes);
-//
-//    compareTwoGraphs();
+//    drawOneGraph(mainGraph.getGenomes());
+    topGraphGenomes.clear();
+    topGraphGenomes.addAll(topGenomes);
+    bottomGraphGenomes.clear();
+    bottomGraphGenomes.addAll(bottomGenomes);
+
+    compareTwoGraphs();
   }
 
   /**
@@ -541,11 +529,11 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph
-      graph, int startLevel, int endLevel) {
+  private void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph graph,
+      int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
-    HashMap<Integer, GraphNodeCircle> circleMap = new HashMap<>();
+    HashMap<Integer, IGraphNode> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
     ArrayList<NodePosition> levelNodes = new ArrayList<>();
@@ -605,52 +593,83 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Draw the given list of nodes as circles in the given pane.
    *
-   * @param pane       the pane in which to draw the nodes.
-   * @param circleMap  the circle map to which to add all of the drawn circles (which represent the
-   *                   nodes).
-   * @param nodes      the list of nodes to draw.
-   * @param level      the level in the tree at which to draw the nodes.
-   * @param startLevel the level at which to start drawing nodes.
+   * @param pane         the pane in which to draw the nodes.
+   * @param graphNodeMap the graph node object map to which to add all of the drawn graph node
+   *                     objects (which represent the nodes/bubbles).
+   * @param nodes        the list of nodes to draw.
+   * @param level        the level in the tree at which to draw the nodes.
+   * @param startLevel   the level at which to start drawing nodes.
    */
-  private void drawNode(Pane pane, HashMap<Integer, GraphNodeCircle> circleMap,
+  private void drawNode(Pane pane, HashMap<Integer, IGraphNode> graphNodeMap,
       ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
       GraphNode node = graphNodeOrder.getNode();
       double relativeHeight = (i + 0.5) / nodes.size();
-      GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
-          relativeHeight, 0.5 / nodes.size());
-      // TODO : REMOVE THIS CODE
-      circle.setOnMouseClicked(event -> {
-        GraphNode thisNode = graphNodeOrder.getNode();
-        curGraph = filter.zoomIn(thisNode, curGraph);
-        drawOneGraph(new ArrayList<>());
-      });
-      circle.setOnScroll(event -> {
-        GraphNode thisNode = graphNodeOrder.getNode();
-        curGraph = filter.zoomOut(thisNode, curGraph);
-        drawOneGraph(new ArrayList<>());
-      });
-      ///////////////////
-      pane.getChildren().add(circle);
-      circleMap.put(node.getId(), circle);
-      if (graphNodeOrder.isOverlapping()) {
-        circle.setFill(OVERLAP_COLOR);
+
+      if (node.hasChildren()) {
+        constructBubble(pane, graphNodeMap, graphNodeOrder, node, relativeHeight,
+            0.5 / nodes.size(), level, startLevel);
       } else {
-        circle.setFill(NO_OVERLAP_COLOR);
+        constructNode(pane, graphNodeMap, graphNodeOrder, node, relativeHeight, 0.5 / nodes.size(),
+            level, startLevel);
       }
-      circle.setCenterX(NODE_X_OFFSET * (level + 1 - startLevel));
-      circle.centerYProperty().bind(pane.heightProperty().multiply(
-          circle.getRelativeHeightProperty()));
-      addLabel(pane, circle, node.getId());
+    }
+  }
+
+  private void constructNode(Pane pane, HashMap<Integer, IGraphNode> graphNodeMap,
+      NodePosition graphNodeOrder, GraphNode node, double relativeHeight, double maxYOffset,
+      int level, int startLevel) {
+    GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
+        relativeHeight, maxYOffset);
+    pane.getChildren().add(circle);
+    graphNodeMap.put(node.getId(), circle);
+    if (graphNodeOrder.isOverlapping()) {
+      circle.setFill(OVERLAP_COLOR);
+    } else {
+      circle.setFill(NO_OVERLAP_COLOR);
+    }
+    circle.setCenterX(NODE_X_OFFSET * (level + 1 - startLevel));
+    circle.centerYProperty().bind(pane.heightProperty().multiply(
+        circle.getRelativeHeightProperty()));
+    addLabel(pane, circle, node.getId());
+  }
+
+  private void constructBubble(Pane pane, HashMap<Integer, IGraphNode> graphNodeMap,
+      NodePosition graphNodeOrder, GraphNode node, double relativeHeight, double maxYOffset,
+      int level, int startLevel) {
+    GraphNodeSquare square = new GraphNodeSquare(calculateBubbleRadius(graphNodeOrder),
+        relativeHeight, maxYOffset);
+    pane.getChildren().add(square);
+    graphNodeMap.put(node.getId(), square);
+    square.centerXProperty().set(NODE_X_OFFSET * (level + 1 - startLevel));
+    square.centerYProperty().bind(pane.heightProperty().multiply(
+        square.getRelativeHeightProperty()));
+    addLabel(pane, square, node.getId());
+  }
+
+  /**
+   * Calculate the radius of the bubble.
+   *
+   * @param node the node position of the bubble.
+   * @return the radius.
+   */
+  private static double calculateBubbleRadius(NodePosition node) {
+    double radius = Math.sqrt(node.getNode().size()) * 5.0;
+    if (radius > MAX_NODE_RADIUS) {
+      return MAX_NODE_RADIUS;
+    }
+    if (radius < MIN_NODE_RADIUS) {
+      return MIN_NODE_RADIUS;
+    } else {
+      return radius;
     }
   }
 
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
    * The mapping function from amount of bases to node radius is completely random (hence the magic
-   * numbers). It was created by drawing graphs of different functions, till a somewhat nice
-   * mapping
+   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
    * function was found.
    *
    * @param node the node.
@@ -676,23 +695,23 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Draw the edges between all of the nodes.
    *
-   * @param pane       the pane to draw the edges in.
-   * @param graphOrder the graph node order containing the nodes to draw edges between.
-   * @param graph      the graph.
-   * @param startIndex the index where to start in the graph.
-   * @param endIndex   the index where to end in the graph.
-   * @param circleMap  a map which maps each node id to the circle which represents the node in the
-   *                   user interface.
+   * @param pane         the pane to draw the edges in.
+   * @param graphOrder   the graph node order containing the nodes to draw edges between.
+   * @param graph        the graph.
+   * @param startIndex   the index where to start in the graph.
+   * @param endIndex     the index where to end in the graph.
+   * @param graphNodeMap a map which maps each node id to the graph node object which represents the
+   *                     node in the user interface.
    */
   private static void drawEdges(Pane pane, ArrayList<NodePosition> graphOrder,
       SequenceGraph graph, int startIndex, int endIndex,
-      HashMap<Integer, GraphNodeCircle> circleMap) {
+      HashMap<Integer, IGraphNode> graphNodeMap) {
     for (int i = startIndex; i < endIndex; i++) {
       GraphNode node = graphOrder.get(i).getNode();
-      Circle fromCircle = circleMap.get(node.getId());
+      IGraphNode fromNode = graphNodeMap.get(node.getId());
       for (Integer outlink : node.getOutEdges()) {
-        Circle toCircle = circleMap.get(outlink);
-        if (toCircle == null) {
+        IGraphNode toNode = graphNodeMap.get(outlink);
+        if (toNode == null) {
           continue;
         }
         Line edge = new Line();
@@ -700,10 +719,10 @@ public class DrawComparedGraphs implements Initializable {
         edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
             graph.getNode(outlink)));
         pane.getChildren().add(edge);
-        edge.startXProperty().bind(fromCircle.centerXProperty());
-        edge.startYProperty().bind(fromCircle.centerYProperty());
-        edge.endXProperty().bind(toCircle.centerXProperty());
-        edge.endYProperty().bind(toCircle.centerYProperty());
+        edge.startXProperty().bind(fromNode.centerXProperty());
+        edge.startYProperty().bind(fromNode.centerYProperty());
+        edge.endXProperty().bind(toNode.centerXProperty());
+        edge.endYProperty().bind(toNode.centerYProperty());
         edge.toBack();
       }
     }
@@ -734,22 +753,22 @@ public class DrawComparedGraphs implements Initializable {
    * Reposition the nodes, so there are no overlapping (horizontal) edges. It is still possible for
    * non-horizontal edges to overlap, but this rarely happens.
    *
-   * @param graphOrder the graph node order.
-   * @param startIndex the index where to start in the graph.
-   * @param endIndex   the index where to end in the graph.
-   * @param circleMap  a map which maps each node id to a circle.
+   * @param graphOrder   the graph node order.
+   * @param startIndex   the index where to start in the graph.
+   * @param endIndex     the index where to end in the graph.
+   * @param graphNodeMap a map which maps each node id to a graph node object.
    */
   private static void repositionOverlappingEdges(ArrayList<NodePosition> graphOrder,
-      int startIndex, int endIndex, HashMap<Integer, GraphNodeCircle> circleMap) {
+      int startIndex, int endIndex, HashMap<Integer, IGraphNode> graphNodeMap) {
     for (int i = startIndex; i < endIndex; i++) {
-      NodePosition graphNode = graphOrder.get(i);
-      GraphNode node = graphNode.getNode();
-      GraphNodeCircle circle = circleMap.get(node.getId());
-      double subtract = circle.getMaxYOffset();
-      while (calculateSameHeightNodes(node, circle, circleMap) >= 2) {
+      NodePosition nodePosition = graphOrder.get(i);
+      GraphNode node = nodePosition.getNode();
+      IGraphNode graphNode = graphNodeMap.get(node.getId());
+      double subtract = graphNode.getMaxYOffset();
+      while (calculateSameHeightNodes(node, graphNode, graphNodeMap) >= 2) {
         subtract /= 2.0;
-        circle.getRelativeHeightProperty().set(
-            circle.getRelativeHeightProperty().doubleValue() - subtract);
+        graphNode.getRelativeHeightProperty().set(
+            graphNode.getRelativeHeightProperty().doubleValue() - subtract);
       }
     }
   }
@@ -757,18 +776,18 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Calculate the amount of nodes which are drawn at the same height as the given node.
    *
-   * @param node      the given node.
-   * @param circle    the circle which represents the node.
-   * @param circleMap the map containing all other circles.
+   * @param node         the given node.
+   * @param graphNode    the graph node object which represents the node.
+   * @param graphNodeMap the map containing all other graph node objects.
    * @return the amount of found nodes (circles) which are at the same height.
    */
-  private static int calculateSameHeightNodes(GraphNode node, GraphNodeCircle circle,
-      HashMap<Integer, GraphNodeCircle> circleMap) {
+  private static int calculateSameHeightNodes(GraphNode node, IGraphNode graphNode,
+      HashMap<Integer, IGraphNode> graphNodeMap) {
     int sameHeight = 0;
     for (Integer inLink : node.getInEdges()) {
-      GraphNodeCircle parent = circleMap.get(inLink);
+      IGraphNode parent = graphNodeMap.get(inLink);
       if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
-          circle.getRelativeHeightProperty().doubleValue()) == 0) {
+          graphNode.getRelativeHeightProperty().doubleValue()) == 0) {
         ++sameHeight;
       }
     }
@@ -778,15 +797,15 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Add a label with the ID of the node to the circle.
    *
-   * @param pane   the pane to add the label to.
-   * @param circle the circle to which to add the label.
-   * @param id     the id to write in the label.
+   * @param pane      the pane to add the label to.
+   * @param graphNode the graph node object to which to add the label.
+   * @param id        the id to write in the label.
    */
-  private static void addLabel(Pane pane, Circle circle, int id) {
+  private static void addLabel(Pane pane, IGraphNode graphNode, int id) {
     Label label = new Label(Integer.toString(id));
     label.setMouseTransparent(true);
-    label.layoutXProperty().bind(circle.centerXProperty().add(-circle.getRadius() + 3.0));
-    label.layoutYProperty().bind(circle.centerYProperty().add(-circle.getRadius() / 2.0));
+    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getRadius() + 3.0));
+    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getRadius() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
   }

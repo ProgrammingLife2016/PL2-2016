@@ -9,7 +9,7 @@ import javafx.scene.shape.Circle;
  *
  * @author Faris
  */
-public class GraphNodeCircle extends Circle {
+public class GraphNodeCircle extends Circle implements IGraphNode {
 
   private final DoubleProperty relativeHeight = new SimpleDoubleProperty();
   private final double maxYOffset;
@@ -27,20 +27,12 @@ public class GraphNodeCircle extends Circle {
     this.maxYOffset = maxYOffset;
   }
 
-  /**
-   * Get the relative height property.
-   *
-   * @return the relative height property.
-   */
+  @Override
   public DoubleProperty getRelativeHeightProperty() {
     return relativeHeight;
   }
 
-  /**
-   * Get the maximum y offset (to above).
-   *
-   * @return the maximum y offset (to above).
-   */
+  @Override
   public double getMaxYOffset() {
     return maxYOffset;
   }
