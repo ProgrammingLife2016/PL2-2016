@@ -124,7 +124,7 @@ public class StringSequenceNode extends AbstractNode {
   public void removeInEdge(int identifier) {
 //    assert inEdges.contains(
 //        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove(identifier);
+    inEdges.remove((Integer)identifier);
   }
 
   /**
@@ -156,7 +156,7 @@ public class StringSequenceNode extends AbstractNode {
   public void removeOutEdge(int identifier) {
 //    assert outEdges.contains(
 //        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove(identifier);
+    outEdges.remove((Integer)identifier);
   }
 
   @Override
@@ -180,7 +180,7 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public GraphNode copy() {
-    return new StringSequenceNode(this.getId(), this.getSequence());
+    return new StringSequenceNode(this.getId(), this.getSequence(), getGenomes());
   }
   
   @Override

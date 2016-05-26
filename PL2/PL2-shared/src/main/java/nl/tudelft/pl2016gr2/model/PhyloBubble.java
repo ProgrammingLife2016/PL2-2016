@@ -33,9 +33,21 @@ public class PhyloBubble implements Bubble {
     this.nestedNodes = new HashSet<>();
   }
   
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<Integer> inEdges, 
+      Collection<Integer> outEdges, Collection<Integer> nestedNodes) {
+    this.id = id;
+    this.treeNode = treeNode;
+    this.inEdges = new ArrayList<>(inEdges);
+    this.outEdges = new ArrayList<>(outEdges);
+    this.inEdges.trimToSize();
+    this.outEdges.trimToSize();
+    this.nestedNodes = new HashSet<>(nestedNodes);
+  }
+  
   @Override
   public String toString() {
-    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges;
+    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges 
+        + ", nested: " + nestedNodes + ", tree leaves: " + treeNode.getGenomes();
   }
 
   @Override
@@ -79,16 +91,16 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addInEdge(int identifier) {
-    assert !inEdges.contains(
-        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert !inEdges.contains(
+//        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
     inEdges.add(identifier);
   }
 
   @Override
   public void removeInEdge(int identifier) {
-    assert inEdges.contains(
-        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove(identifier);
+//    assert inEdges.contains(
+//        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
+    inEdges.remove((Integer)identifier);
   }
 
   @Override
@@ -104,16 +116,16 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addOutEdge(int identifier) {
-    assert !outEdges.contains(
-        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert !outEdges.contains(
+//        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
     outEdges.add(identifier);
   }
 
   @Override
   public void removeOutEdge(int identifier) {
-    assert outEdges.contains(
-        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove(identifier);
+//    assert outEdges.contains(
+//        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
+    outEdges.remove((Integer)identifier);
   }
 
   @Override
@@ -150,7 +162,7 @@ public class PhyloBubble implements Bubble {
   
   @Override
   public GraphNode copyAll() {
-    return new PhyloBubble(getId(), treeNode, inEdges, outEdges);
+    return new PhyloBubble(getId(), treeNode, inEdges, outEdges, nestedNodes);
   }
 
   @Override

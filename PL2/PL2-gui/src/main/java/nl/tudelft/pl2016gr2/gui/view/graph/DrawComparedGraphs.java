@@ -20,18 +20,28 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
+import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -372,6 +382,22 @@ public class DrawComparedGraphs implements Initializable {
         updateGraphSize();
     }
   }
+  
+  //TODO : REMOVE
+  private Tree tree;
+  private IPhylogeneticTreeRoot treeRoot;
+  private FilterBubbles filter;
+  private SequenceGraph curGraph;
+  
+  private void loadTree() {
+     Reader reader = new InputStreamReader(
+         GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
+     BufferedReader br = new BufferedReader(reader);
+     TreeParser tp = new TreeParser(br);
+     
+     tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
+     treeRoot = new PhylogeneticTreeRoot(tree.getRoot());
+   }
 
   /**
    * Draw the given collection of genomes in the top graph.
@@ -379,8 +405,38 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomes the collection of genomes.
    */
   private void drawOneGraph(Collection<String> genomes) {
-    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
-    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
+//    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
+//    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
+    
+    // TODO : remove
+    
+    
+    /* perform bubble aglo here */
+    if (treeRoot == null) {
+      loadTree();
+    }
+    if (filter == null) {
+      //mainGraph.print();
+      filter = new FilterBubbles(mainGraph);
+    }
+    
+    if (curGraph == null) {
+      curGraph = mainGraph;//new SplitGraphs(genomes).getSubgraph();
+      curGraph = filter.filter(treeRoot);
+    }
+    //sg.print();
+    
+    GraphOrdererThread o = new GraphOrdererThread(curGraph);
+    //curGraph.print();
+    o.start();
+    ArrayList<NodePosition> topGraphOrder = new ArrayList(o.getOrderedGraph().values());
+    Collections.sort(topGraphOrder);
+//    topGraphOrder.forEach(nodePos -> {
+//      System.out.println(nodePos.getNode());
+//    });
+    
+    topGraph = new OrderedGraph(curGraph, topGraphOrder);
+    // END OF CHANGED CODE
 
     amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
@@ -396,12 +452,13 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void compareTwoGraphs(Collection<String> topGenomes, Collection<String> bottomGenomes) {
-    topGraphGenomes.clear();
-    topGraphGenomes.addAll(topGenomes);
-    bottomGraphGenomes.clear();
-    bottomGraphGenomes.addAll(bottomGenomes);
-
-    compareTwoGraphs();
+    drawOneGraph(mainGraph.getGenomes());
+    //    topGraphGenomes.clear();
+//    topGraphGenomes.addAll(topGenomes);
+//    bottomGraphGenomes.clear();
+//    bottomGraphGenomes.addAll(bottomGenomes);
+//
+//    compareTwoGraphs();
   }
 
   /**
@@ -494,7 +551,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private static void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph
+  private void drawGraph(Pane pane, ArrayList<NodePosition> graphOrder, SequenceGraph
       graph, int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
@@ -565,7 +622,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private static void drawNode(Pane pane, HashMap<Integer, GraphNodeCircle> circleMap,
+  private void drawNode(Pane pane, HashMap<Integer, GraphNodeCircle> circleMap,
       ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
@@ -573,6 +630,24 @@ public class DrawComparedGraphs implements Initializable {
       double relativeHeight = (i + 0.5) / nodes.size();
       GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
           relativeHeight, 0.5 / nodes.size());
+      circle.setOnMouseClicked(event -> {
+        GraphNode thisNode = graphNodeOrder.getNode();
+        if (thisNode instanceof Bubble) {
+          Bubble bubble = (Bubble) thisNode;
+          curGraph = filter.zoom(bubble, curGraph);
+          drawOneGraph(new ArrayList<>());
+        }
+      });
+      circle.setOnScroll(event -> {
+        GraphNode thisNode = graphNodeOrder.getNode();
+        if (thisNode instanceof Bubble) {
+          Bubble bubble = (Bubble) thisNode;
+          BubblePhyloVisitor visitor = new BubblePhyloVisitor();
+          bubble.accept(visitor);
+          curGraph = filter.zoomOut(visitor.getTreeNode(), bubble, curGraph);
+          drawOneGraph(new ArrayList<>());
+        }
+      });
       pane.getChildren().add(circle);
       circleMap.put(node.getId(), circle);
       if (graphNodeOrder.isOverlapping()) {

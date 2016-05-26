@@ -138,13 +138,17 @@ public class HashGraph implements SequenceGraph {
   public GraphNode remove(int identifier, boolean updateInEdges, boolean updateOutEdges) {
     if (updateInEdges) {
       nodes.get(identifier).getInEdges().forEach(inEdge -> {
-        nodes.get(inEdge).removeOutEdge(identifier);
+        if (nodes.containsKey(inEdge)) {
+          nodes.get(inEdge).removeOutEdge(identifier);
+        }
       });
     }
     
     if (updateOutEdges) {
       nodes.get(identifier).getOutEdges().forEach(outEdge -> {
-        nodes.get(outEdge).removeInEdge(identifier);
+        if (nodes.containsKey(outEdge)) {
+          nodes.get(outEdge).removeInEdge(identifier);
+        }
       });
     }
     

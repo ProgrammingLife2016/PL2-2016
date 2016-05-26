@@ -31,7 +31,7 @@ public class FilterBubbles {
   
   private SequenceGraph originalGraph;
   private int mutationId;
-  private Map<Integer, Map<Integer, Stack<List<GraphNode>>>> oldGraphs = new HashMap<>();
+  private Map<Integer, Map<Integer, Stack<Set<GraphNode>>>> oldGraphs = new HashMap<>();
   
   /**
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
@@ -52,19 +52,6 @@ public class FilterBubbles {
     int inlink = bubble.getInEdges().iterator().next();
     int outlink = bubble.getOutEdges().iterator().next();
     saveOldGraph(inlink, outlink, graph);
-    
-    if (bubble.getChildren().size() == 1) {
-      graph.remove(bubble.getId(), true, true);
-      GraphNode child = originalGraph.getNode(bubble.getChildren().iterator().next());
-      child.getInEdges().forEach(inEdge -> {
-        graph.getNode(inEdge).addOutEdge(child.getId());
-      });
-      child.getOutEdges().forEach(outEdge -> {
-        graph.getNode(outEdge).addInEdge(child.getId());
-      });
-//      graph.replace(bubble, originalGraph.getNode(bubble.getChildren().iterator().next()));
-      return graph;
-    }
     
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
@@ -96,7 +83,6 @@ public class FilterBubbles {
     
     pruneNodes(zoomedGraph, graph, newBubbles);
     replace(bubble, graph, zoomedGraph);
-    //graph.replace(bubble, zoomedGraph);
     return graph;
   }
   
@@ -111,20 +97,20 @@ public class FilterBubbles {
   }
   
   private void saveOldGraph(int start, int end, SequenceGraph graph) {
-    List<GraphNode> oldView = getNodesOnPath(start, end, graph, true);
+    Set<GraphNode> oldView = getNodesOnPath(start, end, graph, true);
     printNodeList(oldView, "Old nodes: ");
     
     if (oldGraphs.containsKey(start)) {
       if (oldGraphs.get(start).containsKey(end)) {
         oldGraphs.get(start).get(end).push(oldView);
       } else {
-        Stack<List<GraphNode>> stack = new Stack<>();
+        Stack<Set<GraphNode>> stack = new Stack<>();
         stack.push(oldView);
         oldGraphs.get(start).put(end, stack);
       }
     } else {
-      Map<Integer, Stack<List<GraphNode>>> endMap = new HashMap<>();
-      Stack<List<GraphNode>> stack = new Stack<>();
+      Map<Integer, Stack<Set<GraphNode>>> endMap = new HashMap<>();
+      Stack<Set<GraphNode>> stack = new Stack<>();
       stack.push(oldView);
       endMap.put(end, stack);
       oldGraphs.put(start, endMap);
@@ -219,7 +205,7 @@ public class FilterBubbles {
       return graph;
     }
     
-    List<GraphNode> nodesToRemove = getNodesOnPath(start, end, graph, false);
+    Set<GraphNode> nodesToRemove = getNodesOnPath(start, end, graph, false);
     printNodeList(nodesToRemove, "Nodes to remove: ");
     nodesToRemove.forEach(node -> {
       if (node.getId() != start && node.getId() != end) {
@@ -229,7 +215,7 @@ public class FilterBubbles {
       }
     });
     
-    List<GraphNode> previousView = oldGraphs.get(start).get(end).pop();
+    Set<GraphNode> previousView = oldGraphs.get(start).get(end).pop();
     printNodeList(previousView, "Nodes to add: ");
     previousView.forEach(node -> {
       graph.add(node);
@@ -238,7 +224,7 @@ public class FilterBubbles {
     return graph;
   }
   
-  private void printNodeList(List<GraphNode> list, String header) {
+  private void printNodeList(Set<GraphNode> list, String header) {
     System.out.print(header + "[");
     list.forEach(node -> {
       System.out.print(node.getId() + ", ");
@@ -246,11 +232,11 @@ public class FilterBubbles {
     System.out.println("]");
   }
   
-  private List<GraphNode> getNodesOnPath(int start, int end, SequenceGraph graph, boolean copy) {
+  private Set<GraphNode> getNodesOnPath(int start, int end, SequenceGraph graph, boolean copy) {
     Queue<Integer> toVisit = new LinkedList<>();
     Set<Integer> visited = new HashSet<>();
     
-    List<GraphNode> nodesOnPath = new ArrayList<>();
+    Set<GraphNode> nodesOnPath = new HashSet<>();
     Set<Integer> seenPaths = new HashSet<>();
     toVisit.add(start);
     
@@ -425,7 +411,7 @@ public class FilterBubbles {
         addToVisit(toVisitNodes.poll(), toVisit, visited);
       }
       
-      System.out.println("New bubble: " + newBubble);
+//      System.out.println("New bubble: " + newBubble);
       newBubbles.add(newBubble);
       filteredGraph.add(newBubble);
       mutationId++;
@@ -523,7 +509,7 @@ public class FilterBubbles {
       GraphNode node = iterator.next();
       int id = node.getId();
       if (id >= originalGraph.size()) {
-        return;
+        continue;
       }
       Collection<Integer> inlinks = pruneInlinks(originalGraph.getNode(id), zoomedGraph);
       inlinks.forEach(node::addInEdge);
