@@ -409,32 +409,22 @@ public class DrawComparedGraphs implements Initializable {
 //    ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
     
     // TODO : remove
-    
-    
-    /* perform bubble aglo here */
     if (treeRoot == null) {
       loadTree();
     }
     if (filter == null) {
-      //mainGraph.print();
       filter = new FilterBubbles(mainGraph);
     }
     
     if (curGraph == null) {
-      curGraph = mainGraph;//new SplitGraphs(genomes).getSubgraph();
+      curGraph = mainGraph;
       curGraph = filter.filter(treeRoot);
     }
-    //sg.print();
     
     GraphOrdererThread o = new GraphOrdererThread(curGraph);
-    //curGraph.print();
     o.start();
     ArrayList<NodePosition> topGraphOrder = new ArrayList(o.getOrderedGraph().values());
-    Collections.sort(topGraphOrder);
-//    topGraphOrder.forEach(nodePos -> {
-//      System.out.println(nodePos.getNode());
-//    });
-    
+    Collections.sort(topGraphOrder); 
     topGraph = new OrderedGraph(curGraph, topGraphOrder);
     // END OF CHANGED CODE
 
@@ -630,6 +620,7 @@ public class DrawComparedGraphs implements Initializable {
       double relativeHeight = (i + 0.5) / nodes.size();
       GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
           relativeHeight, 0.5 / nodes.size());
+      // TODO : REMOVE THIS CODE
       circle.setOnMouseClicked(event -> {
         GraphNode thisNode = graphNodeOrder.getNode();
         if (thisNode instanceof Bubble) {
@@ -646,6 +637,7 @@ public class DrawComparedGraphs implements Initializable {
           drawOneGraph(new ArrayList<>());
         }
       });
+      ///////////////////
       pane.getChildren().add(circle);
       circleMap.put(node.getId(), circle);
       if (graphNodeOrder.isOverlapping()) {

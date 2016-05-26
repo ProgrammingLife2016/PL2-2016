@@ -40,13 +40,25 @@ public class FilterBubbles {
     mutationId = originalGraph.size() + 1;
   }
   
+  /**
+   * Zooms out on this bubble in the given graph. 
+   * @param bubble bubble to zoom out on
+   * @param graph the graph
+   * @return a zoomed out graph
+   */
   public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
     return zoomOut.zoomOut(bubble, graph);
   }
   
+  /**
+   * Zooms in on this bubble, by going down a level in the phylogenetic tree.
+   * @param bubble the bubble to zoom in on
+   * @param graph the graph
+   * @return a zoomed in graph
+   */
   public SequenceGraph zoomIn(Bubble bubble, SequenceGraph graph) {
     mutationId++;
-    return new ZoomIn(originalGraph, zoomOut, mutationId, this).zoom(bubble, graph);
+    return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);
   }
   
   /**
@@ -59,7 +71,6 @@ public class FilterBubbles {
   public SequenceGraph filter(IPhylogeneticTreeNode treeRoot) {
     SequenceGraph filteredGraph = new HashGraph();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    System.out.println("Debubble!");
     debubble(filteredGraph, treeRoot, newBubbles);
     pruneNodes(filteredGraph, originalGraph, newBubbles);
     

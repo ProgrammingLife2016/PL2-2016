@@ -19,14 +19,11 @@ public class ZoomIn {
   
   private SequenceGraph originalGraph;
   private ZoomOut zoomOut;
-  private int mutationId;
   private FilterBubbles filter;
   
-  protected ZoomIn(SequenceGraph originalGraph, ZoomOut zoomOut, int mutationId,
-      FilterBubbles filter) {
+  protected ZoomIn(SequenceGraph originalGraph, ZoomOut zoomOut, FilterBubbles filter) {
     this.originalGraph = originalGraph;
     this.zoomOut = zoomOut;
-    this.mutationId = mutationId;
     this.filter = filter;
   }
   
