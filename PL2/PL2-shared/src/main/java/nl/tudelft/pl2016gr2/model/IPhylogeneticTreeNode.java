@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import javafx.beans.property.BooleanProperty;
+
 import java.util.ArrayList;
 
 /**
@@ -10,25 +12,6 @@ import java.util.ArrayList;
  */
 public interface IPhylogeneticTreeNode {
 
-  /**
-   * Prints information about the current node.
-   */
-  void print();
-  
-  /**
-   * Returns the label of this node.
-   * 
-   * @return the label of this node.
-   */
-  String getLabel();
-  
-  /**
-   * Check if this node is a leaf.
-   * 
-   * @return true if this node is a leaf.
-   */
-  boolean isLeaf();
-  
   /**
    * Check if this node has a parent.
    *
@@ -73,10 +56,41 @@ public interface IPhylogeneticTreeNode {
    * @return the index of the child ndoe.
    */
   int getChildIndex(IPhylogeneticTreeNode child);
-  
+
   /**
-   * Gets all the leaves from the current node.
-   * @return : an ArrayList of strings with the labels of the leaves.
+   * Get all of the genomes whic are present in this branch of the tree.
+   *
+   * @return all of the genomes whic are present in this branch of the tree.
    */
-  ArrayList<String> getLeaves();
+  ArrayList<String> getGenomes();
+
+  /**
+   * Get the length of the edge to this node.
+   *
+   * @return the length of the edge to this node.
+   */
+  double getEdgeLength();
+
+  /**
+   * Check if this node is a leaf node.
+   *
+   * @return if this node is a leaf node.
+   */
+  boolean isLeaf();
+
+  /**
+   * Get the drawn in top property. This property is true iff all of the genomes in this tree node
+   * are drawn in the top graph.
+   *
+   * @return the drawn in top property
+   */
+  BooleanProperty getDrawnInTopProperty();
+
+  /**
+   * Get the drawn in bottom property. This property is true iff all of the genomes in this tree
+   * node are drawn in the bottom graph.
+   *
+   * @return the drawn in bottom property
+   */
+  BooleanProperty getDrawnInBottomProperty();
 }

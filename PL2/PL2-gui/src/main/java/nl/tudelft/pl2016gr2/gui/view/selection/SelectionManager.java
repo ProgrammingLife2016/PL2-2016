@@ -1,15 +1,21 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import com.sun.javafx.collections.ObservableSetWrapper;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.util.Duration;
+import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * This class manages the currently selected node. It makes sure the correct data is displayed and
@@ -19,24 +25,31 @@ import javafx.util.Duration;
  */
 public class SelectionManager {
 
+  private final RootLayoutController rootLayoutController;
   private final Pane selectionDescriptionPane;
-  private final Region background;
+  @TestId(id = "contentPane")
   private DescriptionPane contentPane;
+  @TestId(id = "selected")
   private ISelectable selected;
   private Timeline timeline;
+
+  private final ObservableSet<String> topGraphGenomes = new ObservableSetWrapper<>(new HashSet<>());
+  private final ObservableSet<String> bottomGraphGenomes
+      = new ObservableSetWrapper<>(new HashSet<>());
 
   /**
    * Create a selection manager.
    *
+   * @param rootLayoutController     the root layout controller class.
    * @param selectionDescriptionPane the pane in which to draw information about selected items.
-   * @param background               the background pane which is positioned behind the description.
    */
-  public SelectionManager(Pane selectionDescriptionPane, Region background) {
+  public SelectionManager(RootLayoutController rootLayoutController,
+      Pane selectionDescriptionPane) {
+    this.rootLayoutController = rootLayoutController;
     this.selectionDescriptionPane = selectionDescriptionPane;
-    this.background = background;
 
     selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
-      if (selectionDescriptionPane.getChildren().size() == 0) {
+      if (selectionDescriptionPane.getChildren().isEmpty()) {
         selectionDescriptionPane.setVisible(false);
       } else {
         selectionDescriptionPane.setVisible(true);
@@ -70,6 +83,10 @@ public class SelectionManager {
     }
   }
 
+  protected void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+    rootLayoutController.drawGraph(topGenomes, bottomGenomes);
+  }
+
   /**
    * Set the content of the selection description pane.
    *
@@ -77,7 +94,7 @@ public class SelectionManager {
    */
   private void createDescription(ISelectable selected) {
     createNewContentPane();
-    Node description = selected.getSelectionInfo().getNode();
+    Node description = selected.getSelectionInfo(this).getNode();
     contentPane.getChildren().add(description);
     contentPane.setOpacity(0);
     timeline = new Timeline();
@@ -91,7 +108,7 @@ public class SelectionManager {
    * Create a new content pane.
    */
   private void createNewContentPane() {
-    contentPane = new DescriptionPane(background, selectionDescriptionPane);
+    contentPane = new DescriptionPane(selectionDescriptionPane);
   }
 
   /**
@@ -108,8 +125,15 @@ public class SelectionManager {
     timeline.setOnFinished((ActionEvent event) -> {
       curContentPane.getChildren().clear();
       selectionDescriptionPane.getChildren().remove(curContentPane);
-      curContentPane.clear();
     });
     timeline.play();
+  }
+
+  public ObservableSet<String> getTopGraphGenomes() {
+    return topGraphGenomes;
+  }
+
+  public ObservableSet<String> getBottomGraphGenomes() {
+    return bottomGraphGenomes;
   }
 }

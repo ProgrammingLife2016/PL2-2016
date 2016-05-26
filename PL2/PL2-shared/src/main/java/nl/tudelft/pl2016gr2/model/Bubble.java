@@ -1,77 +1,18 @@
 package nl.tudelft.pl2016gr2.model;
 
-import java.util.ArrayList;
-
-
 /**
- * This class represents a bubble. A bubble exists of multiple nodes which form a common group.
+ * An aggregate <code>GraphNode</code>, containing other <code>GraphNodes</code>.
  *
- * @author Cas
+ * @author Wouter Smit
  */
-public class Bubble extends AbstractNode {
-
-  private IPhylogeneticTreeNode treeNode;
-  private ArrayList<Integer> nestedNodes = new ArrayList<>();
+public interface Bubble extends GraphNode {
 
   /**
-   * Construct a bubble.
-   *
-   * @param id             the ID of the bubble.
-   * @param sequenceLength the sequence length.
+   * Pops this bubble.
+   * <p>
+   * Popping is a synonym for zooming in on the bubble, thus revealing the nodes that it stores.
+   * </p>
    */
-  public Bubble(int id, int sequenceLength) {
-    super(id, sequenceLength);
-  }
-  
-  @Override
-  public String toString() {
-    String leaves = treeNode != null ? treeNode.getLeaves().toString() : "no phylo";
-    return super.toString() + " | " + nestedNodes + ", phylo node: " + leaves;
-  }
-  
-  @Override
-  public Bubble copyAll() {
-    Bubble bubble = new Bubble(getId(), getSequenceLength());
-    bubble.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
-    bubble.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
-    bubble.setTreeNode(treeNode);
-    bubble.setNestedNodes(nestedNodes);
-    return bubble;
-  }
-  
-  public void setTreeNode(IPhylogeneticTreeNode treeNode) {
-    this.treeNode = treeNode;
-  }
-  
-  public void setNestedNodes(ArrayList<Integer> nested) {
-    this.nestedNodes = nested;
-  }
-  
-  public IPhylogeneticTreeNode getTreeNode() {
-    return treeNode;
-  }
-  
-  public void addNestedNode(int node) {
-    nestedNodes.add(node);
-  }
-  
-  public ArrayList<Integer> getNestedNodes() {
-    return nestedNodes;
-  }
+  void pop();
 
-  @Override
-  public boolean equals(Object object) {
-    if (object instanceof Bubble) {
-      Bubble bubble = (Bubble) object;
-      return bubble.getId() == this.getId() && bubble.treeNode.equals(this.treeNode);
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = 41 * hash + this.getId();
-    return hash;
-  }
 }

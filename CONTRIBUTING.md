@@ -22,8 +22,9 @@ Branches should be grouped in one of the following groups
 - `doc/`
 - `misc/`
 - `test/`
+- `fact/`
 
-Furthermore, the name of the branch should reflect at goal of the branch as much as possible. The name should conform to the `lisp-case` naming format (which is `snake_case` with normal dashes)
+Furthermore, the name of the branch should reflect at goal of the branch as much as possible. The name should conform to the `lisp-case` naming format (which is `snake_case` with normal dashes).
 
 ##### Example branch names
 - `doc/add-bugreport`
@@ -31,3 +32,4 @@ Furthermore, the name of the branch should reflect at goal of the branch as much
 - `misc/add-some-binary-files`
 - `bug/fix-segfault-on-zoom`
 - `test/package-test`
+- `fact/refactor-classes`

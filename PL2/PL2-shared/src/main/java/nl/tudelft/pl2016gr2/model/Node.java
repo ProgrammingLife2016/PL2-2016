@@ -1,85 +1,31 @@
 package nl.tudelft.pl2016gr2.model;
 
-import java.util.ArrayList;
-
 /**
- * Mainly a dataholder class which represents a Node.
+ * The most low level <code>GraphNode</code>, containing the individual bases of the DNA sequence.
  *
- * @author Cas
- *
+ * @author Wouter Smit
  */
-public class Node extends Bubble {
-
-  private ArrayList<String> genomes;
-  private final int snips;
-  private String bases = "";
+public interface Node extends GraphNode {
 
   /**
-   * Construct a new node.
+   * Sets the sequence stored in this node to the specified sequence.
    *
-   * @param id             the id (index) of the node.
-   * @param sequenceLength the sequence length.
-   * @param genomes        the list of genomes.
-   * @param snips          the amount of snips.
+   * @param sequence The sequence to set this node to
    */
-  public Node(int id, int sequenceLength, ArrayList<String> genomes, int snips) {
-    super(id, sequenceLength);
-    this.genomes = genomes;
-    this.snips = snips;
-  }
+  void setSequence(String sequence);
 
-  @Override
-  public String toString() {
-    return super.toString() + " " + this.genomes;
-  }
+  /**
+   * Returns a string representation of the sequence that this node contains.
+   *
+   * @return The sequence of this node
+   */
+  String getSequence();
   
-  @Override
-  public boolean equals(Object object) {
-    if (object instanceof Node) {
-      Node node = (Node) object;
-      return node.getId() == this.getId() && node.getOutlinks().equals(this.getOutlinks()) 
-          && node.getInlinks().equals(this.getInlinks());
-    }
-    return false;
-  }
-  
-  @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = 41 * hash + this.getId();
-    return hash;
-  }
-  
-  public Node copy() {
-    return new Node(getId(), getSequenceLength(), this.genomes, this.snips);
-  }
-  
-  @Override
-  public Node copyAll() {
-    Node node = new Node(getId(), getSequenceLength(), this.genomes, this.snips);
-    node.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
-    node.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
-    return node;
-  }
-
-  public ArrayList<String> getGenomes() {
-    return genomes;
-  }
-
-  public void setGenomes(ArrayList<String> gs) {
-    this.genomes = gs;
-  }
-
-  public String getBases() {
-    return this.bases;
-  }
-
-  public void setBases(String bs) {
-    this.bases = bs;
-  }
-
-  public int getSnips() {
-    return snips;
-  }
-
+//  @Override
+//  public Node copyAll() {
+//    Node node = new Node(getId(), getSequenceLength(), this.genomes, this.snips);
+//    node.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
+//    node.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
+//    return node;
+//  }
 }
