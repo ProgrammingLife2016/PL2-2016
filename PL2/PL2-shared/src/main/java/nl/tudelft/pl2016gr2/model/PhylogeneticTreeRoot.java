@@ -1,7 +1,6 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
 
 import java.util.HashMap;
 

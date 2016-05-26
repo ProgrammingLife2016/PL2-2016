@@ -17,6 +17,8 @@ public class PhyloBubble implements Bubble {
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
+    this.inEdges = new ArrayList<>();
+    this.outEdges = new ArrayList<>();
     this.nestedNodes = new HashSet<>();
   }
   
@@ -29,6 +31,11 @@ public class PhyloBubble implements Bubble {
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>();
+  }
+  
+  @Override
+  public String toString() {
+    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges;
   }
 
   @Override

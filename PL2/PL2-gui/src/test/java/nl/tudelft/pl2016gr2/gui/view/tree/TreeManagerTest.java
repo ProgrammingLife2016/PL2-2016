@@ -10,7 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.phylotree.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 
 import org.junit.Before;

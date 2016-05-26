@@ -51,6 +51,8 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * @return the identifiers of all root nodes in this graph.
    */
   Collection<Integer> getRootNodes();
+  
+  void print();
 
   /**
    * Add the node with the specified identifier as a root node of this graph.

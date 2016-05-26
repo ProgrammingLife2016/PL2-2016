@@ -1,6 +1,5 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 
 /**
  * This interface must be implemented by the root of the phylogenetic tree.

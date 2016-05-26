@@ -79,6 +79,11 @@ public class StringSequenceNode extends AbstractNode {
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
   }
+  
+  @Override
+  public String toString() {
+    return super.toString() + ", in: " + inEdges + ", out: " + outEdges + ", genomes: " + genomes;
+  }
 
   @Override
   public void setSequence(String sequence) {
@@ -110,15 +115,15 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public void addInEdge(int identifier) {
-    assert !inEdges.contains(
-        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert !inEdges.contains(
+//        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
     inEdges.add(identifier);
   }
 
   @Override
   public void removeInEdge(int identifier) {
-    assert inEdges.contains(
-        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert inEdges.contains(
+//        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
     inEdges.remove(identifier);
   }
 
@@ -142,15 +147,15 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public void addOutEdge(int identifier) {
-    assert !outEdges.contains(
-        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert !outEdges.contains(
+//        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
     outEdges.add(identifier);
   }
 
   @Override
   public void removeOutEdge(int identifier) {
-    assert outEdges.contains(
-        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
+//    assert outEdges.contains(
+//        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
     outEdges.remove(identifier);
   }
 

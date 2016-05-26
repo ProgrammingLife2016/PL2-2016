@@ -141,6 +141,7 @@ public class FilterBubbles {
   public SequenceGraph filter(IPhylogeneticTreeNode treeRoot) {
     SequenceGraph filteredGraph = new HashGraph();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
+    System.out.println("Debubble!");
     debubble(filteredGraph, treeRoot, newBubbles);
     pruneNodes(filteredGraph, originalGraph, newBubbles);
     
@@ -346,8 +347,7 @@ public class FilterBubbles {
           newBubbles, filteredGraph);
     }
     
-    filterBubbles(toVisit, visited, filteredGraph, leaves, null, treeNode, newBubbles, null);
-    
+    filterBubbles(toVisit, visited, filteredGraph, leaves, null, treeNode, newBubbles);
     return newBubbles;
   }
   
@@ -361,7 +361,7 @@ public class FilterBubbles {
     Set<Integer> visited = new HashSet<>();
     toVisit.add(start.getId());
     
-    filterBubbles(toVisit, visited, filteredGraph, leaves, bubble, treeNode, newBubbles, null);
+    filterBubbles(toVisit, visited, filteredGraph, leaves, bubble, treeNode, newBubbles);
     
     GraphNode end = originalGraph.getNode(bubble.getOutEdges().iterator().next());
     filteredGraph.add(end.copy());
@@ -371,12 +371,10 @@ public class FilterBubbles {
   
   private void filterBubbles(Queue<Integer> toVisit, Set<Integer> visited, 
       SequenceGraph filteredGraph, ArrayList<String> leaves, Bubble bubble, 
-      IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles, Set<Integer> endIds) {
-    if (endIds == null) {
-      endIds = new HashSet<>();
-      if (bubble != null) {
-        endIds.addAll(bubble.getOutEdges());
-      }
+      IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
+    Set<Integer> endIds = new HashSet<>();
+    if (bubble != null) {
+      endIds.addAll(bubble.getOutEdges());
     }
     
     while (!toVisit.isEmpty()) {
@@ -384,7 +382,7 @@ public class FilterBubbles {
       visited.add(next);
       GraphNode current = originalGraph.getNode(next);
       filteredGraph.add(current.copy());
-      if ((bubble != null && endIds.contains(next)) || (!endIds.isEmpty() && endIds.contains(next))) {
+      if (bubble != null && endIds.contains(next)) {
         continue;
       }
       
@@ -426,7 +424,8 @@ public class FilterBubbles {
       while (!toVisitNodes.isEmpty()) {
         addToVisit(toVisitNodes.poll(), toVisit, visited);
       }
-
+      
+      System.out.println("New bubble: " + newBubble);
       newBubbles.add(newBubble);
       filteredGraph.add(newBubble);
       mutationId++;
@@ -475,7 +474,7 @@ public class FilterBubbles {
     }
     
     for (String genome : node.getGenomes()) {
-      if (!leaves.contains(genome)) {
+      if (!genome.contains(".ref.") && !leaves.contains(genome)) {
         return true;
       }
     }

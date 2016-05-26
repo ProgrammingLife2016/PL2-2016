@@ -10,7 +10,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.phylotree.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 
 import org.junit.Before;

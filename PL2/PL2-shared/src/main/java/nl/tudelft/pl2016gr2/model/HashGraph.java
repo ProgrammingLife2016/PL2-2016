@@ -51,6 +51,12 @@ public class HashGraph implements SequenceGraph {
     this.rootNodes = new ArrayList<>(rootNodes);
     this.genomes = new HashSet<>(genomes);
   }
+  
+  public void print() {
+    nodes.forEach((id, node) -> {
+      System.out.println(node);
+    });
+  }
 
   /**
    * Finds all root nodes in the graph.

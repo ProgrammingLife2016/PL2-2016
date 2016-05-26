@@ -10,10 +10,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
