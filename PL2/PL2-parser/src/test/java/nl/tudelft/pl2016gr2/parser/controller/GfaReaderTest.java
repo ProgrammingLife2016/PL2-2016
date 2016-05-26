@@ -80,7 +80,7 @@ public class GfaReaderTest {
     Node node = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
     assertEquals("C", node.getSequence());
     assertEquals(1, node.getGenomes().size());
-    assertEquals("TKK_02_0008.fasta", node.getGenomes().iterator().next());
+    assertEquals("TKK_02_0008", node.getGenomes().iterator().next());
   }
 
   /**
@@ -103,8 +103,8 @@ public class GfaReaderTest {
     char[] chars = "\t*\tORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0005.fasta;\t".toCharArray();
     Node node = new SequenceNode(0);
     AccessPrivate.callMethod("parseNodegenomes", GfaReader.class, null, node, chars, 1);
-    assertTrue(node.getGenomes().contains("MT_H37RV_BRD_V5.ref.fasta"));
-    assertTrue(node.getGenomes().contains("TKK_02_0005.fasta"));
+    assertTrue(node.getGenomes().contains("MT_H37RV_BRD_V5"));
+    assertTrue(node.getGenomes().contains("TKK_02_0005"));
   }
 
   /**
@@ -115,8 +115,8 @@ public class GfaReaderTest {
     char[] chars = "ORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0001.fasta;".toCharArray();
     AccessPrivate.callMethod("parseHeader", GfaReader.class, gfaReader, chars);
     ArrayList<String> actual = AccessPrivate.getFieldValue("genomes", GfaReader.class, gfaReader);
-    assertTrue(actual.contains("MT_H37RV_BRD_V5.ref.fasta"));
-    assertTrue(actual.contains("TKK_02_0001.fasta"));
+    assertTrue(actual.contains("MT_H37RV_BRD_V5"));
+    assertTrue(actual.contains("TKK_02_0001"));
   }
 
   /**
