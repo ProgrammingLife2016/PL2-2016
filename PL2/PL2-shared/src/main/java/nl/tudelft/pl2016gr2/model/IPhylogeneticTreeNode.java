@@ -58,7 +58,7 @@ public interface IPhylogeneticTreeNode {
   int getChildIndex(IPhylogeneticTreeNode child);
 
   /**
-   * Get all of the genomes whic are present in this branch of the tree.
+   * Get all of the genomes which are present in this branch of the tree.
    *
    * @return all of the genomes whic are present in this branch of the tree.
    */

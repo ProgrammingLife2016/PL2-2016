@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -30,6 +31,7 @@ public class GraphNodeSquare extends Rectangle implements IGraphNode {
     this.relativeHeight.set(relativeHeight);
     layoutXProperty().bind(centerXProperty.add(-radius));
     layoutYProperty().bind(centerYProperty.add(-radius));
+    setFill(Color.ALICEBLUE);
   }
 
   @Override

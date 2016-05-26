@@ -72,8 +72,15 @@ public class SubGraphOrderer extends Thread {
   private ArrayList<NodePosition> orderNodes() {
     ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
     for (GraphNode graphNode : subGraph) {
-      int level = mainGraphOrder.get(graphNode.getId()).getLevel();
+      int id = graphNode.getId();
+      // TEMPORARY HACK:
+      if (graphNode.hasChildren()) {
+        id = graphNode.getChildren().iterator().next().getId();
+      }
+      // END OF HACK
+      int level = mainGraphOrder.get(id).getLevel();
       subGraphOrder.add(new NodePosition(graphNode, level));
+
     }
     return subGraphOrder;
   }

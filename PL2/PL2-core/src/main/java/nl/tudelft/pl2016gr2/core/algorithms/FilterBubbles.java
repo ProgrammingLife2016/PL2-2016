@@ -150,7 +150,7 @@ public class FilterBubbles {
   
   private void addNestedNodes(List<Integer> nestedNodes, Bubble bubble) {
     for (Integer node : nestedNodes) {
-      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(node);
+      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(node));
       bubble.accept(visitor);
     }
   }
@@ -191,7 +191,7 @@ public class FilterBubbles {
         endPoints.add(next);
         bubble.addOutEdge(next);
       } else {
-        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(next);
+        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(next));
         bubble.accept(visitor);
         
         for (Integer outlink : current.getOutEdges()) {

@@ -59,7 +59,8 @@ public class RootLayoutController implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
     treeManager = TreeManager.loadView(selectionManager);
-    drawGraphs = DrawComparedGraphs.loadView(selectionManager);
+    loadTree();
+    drawGraphs = DrawComparedGraphs.loadView(selectionManager, treeManager.getTreeRoot());
     drawGraphs.loadMainGraph("TB10.gfa");
     mainPane.getItems().add(treeManager.getTreePane());
 
@@ -67,7 +68,6 @@ public class RootLayoutController implements Initializable {
     mainPane.getItems().add(graphRegion);
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
-    loadTree();
   }
 
   /**

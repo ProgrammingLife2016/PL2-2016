@@ -17,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
@@ -25,6 +24,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
@@ -97,14 +97,17 @@ public class DrawComparedGraphs implements Initializable {
   private SequenceGraph mainGraph;
 
   private ContextMenu contextMenu;
+  private IPhylogeneticTreeRoot treeRoot;
 
   /**
    * Load this view.
    *
    * @param selectionManager the selection manager.
+   * @param treeRoot         the root of the phylogenetic tree.
    * @return the controller of the loaded view.
    */
-  public static DrawComparedGraphs loadView(SelectionManager selectionManager) {
+  public static DrawComparedGraphs loadView(SelectionManager selectionManager,
+      IPhylogeneticTreeRoot treeRoot) {
     FXMLLoader loader = new FXMLLoader();
     try {
       loader.setLocation(
@@ -112,6 +115,7 @@ public class DrawComparedGraphs implements Initializable {
       loader.load();
       DrawComparedGraphs controller = loader.<DrawComparedGraphs>getController();
       controller.setSelectionManager(selectionManager);
+      controller.treeRoot = treeRoot;
       return controller;
     } catch (IOException ex) {
       Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
@@ -394,7 +398,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomes the collection of genomes.
    */
   private void drawOneGraph(Collection<String> genomes) {
-    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder);
+    topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder, treeRoot);
     ArrayList<NodePosition> topGraphOrder = topGraph.getGraphOrder();
 
 //    // TODO : remove
@@ -638,7 +642,7 @@ public class DrawComparedGraphs implements Initializable {
   private void constructBubble(Pane pane, HashMap<Integer, IGraphNode> graphNodeMap,
       NodePosition graphNodeOrder, GraphNode node, double relativeHeight, double maxYOffset,
       int level, int startLevel) {
-    GraphNodeSquare square = new GraphNodeSquare(calculateBubbleRadius(graphNodeOrder),
+    GraphNodeSquare square = new GraphNodeSquare(calculateNodeRadius(graphNodeOrder),
         relativeHeight, maxYOffset);
     pane.getChildren().add(square);
     graphNodeMap.put(node.getId(), square);
@@ -648,23 +652,23 @@ public class DrawComparedGraphs implements Initializable {
     addLabel(pane, square, node.getId());
   }
 
-  /**
-   * Calculate the radius of the bubble.
-   *
-   * @param node the node position of the bubble.
-   * @return the radius.
-   */
-  private static double calculateBubbleRadius(NodePosition node) {
-    double radius = Math.sqrt(node.getNode().size()) * 5.0;
-    if (radius > MAX_NODE_RADIUS) {
-      return MAX_NODE_RADIUS;
-    }
-    if (radius < MIN_NODE_RADIUS) {
-      return MIN_NODE_RADIUS;
-    } else {
-      return radius;
-    }
-  }
+//  /**
+//   * Calculate the radius of the bubble.
+//   *
+//   * @param node the node position of the bubble.
+//   * @return the radius.
+//   */
+//  private static double calculateBubbleRadius(NodePosition node) {
+//    double radius = Math.sqrt(node.getNode().size()) * 5.0;
+//    if (radius > MAX_NODE_RADIUS) {
+//      return MAX_NODE_RADIUS;
+//    }
+//    if (radius < MIN_NODE_RADIUS) {
+//      return MIN_NODE_RADIUS;
+//    } else {
+//      return radius;
+//    }
+//  }
 
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.

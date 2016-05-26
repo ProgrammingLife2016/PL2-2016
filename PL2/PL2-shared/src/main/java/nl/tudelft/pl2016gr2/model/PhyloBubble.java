@@ -12,7 +12,7 @@ public class PhyloBubble implements Bubble {
   private IPhylogeneticTreeNode treeNode;
   private ArrayList<Integer> inEdges;
   private ArrayList<Integer> outEdges;
-  private HashSet<Integer> nestedNodes;
+  private HashSet<GraphNode> nestedNodes;
   
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
@@ -34,7 +34,7 @@ public class PhyloBubble implements Bubble {
   }
   
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<Integer> inEdges, 
-      Collection<Integer> outEdges, Collection<Integer> nestedNodes) {
+      Collection<Integer> outEdges, Collection<GraphNode> nestedNodes) {
     this.id = id;
     this.treeNode = treeNode;
     this.inEdges = new ArrayList<>(inEdges);
@@ -59,7 +59,7 @@ public class PhyloBubble implements Bubble {
     return treeNode;
   }
   
-  public void addChild(int child) {
+  public void addChild(GraphNode child) {
     nestedNodes.add(child);
   }
 
@@ -69,13 +69,17 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public Collection<Integer> getChildren() {
+  public Collection<GraphNode> getChildren() {
     return nestedNodes;
   }
 
   @Override
   public int size() {
-    return nestedNodes.size();
+    int size = 0;
+    for (GraphNode nestedNode : nestedNodes) {
+      size += nestedNode.size();
+    }
+    return size;
   }
 
   @Override
@@ -130,7 +134,11 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public Collection<String> getGenomes() {
-    return treeNode.getGenomes();
+    HashSet<String> genomeSet = new HashSet<>();
+    for (GraphNode nestedNode : nestedNodes) {
+      genomeSet.addAll(nestedNode.getGenomes());
+    }
+    return genomeSet;
   }
 
   @Override

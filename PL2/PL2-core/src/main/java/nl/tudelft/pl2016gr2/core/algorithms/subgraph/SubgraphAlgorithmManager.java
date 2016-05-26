@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -61,22 +63,29 @@ public class SubgraphAlgorithmManager {
    * @param genomes        the genomes which must be present in the subgraph.
    * @param mainGraph      the main graph.
    * @param mainGraphOrder the order of the main graph.
+   * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
   public static OrderedGraph alignOneGraph(Collection<String> genomes, SequenceGraph mainGraph,
-      GraphOrdererThread mainGraphOrder) {
+      GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
     topSubGraphThread.start();
-    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(),
-        topSubGraphThread.getSubGraph());
+    SequenceGraph subgraph = topSubGraphThread.getSubGraph();
+
+    FilterBubbles filter = new FilterBubbles(subgraph);
+    subgraph = filter.filter(treeRoot);
+
+    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(), subgraph);
     graphOrder.start();
 
     CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
     for (NodePosition nodePosition : graphOrder.getNodeOrder()) {
       nodePosition.setOverlapping(true);
     }
-    return new OrderedGraph(topSubGraphThread.getSubGraph(), graphOrder.getNodeOrder());
+
+    // perform bubbling
+    return new OrderedGraph(subgraph, graphOrder.getNodeOrder());
   }
 
   /**

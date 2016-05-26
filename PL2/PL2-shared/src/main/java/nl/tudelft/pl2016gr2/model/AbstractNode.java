@@ -37,7 +37,7 @@ public abstract class AbstractNode implements Node {
   }
 
   @Override
-  public Collection<Integer> getChildren() {
+  public Collection<GraphNode> getChildren() {
     return null;
   }
 

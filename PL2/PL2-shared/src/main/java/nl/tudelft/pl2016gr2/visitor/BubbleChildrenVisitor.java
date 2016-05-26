@@ -5,7 +5,7 @@ import nl.tudelft.pl2016gr2.model.PhyloBubble;
 
 public class BubbleChildrenVisitor implements NodeVisitor {
   
-  int child;
+  private GraphNode child;
   
   /**
    * Creates a visitor which can be accepted by any GraphNode,
@@ -13,7 +13,7 @@ public class BubbleChildrenVisitor implements NodeVisitor {
    * to it (= a nested node). 
    * @param child : the child to add
    */
-  public BubbleChildrenVisitor(int child) {
+  public BubbleChildrenVisitor(GraphNode child) {
     this.child = child;
   }
   
