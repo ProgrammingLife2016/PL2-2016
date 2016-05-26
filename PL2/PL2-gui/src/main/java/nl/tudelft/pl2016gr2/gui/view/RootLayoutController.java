@@ -14,8 +14,11 @@ import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,6 +26,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -79,11 +83,13 @@ public class RootLayoutController implements Initializable {
     BufferedReader br = new BufferedReader(reader);
     TreeParser tp = new TreeParser(br);
 
-    Tree tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
-    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
     try {
+      Tree tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
+      List<Annotation> annotations = new AnnotationReader(AnnotationReader.class
+          .getClassLoader().getResourceAsStream("metadata.xlsx")).read();
+      treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot(), annotations));
       reader.close();
-    } catch (IOException ex) {
+    } catch (IOException | InvalidFormatException ex) {
       Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
     }
   }

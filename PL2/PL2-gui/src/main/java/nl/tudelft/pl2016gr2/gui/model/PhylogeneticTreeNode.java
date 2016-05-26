@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.gui.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
@@ -20,16 +21,17 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
+  private LineageColor lineage = LineageColor.NONE;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
    */
-  private BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
 
   /**
    * If all of the child nodes of this node are drawn in the bottom graph.
    */
-  private BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
 
   /**
    * Construct a phylogenetic tree node.
@@ -132,6 +134,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     return drawnInBottom;
   }
 
+  @Override
+  public Color getLineageColor() {
+    return lineage.getColor();
+  }
+
   /**
    * Creates an iterator which iterates over all of the leaf nodes of the tree.
    *
@@ -198,6 +205,15 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   private boolean childrenAreDrawnInBottom() {
     return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
+  }
+
+  protected void setLineage(LineageColor lineage) {
+    if (isLeaf() || lineage.equals(children[0].lineage) && lineage.equals(children[1].lineage)) {
+      this.lineage = lineage;
+      if (hasParent()) {
+        parent.setLineage(lineage);
+      }
+    }
   }
 
   /**

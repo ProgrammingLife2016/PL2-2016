@@ -8,8 +8,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -20,10 +20,10 @@ public class AnnotationReader {
 
   private static final Logger logger = Logger.getLogger(AnnotationReader.class.getName());
 
-  private final File file;
+  private final InputStream stream;
 
-  public AnnotationReader(File file) {
-    this.file = file;
+  public AnnotationReader(InputStream stream) {
+    this.stream = stream;
   }
 
   /**
@@ -201,7 +201,7 @@ public class AnnotationReader {
    * @throws InvalidFormatException when the given file is not the proper format.
    */
   public List<Annotation> read() throws IOException, InvalidFormatException {
-    Workbook wb = WorkbookFactory.create(file);
+    Workbook wb = WorkbookFactory.create(stream);
     Sheet sheet = wb.getSheetAt(wb.getActiveSheetIndex());
     List<Annotation> out = new ArrayList<>();
     long startTime = System.currentTimeMillis();
