@@ -27,7 +27,6 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -438,12 +437,27 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Load a new main graph.
    *
-   * @param filename the filename of the graph.
+   * @param graph the graph.
    */
-  public void loadMainGraph(String filename) {
-    mainGraph = new GfaReader(filename).read();
+  public void loadMainGraph(SequenceGraph graph) {
+    clear();
+    mainGraph = graph;
     mainGraphOrder = new GraphOrdererThread(mainGraph);
     mainGraphOrder.start();
+  }
+  
+  /**
+   * Clear the content of the class.
+   */
+  private void clear() {
+    topGraphGenomes.clear();
+    bottomGraphGenomes.clear();
+    topPane.getChildren().clear();
+    bottomPane.getChildren().clear();
+    bottomGraph = null;
+    topGraph = null;
+    updateGraphSize();
+    updateGraph();
   }
 
   /**

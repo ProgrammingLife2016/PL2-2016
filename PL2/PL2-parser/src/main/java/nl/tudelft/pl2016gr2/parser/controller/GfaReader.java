@@ -10,6 +10,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,17 +28,17 @@ public class GfaReader {
   @TestId(id = "genomes")
   private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
-  private final String fileName;
+  private final InputStream fileStream;
   @TestId(id = "originalGraph")
   private SequenceGraph originalGraph;
 
   /**
    * Creates a reader object and reads the gfa data from the filename.
    *
-   * @param fileName the name of the file to read.
+   * @param fileStream the file to read.
    */
-  public GfaReader(String fileName) {
-    this.fileName = fileName;
+  public GfaReader(InputStream fileStream) {
+    this.fileStream = fileStream;
   }
 
   /**
@@ -61,8 +62,7 @@ public class GfaReader {
    * Parse a GFA file.
    */
   private void parse() throws IOException {
-    try (BufferedReader br = new BufferedReader(
-        new InputStreamReader(GfaReader.class.getClassLoader().getResourceAsStream(fileName)))) {
+    try (BufferedReader br = new BufferedReader(new InputStreamReader(fileStream))) {
       br.readLine();
       String line;
       while ((line = br.readLine()) != null) {

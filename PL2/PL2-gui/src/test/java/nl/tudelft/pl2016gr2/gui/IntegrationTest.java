@@ -19,6 +19,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
+import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +49,7 @@ public class IntegrationTest {
    */
   @Test
   public void selectTreeNodeTest() {
+    loadFiles();
     TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
         getTreeManager());
     root.getOnMouseClicked().handle(SOME_MOUSE_EVENT);
@@ -78,6 +80,7 @@ public class IntegrationTest {
    * Click through the application, select a tree node and click the "compare children" button.
    */
   private void drawGraph() {
+    loadFiles();
     TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
         getTreeManager());
     root.getOnMouseClicked().handle(new MouseEvent(null, 0, 0, 0, 0, MouseButton.NONE, 0, true,
@@ -93,6 +96,16 @@ public class IntegrationTest {
     }
     assertNotEquals(null, compareButton);
     compareButton.fire();
+  }
+
+  /**
+   * Load the tree, graph and metadata files.
+   */
+  private void loadFiles() {
+    getRootLayoutController().filesLoaded(
+        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"),
+        GfaReader.class.getClassLoader().getResourceAsStream("TB10.gfa"),
+        GfaReader.class.getClassLoader().getResourceAsStream("metadata.xlsx"));
   }
 
   private static Stage getPrimaryStage() {
