@@ -35,7 +35,7 @@ public enum LineageColor {
   }
 
   /**
-   * Transforms the givn string to a lineage. There is really no logical way to split this method,
+   * Transforms the given string to a lineage. There is really no logical way to split this method,
    * so the suppress warnings annotation is used for the method length.
    *
    * @param lineage the lineage string.
