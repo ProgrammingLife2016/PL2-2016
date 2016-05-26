@@ -8,19 +8,20 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import nl.tudelft.pl2016gr2.core.GraphFactory;
+import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
+import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
+import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -32,7 +33,9 @@ import java.util.logging.Logger;
  *
  * @author Faris
  */
-public class RootLayoutController implements Initializable {
+public class RootLayoutController implements
+    Initializable,
+    FileChooserController.InputFileConsumer {
 
   @FXML
   private AnchorPane rootPane;
@@ -60,32 +63,30 @@ public class RootLayoutController implements Initializable {
     initializeSelectionManager();
     treeManager = TreeManager.loadView(selectionManager);
     drawGraphs = DrawComparedGraphs.loadView(selectionManager);
-    drawGraphs.loadMainGraph("TB10.gfa");
     mainPane.getItems().add(treeManager.getTreePane());
 
     Region graphRegion = drawGraphs.getGraphPane();
     mainPane.getItems().add(graphRegion);
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
-    loadTree();
   }
 
   /**
    * Load the data into the root layout.
+   *
+   * @param tree the tree you want to load
    */
-  private void loadTree() {
-    Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
-    BufferedReader br = new BufferedReader(reader);
-    TreeParser tp = new TreeParser(br);
-
-    Tree tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
+  public void loadTree(Tree tree) {
     treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
-    try {
-      reader.close();
-    } catch (IOException ex) {
-      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+  }
+
+  /**
+   * Load the data into the root layout.
+   *
+   * @param graph the graph you want to load
+   */
+  public void loadGraph(SequenceGraph graph) {
+    this.drawGraphs.loadMainGraph(graph);
   }
 
   /**
@@ -136,5 +137,49 @@ public class RootLayoutController implements Initializable {
         event.consume();
       }
     });
+  }
+
+  @Override
+  public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
+    try {
+      // Note: not really enjoying pro's of factories with this structure.
+      // consider to decouple a bit more, as the factories can't be mocked right now.
+      GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
+      TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
+
+      SequenceGraph graph = graphFactory.getGraph();
+      Tree tree = treeFactory.getTree();
+
+      if (graph != null && tree != null) {
+        loadGraph(graph);
+        loadTree(tree);
+      } else {
+        Logger.getLogger(RootLayoutController.class.getName()).log(
+            Level.SEVERE,
+            "tree or graph was null");
+      }
+    } catch (IOException e) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+    }
+  }
+
+  /**
+   * Prompts the user for with the FileChooser.
+   */
+  public void promptFileChooser() {
+    try {
+      FileChooserController fileChooserController =
+          FileChooserController.initialize(mainPane.getScene().getWindow());
+      fileChooserController.setInputFileConsumer(this);
+      fileChooserController.getStage().show();
+    } catch (IOException e) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+    }
+  }
+
+  @FXML
+  @SuppressWarnings("unused")
+  private void openFileMenuItemClicked() {
+    promptFileChooser();
   }
 }

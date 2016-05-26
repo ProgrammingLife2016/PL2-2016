@@ -9,10 +9,15 @@ import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -22,15 +27,28 @@ import java.util.ArrayList;
  */
 public class GfaReaderTest {
 
-  private static final String TEST_GRAPH = "SMALL.gfa";
+  private static final String TEST_GRAPH_RESOURCE = "SMALL.gfa";
   private GfaReader gfaReader;
+  private File file;
 
   /**
    * Initialize some testing variables.
+   *
+   * @throws IOException When file creation fails.
    */
   @Before
-  public void initialize() {
-    gfaReader = new GfaReader(TEST_GRAPH);
+  public void initialize() throws IOException {
+
+    file = File.createTempFile("GfaReaderTest", TEST_GRAPH_RESOURCE);
+    FileUtils.copyInputStreamToFile(
+        GfaReader.class.getClassLoader().getResourceAsStream(TEST_GRAPH_RESOURCE), file);
+
+    gfaReader = new GfaReader(new FileInputStream(file));
+  }
+
+  @After
+  public void tearDown() {
+    file.delete();
   }
 
   /**
