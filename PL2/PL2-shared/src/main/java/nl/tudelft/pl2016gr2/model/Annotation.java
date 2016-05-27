@@ -113,7 +113,7 @@ public class Annotation {
   @SuppressWarnings("checkstyle:MethodLength")
   public String buildMetaDataString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("ID\t\t\t\t\t").append(specimenId).append('\n');
+    sb.append("ID\t\t\t\t\t\t").append(specimenId).append('\n');
     sb.append("Specimen Type\t\t\t").append(specimenType).append('\n');
     sb.append("Lineage\t\t\t\t\t").append(lineage).append('\n');
     sb.append("Isolation\t\t\t\t\t").append(dnaIsolation).append('\n');
@@ -121,7 +121,7 @@ public class Annotation {
     sb.append("Capreomycin\t\t\t\t").append(capreomycin).append('\n');
     sb.append("Cohort\t\t\t\t\t").append(cohort).append('\n');
     sb.append("Date of collection\t\t\t").append(dateOfCollection).append('\n');
-    sb.append("Digital Spoligo type\t\t").append(digitalSpoligotype).append('\n');
+    sb.append("Digital Spoligo type\t\t\t").append(digitalSpoligotype).append('\n');
     sb.append("Ethambutol\t\t\t\t").append(ethambutol).append('\n');
     sb.append("Ethionamide\t\t\t\t").append(ethionamide).append('\n');
     sb.append("Genotypic DST Pattern\t\t").append(genotypicDSTPattern).append('\n');
