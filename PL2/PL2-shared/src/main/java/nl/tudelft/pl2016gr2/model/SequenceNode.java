@@ -88,6 +88,9 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public String getSequence() {
+    if (sequence == null) {
+      return null;
+    }
     return sequence.getBaseSequence();
   }
 
@@ -119,7 +122,7 @@ public class SequenceNode extends AbstractNode {
   public void removeInEdge(int identifier) {
     assert inEdges.contains(
         identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove(identifier);
+    inEdges.remove((Integer) identifier);
   }
 
   /**
@@ -150,7 +153,7 @@ public class SequenceNode extends AbstractNode {
   public void removeOutEdge(int identifier) {
     assert outEdges.contains(
         identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove(identifier);
+    outEdges.remove((Integer) identifier);
   }
 
   @Override
