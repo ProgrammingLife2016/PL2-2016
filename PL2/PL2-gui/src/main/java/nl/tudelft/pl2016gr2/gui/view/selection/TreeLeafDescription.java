@@ -37,7 +37,7 @@ public class TreeLeafDescription implements ISelectionInfo {
     text.setPrefHeight(500);
     text.setPrefWidth(300);
     text.setWrapText(true);
-    text.setText("Genome: " + treeNode.getGenomes().get(0) + "\n" + treeNode.getMetaData());
+    text.setText(treeNode.getMetaData());
 
     pane.getChildren().add(text);
   }
