@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -120,7 +121,12 @@ public class Annotation {
     sb.append("Age\t\t\t\t\t\t").append(age).append('\n');
     sb.append("Capreomycin\t\t\t\t").append(capreomycin).append('\n');
     sb.append("Cohort\t\t\t\t\t").append(cohort).append('\n');
-    sb.append("Date of collection\t\t\t").append(dateOfCollection).append('\n');
+    sb.append("Date of collection\t\t\t");
+    if (dateOfCollection == null) {
+      sb.append("Unknown").append('\n');
+    } else {
+      sb.append(new SimpleDateFormat("dd-MM-yyyy").format(dateOfCollection)).append('\n');
+    }
     sb.append("Digital Spoligo type\t\t\t").append(digitalSpoligotype).append('\n');
     sb.append("Ethambutol\t\t\t\t").append(ethambutol).append('\n');
     sb.append("Ethionamide\t\t\t\t").append(ethionamide).append('\n');
