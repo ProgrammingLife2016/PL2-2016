@@ -24,7 +24,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
+import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
@@ -480,6 +480,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     if (dataNode.getChildCount() != 0) {
       return new TreeNodeDescription(selectionManager, dataNode);
     }
-    return new TextDescription("this is a root node");
+    return new TreeLeafDescription(dataNode);
   }
 }
