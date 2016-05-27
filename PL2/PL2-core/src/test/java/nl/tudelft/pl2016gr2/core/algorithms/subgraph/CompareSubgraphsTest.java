@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import static org.junit.Assert.assertEquals;
 
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
@@ -57,7 +58,7 @@ public class CompareSubgraphsTest {
     SequenceGraph graph = gfaReader.read();
     GraphOrdererThread thread = new GraphOrdererThread(graph);
     thread.start();
-    HashMap<Integer, NodePosition> mainGraphOrder = thread.getOrderedGraph();
+    HashMap<GraphNode, NodePosition> mainGraphOrder = thread.getOrderedGraph();
 
     ArrayList<String> topGenomes = new ArrayList<>();
     topGenomes.add("TKK_02_0005");

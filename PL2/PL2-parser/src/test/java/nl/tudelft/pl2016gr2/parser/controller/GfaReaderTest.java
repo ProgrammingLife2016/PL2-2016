@@ -58,7 +58,6 @@ public class GfaReaderTest {
   public void integrationTest() {
     SequenceGraph og = gfaReader.read();
     assertEquals(og.getGenomes().size(), 11);
-    assertEquals(og.getNode(3).getGenomes().size(), 1);
   }
 
   /**
@@ -82,9 +81,9 @@ public class GfaReaderTest {
     SequenceNode node2 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 2);
     SequenceNode node3 = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
     assertEquals(1, node2.getOutEdges().size());
-    assertEquals(3, (long) node2.getOutEdges().iterator().next());
+    assertEquals(new SequenceNode(3), node2.getOutEdges().iterator().next());
     assertEquals(1, node3.getInEdges().size());
-    assertEquals(2, (long) node3.getInEdges().iterator().next());
+    assertEquals(new SequenceNode(2), node3.getInEdges().iterator().next());
   }
 
   /**
