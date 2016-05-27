@@ -101,4 +101,12 @@ public interface IPhylogeneticTreeNode {
    * @return the lineage color of this node.
    */
   Color getLineageColor();
+
+  /**
+   * Get a string containing metadata about the genome in the leaf node. Returns an empty string if
+   * it is called on a non-leaf node.
+   *
+   * @return a string containing metadata about the genome in the leaf node.
+   */
+  String getMetaData();
 }

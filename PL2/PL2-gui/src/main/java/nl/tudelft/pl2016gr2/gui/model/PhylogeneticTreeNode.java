@@ -4,6 +4,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
+import nl.tudelft.pl2016gr2.model.Annotation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,7 +22,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
-  private LineageColor lineage = LineageColor.NONE;
+  private Annotation annotation;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
@@ -136,7 +137,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
 
   @Override
   public Color getLineageColor() {
-    return lineage.getColor();
+    if (annotation != null) {
+      return LineageColor.toLineage(annotation.lineage).getColor();
+    } else {
+      return LineageColor.NONE.getColor();
+    }
   }
 
   /**
@@ -147,6 +152,16 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   @Override
   public Iterator<PhylogeneticTreeNode> iterator() {
     return new LeafNodeIterator();
+  }
+
+  @Override
+  public String getMetaData() {
+    System.out.println("annotation = " + annotation);
+    if (annotation == null) {
+      return "";
+    } else {
+      return annotation.buildMetaDataString();
+    }
   }
 
   /**
@@ -207,13 +222,8 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
   }
 
-  protected void setLineage(LineageColor lineage) {
-    if (isLeaf() || lineage.equals(children[0].lineage) && lineage.equals(children[1].lineage)) {
-      this.lineage = lineage;
-      if (hasParent()) {
-        parent.setLineage(lineage);
-      }
-    }
+  protected void setAnnotation(Annotation annotation) {
+    this.annotation = annotation;
   }
 
   /**

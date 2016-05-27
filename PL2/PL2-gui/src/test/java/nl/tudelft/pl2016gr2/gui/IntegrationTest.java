@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
@@ -90,8 +91,8 @@ public class IntegrationTest {
         selectionManager);
     Button compareButton = null;
     for (Node node : description.getChildren()) {
-      if (node instanceof Button) {
-        compareButton = (Button) node;
+      if (node instanceof Pane) {
+        compareButton = (Button) ((Pane) node).getChildren().get(0);
       }
     }
     assertNotEquals(null, compareButton);

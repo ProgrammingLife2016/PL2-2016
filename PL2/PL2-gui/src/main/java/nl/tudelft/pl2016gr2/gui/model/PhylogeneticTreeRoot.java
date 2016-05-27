@@ -16,7 +16,6 @@ import java.util.List;
 public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylogeneticTreeRoot {
 
   private final HashMap<String, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
-  private final List<Annotation> annotations;
 
   /**
    * Construct a phylogenetic tree root node.
@@ -26,23 +25,24 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
    */
   public PhylogeneticTreeRoot(TreeNode node, List<Annotation> annotations) {
     super(node, null);
-    this.annotations = annotations;
     for (PhylogeneticTreeNode leafNode : this) {
       genomeToTreeMap.put(leafNode.getLabel(), leafNode);
     }
-    initLineages();
+    initLineages(annotations);
   }
 
   /**
    * Initialize the lineage colors of all of the nodes.
+   *
+   * @param annotations the list of annotations.
    */
-  private void initLineages() {
+  private void initLineages(List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
       PhylogeneticTreeNode node = genomeToTreeMap.get(annotation.specimenId);
       if (node == null) {
         continue;
       }
-      node.setLineage(LineageColor.toLineage(annotation.lineage));
+      node.setAnnotation(annotation);
     }
   }
 
