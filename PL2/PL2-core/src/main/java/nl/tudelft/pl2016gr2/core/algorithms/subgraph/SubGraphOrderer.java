@@ -7,6 +7,7 @@ import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,7 +16,7 @@ import java.util.logging.Logger;
  */
 public class SubGraphOrderer extends Thread {
 
-  private final HashMap<Integer, NodePosition> mainGraphOrder;
+  private final HashMap<GraphNode, NodePosition> mainGraphOrder;
   private final SequenceGraph subGraph;
   private final boolean markOverlap;
   private OverlapThread overlapThread;
@@ -27,7 +28,7 @@ public class SubGraphOrderer extends Thread {
    * @param mainGraphOrder a map containing the order of the main graph.
    * @param subGraph       the subgraph.
    */
-  public SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder, SequenceGraph subGraph) {
+  public SubGraphOrderer(HashMap<GraphNode, NodePosition> mainGraphOrder, SequenceGraph subGraph) {
     this.mainGraphOrder = mainGraphOrder;
     this.subGraph = subGraph;
     markOverlap = false;
@@ -40,7 +41,7 @@ public class SubGraphOrderer extends Thread {
    * @param subGraph       the subgraph.
    * @param overlapThread  the thread which is checking which nodes are overlapping.
    */
-  public SubGraphOrderer(HashMap<Integer, NodePosition> mainGraphOrder,
+  public SubGraphOrderer(HashMap<GraphNode, NodePosition> mainGraphOrder,
       SequenceGraph subGraph, OverlapThread overlapThread) {
     this.mainGraphOrder = mainGraphOrder;
     this.subGraph = subGraph;
@@ -72,7 +73,7 @@ public class SubGraphOrderer extends Thread {
   private ArrayList<NodePosition> orderNodes() {
     ArrayList<NodePosition> subGraphOrder = new ArrayList<>();
     for (GraphNode graphNode : subGraph) {
-      int level = mainGraphOrder.get(graphNode.getId()).getLevel();
+      int level = mainGraphOrder.get(graphNode).getLevel();
       subGraphOrder.add(new NodePosition(graphNode, level));
     }
     return subGraphOrder;
@@ -84,11 +85,10 @@ public class SubGraphOrderer extends Thread {
    * @param overlappingNodes a map containing all of the overlapping nodes.
    * @param nodeOrder        the ordered list of nodes of the subgraph.
    */
-  private static void markOverlap(HashMap<Integer, GraphNode> overlappingNodes,
+  private static void markOverlap(HashSet<GraphNode> overlappingNodes,
       ArrayList<NodePosition> nodeOrder) {
     nodeOrder.forEach(graphNode -> {
-      graphNode.setOverlapping(overlappingNodes.containsKey(
-          graphNode.getNode().getId()));
+      graphNode.setOverlapping(overlappingNodes.contains(graphNode.getNode()));
     });
   }
 

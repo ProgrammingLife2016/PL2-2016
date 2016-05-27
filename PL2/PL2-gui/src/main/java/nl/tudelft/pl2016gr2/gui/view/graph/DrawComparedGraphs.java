@@ -512,7 +512,7 @@ public class DrawComparedGraphs implements Initializable {
       graph, int startLevel, int endLevel) {
     pane.getChildren().clear();
     int startIndex = calculateStartIndex(graphOrder, startLevel);
-    HashMap<Integer, GraphNodeCircle> circleMap = new HashMap<>();
+    HashMap<GraphNode, GraphNodeCircle> circleMap = new HashMap<>();
     int curLevel = startLevel;
     int endIndex;
     ArrayList<NodePosition> levelNodes = new ArrayList<>();
@@ -579,7 +579,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private static void drawNode(Pane pane, HashMap<Integer, GraphNodeCircle> circleMap,
+  private static void drawNode(Pane pane, HashMap<GraphNode, GraphNodeCircle> circleMap,
       ArrayList<NodePosition> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       NodePosition graphNodeOrder = nodes.get(i);
@@ -588,7 +588,7 @@ public class DrawComparedGraphs implements Initializable {
       GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(graphNodeOrder),
           relativeHeight, 0.5 / nodes.size());
       pane.getChildren().add(circle);
-      circleMap.put(node.getId(), circle);
+      circleMap.put(node, circle);
       if (graphNodeOrder.isOverlapping()) {
         circle.setFill(OVERLAP_COLOR);
       } else {
@@ -641,11 +641,11 @@ public class DrawComparedGraphs implements Initializable {
    */
   private static void drawEdges(Pane pane, ArrayList<NodePosition> graphOrder,
       SequenceGraph graph, int startIndex, int endIndex,
-      HashMap<Integer, GraphNodeCircle> circleMap) {
+      HashMap<GraphNode, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       GraphNode node = graphOrder.get(i).getNode();
-      Circle fromCircle = circleMap.get(node.getId());
-      for (Integer outlink : node.getOutEdges()) {
+      Circle fromCircle = circleMap.get(node);
+      for (GraphNode outlink : node.getOutEdges()) {
         Circle toCircle = circleMap.get(outlink);
         if (toCircle == null) {
           continue;
@@ -653,7 +653,7 @@ public class DrawComparedGraphs implements Initializable {
         Line edge = new Line();
         edge.setSmooth(true);
         edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
-            graph.getNode(outlink)));
+            outlink));
         pane.getChildren().add(edge);
         edge.startXProperty().bind(fromCircle.centerXProperty());
         edge.startYProperty().bind(fromCircle.centerYProperty());
@@ -695,11 +695,11 @@ public class DrawComparedGraphs implements Initializable {
    * @param circleMap  a map which maps each node id to a circle.
    */
   private static void repositionOverlappingEdges(ArrayList<NodePosition> graphOrder,
-      int startIndex, int endIndex, HashMap<Integer, GraphNodeCircle> circleMap) {
+      int startIndex, int endIndex, HashMap<GraphNode, GraphNodeCircle> circleMap) {
     for (int i = startIndex; i < endIndex; i++) {
       NodePosition graphNode = graphOrder.get(i);
       GraphNode node = graphNode.getNode();
-      GraphNodeCircle circle = circleMap.get(node.getId());
+      GraphNodeCircle circle = circleMap.get(node);
       double subtract = circle.getMaxYOffset();
       while (calculateSameHeightNodes(node, circle, circleMap) >= 2) {
         subtract /= 2.0;
@@ -718,9 +718,9 @@ public class DrawComparedGraphs implements Initializable {
    * @return the amount of found nodes (circles) which are at the same height.
    */
   private static int calculateSameHeightNodes(GraphNode node, GraphNodeCircle circle,
-      HashMap<Integer, GraphNodeCircle> circleMap) {
+      HashMap<GraphNode, GraphNodeCircle> circleMap) {
     int sameHeight = 0;
-    for (Integer inLink : node.getInEdges()) {
+    for (GraphNode inLink : node.getInEdges()) {
       GraphNodeCircle parent = circleMap.get(inLink);
       if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
           circle.getRelativeHeightProperty().doubleValue()) == 0) {

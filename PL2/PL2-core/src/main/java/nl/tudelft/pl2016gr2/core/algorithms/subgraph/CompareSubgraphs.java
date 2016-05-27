@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
@@ -32,7 +33,7 @@ public class CompareSubgraphs {
    *         the node graph order of the bottom graph.
    */
   public static Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> compareGraphs(
-      HashMap<Integer, NodePosition> mainGraphOrder, SequenceGraph topGraph,
+      HashMap<GraphNode, NodePosition> mainGraphOrder, SequenceGraph topGraph,
       SequenceGraph bottomGraph) {
     // todo: decolapse bubble from the graphs (possibly remember bubbles here for easy recolapsing)
     OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);

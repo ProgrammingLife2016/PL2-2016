@@ -59,7 +59,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return The set of child nodes, or an <code>null</code> if the node does not have children
    */
-  Collection<Integer> getChildren();
+  Collection<GraphNode> getChildren();
 
   /**
    * Returns the size of this node.
@@ -85,7 +85,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return All in-edges of this <code>GraphNode</code>
    */
-  Collection<Integer> getInEdges();
+  Collection<GraphNode> getInEdges();
 
   /**
    * Sets the set of in-edges to be equal to the provided collection.
@@ -102,23 +102,23 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @param edges The collection of edges to make the in-edges of this node
    */
-  void setInEdges(Collection<Integer> edges);
+  void setInEdges(Collection<GraphNode> edges);
 
   /**
    * Adds the specified ID to the set of in-edges of this <code>GraphNode</code>.
    *
-   * @param identifier The identifier of the in-edge to add to this <code>GraphNode</code>.
+   * @param node The node to add to the in-edges of this <code>GraphNode</code>.
    * @deprecated This method delivers suboptimal performance. Use {@link #setInEdges(Collection)}
    */
-  void addInEdge(int identifier);
+  void addInEdge(GraphNode node);
 
   /**
    * Removes the specified ID to the set of in-edges of this <code>GraphNode</code>.
    *
-   * @param identifier The identifier of the in-edge to remove from this <code>GraphNode</code>.
+   * @param node The node to remove from the in-edges of this <code>GraphNode</code>.
    * @deprecated This method delivers suboptimal performance. Use {@link #setInEdges(Collection)}
    */
-  void removeInEdge(int identifier);
+  void removeInEdge(GraphNode node);
 
   /**
    * Returns the identifiers of the nodes of all out-edges of <code>GraphNode</code>.
@@ -128,7 +128,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return All children of this <code>GraphNode</code>
    */
-  Collection<Integer> getOutEdges();
+  Collection<GraphNode> getOutEdges();
 
   /**
    * Sets the set of out-edges to be equal to the provided collection.
@@ -145,23 +145,23 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @param edges The collection of edges to make the out-edges of this node
    */
-  void setOutEdges(Collection<Integer> edges);
+  void setOutEdges(Collection<GraphNode> edges);
 
   /**
    * Adds the specified ID to the set of out-edges of this <code>GraphNode</code>.
    *
-   * @param identifier The unique identifier of the child to add.
+   * @param node The node to add to the out-edges of this <code>GraphNode</code>.
    * @deprecated This method delivers suboptimal performance. Use {@link #setOutEdges(Collection)}
    */
-  void addOutEdge(int identifier);
+  void addOutEdge(GraphNode node);
 
   /**
    * Removes the specified ID to the set of out-edges of this <code>GraphNode</code>.
    *
-   * @param identifier The identifier of the out-edge to remove from this <code>GraphNode</code>.
+   * @param node The node to remove from the out-edges of this <code>GraphNode</code>.
    * @deprecated This method delivers suboptimal performance. Use {@link #setOutEdges(Collection)}
    */
-  void removeOutEdge(int identifier);
+  void removeOutEdge(GraphNode node);
 
   /**
    * Returns the names of all genomes that go through this <code>GraphNode</code>.

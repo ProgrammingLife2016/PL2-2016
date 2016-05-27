@@ -104,8 +104,8 @@ public class GfaReader {
       to *= SHIFT_BY_BASE_10;
       to += chars[index++] - '0';
     }
-    getNode(to).addInEdge(from);
-    getNode(from).addOutEdge(to);
+    getNode(to).addInEdge(getNode(from));
+    getNode(from).addOutEdge(getNode(to));
   }
 
   /**
