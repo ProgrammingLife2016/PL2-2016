@@ -37,7 +37,7 @@ public class FilterBubbles {
     this.originalGraph = originalGraph;
     zoomOut = new ZoomOut(originalGraph);
     // This should be based on highest id just to be safe (instead of size)
-    mutationId = originalGraph.size() + 1;
+    mutationId = originalGraph.getHighestId();
   }
   
   /**
@@ -245,7 +245,7 @@ public class FilterBubbles {
     while (iterator.hasNext()) {
       GraphNode node = iterator.next();
       int id = node.getId();
-      if (id >= originalGraph.size()) {
+      if (id >= originalGraph.getHighestId()) {
         continue;
       }
       Collection<Integer> inlinks = pruneInlinks(originalGraph.getNode(id), zoomedGraph);

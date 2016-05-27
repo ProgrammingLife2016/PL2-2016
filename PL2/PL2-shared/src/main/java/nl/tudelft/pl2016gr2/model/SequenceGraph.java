@@ -53,6 +53,13 @@ public interface SequenceGraph extends Iterable<GraphNode> {
   Collection<Integer> getRootNodes();
   
   void print();
+  
+  /**
+   * Gets the highest id in the graph.
+   * 
+   * @return the highest id in the graph
+   */
+  int getHighestId();
 
   /**
    * Add the node with the specified identifier as a root node of this graph.

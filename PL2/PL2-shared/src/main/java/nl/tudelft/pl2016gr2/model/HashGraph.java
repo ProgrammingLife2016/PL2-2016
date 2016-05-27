@@ -12,6 +12,7 @@ public class HashGraph implements SequenceGraph {
   private final HashMap<Integer, GraphNode> nodes;
   private final ArrayList<Integer> rootNodes;
   private final HashSet<String> genomes;
+  private int highestId;
 
   /**
    * Constructs an empty <code>HashGraph</code>.
@@ -20,6 +21,7 @@ public class HashGraph implements SequenceGraph {
     nodes = new HashMap<>();
     rootNodes = new ArrayList<>();
     genomes = new HashSet<>();
+    highestId = 0;
   }
 
   /**
@@ -56,6 +58,11 @@ public class HashGraph implements SequenceGraph {
     nodes.forEach((id, node) -> {
       System.out.println(node);
     });
+  }
+  
+  @Override
+  public int getHighestId() {
+    return highestId;
   }
 
   /**
@@ -127,7 +134,10 @@ public class HashGraph implements SequenceGraph {
   @Override
   public void add(GraphNode node) {
     //assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
-
+    if (node.getId() > highestId) {
+      highestId = node.getId();
+    }
+    
     if (node.isRoot()) {
       rootNodes.add(node.getId());
     }
