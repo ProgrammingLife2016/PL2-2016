@@ -209,7 +209,7 @@ public class FilterBubbles {
     List<Integer> curNodeOutlinks = new ArrayList<>();
 
     for (Integer outlink : node.getOutEdges()) {
-      if (bubble != null && !bubble.getChildren().contains(outlink)) {
+      if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
       ArrayList<String> genomes = new ArrayList<>(originalGraph.getNode(outlink).getGenomes());
@@ -245,7 +245,7 @@ public class FilterBubbles {
     while (iterator.hasNext()) {
       GraphNode node = iterator.next();
       int id = node.getId();
-      if (id >= originalGraph.getHighestId()) {
+      if (node.hasChildren()) {
         continue;
       }
       Collection<Integer> inlinks = pruneInlinks(originalGraph.getNode(id), zoomedGraph);

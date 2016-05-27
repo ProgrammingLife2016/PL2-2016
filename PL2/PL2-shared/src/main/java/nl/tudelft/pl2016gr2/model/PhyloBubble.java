@@ -46,8 +46,14 @@ public class PhyloBubble implements Bubble {
   
   @Override
   public String toString() {
+    String nested = "[";
+    for (GraphNode node : nestedNodes) {
+      nested = nested + ", " + node.getId();
+    }
+    nested = nested + "]";
+    
     return "id: " + id + ", in: " + inEdges + ", out: " + outEdges 
-        + ", nested: " + nestedNodes + ", tree leaves: " + treeNode.getGenomes();
+        + ", nested: " + nested + ", tree leaves: " + treeNode.getGenomes();
   }
 
   @Override
@@ -66,6 +72,17 @@ public class PhyloBubble implements Bubble {
   @Override
   public boolean hasChildren() {
     return true;
+  }
+  
+  @Override
+  public boolean hasChild(int child) {
+    for (GraphNode node : nestedNodes) {
+      if (node.getId() == child) {
+        return true;
+      }
+    }
+    
+    return false;
   }
 
   @Override

@@ -155,6 +155,10 @@ public class ZoomOut {
     }
     
     Set<GraphNode> nodesToRemove = NodePathFinder.getNodesOnPath(start, end, graph, false);
+    // get current in and outlinks of start and end node
+    Collection<Integer> startInEdges = graph.getNode(start).getInEdges();
+    Collection<Integer> endOutEdges = graph.getNode(end).getOutEdges();
+    
     nodesToRemove.forEach(node -> {
       if (node.getId() != start && node.getId() != end) {
         graph.remove(node.getId(), true, true);
@@ -165,9 +169,22 @@ public class ZoomOut {
     
     Set<GraphNode> previousView = oldGraphs.get(start).get(end).pop();
     previousView.forEach(node -> {
+      if (node.getId() == start) {
+        node.setInEdges(startInEdges);
+      } else if (node.getId() == end) {
+        node.setOutEdges(endOutEdges);
+      }
       graph.add(node);
     });
     
     return graph;
+  }
+  
+  private void printList(String header, Collection<GraphNode> nodes) {
+    System.out.print(header + ": [");
+    nodes.forEach(node -> {
+      System.out.print(node.getId() + ", ");
+    });
+    System.out.println("]");
   }
 }

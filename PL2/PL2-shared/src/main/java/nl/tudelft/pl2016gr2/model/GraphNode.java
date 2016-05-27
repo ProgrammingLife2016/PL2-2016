@@ -60,6 +60,13 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return The set of child nodes, or an <code>null</code> if the node does not have children
    */
   Collection<GraphNode> getChildren();
+  
+  /**
+   * Checks if this node has a child with the specified child.
+   * 
+   * @return true if this node has the child.
+   */
+  boolean hasChild(int child);
 
   /**
    * Returns the size of this node.

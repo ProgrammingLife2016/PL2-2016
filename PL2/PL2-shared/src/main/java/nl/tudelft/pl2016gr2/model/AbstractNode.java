@@ -35,6 +35,11 @@ public abstract class AbstractNode implements Node {
   public boolean hasChildren() {
     return false;
   }
+  
+  @Override
+  public boolean hasChild(int child) {
+    return false;
+  }
 
   @Override
   public Collection<GraphNode> getChildren() {

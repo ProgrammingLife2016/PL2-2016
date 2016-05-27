@@ -63,7 +63,7 @@ public class ZoomIn {
         endNode.addInEdge(curInlink);
       }
     }
-    
+
     filter.pruneNodes(zoomedGraph, graph, newBubbles);
     replace(bubble, graph, zoomedGraph);
     return graph;
