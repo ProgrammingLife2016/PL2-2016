@@ -235,7 +235,7 @@ public class FileChooserController implements Initializable {
     return (observable, oldValue, newValue) -> {
       if (newValue == browseFile) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(getSafeStartDir(newValue));
+        fileChooser.setInitialDirectory(getSafeStartDir(oldValue));
         fileChooser.setTitle("Select file");
 
         File file = fileChooser.showOpenDialog(root.getScene().getWindow());
