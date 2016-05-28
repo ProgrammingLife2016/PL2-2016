@@ -1,7 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class GraphOrdererThread extends Thread {
 
-  private HashMap<GraphNode, NodePosition> orderedGraph;
+//  private ArrayList<GraphNode> orderedGraph;
   private final SequenceGraph graph;
 
   /**
@@ -39,8 +38,8 @@ public class GraphOrdererThread extends Thread {
    * @param graph the graph.
    * @return the node order.
    */
-  private static HashMap<GraphNode, NodePosition> calculateGraphOrder(SequenceGraph graph) {
-    HashMap<GraphNode, NodePosition> nodeOrder = new HashMap<>();
+  private void calculateGraphOrder() {
+//    ArrayList<GraphNode> nodeOrder = new ArrayList<>();
     HashMap<GraphNode, Integer> reachedCount = new HashMap<>();
     Set<GraphNode> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
@@ -51,7 +50,8 @@ public class GraphOrdererThread extends Thread {
       for (GraphNode node : currentLevel) {
         int count = reachedCount.getOrDefault(node, 0);
         if (node.getInEdges().size() == count) {
-          nodeOrder.put(node, new NodePosition(node, level));
+          node.setLevel(level);
+//          nodeOrder.add(node);
           nextLevel.addAll(node.getOutEdges());
           addedOutLinks.add(new ArrayList<>(node.getOutEdges()));
         }
@@ -59,7 +59,7 @@ public class GraphOrdererThread extends Thread {
       updateReachedCount(reachedCount, addedOutLinks);
       currentLevel = nextLevel;
     }
-    return nodeOrder;
+//    return nodeOrder;
   }
 
   /**
@@ -82,13 +82,13 @@ public class GraphOrdererThread extends Thread {
    *
    * @return a hashmap containing an id, node order mapping.
    */
-  public HashMap<GraphNode, NodePosition> getOrderedGraph() {
+  public SequenceGraph getGraph() {
     try {
       this.join();
     } catch (InterruptedException ex) {
       Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return orderedGraph;
+    return graph;
   }
 
   /**
@@ -96,6 +96,6 @@ public class GraphOrdererThread extends Thread {
    */
   @Override
   public void run() {
-    orderedGraph = calculateGraphOrder(graph);
+    calculateGraphOrder();
   }
 }

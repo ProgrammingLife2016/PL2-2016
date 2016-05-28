@@ -18,6 +18,16 @@ public class SequenceNode extends AbstractNode {
   private ArrayList<GraphNode> outEdges;
 
   /**
+   * If this node is overlapping with a node from the other graph.
+   */
+  private boolean overlapping;
+
+  /**
+   * The level of this node (the depth in the graph.
+   */
+  private int level;
+
+  /**
    * Constructs a bare node with only an identifier.
    *
    * @param identifier The ID to assign to this node.
@@ -176,10 +186,35 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copy() {
     return new SequenceNode(this.getId(), sequence, getGenomes());
   }
-  
+
   @Override
   public GraphNode copyAll() {
     return new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
+  }
+
+  @Override
+  public void addPositionOffset(int offset) {
+    level += offset;
+  }
+
+  @Override
+  public int getLevel() {
+    return level;
+  }
+
+  @Override
+  public void setOverlapping(boolean overlapping) {
+    this.overlapping = overlapping;
+  }
+
+  @Override
+  public boolean isOverlapping() {
+    return overlapping;
+  }
+
+  @Override
+  public void setLevel(int level) {
+    this.level = level;
   }
 
   @Override
@@ -196,6 +231,7 @@ public class SequenceNode extends AbstractNode {
       sb2.append(outEdge.getId()).append(", ");
     }
     sb2.append(']');
-    return super.toString() + ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.toString() + ", outEdges=" + sb2.toString() + '}';
+    return super.toString() + ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.
+        toString() + ", outEdges=" + sb2.toString() + '}';
   }
 }

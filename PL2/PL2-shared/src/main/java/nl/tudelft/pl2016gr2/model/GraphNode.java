@@ -229,4 +229,21 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return A copy of the object.
    */
   GraphNode copyAll();
+
+  public boolean isOverlapping();
+
+  public void setOverlapping(boolean overlapping);
+
+  /**
+   * Add an offset to the current level of the node.
+   *
+   * @param offset the offset.
+   */
+  public void addPositionOffset(int offset);
+
+  public void setLevel(int level);
+
+  public int getLevel();
+//  NodePosition getNodePosition();
+//  void setNodePosition(NodePosition nodePosition);
 }

@@ -8,18 +8,19 @@ import java.util.HashSet;
 
 public class PhyloBubble implements Bubble {
 
-  private int id;
-  private IPhylogeneticTreeNode treeNode;
+  private final int id;
+  private final IPhylogeneticTreeNode treeNode;
+  private final ArrayList<GraphNode> nestedNodes;
+  
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
-  private HashSet<GraphNode> nestedNodes;
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
     this.inEdges = new ArrayList<>();
     this.outEdges = new ArrayList<>();
-    this.nestedNodes = new HashSet<>();
+    this.nestedNodes = new ArrayList<>();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode,
@@ -30,7 +31,7 @@ public class PhyloBubble implements Bubble {
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
-    this.nestedNodes = new HashSet<>();
+    this.nestedNodes = new ArrayList<>();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<GraphNode> inEdges,
@@ -41,7 +42,7 @@ public class PhyloBubble implements Bubble {
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
-    this.nestedNodes = new HashSet<>(nestedNodes);
+    this.nestedNodes = new ArrayList<>(nestedNodes);
   }
 
   @Override
@@ -50,7 +51,7 @@ public class PhyloBubble implements Bubble {
     for (GraphNode node : nestedNodes) {
       nested = nested + ", " + node.getId();
     }
-    nested = nested + "]";
+    nested += "]";
 
     return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
         + ", nested: " + nested + ", tree leaves: " + treeNode.getGenomes();
@@ -206,4 +207,28 @@ public class PhyloBubble implements Bubble {
     return id == ((PhyloBubble) obj).id;
   }
 
+  @Override
+  public boolean isOverlapping() {
+    return nestedNodes.get(0).isOverlapping();
+  }
+
+  @Override
+  public void setOverlapping(boolean overlapping) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void addPositionOffset(int offset) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setLevel(int level) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int getLevel() {
+    return nestedNodes.get(0).getLevel();
+  }
 }

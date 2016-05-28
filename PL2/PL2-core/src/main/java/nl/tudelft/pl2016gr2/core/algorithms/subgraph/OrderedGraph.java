@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.NodePosition;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class OrderedGraph {
 
   private final SequenceGraph subgraph;
-  private final ArrayList<NodePosition> graphOrder;
+  private final ArrayList<GraphNode> graphOrder;
 
   /**
    * Construct an ordered graph.
@@ -21,7 +21,7 @@ public class OrderedGraph {
    * @param subgraph   the subgraph.
    * @param graphOrder the graph order.
    */
-  public OrderedGraph(SequenceGraph subgraph, ArrayList<NodePosition> graphOrder) {
+  public OrderedGraph(SequenceGraph subgraph, ArrayList<GraphNode> graphOrder) {
     this.subgraph = subgraph;
     this.graphOrder = graphOrder;
   }
@@ -30,7 +30,7 @@ public class OrderedGraph {
     return subgraph;
   }
 
-  public ArrayList<NodePosition> getGraphOrder() {
+  public ArrayList<GraphNode> getGraphOrder() {
     return graphOrder;
   }
 }

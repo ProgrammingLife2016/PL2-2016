@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -44,12 +44,12 @@ public class SubgraphAlgorithmManager {
         bottomGenomes);
     topSubGraphThread.start();
     bottomSubGraphThread.start();
-
-    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
-        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
+    
+    Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> alignedGraphs
+        = CompareSubgraphs.compareGraphs(mainGraphOrder.getGraph(),
             topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    ArrayList<NodePosition> topGraphOrder = alignedGraphs.left;
-    ArrayList<NodePosition> bottomGraphOrder = alignedGraphs.right;
+    ArrayList<GraphNode> topGraphOrder = alignedGraphs.left;
+    ArrayList<GraphNode> bottomGraphOrder = alignedGraphs.right;
 
     OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
     OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
@@ -73,16 +73,16 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
-    FilterBubbles filter = new FilterBubbles(subgraph);
-    subgraph = filter.filter(treeRoot);
-
-    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(), subgraph);
+    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getGraph(), subgraph);
     graphOrder.start();
 
     CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
-    for (NodePosition nodePosition : graphOrder.getNodeOrder()) {
+    for (GraphNode nodePosition : graphOrder.getNodeOrder()) {
       nodePosition.setOverlapping(true);
     }
+
+//    FilterBubbles filter = new FilterBubbles(subgraph);
+//    subgraph = filter.filter(treeRoot);
 
     // perform bubbling
     return new OrderedGraph(subgraph, graphOrder.getNodeOrder());

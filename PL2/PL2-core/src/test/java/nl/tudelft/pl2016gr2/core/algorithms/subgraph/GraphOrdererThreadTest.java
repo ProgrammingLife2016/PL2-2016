@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.NodePosition;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
 import org.junit.Before;
@@ -59,12 +58,12 @@ public class GraphOrdererThreadTest {
     SequenceGraph graph = new HashGraph(nodes, rootNodes, new ArrayList<>());
     GraphOrdererThread orderer = new GraphOrdererThread(graph);
     orderer.start();
-    HashMap<GraphNode, NodePosition> orderedGraph = orderer.getOrderedGraph();
+    SequenceGraph orderedGraph = orderer.getGraph();
     assertEquals(4, orderedGraph.size());
-    assertEquals(0, orderedGraph.get(nodea).getLevel());
-    assertEquals(1, orderedGraph.get(nodeb).getLevel());
-    assertEquals(2, orderedGraph.get(nodec).getLevel());
-    assertEquals(2, orderedGraph.get(noded).getLevel());
+    assertEquals(0, nodea.getLevel());
+    assertEquals(1, nodeb.getLevel());
+    assertEquals(2, nodec.getLevel());
+    assertEquals(2, noded.getLevel());
   }
 
 }
