@@ -4,6 +4,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,6 +62,13 @@ public class HashGraph implements SequenceGraph {
     nodes.forEach((id, node) -> {
       System.out.println(node);
     });
+  }
+
+  @Override
+  public ArrayList<GraphNode> getOrderedGraph() {
+    ArrayList<GraphNode> graphOrder = new ArrayList<>(nodes.values());
+    graphOrder.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+    return graphOrder;
   }
 
   /**

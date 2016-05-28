@@ -184,12 +184,18 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public GraphNode copy() {
-    return new SequenceNode(this.getId(), sequence, getGenomes());
+    SequenceNode node = new SequenceNode(this.getId(), sequence, getGenomes());
+    node.level = level;
+    node.overlapping = overlapping;
+    return node;
   }
 
   @Override
   public GraphNode copyAll() {
-    return new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
+    SequenceNode node = new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
+    node.level = level;
+    node.overlapping = overlapping;
+    return node;
   }
 
   @Override

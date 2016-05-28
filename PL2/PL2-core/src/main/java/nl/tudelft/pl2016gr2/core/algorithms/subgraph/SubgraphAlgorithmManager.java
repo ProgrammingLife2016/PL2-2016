@@ -80,12 +80,14 @@ public class SubgraphAlgorithmManager {
     for (GraphNode nodePosition : graphOrder.getNodeOrder()) {
       nodePosition.setOverlapping(true);
     }
-
-//    FilterBubbles filter = new FilterBubbles(subgraph);
-//    subgraph = filter.filter(treeRoot);
-
-    // perform bubbling
-    return new OrderedGraph(subgraph, graphOrder.getNodeOrder());
+    
+    FilterBubbles filter = new FilterBubbles(subgraph);
+    subgraph = filter.filter(treeRoot);
+    
+    ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
+    CompareSubgraphs.removeEmptyLevels(orderedNodes);
+    
+    return new OrderedGraph(subgraph, orderedNodes);
   }
 
   /**

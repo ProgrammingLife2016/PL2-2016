@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -167,4 +168,10 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    */
   @Override
   Iterator<GraphNode> iterator();
+  
+  /**
+   * Get the nodes of the graph ordered by level.
+   * @return the nodes of the graph ordered by level.
+   */
+  ArrayList<GraphNode> getOrderedGraph();
 }

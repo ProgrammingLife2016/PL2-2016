@@ -103,13 +103,14 @@ public class CompareSubgraphs {
     int curLevel = 0;
     int emptyLevels = 0;
     for (GraphNode node : nodeOrder) {
-      if (node.getLevel() > curLevel) {
-        for (int i = curLevel; i < node.getLevel(); i++) {
+      int nodeLevel = node.getLevel();
+      if (nodeLevel > curLevel) {
+        for (int i = curLevel; i < nodeLevel; i++) {
           if (!levelIsNotEmpty[i]) {
             ++emptyLevels;
           }
         }
-        curLevel = node.getLevel();
+        curLevel = nodeLevel;
       }
       node.addPositionOffset(-emptyLevels);
     }

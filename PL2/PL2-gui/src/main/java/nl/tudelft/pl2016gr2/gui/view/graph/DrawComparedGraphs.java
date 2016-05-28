@@ -203,7 +203,11 @@ public class DrawComparedGraphs implements Initializable {
             genomes.add(gen);
           }
         }
-        handleGenomesDropped(genomes, event, topGraphGenomes, bottomGraphGenomes);
+        try {
+          handleGenomesDropped(genomes, event, topGraphGenomes, bottomGraphGenomes);
+        } catch (Exception ex) {
+          Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
+        }
         event.setDropCompleted(true);
         event.consume();
       }

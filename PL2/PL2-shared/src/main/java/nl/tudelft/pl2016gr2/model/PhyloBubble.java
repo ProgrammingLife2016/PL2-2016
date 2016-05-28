@@ -10,17 +10,17 @@ public class PhyloBubble implements Bubble {
 
   private final int id;
   private final IPhylogeneticTreeNode treeNode;
-  private final ArrayList<GraphNode> nestedNodes;
+  private final HashSet<GraphNode> nestedNodes;
   
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
-
+  
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
     this.inEdges = new ArrayList<>();
     this.outEdges = new ArrayList<>();
-    this.nestedNodes = new ArrayList<>();
+    this.nestedNodes = new HashSet<>();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode,
@@ -31,7 +31,7 @@ public class PhyloBubble implements Bubble {
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
-    this.nestedNodes = new ArrayList<>();
+    this.nestedNodes = new HashSet<>();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<GraphNode> inEdges,
@@ -42,7 +42,7 @@ public class PhyloBubble implements Bubble {
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
-    this.nestedNodes = new ArrayList<>(nestedNodes);
+    this.nestedNodes = new HashSet<>(nestedNodes);
   }
 
   @Override
@@ -209,7 +209,12 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public boolean isOverlapping() {
-    return nestedNodes.get(0).isOverlapping();
+    for (GraphNode nestedNode : nestedNodes) {
+      if(nestedNode.isOverlapping()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -219,7 +224,9 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addPositionOffset(int offset) {
-    throw new UnsupportedOperationException();
+    for (GraphNode nestedNode : nestedNodes) {
+      nestedNode.addPositionOffset(offset);
+    }
   }
 
   @Override
@@ -229,6 +236,12 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public int getLevel() {
-    return nestedNodes.get(0).getLevel();
+    int lowestLevel = Integer.MAX_VALUE;
+    for (GraphNode nestedNode : nestedNodes) {
+      if(nestedNode.getLevel() < lowestLevel) {
+        lowestLevel = nestedNode.getLevel();
+      }
+    }
+    return lowestLevel;
   }
 }
