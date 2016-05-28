@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import javafx.beans.property.BooleanProperty;
+
 import java.util.ArrayList;
 
 /**
@@ -75,4 +77,20 @@ public interface IPhylogeneticTreeNode {
    * @return if this node is a leaf node.
    */
   boolean isLeaf();
+
+  /**
+   * Get the drawn in top property. This property is true iff all of the genomes in this tree node
+   * are drawn in the top graph.
+   *
+   * @return the drawn in top property
+   */
+  BooleanProperty getDrawnInTopProperty();
+
+  /**
+   * Get the drawn in bottom property. This property is true iff all of the genomes in this tree
+   * node are drawn in the bottom graph.
+   *
+   * @return the drawn in bottom property
+   */
+  BooleanProperty getDrawnInBottomProperty();
 }

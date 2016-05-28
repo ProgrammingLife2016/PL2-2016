@@ -1,23 +1,21 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import com.sun.javafx.collections.ObservableSetWrapper;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.util.Duration;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
-import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * This class manages the currently selected node. It makes sure the correct data is displayed and
@@ -29,28 +27,26 @@ public class SelectionManager {
 
   private final RootLayoutController rootLayoutController;
   private final Pane selectionDescriptionPane;
-  private final Region background;
   @TestId(id = "contentPane")
   private DescriptionPane contentPane;
   @TestId(id = "selected")
   private ISelectable selected;
   private Timeline timeline;
 
-  private final ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> graphNodes
-      = new SimpleObjectProperty<>();
+  private final ObservableSet<String> topGraphGenomes = new ObservableSetWrapper<>(new HashSet<>());
+  private final ObservableSet<String> bottomGraphGenomes
+      = new ObservableSetWrapper<>(new HashSet<>());
 
   /**
    * Create a selection manager.
    *
    * @param rootLayoutController     the root layout controller class.
    * @param selectionDescriptionPane the pane in which to draw information about selected items.
-   * @param background               the background pane which is positioned behind the description.
    */
-  public SelectionManager(RootLayoutController rootLayoutController, Pane selectionDescriptionPane,
-      Region background) {
+  public SelectionManager(RootLayoutController rootLayoutController,
+      Pane selectionDescriptionPane) {
     this.rootLayoutController = rootLayoutController;
     this.selectionDescriptionPane = selectionDescriptionPane;
-    this.background = background;
 
     selectionDescriptionPane.getChildren().addListener((Observable observable) -> {
       if (selectionDescriptionPane.getChildren().isEmpty()) {
@@ -112,7 +108,7 @@ public class SelectionManager {
    * Create a new content pane.
    */
   private void createNewContentPane() {
-    contentPane = new DescriptionPane(background, selectionDescriptionPane);
+    contentPane = new DescriptionPane(selectionDescriptionPane);
   }
 
   /**
@@ -129,27 +125,15 @@ public class SelectionManager {
     timeline.setOnFinished((ActionEvent event) -> {
       curContentPane.getChildren().clear();
       selectionDescriptionPane.getChildren().remove(curContentPane);
-      curContentPane.clear();
     });
     timeline.play();
   }
 
-  /**
-   * Set the IPhylogeneticTreeNode which is shown in the top and bottom graph.
-   *
-   * @param topNode    the IPhylogeneticTreeNode which is shown in the top graph.
-   * @param bottomNode the IPhylogeneticTreeNode which is shown in the bottom graph.
-   */
-  public void setShownGraphNodes(IPhylogeneticTreeNode topNode, IPhylogeneticTreeNode bottomNode) {
-    graphNodes.set(new Pair<>(topNode, bottomNode));
+  public ObservableSet<String> getTopGraphGenomes() {
+    return topGraphGenomes;
   }
 
-  /**
-   * Get the IPhylogeneticTreeNode which is shown in the top and bottom graph.
-   *
-   * @return the IPhylogeneticTreeNode which is shown in the top and bottom graph.
-   */
-  public ObjectProperty<Pair<IPhylogeneticTreeNode, IPhylogeneticTreeNode>> getShownGraphNodes() {
-    return graphNodes;
+  public ObservableSet<String> getBottomGraphGenomes() {
+    return bottomGraphGenomes;
   }
 }

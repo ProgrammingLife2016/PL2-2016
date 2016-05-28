@@ -4,15 +4,23 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
+import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -21,6 +29,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represent a node of the phylogenetic tree which can be drawn in the user interface (it
@@ -28,21 +37,36 @@ import java.util.ArrayList;
  *
  * @author Faris
  */
-public class ViewNode extends Circle implements ISelectable {
+public class TreeNodeCircle extends Circle implements ISelectable {
 
   private static final Color LEAF_COLOR = Color.BLACK;
   private static final Color NODE_COLOR = Color.ALICEBLUE;
   private static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
+  private static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
 
+  private static final List<Stop> MULTI_GRAPH_GRADIENT_STOPS = new ArrayList<>(2);
+
+  /**
+   * Initialize the colors of the multie graph gradient. DON'T MOVE THIS TO AFTER THE
+   * MULTI_GRAPH_GRADIENT DECLARATION. THIS WILL BREAK IT.
+   */
+  static {
+    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(0.0, DrawComparedGraphs.TOP_GRAPH_COLOR));
+    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, DrawComparedGraphs.BOTTOM_GRAPH_COLOR));
+  }
+
+  private static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
+      true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
+
   private final IPhylogeneticTreeNode dataNode;
   @TestId(id = "children")
-  private final ArrayList<ViewNode> children = new ArrayList<>();
+  private final ArrayList<TreeNodeCircle> children = new ArrayList<>();
   private final Area area;
   private final SelectionManager selectionManager;
   private boolean isLeaf;
@@ -54,18 +78,34 @@ public class ViewNode extends Circle implements ISelectable {
    * @param graphArea        the graph area in which the node has to be drawn.
    * @param selectionManager the selection manager.
    */
-  private ViewNode(IPhylogeneticTreeNode dataNode, Area graphArea,
+  private TreeNodeCircle(IPhylogeneticTreeNode dataNode, Area graphArea,
       SelectionManager selectionManager) {
     super(NODE_RADIUS);
+    setStrokeWidth(NODE_BORDER_WIDTH);
     this.dataNode = dataNode;
     this.area = graphArea;
     this.selectionManager = selectionManager;
 
-    setDefaultColor();
+    resetColor();
+    initializeNodeListeners();
 
     this.setCenterX(graphArea.getEndX() - this.getRadius());
     this.setCenterY(graphArea.getCenterY());
     initializeClickedEvent();
+    initializeDragEvent();
+  }
+
+  /**
+   * Initialize listeners which listen to the dataNode properties and change the node properties
+   * accordingly.
+   */
+  private void initializeNodeListeners() {
+    dataNode.getDrawnInTopProperty().addListener(invalid -> {
+      resetColor();
+    });
+    dataNode.getDrawnInBottomProperty().addListener(invalid -> {
+      resetColor();
+    });
   }
 
   /**
@@ -76,6 +116,63 @@ public class ViewNode extends Circle implements ISelectable {
       selectionManager.select(this);
       event.consume();
     });
+  }
+
+  /**
+   * Initialize a drag event initializer.
+   */
+  private void initializeDragEvent() {
+    setOnDragDetected((MouseEvent event) -> {
+      StringBuilder genomeStringBuilder = new StringBuilder();
+      for (String genome : dataNode.getGenomes()) {
+        genomeStringBuilder.append(genome).append('\n');
+      }
+      genomeStringBuilder.deleteCharAt(genomeStringBuilder.length() - 1);
+
+      ClipboardContent clipboard = new ClipboardContent();
+      clipboard.putString(genomeStringBuilder.toString());
+      Dragboard dragboard = startDragAndDrop(TransferMode.ANY);
+      dragboard.setContent(clipboard);
+
+      SnapshotParameters snapshotParams = new SnapshotParameters();
+      snapshotParams.setFill(Color.TRANSPARENT);
+      dragboard.setDragView(snapshot(snapshotParams, null));
+      event.consume();
+    });
+  }
+
+  /**
+   * Recalculate the color of this node.
+   */
+  private void resetColor() {
+    resetBorderColor();
+    setDefaultColor();
+  }
+
+  /**
+   * Recalculate the border color of this node.
+   */
+  private void resetBorderColor() {
+    if (dataNode.getDrawnInTopProperty().get() && dataNode.getDrawnInBottomProperty().get()) {
+      setStroke(MULTI_GRAPH_GRADIENT);
+    } else if (dataNode.getDrawnInTopProperty().get()) {
+      setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+    } else if (dataNode.getDrawnInBottomProperty().get()) {
+      setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+    } else {
+      setStroke(null);
+    }
+  }
+
+  /**
+   * Set the default color of this node.
+   */
+  private void setDefaultColor() {
+    if (dataNode.isLeaf()) {
+      setFill(LEAF_COLOR);
+    } else {
+      setFill(NODE_COLOR);
+    }
   }
 
   /**
@@ -96,13 +193,13 @@ public class ViewNode extends Circle implements ISelectable {
    * @param selectionManager the selection manager.
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
-  protected static ViewNode drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
+  protected static TreeNodeCircle drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
       Pane graphPane, SelectionManager selectionManager) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {
       return null; // box too small to draw node.
     }
-    ViewNode node = new ViewNode(dataNode, graphArea, selectionManager);
+    TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
     graphPane.getChildren().add(node);
     drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
     return node;
@@ -117,7 +214,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param graphPane        the pane in which to draw the node.
    * @param selectionManager the selection manager.
    */
-  private static void drawChildren(ViewNode node, IPhylogeneticTreeNode dataNode, Area area,
+  private static void drawChildren(TreeNodeCircle node, IPhylogeneticTreeNode dataNode, Area area,
       Pane graphPane, SelectionManager selectionManager) {
     if (dataNode.isLeaf()) {
       node.isLeaf = true;
@@ -135,7 +232,7 @@ public class ViewNode extends Circle implements ISelectable {
       double nextEndY = nextStartY + ySize;
       double nextEndX = area.getEndX() - calculateEdgeLength(dataNode.getChild(i));
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
-      ViewNode child = drawNode(childDataNode, childArea, graphPane, selectionManager);
+      TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
       node.children.add(child);
       drawEdge(node, child, graphPane);
     }
@@ -185,8 +282,9 @@ public class ViewNode extends Circle implements ISelectable {
    * @param child     the child node.
    * @param graphPane the pane in which the edge should be drawn.
    */
-  private static void drawEdge(ViewNode parent, ViewNode child, Pane graphPane) {
+  private static void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
     Line edge = new Line();
+    edge.setSmooth(true);
     edge.startXProperty().bind(parent.centerXProperty());
     edge.startYProperty().bind(parent.centerYProperty());
     edge.endXProperty().bind(child.centerXProperty());
@@ -202,7 +300,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param node      the parent node.
    * @param graphPane the pane in which to draw the elipsis.
    */
-  private static void drawElipsis(ViewNode node, Pane graphPane) {
+  private static void drawElipsis(TreeNodeCircle node, Pane graphPane) {
     Line elipsis = new Line();
     elipsis.startXProperty().bind(node.centerXProperty().add(-node.getRadius() * 1.25));
     elipsis.endXProperty().bind(node.centerXProperty().add(-node.getRadius() * 2.5));
@@ -218,7 +316,7 @@ public class ViewNode extends Circle implements ISelectable {
    * @param newRoot  the node which should be the root after zooming in.
    * @param timeline the timeline which is used for the animation.
    */
-  public void zoomIn(ViewNode newRoot, Timeline timeline) {
+  public void zoomIn(TreeNodeCircle newRoot, Timeline timeline) {
     zoomIn(this.area, newRoot.area, timeline);
   }
 
@@ -241,7 +339,7 @@ public class ViewNode extends Circle implements ISelectable {
     fireEvent(new AnimationEvent(getCenterX(), getCenterY(), newX, newY,
         originalArea.getHeight() / zoomArea.getHeight(), timeline, ZOOM_IN_ANIMATION_DURATION));
 
-    for (ViewNode child : children) {
+    for (TreeNodeCircle child : children) {
       child.zoomIn(originalArea, zoomArea, timeline);
     }
   }
@@ -280,7 +378,7 @@ public class ViewNode extends Circle implements ISelectable {
     fireEvent(new AnimationEvent(getCenterX(), getCenterY(), newX, newY, 0.5, timeline,
         ZOOM_OUT_ANIMATION_DURATION));
 
-    for (ViewNode child : children) {
+    for (TreeNodeCircle child : children) {
       child.zoomOut(originalArea, zoomArea, timeline);
     }
   }
@@ -299,10 +397,10 @@ public class ViewNode extends Circle implements ISelectable {
    *
    * @return the nodes which are currently being displayed as leaf nodes.
    */
-  public ArrayList<ViewNode> getCurrentLeaves() {
-    ArrayList<ViewNode> res = new ArrayList<>();
+  public ArrayList<TreeNodeCircle> getCurrentLeaves() {
+    ArrayList<TreeNodeCircle> res = new ArrayList<>();
     if (!isLeaf) {
-      for (ViewNode child : children) {
+      for (TreeNodeCircle child : children) {
         res.addAll(child.getCurrentLeaves());
       }
     } else {
@@ -320,10 +418,10 @@ public class ViewNode extends Circle implements ISelectable {
    * @param yCoord the y coordinate.
    * @return the closest parent.
    */
-  public ViewNode getClosestParentNode(double xCoord, double yCoord) {
+  public TreeNodeCircle getClosestParentNode(double xCoord, double yCoord) {
     if (area.contains(xCoord, yCoord)) {
-      for (ViewNode child : children) {
-        ViewNode closest = child.getClosestParentNode(xCoord, yCoord);
+      for (TreeNodeCircle child : children) {
+        TreeNodeCircle closest = child.getClosestParentNode(xCoord, yCoord);
         if (closest != null) {
           return closest;
         }
@@ -359,84 +457,16 @@ public class ViewNode extends Circle implements ISelectable {
     highlightArea = null;
   }
 
-  /**
-   * Highlight the given node and its child nodes. First search for matches in any of the parent
-   * nodes, then search for matches in the child nodes.
-   *
-   * @param node  the node.
-   * @param color the color.
-   */
-  public void highlightNode(IPhylogeneticTreeNode node, Color color) {
-    IPhylogeneticTreeNode parent = dataNode;
-    while (parent.hasParent()) {
-      parent = parent.getParent();
-      if (parent.equals(node)) {
-        setRecursiveColor(color);
-        return;
-      }
-    }
-    highlightChildNode(node, color);
-  }
-
-  /**
-   * Highlight the given node and its child nodes. Only search for matches in the child nodes.
-   *
-   * @param node  the node.
-   * @param color the color.
-   */
-  private void highlightChildNode(IPhylogeneticTreeNode node, Color color) {
-    if (dataNode.equals(node)) {
-      setRecursiveColor(color);
-    } else {
-      for (ViewNode child : children) {
-        child.highlightNode(node, color);
-      }
-    }
-  }
-
-  /**
-   * Recursively set the color of this node and all child nodes to the given color.
-   *
-   * @param color the color.
-   */
-  private void setRecursiveColor(Color color) {
-    if (dataNode.isLeaf()) {
-      setFill(color.darker().darker());
-    } else {
-      setFill(color);
-      for (ViewNode child : children) {
-        child.setRecursiveColor(color);
-      }
-    }
-  }
-
-  /**
-   * Recursively set the color of this node and all child nodes to the default color.
-   */
-  public void removeHighlightColor() {
-    setDefaultColor();
-    for (ViewNode child : children) {
-      child.removeHighlightColor();
-    }
-  }
-
-  /**
-   * Set the default color of this node.
-   */
-  private void setDefaultColor() {
-    if (dataNode.isLeaf()) {
-      setFill(LEAF_COLOR);
-    } else {
-      setFill(NODE_COLOR);
-    }
-  }
-
   @Override
   public void select() {
+    setScaleX(1.75);
+    setScaleY(1.75);
   }
 
   @Override
   public void deselect() {
+    setScaleX(1.0);
+    setScaleY(1.0);
   }
 
   @Override

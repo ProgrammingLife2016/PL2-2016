@@ -9,7 +9,7 @@ import javafx.scene.shape.Circle;
  *
  * @author Faris
  */
-public class NodeCircle extends Circle {
+public class GraphNodeCircle extends Circle {
 
   private final DoubleProperty relativeHeight = new SimpleDoubleProperty();
   private final double maxYOffset;
@@ -21,7 +21,7 @@ public class NodeCircle extends Circle {
    * @param relativeHeight the relative height of the circle (compared to the height of the pane).
    * @param maxYOffset     the maximum value by which this node may be offset (to above).
    */
-  public NodeCircle(double radius, double relativeHeight, double maxYOffset) {
+  public GraphNodeCircle(double radius, double relativeHeight, double maxYOffset) {
     super(radius);
     this.relativeHeight.set(relativeHeight);
     this.maxYOffset = maxYOffset;

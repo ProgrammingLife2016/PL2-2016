@@ -1,7 +1,5 @@
 package nl.tudelft.pl2016gr2.thirdparty.testing.utility;
 
-import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
-
 /**
  * This class is for testing if we are correctly able to access it's private members.
  *
