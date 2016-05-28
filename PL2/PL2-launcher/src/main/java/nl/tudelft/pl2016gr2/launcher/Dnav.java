@@ -43,6 +43,7 @@ public class Dnav extends Application {
     primaryStage.setScene(scene);
     if (!Boolean.getBoolean("test")) {
       primaryStage.show();
+      rootLayout.promptFileChooser();
     }
   }
 

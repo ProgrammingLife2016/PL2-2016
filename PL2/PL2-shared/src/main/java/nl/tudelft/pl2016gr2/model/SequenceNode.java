@@ -5,23 +5,24 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * A simple implementation of <code>Node</code> that represents the DNA sequence as String.
+ * A simple implementation of <code>Node</code> that offers the DNA sequence as a String, but
+ * internally uses a more efficient storage mechanism (see {@link BaseSequence}).
  *
  * @author Wouter Smit
  */
-public class StringSequenceNode extends AbstractNode {
+public class SequenceNode extends AbstractNode {
 
-  private String sequence;
+  private BaseSequence sequence;
   private HashSet<String> genomes;
-  private ArrayList<Integer> inEdges;
-  private ArrayList<Integer> outEdges;
+  private ArrayList<GraphNode> inEdges;
+  private ArrayList<GraphNode> outEdges;
 
   /**
    * Constructs a bare node with only an identifier.
    *
    * @param identifier The ID to assign to this node.
    */
-  public StringSequenceNode(int identifier) {
+  public SequenceNode(int identifier) {
     super(identifier);
     genomes = new HashSet<>();
     inEdges = new ArrayList<>();
@@ -34,7 +35,7 @@ public class StringSequenceNode extends AbstractNode {
    * @param identifier The identifier of the node
    * @param sequence   The DNA sequence that this node holds
    */
-  public StringSequenceNode(int identifier, String sequence) {
+  public SequenceNode(int identifier, BaseSequence sequence) {
     super(identifier);
     this.sequence = sequence;
     genomes = new HashSet<>();
@@ -49,7 +50,7 @@ public class StringSequenceNode extends AbstractNode {
    * @param sequence   The DNA sequence that this node holds
    * @param genomes    The genomes that go through this node
    */
-  public StringSequenceNode(int identifier, String sequence, Collection<String> genomes) {
+  public SequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes) {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new HashSet<>(genomes);
@@ -69,8 +70,8 @@ public class StringSequenceNode extends AbstractNode {
    * @param inEdges    The IDs of the nodes that are direct predecessors of this node
    * @param outEdges   The IDs of the nodes that are direct successors of this node
    */
-  public StringSequenceNode(int identifier, String sequence, Collection<String> genomes,
-      Collection<Integer> inEdges, Collection<Integer> outEdges) {
+  public SequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes,
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new HashSet<>(genomes);
@@ -79,84 +80,77 @@ public class StringSequenceNode extends AbstractNode {
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
   }
-  
-  @Override
-  public String toString() {
-    return super.toString() + ", in: " + inEdges + ", out: " + outEdges + ", genomes: " + genomes;
-  }
 
   @Override
-  public void setSequence(String sequence) {
+  public void setSequence(BaseSequence sequence) {
     this.sequence = sequence;
   }
 
   @Override
   public String getSequence() {
-    return sequence;
+    return sequence.getBaseSequence();
   }
 
   /**
    * {@inheritDoc}
    * <p>
-   * The collection is backed by the node.
-   * Any changes will be reflected in the node.
+   * The collection is backed by the node. Any changes will be reflected in the node.
    * </p>
    */
   @Override
-  public Collection<Integer> getInEdges() {
+  public Collection<GraphNode> getInEdges() {
     return inEdges;
   }
 
   @Override
-  public void setInEdges(Collection<Integer> edges) {
+  public void setInEdges(Collection<GraphNode> edges) {
     inEdges = new ArrayList<>(edges);
     inEdges.trimToSize();
   }
 
   @Override
-  public void addInEdge(int identifier) {
+  public void addInEdge(GraphNode node) {
 //    assert !inEdges.contains(
-//        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.add(identifier);
+//        node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    inEdges.add(node);
   }
 
   @Override
-  public void removeInEdge(int identifier) {
+  public void removeInEdge(GraphNode node) {
 //    assert inEdges.contains(
-//        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove((Integer)identifier);
+//        node) : "Removing non-existent in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    inEdges.remove(node);
   }
 
   /**
    * {@inheritDoc}
    * <p>
-   * The collection is backed by the node.
-   * Any changes will be reflected in the node.
+   * The collection is backed by the node. Any changes will be reflected in the node.
    * </p>
    */
   @Override
-  public Collection<Integer> getOutEdges() {
+  public Collection<GraphNode> getOutEdges() {
     return outEdges;
   }
 
   @Override
-  public void setOutEdges(Collection<Integer> edges) {
+  public void setOutEdges(Collection<GraphNode> edges) {
     outEdges = new ArrayList<>(edges);
     outEdges.trimToSize();
   }
 
   @Override
-  public void addOutEdge(int identifier) {
+  public void addOutEdge(GraphNode node) {
 //    assert !outEdges.contains(
-//        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.add(identifier);
+//        node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    outEdges.add(node);
   }
 
   @Override
-  public void removeOutEdge(int identifier) {
+  public void removeOutEdge(GraphNode node) {
 //    assert outEdges.contains(
-//        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove((Integer)identifier);
+//        node) : "Removing non-existent out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    outEdges.remove(node);
   }
 
   @Override
@@ -166,8 +160,8 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public void addGenome(String genome) {
-    assert !genomes.contains(
-        genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
+//    assert !genomes.contains(
+//        genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
     genomes.add(genome);
   }
 
@@ -180,11 +174,11 @@ public class StringSequenceNode extends AbstractNode {
 
   @Override
   public GraphNode copy() {
-    return new StringSequenceNode(this.getId(), this.getSequence(), getGenomes());
+    return new SequenceNode(this.getId(), sequence, getGenomes());
   }
   
   @Override
   public GraphNode copyAll() {
-    return new StringSequenceNode(getId(), getSequence(), getGenomes(), inEdges, outEdges);
+    return new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
   }
 }

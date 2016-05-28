@@ -7,13 +7,13 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class PhyloBubble implements Bubble {
-  
+
   private int id;
   private IPhylogeneticTreeNode treeNode;
-  private ArrayList<Integer> inEdges;
-  private ArrayList<Integer> outEdges;
+  private ArrayList<GraphNode> inEdges;
+  private ArrayList<GraphNode> outEdges;
   private HashSet<GraphNode> nestedNodes;
-  
+
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
@@ -21,9 +21,9 @@ public class PhyloBubble implements Bubble {
     this.outEdges = new ArrayList<>();
     this.nestedNodes = new HashSet<>();
   }
-  
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, 
-      Collection<Integer> inEdges, Collection<Integer> outEdges) {
+
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode,
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     this.id = id;
     this.treeNode = treeNode;
     this.inEdges = new ArrayList<>(inEdges);
@@ -32,9 +32,9 @@ public class PhyloBubble implements Bubble {
     this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>();
   }
-  
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<Integer> inEdges, 
-      Collection<Integer> outEdges, Collection<GraphNode> nestedNodes) {
+
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<GraphNode> inEdges,
+      Collection<GraphNode> outEdges, Collection<GraphNode> nestedNodes) {
     this.id = id;
     this.treeNode = treeNode;
     this.inEdges = new ArrayList<>(inEdges);
@@ -43,7 +43,7 @@ public class PhyloBubble implements Bubble {
     this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>(nestedNodes);
   }
-  
+
   @Override
   public String toString() {
     String nested = "[";
@@ -51,8 +51,8 @@ public class PhyloBubble implements Bubble {
       nested = nested + ", " + node.getId();
     }
     nested = nested + "]";
-    
-    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges 
+
+    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
         + ", nested: " + nested + ", tree leaves: " + treeNode.getGenomes();
   }
 
@@ -60,11 +60,11 @@ public class PhyloBubble implements Bubble {
   public int getId() {
     return id;
   }
-  
+
   public IPhylogeneticTreeNode getTreeNode() {
     return treeNode;
   }
-  
+
   public void addChild(GraphNode child) {
     nestedNodes.add(child);
   }
@@ -73,16 +73,10 @@ public class PhyloBubble implements Bubble {
   public boolean hasChildren() {
     return true;
   }
-  
+
   @Override
-  public boolean hasChild(int child) {
-    for (GraphNode node : nestedNodes) {
-      if (node.getId() == child) {
-        return true;
-      }
-    }
-    
-    return false;
+  public boolean hasChild(GraphNode child) {
+    return nestedNodes.contains(child);
   }
 
   @Override
@@ -100,53 +94,53 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public Collection<Integer> getInEdges() {
+  public Collection<GraphNode> getInEdges() {
     return inEdges;
   }
 
   @Override
-  public void setInEdges(Collection<Integer> edges) {
+  public void setInEdges(Collection<GraphNode> edges) {
     inEdges = new ArrayList<>(edges);
     inEdges.trimToSize();
   }
 
   @Override
-  public void addInEdge(int identifier) {
+  public void addInEdge(GraphNode node) {
 //    assert !inEdges.contains(
 //        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.add(identifier);
+    inEdges.add(node);
   }
 
   @Override
-  public void removeInEdge(int identifier) {
+  public void removeInEdge(GraphNode node) {
 //    assert inEdges.contains(
 //        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove((Integer)identifier);
+    inEdges.remove(node);
   }
 
   @Override
-  public Collection<Integer> getOutEdges() {
+  public Collection<GraphNode> getOutEdges() {
     return outEdges;
   }
 
   @Override
-  public void setOutEdges(Collection<Integer> edges) {
+  public void setOutEdges(Collection<GraphNode> edges) {
     outEdges = new ArrayList<>(edges);
     outEdges.trimToSize();
   }
 
   @Override
-  public void addOutEdge(int identifier) {
+  public void addOutEdge(GraphNode node) {
 //    assert !outEdges.contains(
 //        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.add(identifier);
+    outEdges.add(node);
   }
 
   @Override
-  public void removeOutEdge(int identifier) {
+  public void removeOutEdge(GraphNode node) {
 //    assert outEdges.contains(
 //        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove((Integer)identifier);
+    outEdges.remove(node);
   }
 
   @Override
@@ -171,12 +165,11 @@ public class PhyloBubble implements Bubble {
   @Override
   public Collection<String> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
-        node.getId()) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
+        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
         + "not a direct successor. This = " + this.getId();
 
     Collection<String> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
-        ::add);
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes::add);
     return genomes;
   }
 
@@ -184,7 +177,7 @@ public class PhyloBubble implements Bubble {
   public GraphNode copy() {
     return new PhyloBubble(getId(), treeNode);
   }
-  
+
   @Override
   public GraphNode copyAll() {
     return new PhyloBubble(getId(), treeNode, inEdges, outEdges, nestedNodes);
@@ -197,7 +190,20 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void pop() {
-    
+
+  }
+
+  @Override
+  public int hashCode() {
+    return id;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !getClass().equals(obj.getClass())) {
+      return false;
+    }
+    return id == ((PhyloBubble) obj).id;
   }
 
 }

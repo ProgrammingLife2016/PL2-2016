@@ -8,21 +8,27 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
+import nl.tudelft.pl2016gr2.core.GraphFactory;
+import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
+import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
+import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,7 +38,9 @@ import java.util.logging.Logger;
  *
  * @author Faris
  */
-public class RootLayoutController implements Initializable {
+public class RootLayoutController implements
+    Initializable,
+    FileChooserController.InputFileConsumer {
 
   @FXML
   private AnchorPane rootPane;
@@ -59,9 +67,7 @@ public class RootLayoutController implements Initializable {
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
     treeManager = TreeManager.loadView(selectionManager);
-    loadTree();
-    drawGraphs = DrawComparedGraphs.loadView(selectionManager, treeManager.getTreeRoot());
-    drawGraphs.loadMainGraph("TB10.gfa");
+    drawGraphs = DrawComparedGraphs.loadView(selectionManager);
     mainPane.getItems().add(treeManager.getTreePane());
 
     Region graphRegion = drawGraphs.getGraphPane();
@@ -72,20 +78,21 @@ public class RootLayoutController implements Initializable {
 
   /**
    * Load the data into the root layout.
+   *
+   * @param treeRoot the root of the loaded tree.
    */
-  private void loadTree() {
-    Reader reader = new InputStreamReader(
-        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
-    BufferedReader br = new BufferedReader(reader);
-    TreeParser tp = new TreeParser(br);
+  public void loadTree(IPhylogeneticTreeRoot treeRoot) {
+    treeManager.loadTree(treeRoot);
+  }
 
-    Tree tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
-    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot()));
-    try {
-      reader.close();
-    } catch (IOException ex) {
-      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
-    }
+  /**
+   * Load the data into the root layout.
+   *
+   * @param graph    the graph you want to load
+   * @param treeRoot the root of the loaded tree.
+   */
+  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
+    this.drawGraphs.loadMainGraph(graph, treeRoot);
   }
 
   /**
@@ -136,5 +143,51 @@ public class RootLayoutController implements Initializable {
         event.consume();
       }
     });
+  }
+
+  @Override
+  public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
+    try {
+      // Note: not really enjoying pro's of factories with this structure.
+      // consider to decouple a bit more, as the factories can't be mocked right now.
+      GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
+      TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
+
+      SequenceGraph graph = graphFactory.getGraph();
+      Tree tree = treeFactory.getTree();
+
+      if (graph != null && tree != null) {
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(),
+            new AnnotationReader(metadataFile).read());
+        loadGraph(graph, treeRoot);
+        loadTree(treeRoot);
+      } else {
+        Logger.getLogger(RootLayoutController.class.getName()).log(
+            Level.SEVERE,
+            "tree or graph was null");
+      }
+    } catch (IOException | InvalidFormatException ex) {
+      Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  /**
+   * Prompts the user for with the FileChooser.
+   */
+  public void promptFileChooser() {
+    try {
+      FileChooserController fileChooserController
+          = FileChooserController.initialize(mainPane.getScene().getWindow());
+      fileChooserController.setInputFileConsumer(this);
+      fileChooserController.getStage().show();
+    } catch (IOException e) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, e);
+    }
+  }
+
+  @FXML
+  @SuppressWarnings("unused")
+  private void openFileMenuItemClicked() {
+    promptFileChooser();
   }
 }

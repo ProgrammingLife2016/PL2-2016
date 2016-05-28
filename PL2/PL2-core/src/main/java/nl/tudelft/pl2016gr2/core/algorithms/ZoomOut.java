@@ -25,8 +25,8 @@ import java.util.Stack;
  */
 public class ZoomOut {
   
-  private SequenceGraph originalGraph;
-  private Map<Integer, Map<Integer, Stack<Set<GraphNode>>>> oldGraphs = new HashMap<>();
+  private final SequenceGraph originalGraph;
+  private Map<GraphNode, Map<GraphNode, Stack<Set<GraphNode>>>> oldGraphs = new HashMap<>();
   
   /**
    * Constructs an object of this class, with the originalgraph. 
@@ -44,7 +44,7 @@ public class ZoomOut {
    * @param end the id of the end node from where the view should be saved.
    * @param graph the graph
    */
-  protected void addOldView(int start, int end, SequenceGraph graph) {
+  protected void addOldView(GraphNode start, GraphNode end, SequenceGraph graph) {
     Set<GraphNode> oldView = NodePathFinder.getNodesOnPath(start, end, graph, true);
     
     if (oldGraphs.containsKey(start)) {
@@ -56,7 +56,7 @@ public class ZoomOut {
         oldGraphs.get(start).put(end, stack);
       }
     } else {
-      Map<Integer, Stack<Set<GraphNode>>> endMap = new HashMap<>();
+      Map<GraphNode, Stack<Set<GraphNode>>> endMap = new HashMap<>();
       Stack<Set<GraphNode>> stack = new Stack<>();
       stack.push(oldView);
       endMap.put(end, stack);
@@ -87,32 +87,32 @@ public class ZoomOut {
     
     IPhylogeneticTreeNode parent = treeNode.getParent();
     ArrayList<String> leaves = parent.getGenomes();
-    int start = findStart(bubble.getId(), graph, leaves);
-    int end = findEnd(bubble.getOutEdges(), graph, leaves);
+    GraphNode start = findStart(bubble, graph, leaves);
+    GraphNode end = findEnd(bubble.getOutEdges(), graph, leaves);
     
     graph = getPreviousView(start, end, graph);
     return graph;
   }
   
-  private int findStart(int bubbleId, SequenceGraph graph, ArrayList<String> leaves) {
-    Queue<Integer> toVisit = new LinkedList<>();
-    Set<Integer> visited = new HashSet<>();
-    toVisit.add(bubbleId);
-    int start = -1;
+  private GraphNode findStart(GraphNode bubble, SequenceGraph graph, ArrayList<String> leaves) {
+    Queue<GraphNode> toVisit = new LinkedList<>();
+    Set<GraphNode> visited = new HashSet<>();
+    toVisit.add(bubble);
+    GraphNode start = null;
     
     while (!toVisit.isEmpty()) {
-      int next = toVisit.poll();
+      GraphNode next = toVisit.poll();
       if (!originalGraph.contains(next)) {
-        for (Integer inlink : graph.getNode(next).getInEdges()) {
+        for (GraphNode inlink : graph.getNode(next.getId()).getInEdges()) {
           FilterHelpers.addToVisit(inlink, toVisit, visited);
         }
       } else {
-        GraphNode curNode = originalGraph.getNode(next);
+        GraphNode curNode = originalGraph.getNode(next.getId());
         if (FilterHelpers.isShared(curNode, leaves)) {
-          return curNode.getId();
+          return curNode;
         }
         
-        for (Integer inlink : graph.getNode(next).getInEdges()) {
+        for (GraphNode inlink : graph.getNode(next.getId()).getInEdges()) {
           FilterHelpers.addToVisit(inlink, toVisit, visited);
         }
       }
@@ -121,25 +121,24 @@ public class ZoomOut {
     return start;
   }
   
-  private int findEnd(Collection<Integer> outEdges, SequenceGraph graph, ArrayList<String> leaves) {
-    Queue<Integer> toVisit = new LinkedList<>();
-    Set<Integer> visited = new HashSet<>();
+  private GraphNode findEnd(Collection<GraphNode> outEdges, SequenceGraph graph, ArrayList<String> leaves) {
+    Queue<GraphNode> toVisit = new LinkedList<>();
+    Set<GraphNode> visited = new HashSet<>();
     toVisit.addAll(outEdges);
-    int end = -1;
+    GraphNode end = null;
     
     while (!toVisit.isEmpty()) {
-      int next = toVisit.poll();
+      GraphNode next = toVisit.poll();
       if (!originalGraph.contains(next)) {
-        for (Integer outlink : graph.getNode(next).getOutEdges()) {
+        for (GraphNode outlink : graph.getNode(next.getId()).getOutEdges()) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         }
       } else {
-        GraphNode curNode = originalGraph.getNode(next);
-        if (FilterHelpers.isShared(curNode, leaves)) {
-          return curNode.getId();
+        if (FilterHelpers.isShared(originalGraph.getNode(next.getId()), leaves)) {
+          return next;
         }
         
-        for (Integer outlink : graph.getNode(next).getOutEdges()) {
+        for (GraphNode outlink : graph.getNode(next.getId()).getOutEdges()) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         }
       }
@@ -148,7 +147,7 @@ public class ZoomOut {
     return end;
   }
   
-  private SequenceGraph getPreviousView(int start, int end, SequenceGraph graph) {
+  private SequenceGraph getPreviousView(GraphNode start, GraphNode end, SequenceGraph graph) {
     if (!oldGraphs.containsKey(start) || !oldGraphs.get(start).containsKey(end) 
         || oldGraphs.get(start).get(end).isEmpty()) {
       return graph;
@@ -156,22 +155,22 @@ public class ZoomOut {
     
     Set<GraphNode> nodesToRemove = NodePathFinder.getNodesOnPath(start, end, graph, false);
     // get current in and outlinks of start and end node
-    Collection<Integer> startInEdges = graph.getNode(start).getInEdges();
-    Collection<Integer> endOutEdges = graph.getNode(end).getOutEdges();
+    Collection<GraphNode> startInEdges = graph.getNode(start.getId()).getInEdges();
+    Collection<GraphNode> endOutEdges = graph.getNode(end.getId()).getOutEdges();
     
     nodesToRemove.forEach(node -> {
-      if (node.getId() != start && node.getId() != end) {
-        graph.remove(node.getId(), true, true);
+      if (!node.equals(start) && !node.equals(end)) {
+        graph.remove(node, true, true);
       } else {
-        graph.remove(node.getId(), false, false);
+        graph.remove(node, false, false);
       }
     });
     
     Set<GraphNode> previousView = oldGraphs.get(start).get(end).pop();
     previousView.forEach(node -> {
-      if (node.getId() == start) {
+      if (node.equals(start)) {
         node.setInEdges(startInEdges);
-      } else if (node.getId() == end) {
+      } else if (node.equals(end)) {
         node.setOutEdges(endOutEdges);
       }
       graph.add(node);

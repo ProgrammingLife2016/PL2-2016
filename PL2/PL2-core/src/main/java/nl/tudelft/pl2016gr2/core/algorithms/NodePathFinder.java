@@ -31,26 +31,25 @@ public class NodePathFinder {
    *     of a reference)
    * @return a set with all nodes on the path between start and end.
    */
-  protected static Set<GraphNode> getNodesOnPath(int start, int end, 
+  protected static Set<GraphNode> getNodesOnPath(GraphNode start, GraphNode end, 
       SequenceGraph graph, boolean copy) {
-    Queue<Integer> toVisit = new LinkedList<>();
-    Set<Integer> visited = new HashSet<>();
+    Queue<GraphNode> toVisit = new LinkedList<>();
+    Set<GraphNode> visited = new HashSet<>();
     
     Set<GraphNode> nodesOnPath = new HashSet<>();
-    Set<Integer> seenPaths = new HashSet<>();
-    Set<Integer> noPath = new HashSet<>();
+    Set<GraphNode> seenPaths = new HashSet<>();
+    Set<GraphNode> noPath = new HashSet<>();
     toVisit.add(start);
     
     while (!toVisit.isEmpty()) {
-      int next = toVisit.poll();
-      GraphNode node = graph.getNode(next);
+      GraphNode next = graph.getNode(toVisit.poll().getId());
       if (copy) {
-        nodesOnPath.add(node.copyAll());
+        nodesOnPath.add(next.copyAll());
       } else {
-        nodesOnPath.add(node);
+        nodesOnPath.add(next);
       }
       
-      for (Integer outlink : node.getOutEdges()) {
+      for (GraphNode outlink : next.getOutEdges()) {
         if (hasPath(outlink, end, graph, seenPaths, noPath)) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         }
@@ -69,21 +68,21 @@ public class NodePathFinder {
    * @param noPath a set of nodes that are know to not be on the path
    * @return true if there is a path
    */
-  private static boolean hasPath(int from, int to, SequenceGraph graph, 
-      Set<Integer> seenPaths, Set<Integer> noPath) {
+  private static boolean hasPath(GraphNode from, GraphNode to, SequenceGraph graph, 
+      Set<GraphNode> seenPaths, Set<GraphNode> noPath) {
     if (from == to || seenPaths.contains(from)) {
       return true;
     } else if (noPath.contains(from)) {
       return false;
     }
 
-    GraphNode node = graph.getNode(from);
-    if (!node.hasChildren() && from > to) {
+    GraphNode node = graph.getNode(from.getId());
+    if (!node.hasChildren() && from.getId() > to.getId()) { // is this really correct? comparing IDs <<<<<<<
       noPath.add(from);
       return false;
     } else {
       boolean hasPath = false;
-      for (Integer outEdge : node.getOutEdges()) {
+      for (GraphNode outEdge : node.getOutEdges()) {
         if (outEdge == to) {
           seenPaths.add(from);
           return true;

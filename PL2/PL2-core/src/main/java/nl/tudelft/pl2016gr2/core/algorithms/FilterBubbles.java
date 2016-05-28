@@ -18,31 +18,34 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Class used to filter bubbles based on the phylogenetic tree. 
+ * Class used to filter bubbles based on the phylogenetic tree.
+ *
  * @author Casper
  *
  */
 public class FilterBubbles {
-  
-  private SequenceGraph originalGraph;
-  private ZoomOut zoomOut;
+
+  private final SequenceGraph originalGraph;
+  private final ZoomOut zoomOut;
   private int mutationId;
-  
+
   /**
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
    * tree based on which this graph will be filtered.
+   *
    * @param originalGraph : the graph to be filtered.
    */
   public FilterBubbles(SequenceGraph originalGraph) {
     this.originalGraph = originalGraph;
     zoomOut = new ZoomOut(originalGraph);
     // This should be based on highest id just to be safe (instead of size)
-    mutationId = originalGraph.getHighestId();
+    mutationId = -1;
   }
-  
+
   /**
-   * Zooms out on this node, if it's a bubble, in the given graph. 
-   * @param node bubble to zoom out on
+   * Zooms out on this node, if it's a bubble, in the given graph.
+   *
+   * @param node  bubble to zoom out on
    * @param graph the graph
    * @return a zoomed out graph
    */
@@ -54,10 +57,11 @@ public class FilterBubbles {
       return zoomOut.zoomOut(bubble, graph);
     }
   }
-  
+
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
-   * @param node the node to zoom in on
+   *
+   * @param node  the node to zoom in on
    * @param graph the graph
    * @return a zoomed in graph
    */
@@ -66,16 +70,17 @@ public class FilterBubbles {
       return graph;
     } else {
       Bubble bubble = (Bubble) node;
-      mutationId++;
+      mutationId--;
       return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);
     }
   }
-  
+
   /**
    * Filters the input graph of this object, using the phylogenetic tree. It finds all leaves of the
-   * current node of the tree, which correspond to a certain genome. The filtered graph then only 
+   * current node of the tree, which correspond to a certain genome. The filtered graph then only
    * shows nodes that have all these genomes going through them, and shows mutation nodes in between
    * these.
+   *
    * @param treeRoot the root of the tree.
    * @return a filtered graph.
    */
@@ -84,136 +89,138 @@ public class FilterBubbles {
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(filteredGraph, treeRoot, newBubbles);
     pruneNodes(filteredGraph, originalGraph, newBubbles);
-    
+
     return filteredGraph;
   }
-  
-  private List<Bubble> debubble(SequenceGraph filteredGraph, IPhylogeneticTreeNode treeNode, 
-      ArrayList<Bubble> newBubbles) {
-    mutationId++;
-    
-    ArrayList<String> leaves = treeNode.getGenomes();
-    Queue<Integer> toVisit = new LinkedList<>();
-    Set<Integer> visited = new HashSet<>();
 
-    Collection<Integer> rootNodes = originalGraph.getRootNodes();
+  private List<Bubble> debubble(SequenceGraph filteredGraph, IPhylogeneticTreeNode treeNode,
+      ArrayList<Bubble> newBubbles) {
+    mutationId--;
+
+    ArrayList<String> leaves = treeNode.getGenomes();
+    Queue<GraphNode> toVisit = new LinkedList<>();
+    Set<GraphNode> visited = new HashSet<>();
+
+    Collection<GraphNode> rootNodes = originalGraph.getRootNodes();
     //Node rootNode = originalGraph.getRootNodes();
-    GraphNode rootNode = originalGraph.getNode(rootNodes.iterator().next());
-    int rootId = rootNode.getId();
+    GraphNode rootNode = rootNodes.iterator().next();
     if (FilterHelpers.isShared(rootNode, leaves)) {
-      toVisit.add(rootId);
+      toVisit.add(rootNode);
     } else {
-      List<Integer> bubbleStart = new ArrayList<>();
-      bubbleStart.add(rootId);
-      createBubble(treeNode, -1, bubbleStart, leaves, toVisit, visited, 
+      List<GraphNode> bubbleStart = new ArrayList<>();
+      bubbleStart.add(rootNode);
+      createBubble(treeNode, null, bubbleStart, leaves, toVisit, visited,
           newBubbles, filteredGraph);
     }
-    
+
     filterBubbles(toVisit, visited, filteredGraph, leaves, null, treeNode, newBubbles);
     return newBubbles;
   }
-  
-  protected void filterBubbles(Queue<Integer> toVisit, Set<Integer> visited, 
-      SequenceGraph filteredGraph, ArrayList<String> leaves, Bubble bubble, 
+
+  protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
+      SequenceGraph filteredGraph, ArrayList<String> leaves, Bubble bubble,
       IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
-    Set<Integer> endIds = new HashSet<>();
+    Set<GraphNode> endNodes = new HashSet<>();
     if (bubble != null) {
-      endIds.addAll(bubble.getOutEdges());
+      endNodes.addAll(bubble.getOutEdges());
     }
-    
+
     while (!toVisit.isEmpty()) {
-      int next = toVisit.poll();
+      GraphNode next = toVisit.poll();
       visited.add(next);
-      GraphNode current = originalGraph.getNode(next);
+      GraphNode current = next;
       filteredGraph.add(current.copy());
-      if (bubble != null && endIds.contains(next)) {
+      if (bubble != null && endNodes.contains(next)) {
         continue;
       }
-      
-      // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<Integer> outlinks = calcNodeOutlinks(current, leaves, bubble);
-      List<Integer> bubbleLinks = new ArrayList<>();
 
-      for (Integer outlink : outlinks) {
-        GraphNode node = originalGraph.getNode(outlink);
+      // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
+      List<GraphNode> outlinks = calcNodeOutlinks(current, leaves, bubble);
+      List<GraphNode> bubbleLinks = new ArrayList<>();
+
+      for (GraphNode outlink : outlinks) {
+        GraphNode node = originalGraph.getNode(outlink.getId());
         if (FilterHelpers.isShared(node, leaves)) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         } else {
           bubbleLinks.add(outlink);
         }
       }
-      
-      createBubble(treeNode, next, bubbleLinks, leaves, toVisit, visited, 
+
+      createBubble(treeNode, next, bubbleLinks, leaves, toVisit, visited,
           newBubbles, filteredGraph);
     }
   }
-  
-  private void addNestedNodes(List<Integer> nestedNodes, Bubble bubble) {
-    for (Integer node : nestedNodes) {
-      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(node));
+
+  private void addNestedNodes(List<GraphNode> nestedNodes, Bubble bubble) {
+    for (GraphNode node : nestedNodes) {
+      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(node.getId()));
       bubble.accept(visitor);
     }
   }
-  
-  private void createBubble(IPhylogeneticTreeNode treeNode, int inlink, List<Integer> bubbleLinks, 
-      List<String> leaves, Queue<Integer> toVisit, Set<Integer> visited, List<Bubble> newBubbles, 
+
+  private void createBubble(IPhylogeneticTreeNode treeNode, GraphNode inlink,
+      List<GraphNode> bubbleLinks,
+      List<String> leaves, Queue<GraphNode> toVisit, Set<GraphNode> visited, List<Bubble> newBubbles,
       SequenceGraph filteredGraph) {
     if (!bubbleLinks.isEmpty()) {
       Bubble newBubble = new PhyloBubble(mutationId, treeNode);
-      if (inlink != -1) {
+      if (inlink != null) {
         newBubble.addInEdge(inlink);
       }
       addNestedNodes(bubbleLinks, newBubble);
-      Queue<Integer> toVisitNodes = makeBubble(newBubble, bubbleLinks, leaves);
+      Queue<GraphNode> toVisitNodes = makeBubble(newBubble, bubbleLinks, leaves);
       while (!toVisitNodes.isEmpty()) {
         FilterHelpers.addToVisit(toVisitNodes.poll(), toVisit, visited);
       }
-      
+
       newBubbles.add(newBubble);
       filteredGraph.add(newBubble);
-      mutationId++;
+      mutationId--;
     }
   }
-  
-  private Queue<Integer> makeBubble(Bubble bubble, List<Integer> start, List<String> leaves) {
-    Queue<Integer> endPoints = new LinkedList<>();
-    Set<Integer> visited = new HashSet<>();
-    Queue<Integer> toVisit = new LinkedList<>();
-    
+
+  private Queue<GraphNode> makeBubble(Bubble bubble, List<GraphNode> start, List<String> leaves) {
+    Queue<GraphNode> endPoints = new LinkedList<>();
+    Set<GraphNode> visited = new HashSet<>();
+    Queue<GraphNode> toVisit = new LinkedList<>();
+
     toVisit.addAll(start);
-    
+
     while (!toVisit.isEmpty()) {
-      int next = toVisit.poll();
+      GraphNode next = toVisit.poll();
       visited.add(next);
-      GraphNode current = originalGraph.getNode(next);
-      
+      GraphNode current = originalGraph.getNode(next.getId());
+
       if (FilterHelpers.isShared(current, leaves)) {
         endPoints.add(next);
         bubble.addOutEdge(next);
       } else {
-        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(next));
+        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.
+            getNode(next.getId()));
         bubble.accept(visitor);
-        
-        for (Integer outlink : current.getOutEdges()) {
+
+        for (GraphNode outlink : current.getOutEdges()) {
           if (!(visited.contains(outlink) || toVisit.contains(outlink))) {
             toVisit.add(outlink);
           }
         }
       }
     }
-     
+
     return endPoints;
   }
-  
-  private List<Integer> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves, Bubble bubble) {
-    List<Integer> curNodeOutlinks = new ArrayList<>();
 
-    for (Integer outlink : node.getOutEdges()) {
+  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves, Bubble bubble) {
+    List<GraphNode> curNodeOutlinks = new ArrayList<>();
+
+    for (GraphNode outlink : node.getOutEdges()) {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
-      ArrayList<String> genomes = new ArrayList<>(originalGraph.getNode(outlink).getGenomes());
-      
+      ArrayList<String> genomes = new ArrayList<>(originalGraph.getNode(outlink.getId()).
+          getGenomes());
+
       for (String leaf : leaves) {
         if (genomes.contains(leaf)) {
           curNodeOutlinks.add(outlink);
@@ -221,42 +228,42 @@ public class FilterBubbles {
         }
       }
     }
-    
+
     return curNodeOutlinks;
   }
-  
-  protected void pruneNodes(SequenceGraph zoomedGraph, SequenceGraph oldGraph, 
+
+  protected void pruneNodes(SequenceGraph zoomedGraph, SequenceGraph oldGraph,
       ArrayList<Bubble> newBubbles) {
     newBubbles.forEach(bubble -> {
-      Collection<Integer> inlinks = bubble.getInEdges();
+      Collection<GraphNode> inlinks = bubble.getInEdges();
       if (!inlinks.isEmpty()) {
-        zoomedGraph.getNode(inlinks.iterator().next()).addOutEdge(bubble.getId());
+        zoomedGraph.getNode(inlinks.iterator().next().getId()).addOutEdge(bubble);
       }
-      
-      Collection<Integer> outlinks = bubble.getOutEdges();
+
+      Collection<GraphNode> outlinks = bubble.getOutEdges();
       if (!outlinks.isEmpty()) {
         outlinks.forEach(outlink -> {
-          zoomedGraph.getNode(outlink).addInEdge(bubble.getId());
+          zoomedGraph.getNode(outlink.getId()).addInEdge(bubble);
         });
       }
     });
-    
+
     Iterator<GraphNode> iterator = zoomedGraph.iterator();
     while (iterator.hasNext()) {
       GraphNode node = iterator.next();
-      int id = node.getId();
       if (node.hasChildren()) {
         continue;
       }
-      Collection<Integer> inlinks = pruneInlinks(originalGraph.getNode(id), zoomedGraph);
+      Collection<GraphNode> inlinks = pruneInlinks(originalGraph.getNode(node.getId()), zoomedGraph);
       inlinks.forEach(node::addInEdge);
-      Collection<Integer> outlinks = pruneOutlinks(originalGraph.getNode(id), zoomedGraph);
+      Collection<GraphNode> outlinks = pruneOutlinks(originalGraph.getNode(node.getId()),
+          zoomedGraph);
       outlinks.forEach(node::addOutEdge);
     }
   }
-  
-  private Collection<Integer> pruneInlinks(GraphNode original, SequenceGraph zoomedGraph) {
-    Collection<Integer> prunedInlinks = new ArrayList<>();
+
+  private Collection<GraphNode> pruneInlinks(GraphNode original, SequenceGraph zoomedGraph) {
+    Collection<GraphNode> prunedInlinks = new ArrayList<>();
     original.getInEdges().forEach(link -> {
       if (zoomedGraph.contains(link)) {
         prunedInlinks.add(link);
@@ -264,9 +271,9 @@ public class FilterBubbles {
     });
     return prunedInlinks;
   }
-  
-  private Collection<Integer> pruneOutlinks(GraphNode original, SequenceGraph zoomedGraph) {
-    Collection<Integer> prunedOutlinks = new ArrayList<>();
+
+  private Collection<GraphNode> pruneOutlinks(GraphNode original, SequenceGraph zoomedGraph) {
+    Collection<GraphNode> prunedOutlinks = new ArrayList<>();
     original.getOutEdges().forEach(link -> {
       if (zoomedGraph.contains(link)) {
         prunedOutlinks.add(link);

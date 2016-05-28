@@ -24,7 +24,8 @@ public class FilterHelpers {
    * @param toVisit the current queue
    * @param visited the set of visited ints
    */
-  protected static void addToVisit(int visitor, Queue<Integer> toVisit, Set<Integer> visited) {
+  protected static void addToVisit(GraphNode visitor, Queue<GraphNode> toVisit, 
+      Set<GraphNode> visited) {
     if (!visited.contains(visitor) && !toVisit.contains(visitor)) {
       toVisit.add(visitor);
     }

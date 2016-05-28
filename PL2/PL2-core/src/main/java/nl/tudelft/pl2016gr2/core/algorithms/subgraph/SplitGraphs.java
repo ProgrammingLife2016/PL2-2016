@@ -61,7 +61,7 @@ public class SplitGraphs {
     assert mainGraph.getGenomes().containsAll(genomeSet) :
         "Tried splitting graph on absent genomes";
 
-    HashSet<Integer> nodeSet = findSubgraphNodes(genomeSet);
+    HashSet<GraphNode> nodeSet = findSubgraphNodes(genomeSet);
     return createNewGraph(nodeSet, genomeSet);
   }
 
@@ -74,13 +74,13 @@ public class SplitGraphs {
    * @param genomeSet the genomes that should be included in the subgraph.
    * @return a map containing all of the nodes which are part of the subgraph.
    */
-  private HashSet<Integer> findSubgraphNodes(HashSet<String> genomeSet) {
-    HashSet<Integer> nodeSet = new HashSet<>();
+  private HashSet<GraphNode> findSubgraphNodes(HashSet<String> genomeSet) {
+    HashSet<GraphNode> nodeSet = new HashSet<>();
     Iterator<GraphNode> nodeIterator = mainGraph.iterator();
     nodeIterator.forEachRemaining(node -> {
       for (String genome : node.getGenomes()) {
         if (genomeSet.contains(genome)) {
-          nodeSet.add(node.getId());
+          nodeSet.add(node);
           break;
         }
       }
@@ -101,10 +101,9 @@ public class SplitGraphs {
    * @param genomeSet The set of all genomes that should be included in the subgraph.
    * @return the new graph which contains all of the newly created nodes.
    */
-  private SequenceGraph createNewGraph(HashSet<Integer> nodeSet, HashSet<String> genomeSet) {
+  private SequenceGraph createNewGraph(HashSet<GraphNode> nodeSet, HashSet<String> genomeSet) {
     SequenceGraph newGraph = new HashGraph();
-    nodeSet.forEach(nodeId -> {
-      GraphNode originalNode = mainGraph.getNode(nodeId);
+    nodeSet.forEach(originalNode -> {
       GraphNode newNode = pruneNode(originalNode, genomeSet, nodeSet);
       newGraph.add(newNode);
     });
@@ -129,7 +128,7 @@ public class SplitGraphs {
    * @return A new <code>GraphNode</code> identical to the <code>original</code> after pruning
    */
   private GraphNode pruneNode(
-      GraphNode original, HashSet<String> genomeSet, HashSet<Integer> nodeSet) {
+      GraphNode original, HashSet<String> genomeSet, HashSet<GraphNode> nodeSet) {
     GraphNode newNode = original.copy();
 
     pruneGenomes(original, genomeSet).forEach(newNode::addGenome);
@@ -150,8 +149,8 @@ public class SplitGraphs {
    * @param graphNodes The set of nodes in the graph
    * @return The intersection of the node inLinks and the graph nodes
    */
-  private Collection<Integer> pruneInLinks(GraphNode original, HashSet<Integer> graphNodes) {
-    Collection<Integer> prunedInLinks = new ArrayList<>();
+  private Collection<GraphNode> pruneInLinks(GraphNode original, HashSet<GraphNode> graphNodes) {
+    Collection<GraphNode> prunedInLinks = new ArrayList<>();
     original.getInEdges().forEach(edge -> {
       if (graphNodes.contains(edge)) {
         prunedInLinks.add(edge);
@@ -172,8 +171,8 @@ public class SplitGraphs {
    * @param graphNodes The set of nodes in the graph
    * @return The intersection of the node outLinks and the graph nodes
    */
-  private Collection<Integer> pruneOutLinks(GraphNode original, HashSet<Integer> graphNodes) {
-    Collection<Integer> prunedOutLinks = new ArrayList<>();
+  private Collection<GraphNode> pruneOutLinks(GraphNode original, HashSet<GraphNode> graphNodes) {
+    Collection<GraphNode> prunedOutLinks = new ArrayList<>();
     original.getOutEdges().forEach(edge -> {
       if (graphNodes.contains(edge)) {
         prunedOutLinks.add(edge);

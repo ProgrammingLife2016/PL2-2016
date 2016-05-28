@@ -12,7 +12,7 @@ public interface Node extends GraphNode {
    *
    * @param sequence The sequence to set this node to
    */
-  void setSequence(String sequence);
+  void setSequence(BaseSequence sequence);
 
   /**
    * Returns a string representation of the sequence that this node contains.

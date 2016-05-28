@@ -7,11 +7,13 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.StringSequenceNode;
-import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 
+import nl.tudelft.pl2016gr2.model.BaseSequence;
+import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.HashGraph;
+import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,6 +24,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
@@ -35,21 +38,23 @@ public class SplitGraphsTest {
   @Rule
   public final ExpectedException exception = ExpectedException.none();
 
-  private SequenceGraph mockedGraph;
+  private HashGraph mockedGraph;
   private ArrayList<String> genomeSet;
   private SplitGraphs defInstance;
   private Collection<Integer> nodeIDs;
+  private HashMap<Integer, SequenceNode> nodes;
 
   /**
    * Sets up mocked dependencies.
    */
   @Before
   public void setup() {
+    nodes = new HashMap<>();
     genomeSet = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       genomeSet.add("testGen0" + i);
     }
-    mockedGraph = mock(SequenceGraph.class);
+    mockedGraph = mock(HashGraph.class);
     when(mockedGraph.getGenomes()).thenReturn(genomeSet);
     defInstance = new SplitGraphs(mockedGraph);
     setupIterator();
@@ -64,12 +69,12 @@ public class SplitGraphsTest {
     @SuppressWarnings("unchecked") // Necessary when mocking generic types
     Iterator<GraphNode> mockedIterator = mock(Iterator.class);
 
-    GraphNode firstNode = createNode(new String[] {genomeSet.get(0), genomeSet.get(1)},
-        new Integer[] {3}, new Integer[] {3}, 0);
-    GraphNode secondNode = createNode(new String[] {genomeSet.get(1)}, new Integer[] {0, 1, 3},
-        new Integer[] {0, 1, 3}, 1);
-    GraphNode thirdNode = createNode(new String[] {genomeSet.get(1), genomeSet.get(2)},
-        new Integer[] {2, 5, 3}, new Integer[] {1, 10, 2}, 3);
+    GraphNode firstNode = createNode(new String[]{genomeSet.get(0), genomeSet.get(1)},
+        new Integer[]{3}, new Integer[]{3}, 0);
+    GraphNode secondNode = createNode(new String[]{genomeSet.get(1)}, new Integer[]{0, 1, 3},
+        new Integer[]{0, 1, 3}, 1);
+    GraphNode thirdNode = createNode(new String[]{genomeSet.get(1), genomeSet.get(2)},
+        new Integer[]{2, 5, 3}, new Integer[]{1, 10, 2}, 3);
 
     when(mockedIterator.hasNext()).thenReturn(true, true, true, false);
     when(mockedIterator.next()).thenReturn(firstNode, secondNode, thirdNode);
@@ -78,7 +83,6 @@ public class SplitGraphsTest {
     when(mockedGraph.getNode(0)).thenReturn(firstNode);
     when(mockedGraph.getNode(1)).thenReturn(secondNode);
     when(mockedGraph.getNode(3)).thenReturn(thirdNode);
-    //whem(firstNode.copy())
   }
 
   /**
@@ -91,9 +95,22 @@ public class SplitGraphsTest {
    */
   private GraphNode createNode(String[] genomes, Integer[] inLinks, Integer[] outLinks,
       int identifier) {
-    return new StringSequenceNode(
-        identifier, "ACTG", Arrays.asList(genomes), Arrays.asList(inLinks),
-        Arrays.asList(outLinks));
+    nodes.put(identifier, nodes.getOrDefault(this, new SequenceNode(identifier)));
+    SequenceNode node = nodes.get(identifier);
+    node.setSequence(new BaseSequence("ACTG"));
+    for (Integer inLink : inLinks) {
+      nodes.put(inLink, nodes.getOrDefault(this, new SequenceNode(inLink)));
+      node.addInEdge(nodes.get(inLink));
+    }
+    for (Integer outLink : outLinks) {
+      nodes.put(outLink, nodes.getOrDefault(this, new SequenceNode(outLink)));
+      node.addOutEdge(nodes.get(outLink));
+    }
+    for (String genome : genomes) {
+      node.addGenome(genome);
+    }
+
+    return node;
   }
 
   @Test
@@ -118,12 +135,11 @@ public class SplitGraphsTest {
   }
 
   /**
-   * Verifies that the {@link SplitGraphs#getSubgraph(Collection)} method returns a non-empty
-   * graph.
+   * Verifies that the {@link SplitGraphs#getSubgraph(Collection)} method returns a non-empty graph.
    */
   @Test
   public void testGetSubgraphReturnsNonEmptyGraph() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(0)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(0)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
@@ -135,7 +151,7 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphOnlyContainsGenomeNodes() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(0)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(0)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
@@ -151,7 +167,7 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphContainsAllGenomeNodes() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(0)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(0)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
@@ -181,7 +197,7 @@ public class SplitGraphsTest {
   @Test
   public void testGetSubgraphNodesContainOnlySpecifiedGenomes() {
     ArrayList<String> genomeSub = new ArrayList<>(
-        Arrays.asList(new String[] {genomeSet.get(0), genomeSet.get(2)}));
+        Arrays.asList(new String[]{genomeSet.get(0), genomeSet.get(2)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
@@ -197,7 +213,7 @@ public class SplitGraphsTest {
   @Test
   public void testGetSubgraphNodesContainAllSpecifiedGenomes() {
     ArrayList<String> genomeSub = new ArrayList<>(
-        Arrays.asList(new String[] {genomeSet.get(0), genomeSet.get(2)}));
+        Arrays.asList(new String[]{genomeSet.get(0), genomeSet.get(2)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
@@ -215,13 +231,13 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphNodesContainOnlySpecifiedInLinks() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(1)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(1)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
 
     for (GraphNode graphNode : subgraph) {
-      for (Integer inEdge : graphNode.getInEdges()) {
+      for (GraphNode inEdge : graphNode.getInEdges()) {
         assertTrue(subgraph.contains(inEdge));
       }
     }
@@ -233,13 +249,13 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphContainsAllSpecifiedInLinks() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(1)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(1)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
     for (GraphNode graphNode : subgraph) {
-      Collection<Integer> expectedLinks = mockedGraph.getNode(graphNode.getId()).getInEdges();
-      expectedLinks.removeIf(link -> !nodeIDs.contains(link));
+      Collection<GraphNode> expectedLinks = mockedGraph.getNode(graphNode.getId()).getInEdges();
+      expectedLinks.removeIf(link -> !nodeIDs.contains(link.getId()));
       assertTrue(graphNode.getInEdges().containsAll(expectedLinks));
     }
   }
@@ -250,13 +266,13 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphNodesContainOnlySpecifiedOutLinks() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(1)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(1)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
 
     for (GraphNode graphNode : subgraph) {
-      for (Integer outEdge : graphNode.getOutEdges()) {
+      for (GraphNode outEdge : graphNode.getOutEdges()) {
         assertTrue(subgraph.contains(outEdge));
       }
     }
@@ -268,13 +284,13 @@ public class SplitGraphsTest {
    */
   @Test
   public void testGetSubgraphNodesContainAllSpecifiedOutLinks() {
-    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[] {genomeSet.get(1)}));
+    ArrayList<String> genomeSub = new ArrayList<>(Arrays.asList(new String[]{genomeSet.get(1)}));
 
     SequenceGraph subgraph = defInstance.getSubgraph(genomeSub);
     assertFalse(subgraph.isEmpty());
     for (GraphNode graphNode : subgraph) {
-      Collection<Integer> expectedLinks = mockedGraph.getNode(graphNode.getId()).getOutEdges();
-      expectedLinks.removeIf(link -> !nodeIDs.contains(link));
+      Collection<GraphNode> expectedLinks = mockedGraph.getNode(graphNode.getId()).getOutEdges();
+      expectedLinks.removeIf(link -> !nodeIDs.contains(link.getId()));
       assertTrue(graphNode.getOutEdges().containsAll(expectedLinks));
     }
   }

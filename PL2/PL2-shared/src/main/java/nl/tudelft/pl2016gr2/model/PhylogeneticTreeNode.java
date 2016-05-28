@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
@@ -20,16 +21,17 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
+  private Annotation annotation;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
    */
-  private BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
 
   /**
    * If all of the child nodes of this node are drawn in the bottom graph.
    */
-  private BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
 
   /**
    * Construct a phylogenetic tree node.
@@ -38,7 +40,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param parent the parent of this phylogenetic tree node.
    */
   protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
-    this.label = node.label;
     this.weight = node.weight;
     this.parent = parent;
 
@@ -48,6 +49,12 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
       children[1] = new PhylogeneticTreeNode(node.getChild(1), this);
     } else { // leaf node
       children = null;
+    }
+
+    if (node.numberChildren() == 0) {
+      this.label = node.label.split("\\.", 2)[0];
+    } else {
+      label = null;
     }
   }
   
@@ -127,6 +134,15 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     return drawnInBottom;
   }
 
+  @Override
+  public Color getLineageColor() {
+    if (annotation != null) {
+      return LineageColor.toLineage(annotation.lineage).getColor();
+    } else {
+      return LineageColor.NONE.getColor();
+    }
+  }
+
   /**
    * Creates an iterator which iterates over all of the leaf nodes of the tree.
    *
@@ -145,6 +161,16 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   public String getLabel() {
     assert isLeaf();
     return label;
+  }
+
+  @Override
+  public String getMetaData() {
+    System.out.println("annotation = " + annotation);
+    if (annotation == null) {
+      return "";
+    } else {
+      return annotation.buildMetaDataString();
+    }
   }
 
   /**
@@ -193,6 +219,10 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   private boolean childrenAreDrawnInBottom() {
     return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
+  }
+
+  protected void setAnnotation(Annotation annotation) {
+    this.annotation = annotation;
   }
 
   /**
