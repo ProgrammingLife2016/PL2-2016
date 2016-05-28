@@ -46,11 +46,10 @@ public class FilterHelpers {
     }
     
     for (String genome : node.getGenomes()) {
-      if (!genome.contains(".ref.") && !leaves.contains(genome)) {
+      if (!genome.contains("MT_") && !leaves.contains(genome)) {
         return true;
       }
     }
-    
     return false;
   }
 }

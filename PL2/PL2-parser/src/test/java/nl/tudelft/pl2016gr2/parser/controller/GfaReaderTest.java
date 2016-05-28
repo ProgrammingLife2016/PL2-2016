@@ -4,16 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
-<<<<<<< HEAD
-
-=======
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
->>>>>>> dev
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

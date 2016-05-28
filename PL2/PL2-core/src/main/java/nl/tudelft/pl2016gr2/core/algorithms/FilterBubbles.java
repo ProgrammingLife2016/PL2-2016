@@ -88,7 +88,7 @@ public class FilterBubbles {
     SequenceGraph filteredGraph = new HashGraph();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(filteredGraph, treeRoot, newBubbles);
-    pruneNodes(filteredGraph, originalGraph, newBubbles);
+    pruneNodes(filteredGraph, newBubbles);
 
     return filteredGraph;
   }
@@ -112,7 +112,6 @@ public class FilterBubbles {
       createBubble(treeNode, null, bubbleStart, leaves, toVisit, visited,
           newBubbles, filteredGraph);
     }
-
     filterBubbles(toVisit, visited, filteredGraph, leaves, null, treeNode, newBubbles);
     return newBubbles;
   }
@@ -124,22 +123,21 @@ public class FilterBubbles {
     if (bubble != null) {
       endNodes.addAll(bubble.getOutEdges());
     }
-
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
-      GraphNode current = next;
-      filteredGraph.add(current.copy());
+//      GraphNode current = next;
+      filteredGraph.add(next.copy());
       if (bubble != null && endNodes.contains(next)) {
         continue;
       }
 
       // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<GraphNode> outlinks = calcNodeOutlinks(current, leaves, bubble);
+      List<GraphNode> outlinks = calcNodeOutlinks(next, leaves, bubble);
       List<GraphNode> bubbleLinks = new ArrayList<>();
 
       for (GraphNode outlink : outlinks) {
-        GraphNode node = originalGraph.getNode(outlink.getId());
+        GraphNode node = outlink;
         if (FilterHelpers.isShared(node, leaves)) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         } else {
@@ -154,7 +152,7 @@ public class FilterBubbles {
 
   private void addNestedNodes(List<GraphNode> nestedNodes, Bubble bubble) {
     for (GraphNode node : nestedNodes) {
-      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.getNode(node.getId()));
+      BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(node);
       bubble.accept(visitor);
     }
   }
@@ -190,17 +188,15 @@ public class FilterBubbles {
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
-      GraphNode current = originalGraph.getNode(next.getId());
 
-      if (FilterHelpers.isShared(current, leaves)) {
+      if (FilterHelpers.isShared(next, leaves)) {
         endPoints.add(next);
         bubble.addOutEdge(next);
       } else {
-        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(originalGraph.
-            getNode(next.getId()));
+        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(next);
         bubble.accept(visitor);
 
-        for (GraphNode outlink : current.getOutEdges()) {
+        for (GraphNode outlink : next.getOutEdges()) {
           if (!(visited.contains(outlink) || toVisit.contains(outlink))) {
             toVisit.add(outlink);
           }
@@ -218,7 +214,7 @@ public class FilterBubbles {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
-      ArrayList<String> genomes = new ArrayList<>(originalGraph.getNode(outlink.getId()).
+      ArrayList<String> genomes = new ArrayList<>(outlink.
           getGenomes());
 
       for (String leaf : leaves) {
@@ -232,8 +228,7 @@ public class FilterBubbles {
     return curNodeOutlinks;
   }
 
-  protected void pruneNodes(SequenceGraph zoomedGraph, SequenceGraph oldGraph,
-      ArrayList<Bubble> newBubbles) {
+  protected void pruneNodes(SequenceGraph zoomedGraph, ArrayList<Bubble> newBubbles) {
     newBubbles.forEach(bubble -> {
       Collection<GraphNode> inlinks = bubble.getInEdges();
       if (!inlinks.isEmpty()) {

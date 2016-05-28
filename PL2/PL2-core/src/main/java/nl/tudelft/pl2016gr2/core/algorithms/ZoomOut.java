@@ -159,7 +159,7 @@ public class ZoomOut {
     Collection<GraphNode> endOutEdges = graph.getNode(end.getId()).getOutEdges();
     
     nodesToRemove.forEach(node -> {
-      if (!node.equals(start) && !node.equals(end)) {
+      if (node.getId() != start.getId() && node.getId() != end.getId()) {
         graph.remove(node, true, true);
       } else {
         graph.remove(node, false, false);
@@ -168,9 +168,9 @@ public class ZoomOut {
     
     Set<GraphNode> previousView = oldGraphs.get(start).get(end).pop();
     previousView.forEach(node -> {
-      if (node.equals(start)) {
+      if (node.getId() == start.getId()) {
         node.setInEdges(startInEdges);
-      } else if (node.equals(end)) {
+      } else if (node.getId() == end.getId()) {
         node.setOutEdges(endOutEdges);
       }
       graph.add(node);

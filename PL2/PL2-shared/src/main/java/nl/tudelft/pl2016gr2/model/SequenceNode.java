@@ -181,4 +181,21 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copyAll() {
     return new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
   }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append('[');
+    for (GraphNode inEdge : inEdges) {
+      sb.append(inEdge.getId()).append(", ");
+    }
+    sb.append(']');
+    StringBuilder sb2 = new StringBuilder();
+    sb2.append('[');
+    for (GraphNode outEdge : outEdges) {
+      sb2.append(outEdge.getId()).append(", ");
+    }
+    sb2.append(']');
+    return super.toString() + ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.toString() + ", outEdges=" + sb2.toString() + '}';
+  }
 }

@@ -49,7 +49,7 @@ public class ZoomIn {
     GraphNode oldStartNode = graph.getNode(inlink.getId());
     startNode.setInEdges(oldStartNode.getInEdges());
     for (GraphNode curOutlink : oldStartNode.getOutEdges()) {
-      if (!curOutlink.equals(bubble) && !startNode.getOutEdges().contains(curOutlink)) {
+      if (curOutlink.getId() != bubble.getId() && !startNode.getOutEdges().contains(curOutlink)) {
         startNode.addOutEdge(curOutlink);
       }
     }
@@ -59,12 +59,12 @@ public class ZoomIn {
     GraphNode oldEndNode = graph.getNode(outlink.getId());
     endNode.setOutEdges(oldEndNode.getOutEdges());
     for (GraphNode curInlink : oldEndNode.getInEdges()) {
-      if (!curInlink.equals(bubble) && !endNode.getInEdges().contains(curInlink)) {
+      if (curInlink.getId() != bubble.getId() && !endNode.getInEdges().contains(curInlink)) {
         endNode.addInEdge(curInlink);
       }
     }
 
-    filter.pruneNodes(zoomedGraph, graph, newBubbles);
+    filter.pruneNodes(zoomedGraph, newBubbles);
     replace(bubble, graph, zoomedGraph);
     return graph;
   }
