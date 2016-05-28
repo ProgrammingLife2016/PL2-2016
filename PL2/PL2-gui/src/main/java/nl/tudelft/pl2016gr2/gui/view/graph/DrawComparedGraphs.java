@@ -1,5 +1,11 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,6 +18,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -36,7 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -73,6 +79,7 @@ public class DrawComparedGraphs implements Initializable {
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
 
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
+  private static final double MIN_VISIBILITY_RADIUS = 2.0;
   private static final double NODE_X_OFFSET = 50.0;
   private static final double MAX_NODE_RADIUS = 45.0;
   private static final double MIN_NODE_RADIUS = 5.0;
@@ -91,13 +98,18 @@ public class DrawComparedGraphs implements Initializable {
   private ObservableSet<String> topGraphGenomes;
   private ObservableSet<String> bottomGraphGenomes;
   @TestId(id = "amountOfLevels")
-  private int amountOfLevels;
+  private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
 
   private GraphOrdererThread mainGraphOrder;
   private SequenceGraph mainGraph;
 
   private ContextMenu contextMenu;
   private IPhylogeneticTreeRoot treeRoot;
+
+  private static final double SCROLL_ZOOM_FACTOR = 0.0025;
+  private static final double MAX_ZOOM_FACTOR = 2.0;
+
+  private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
 
   /**
    * Load this view.
@@ -157,14 +169,86 @@ public class DrawComparedGraphs implements Initializable {
     initializeTopDragEvent();
     initializeBottomDragEvent();
 
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    mainPane.widthProperty().addListener(invalidate -> updateGraph());
+    initializeScroll();
     mainPane.setOnMouseClicked(event -> {
       if (contextMenu != null) {
         contextMenu.hide();
         contextMenu = null;
       }
     });
+  }
+
+  /**
+   * Initialize the scrollbar and scroll event.
+   */
+  private void initializeScroll() {
+    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
+    scrollbar.unitIncrementProperty().bind(new SimpleDoubleProperty(UNIT_INCREMENT_RATE).divide(
+        amountOfLevels).divide(zoomFactor));
+    scrollbar.blockIncrementProperty().bind(new SimpleDoubleProperty(BLOCK_INCREMENT_RATE).divide(
+        amountOfLevels).divide(zoomFactor));
+    scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(NODE_X_OFFSET)
+        .divide(zoomFactor).divide(amountOfLevels));
+
+    zoomFactor.addListener(invalid -> verifyZoomFactor());
+    mainPane.widthProperty().addListener(invalid -> verifyZoomFactor());
+    amountOfLevels.addListener(invalid -> verifyZoomFactor());
+
+    mainPane.setOnScroll((ScrollEvent event) -> {
+      double relativePos = event.getX() / mainPane.getWidth();
+      if (event.getDeltaY() > 0) {
+        updateScrollbarValue(
+            scrollbar.getValue() + (relativePos - 0.5) * scrollbar.getVisibleAmount() / 9.0);
+        zoomIn(event.getDeltaY());
+      } else {
+        zoomOut(-event.getDeltaY());
+        updateScrollbarValue(
+            scrollbar.getValue() + (0.5 - relativePos) * scrollbar.getVisibleAmount() / 9.0);
+      }
+    });
+  }
+
+  private void updateScrollbarValue(double newValue) {
+    if (newValue < 0.0) {
+      scrollbar.setValue(0.0);
+    } else if (newValue > 1.0) {
+      scrollbar.setValue(1.0);
+    } else {
+      scrollbar.setValue(newValue);
+    }
+  }
+
+  /**
+   * Zoom in.
+   *
+   * @param deltaY the delta Y of the scroll wheel event.
+   */
+  private void zoomIn(double deltaY) {
+    zoomFactor.set(zoomFactor.get() * (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+  }
+
+  /**
+   * Zoom out.
+   *
+   * @param deltaY the delta Y of the scroll wheel event.
+   */
+  private void zoomOut(double deltaY) {
+    zoomFactor.set(zoomFactor.get() / (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+  }
+
+  /**
+   * Verify that the zoom factor is not too small or too large.
+   */
+  private void verifyZoomFactor() {
+    if (amountOfLevels.get() <= 0) {
+      return;
+    }
+    if (zoomFactor.get() > MAX_ZOOM_FACTOR) {
+      zoomFactor.set(MAX_ZOOM_FACTOR);
+    } else if (zoomFactor.get() < mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get()) {
+      zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
+    }
+    updateGraph();
   }
 
   /**
@@ -421,9 +505,7 @@ public class DrawComparedGraphs implements Initializable {
 //    Collections.sort(topGraphOrder);
 //    topGraph = new OrderedGraph(curGraph, topGraphOrder);
 //    // END OF CHANGED CODE
-    amountOfLevels = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
-    scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
-    scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
+    amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     updateGraphSize();
     updateGraph();
   }
@@ -465,12 +547,10 @@ public class DrawComparedGraphs implements Initializable {
     int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
     int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
     if (highestTopLevel > highestBottomLevel) {
-      amountOfLevels = highestTopLevel;
+      amountOfLevels.set(highestTopLevel);
     } else {
-      amountOfLevels = highestBottomLevel;
+      amountOfLevels.set(highestBottomLevel);
     }
-    scrollbar.setUnitIncrement(UNIT_INCREMENT_RATE / amountOfLevels);
-    scrollbar.setBlockIncrement(BLOCK_INCREMENT_RATE / amountOfLevels);
     updateGraphSize();
     updateGraph();
   }
@@ -509,8 +589,8 @@ public class DrawComparedGraphs implements Initializable {
   private void updateGraph() {
     double viewPosition = scrollbar.getValue();
     double graphWidth = mainPane.getWidth();
-    int levelsToDraw = (int) (graphWidth / NODE_X_OFFSET);
-    int startLevel = (int) ((amountOfLevels - levelsToDraw + 2) * viewPosition);
+    int levelsToDraw = (int) (graphWidth / (NODE_X_OFFSET * zoomFactor.get()));
+    int startLevel = (int) ((amountOfLevels.get() - levelsToDraw + 2) * viewPosition);
     if (startLevel < 0) {
       startLevel = 0;
     }
@@ -625,7 +705,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private static void drawNode(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
+  private void drawNode(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
       ArrayList<GraphNode> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       GraphNode node = nodes.get(i);
@@ -640,7 +720,7 @@ public class DrawComparedGraphs implements Initializable {
     }
   }
 
-  private static void constructNode(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
+  private void constructNode(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
       GraphNode node, double relativeHeight, double maxYOffset,
       int level, int startLevel) {
     GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(node),
@@ -652,23 +732,31 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       circle.setFill(NO_OVERLAP_COLOR);
     }
-    circle.setCenterX(NODE_X_OFFSET * (level + 1 - startLevel));
+    circle.setCenterX(NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel));
     circle.centerYProperty().bind(pane.heightProperty().multiply(
         circle.getRelativeHeightProperty()));
-    addLabel(pane, circle, node.getId());
+    if (circle.getRadius() < MIN_VISIBILITY_RADIUS) {
+      circle.setVisible(false);
+    } else {
+      addLabel(pane, circle, node.getId());
+    }
   }
 
-  private static void constructBubble(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
+  private void constructBubble(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
       GraphNode node, double relativeHeight, double maxYOffset,
       int level, int startLevel) {
     GraphNodeSquare square = new GraphNodeSquare(calculateNodeRadius(node),
         relativeHeight, maxYOffset);
     pane.getChildren().add(square);
     graphNodeMap.put(node, square);
-    square.centerXProperty().set(NODE_X_OFFSET * (level + 1 - startLevel));
+    square.centerXProperty().set(NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel));
     square.centerYProperty().bind(pane.heightProperty().multiply(
         square.getRelativeHeightProperty()));
-    addLabel(pane, square, node.getId());
+    if (square.getRadius() < MIN_VISIBILITY_RADIUS) {
+      square.setVisible(false);
+    } else {
+      addLabel(pane, square, node.getId());
+    }
   }
 
 //  /**
@@ -697,18 +785,18 @@ public class DrawComparedGraphs implements Initializable {
    * @param node the node.
    * @return the radius.
    */
-  private static double calculateNodeRadius(GraphNode node) {
+  private double calculateNodeRadius(GraphNode node) {
     int amountOfBases = node.size();
     double radius;
     if (amountOfBases > 1000) {
-      radius = Math.log(amountOfBases) * 4.0 - 17.0; // see javadoc
-      if (radius > MAX_NODE_RADIUS) {
-        return MAX_NODE_RADIUS;
+      radius = (Math.log(amountOfBases) * 4.0 - 17.0) * zoomFactor.get(); // see javadoc
+      if (radius > MAX_NODE_RADIUS * zoomFactor.get()) {
+        return MAX_NODE_RADIUS * zoomFactor.get();
       }
     } else {
-      radius = Math.log(amountOfBases) * 0.7 + 5.1; // see javadoc
-      if (radius < MIN_NODE_RADIUS) {
-        return MIN_NODE_RADIUS;
+      radius = (Math.log(amountOfBases) * 0.7 + 5.1) * zoomFactor.get(); // see javadoc
+      if (radius < MIN_NODE_RADIUS * zoomFactor.get()) {
+        return MIN_NODE_RADIUS * zoomFactor.get();
       }
     }
     return radius;
