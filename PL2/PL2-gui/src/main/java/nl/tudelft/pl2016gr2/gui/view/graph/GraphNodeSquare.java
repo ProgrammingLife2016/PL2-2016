@@ -26,11 +26,11 @@ public class GraphNodeSquare extends Rectangle implements IGraphNode {
    * @param maxYOffset     the maximum y offset of the square.
    */
   public GraphNodeSquare(double radius, double relativeHeight, double maxYOffset) {
-    super(radius * 2.0, radius * 2.0);
+    super(radius * 2.0, NODE_HEIGHT_RADIUS * 2.0);
     this.maxYOffset = maxYOffset;
     this.relativeHeight.set(relativeHeight);
     layoutXProperty().bind(centerXProperty.add(-radius));
-    layoutYProperty().bind(centerYProperty.add(-radius));
+    layoutYProperty().bind(centerYProperty.add(-NODE_HEIGHT_RADIUS));
     setFill(Color.ALICEBLUE);
   }
 
@@ -52,10 +52,5 @@ public class GraphNodeSquare extends Rectangle implements IGraphNode {
   @Override
   public DoubleProperty centerYProperty() {
     return centerYProperty;
-  }
-
-  @Override
-  public double getRadius() {
-    return getWidth() / 2.0;
   }
 }

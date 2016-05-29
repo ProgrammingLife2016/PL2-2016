@@ -77,15 +77,18 @@ public class SubgraphAlgorithmManager {
     graphOrder.start();
 
     CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
+//    CompareSubgraphs.alignVertically(graphOrder.getNodeOrder());
     for (GraphNode nodePosition : graphOrder.getNodeOrder()) {
       nodePosition.setOverlapping(true);
     }
+    CompareSubgraphs.shiftLevelsByBaseSize(graphOrder.getNodeOrder());
     
     FilterBubbles filter = new FilterBubbles(subgraph);
     subgraph = filter.filter(treeRoot);
     
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
-    CompareSubgraphs.removeEmptyLevels(orderedNodes);
+//    CompareSubgraphs.removeEmptyLevels(orderedNodes);
+    
     
     return new OrderedGraph(subgraph, orderedNodes);
   }

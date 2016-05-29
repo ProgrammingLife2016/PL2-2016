@@ -4,8 +4,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -79,12 +77,12 @@ public class DrawComparedGraphs implements Initializable {
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
 
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
-  private static final double MIN_VISIBILITY_RADIUS = 2.0;
-  private static final double NODE_X_OFFSET = 50.0;
+  private static final double MIN_VISIBILITY_WIDTH = 2.0;
+  private static final double NODE_X_OFFSET = 1.0;
   private static final double MAX_NODE_RADIUS = 45.0;
   private static final double MIN_NODE_RADIUS = 5.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
-  private static final double MIN_EDGE_WIDTH = 0.3;
+  private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
   private static final double UNIT_INCREMENT_RATE = 1.0;
   private static final double BLOCK_INCREMENT_RATE = 10.0;
@@ -190,7 +188,6 @@ public class DrawComparedGraphs implements Initializable {
     scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(NODE_X_OFFSET)
         .divide(zoomFactor).divide(amountOfLevels));
 
-    zoomFactor.addListener(invalid -> verifyZoomFactor());
     mainPane.widthProperty().addListener(invalid -> verifyZoomFactor());
     amountOfLevels.addListener(invalid -> verifyZoomFactor());
 
@@ -225,6 +222,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void zoomIn(double deltaY) {
     zoomFactor.set(zoomFactor.get() * (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+    verifyZoomFactor();
   }
 
   /**
@@ -234,6 +232,7 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void zoomOut(double deltaY) {
     zoomFactor.set(zoomFactor.get() / (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+    verifyZoomFactor();
   }
 
   /**
@@ -243,10 +242,11 @@ public class DrawComparedGraphs implements Initializable {
     if (amountOfLevels.get() <= 0) {
       return;
     }
-    if (zoomFactor.get() > MAX_ZOOM_FACTOR) {
+    double minZoom = mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get();
+    if (zoomFactor.get() > MAX_ZOOM_FACTOR && minZoom < MAX_ZOOM_FACTOR) {
       zoomFactor.set(MAX_ZOOM_FACTOR);
-    } else if (zoomFactor.get() < mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get()) {
-      zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
+    } else if (zoomFactor.get() < minZoom) {
+      zoomFactor.set(minZoom);
     }
     updateGraph();
   }
@@ -732,10 +732,11 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       circle.setFill(NO_OVERLAP_COLOR);
     }
-    circle.setCenterX(NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel));
+    circle.setCenterX(
+        NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     circle.centerYProperty().bind(pane.heightProperty().multiply(
         circle.getRelativeHeightProperty()));
-    if (circle.getRadius() < MIN_VISIBILITY_RADIUS) {
+    if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
       circle.setVisible(false);
     } else {
       addLabel(pane, circle, node.getId());
@@ -745,14 +746,16 @@ public class DrawComparedGraphs implements Initializable {
   private void constructBubble(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
       GraphNode node, double relativeHeight, double maxYOffset,
       int level, int startLevel) {
-    GraphNodeSquare square = new GraphNodeSquare(calculateNodeRadius(node),
+    double radius = calculateNodeRadius(node);
+    GraphNodeSquare square = new GraphNodeSquare(radius,
         relativeHeight, maxYOffset);
     pane.getChildren().add(square);
     graphNodeMap.put(node, square);
-    square.centerXProperty().set(NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel));
+    square.centerXProperty().set(
+        NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     square.centerYProperty().bind(pane.heightProperty().multiply(
         square.getRelativeHeightProperty()));
-    if (square.getRadius() < MIN_VISIBILITY_RADIUS) {
+    if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
       square.setVisible(false);
     } else {
       addLabel(pane, square, node.getId());
@@ -786,20 +789,21 @@ public class DrawComparedGraphs implements Initializable {
    * @return the radius.
    */
   private double calculateNodeRadius(GraphNode node) {
-    int amountOfBases = node.size();
-    double radius;
-    if (amountOfBases > 1000) {
-      radius = (Math.log(amountOfBases) * 4.0 - 17.0) * zoomFactor.get(); // see javadoc
-      if (radius > MAX_NODE_RADIUS * zoomFactor.get()) {
-        return MAX_NODE_RADIUS * zoomFactor.get();
-      }
-    } else {
-      radius = (Math.log(amountOfBases) * 0.7 + 5.1) * zoomFactor.get(); // see javadoc
-      if (radius < MIN_NODE_RADIUS * zoomFactor.get()) {
-        return MIN_NODE_RADIUS * zoomFactor.get();
-      }
-    }
-    return radius;
+//    int amountOfBases = node.size();
+//    double radius;
+//    if (amountOfBases > 1000) {
+//      radius = (Math.log(amountOfBases) * 4.0 - 17.0) * zoomFactor.get(); // see javadoc
+//      if (radius > MAX_NODE_RADIUS * zoomFactor.get()) {
+//        return MAX_NODE_RADIUS * zoomFactor.get();
+//      }
+//    } else {
+//      radius = (Math.log(amountOfBases) * 0.7 + 5.1) * zoomFactor.get(); // see javadoc
+//      if (radius < MIN_NODE_RADIUS * zoomFactor.get()) {
+//        return MIN_NODE_RADIUS * zoomFactor.get();
+//      }
+//    }
+//    return radius;
+    return node.size() / 2.0 * zoomFactor.get();
   }
 
   /**
@@ -813,7 +817,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param graphNodeMap a map which maps each node id to the graph node object which represents the
    *                     node in the user interface.
    */
-  private static void drawEdges(Pane pane, ArrayList<GraphNode> graphOrder,
+  private void drawEdges(Pane pane, ArrayList<GraphNode> graphOrder,
       SequenceGraph graph, int startIndex, int endIndex,
       HashMap<GraphNode, IGraphNode> graphNodeMap) {
     for (int i = startIndex; i < endIndex; i++) {
@@ -848,9 +852,9 @@ public class DrawComparedGraphs implements Initializable {
    * @param to         the node to which the edge goes.
    * @return the edge width.
    */
-  private static double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
+  private double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
     int genomesOverEdge = from.getGenomesOverEdge(to).size();
-    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8; // see javadoc
+    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8 * zoomFactor.get(); // see javadoc
     if (edgeWith > MAX_EDGE_WIDTH) {
       return MAX_EDGE_WIDTH;
     } else if (edgeWith < MIN_EDGE_WIDTH) {
@@ -913,8 +917,8 @@ public class DrawComparedGraphs implements Initializable {
   private static void addLabel(Pane pane, IGraphNode graphNode, int id) {
     Label label = new Label(Integer.toString(id));
     label.setMouseTransparent(true);
-    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getRadius() + 3.0));
-    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getRadius() / 2.0));
+    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
+    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
     label.setTextFill(Color.ALICEBLUE);
     pane.getChildren().add(label);
   }

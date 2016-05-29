@@ -244,6 +244,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   public void setLevel(int level);
 
   public int getLevel();
-//  NodePosition getNodePosition();
-//  void setNodePosition(NodePosition nodePosition);
+  
+  double getRelvativeYPos();
+  
+  public void setRelvativeYPos(double relvativeYPos);
 }

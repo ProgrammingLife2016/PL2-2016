@@ -2,14 +2,14 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Ellipse;
 
 /**
  * A circle representation of a node, which can be drawn in the user interface.
  *
  * @author Faris
  */
-public class GraphNodeCircle extends Circle implements IGraphNode {
+public class GraphNodeCircle extends Ellipse implements IGraphNode {
 
   private final DoubleProperty relativeHeight = new SimpleDoubleProperty();
   private final double maxYOffset;
@@ -22,7 +22,7 @@ public class GraphNodeCircle extends Circle implements IGraphNode {
    * @param maxYOffset     the maximum value by which this node may be offset (to above).
    */
   public GraphNodeCircle(double radius, double relativeHeight, double maxYOffset) {
-    super(radius);
+    super(radius, NODE_HEIGHT_RADIUS * 2.0);
     this.relativeHeight.set(relativeHeight);
     this.maxYOffset = maxYOffset;
   }
@@ -35,5 +35,15 @@ public class GraphNodeCircle extends Circle implements IGraphNode {
   @Override
   public double getMaxYOffset() {
     return maxYOffset;
+  }
+
+  @Override
+  public double getWidth() {
+    return getRadiusX() * 2.0;
+  }
+
+  @Override
+  public double getHeight() {
+    return getRadiusY() * 2.0;
   }
 }

@@ -115,4 +115,31 @@ public class CompareSubgraphs {
       node.addPositionOffset(-emptyLevels);
     }
   }
+
+  public static void shiftLevelsByBaseSize(ArrayList<GraphNode> graphOrder) {
+    int level = 0;
+    int maxLevelOffset = 0;
+    int curOffset = 0;
+    for (GraphNode node : graphOrder) {
+      if (node.getLevel() > level) {
+        level = node.getLevel();
+        curOffset += maxLevelOffset;
+        maxLevelOffset = 0;
+      }
+      int bases = node.size();
+      if (bases > maxLevelOffset) {
+        maxLevelOffset = bases;
+      }
+      node.addPositionOffset(curOffset + bases);
+    }
+    graphOrder.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+  }
+  
+  public static void alignVertically(ArrayList<GraphNode> graphOrder) {
+    for (GraphNode graphNode : graphOrder) {
+      double width = graphNode.size();
+      double endX = graphNode.getLevel();
+      double startX = endX - width;
+    }
+  }
 }

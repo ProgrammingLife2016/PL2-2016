@@ -11,10 +11,13 @@ public class PhyloBubble implements Bubble {
   private final int id;
   private final IPhylogeneticTreeNode treeNode;
   private final HashSet<GraphNode> nestedNodes;
-  
+
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
-  
+
+  private int size = -1;
+  private int level = -1;
+
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
@@ -87,9 +90,11 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public int size() {
-    int size = 0;
-    for (GraphNode nestedNode : nestedNodes) {
-      size += nestedNode.size();
+    if (size == -1) {
+      size = 0;
+      for (GraphNode nestedNode : nestedNodes) {
+        size += nestedNode.size();
+      }
     }
     return size;
   }
@@ -155,12 +160,14 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addGenome(String genome) {
-    // NOT RELEVANT FOR BUBBLE
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
   }
 
   @Override
   public void removeGenome(String genome) {
-    // NOT RELEVANT FOR BUBBLE
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
   }
 
   @Override
@@ -210,7 +217,7 @@ public class PhyloBubble implements Bubble {
   @Override
   public boolean isOverlapping() {
     for (GraphNode nestedNode : nestedNodes) {
-      if(nestedNode.isOverlapping()) {
+      if (nestedNode.isOverlapping()) {
         return true;
       }
     }
@@ -219,7 +226,8 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void setOverlapping(boolean overlapping) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
   }
 
   @Override
@@ -231,17 +239,31 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void setLevel(int level) {
-    throw new UnsupportedOperationException();
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
+  }
+
+  @Override
+  public double getRelvativeYPos() {
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
+  }
+
+  @Override
+  public void setRelvativeYPos(double relvativeYPos) {
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
   }
 
   @Override
   public int getLevel() {
-    int lowestLevel = Integer.MAX_VALUE;
-    for (GraphNode nestedNode : nestedNodes) {
-      if(nestedNode.getLevel() < lowestLevel) {
-        lowestLevel = nestedNode.getLevel();
+    if (level == -1) {
+      for (GraphNode nestedNode : nestedNodes) {
+        if (nestedNode.getLevel() > level) {
+          level = nestedNode.getLevel();
+        }
       }
     }
-    return lowestLevel;
+    return level;
   }
 }

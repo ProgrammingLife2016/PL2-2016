@@ -1,8 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.value.ObservableValue;
-import javafx.scene.Node;
 
 /**
  * Interface of all drawable graph nodes.
@@ -11,6 +9,8 @@ import javafx.scene.Node;
  */
 public interface IGraphNode {
 
+  public static final double NODE_HEIGHT_RADIUS = 10.0;
+  
   /**
    * Get the relative height property.
    *
@@ -39,10 +39,7 @@ public interface IGraphNode {
    */
   DoubleProperty centerYProperty();
 
-  /**
-   * Get the radius of the object.
-   *
-   * @return the radius of the object.
-   */
-  double getRadius();
+  double getWidth();
+  
+  double getHeight();
 }

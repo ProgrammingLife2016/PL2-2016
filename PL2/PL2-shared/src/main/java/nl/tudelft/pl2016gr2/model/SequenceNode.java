@@ -26,6 +26,11 @@ public class SequenceNode extends AbstractNode {
    * The level of this node (the depth in the graph.
    */
   private int level;
+  
+  /**
+   * The relative y-position of the node
+   */
+  private double relvativeYPos;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -221,6 +226,16 @@ public class SequenceNode extends AbstractNode {
   @Override
   public void setLevel(int level) {
     this.level = level;
+  }
+
+  @Override
+  public double getRelvativeYPos() {
+    return relvativeYPos;
+  }
+
+  @Override
+  public void setRelvativeYPos(double relvativeYPos) {
+    this.relvativeYPos = relvativeYPos;
   }
 
   @Override
