@@ -33,9 +33,10 @@ public class ZoomIn {
     bubble.accept(visitor);
     IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
     
-    GraphNode inlink = bubble.getInEdges().iterator().next();
-    GraphNode outlink = bubble.getOutEdges().iterator().next();
-    zoomOut.addOldView(inlink, outlink, graph);
+    Collection<GraphNode> inlinks = bubble.getInEdges();
+    Collection<GraphNode> outlinks = bubble.getOutEdges();
+    // THIS MIGHT NOT WORK WITH THE FIRST/LAST NODE
+    zoomOut.addOldView(getNode(inlinks), getNode(outlinks), graph);
     
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
@@ -45,29 +46,45 @@ public class ZoomIn {
     debubble(poppedNodes, childOne, bubble, newBubbles);
     debubble(poppedNodes, childTwo, bubble, newBubbles);
     
- // Add outlink to other bubbles that are not affected
-    GraphNode startNode = getNode(inlink.getId(), false, poppedNodes);
-    GraphNode oldStartNode = graph.getNode(inlink.getId());
-    startNode.setInEdges(oldStartNode.getInEdges());
-    for (GraphNode curOutlink : oldStartNode.getOutEdges()) {
-      if (curOutlink.getId() != bubble.getId() && !startNode.getOutEdges().contains(curOutlink)) {
-        startNode.addOutEdge(curOutlink);
+    // Add outlink to other bubbles that are not affected
+    Iterator<GraphNode> inlinkIterator = inlinks.iterator();
+    while (inlinkIterator.hasNext()) {
+      GraphNode oldStartNode = inlinkIterator.next();
+      GraphNode startNode = getNode(oldStartNode.getId(), false, poppedNodes);
+      //GraphNode oldStartNode = graph.getNode(next.getId());
+      startNode.setInEdges(oldStartNode.getInEdges());
+      for (GraphNode curOutlink : oldStartNode.getOutEdges()) {
+        if (curOutlink.getId() != bubble.getId() && !startNode.getOutEdges().contains(curOutlink)) {
+          startNode.addOutEdge(curOutlink);
+        }
       }
     }
     
     // Add inlink to other bubbles that are not affected
-    GraphNode endNode = getNode(outlink.getId(), true, poppedNodes);
-    GraphNode oldEndNode = graph.getNode(outlink.getId());
-    endNode.setOutEdges(oldEndNode.getOutEdges());
-    for (GraphNode curInlink : oldEndNode.getInEdges()) {
-      if (curInlink.getId() != bubble.getId() && !endNode.getInEdges().contains(curInlink)) {
-        endNode.addInEdge(curInlink);
+    Iterator<GraphNode> outlinkIterator = outlinks.iterator();
+    while (outlinkIterator.hasNext()) {
+      GraphNode oldEndNode = outlinkIterator.next();
+      GraphNode endNode = getNode(oldEndNode.getId(), true, poppedNodes);
+      endNode.setOutEdges(oldEndNode.getOutEdges());
+      for (GraphNode curInlink : oldEndNode.getInEdges()) {
+        if (curInlink.getId() != bubble.getId() && !endNode.getInEdges().contains(curInlink)) {
+          endNode.addInEdge(curInlink);
+        }
       }
     }
 
     filter.pruneNodes(poppedNodes, newBubbles);
     //replace(bubble, graph, zoomedGraph);
     return poppedNodes;
+  }
+  
+  private GraphNode getNode(Collection<GraphNode> links) {
+    GraphNode node = null;
+    if (!links.isEmpty()) {
+      node = links.iterator().next();
+    }
+    
+    return node;
   }
   
   private GraphNode getNode(int id, boolean startEnd, List<GraphNode> nodes) {
@@ -90,17 +107,19 @@ public class ZoomIn {
   
   private List<Bubble> debubble(List<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
-    GraphNode start = originalGraph.getNode(bubble.getInEdges().iterator().next().getId());
+    Collection<GraphNode> startNodes = bubble.getInEdges();
     
     ArrayList<String> leaves = treeNode.getGenomes();
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
-    toVisit.add(start);
+    toVisit.addAll(startNodes);
     
     filter.filterBubbles(toVisit, visited, poppedNodes, leaves, bubble, treeNode, newBubbles);
     
-    GraphNode end = originalGraph.getNode(bubble.getOutEdges().iterator().next().getId());
-    poppedNodes.add(end.copy());
+    Iterator<GraphNode> iterator = bubble.getOutEdges().iterator();
+    while (iterator.hasNext()) {
+      poppedNodes.add(iterator.next().copy());
+    }
     
     return newBubbles;
   }

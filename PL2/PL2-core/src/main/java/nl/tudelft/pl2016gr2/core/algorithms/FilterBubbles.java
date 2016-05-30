@@ -118,7 +118,6 @@ public class FilterBubbles implements PhyloFilter {
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
-//      GraphNode current = next;
       poppedNodes.add(next.copy());
       if (bubble != null && endNodes.contains(next)) {
         continue;
