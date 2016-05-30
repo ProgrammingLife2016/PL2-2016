@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import java.util.Collection;
+
 /**
  * An aggregate <code>GraphNode</code>, containing other <code>GraphNodes</code>.
  *
@@ -13,6 +15,6 @@ public interface Bubble extends GraphNode {
    * Popping is a synonym for zooming in on the bubble, thus revealing the nodes that it stores.
    * </p>
    */
-  void pop();
+  Collection<GraphNode> pop(SequenceGraph graph);
 
 }

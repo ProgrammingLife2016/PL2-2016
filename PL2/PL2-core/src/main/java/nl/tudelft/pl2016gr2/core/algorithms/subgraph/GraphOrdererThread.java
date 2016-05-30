@@ -52,7 +52,7 @@ public class GraphOrdererThread extends Thread {
 
           int maxInLevel = 0;
           for (GraphNode inEdge : node.getInEdges()) {
-            if (inEdge.getLevel()> maxInLevel) {
+            if (inEdge.getLevel() > maxInLevel) {
               maxInLevel = inEdge.getLevel();
             }
           }

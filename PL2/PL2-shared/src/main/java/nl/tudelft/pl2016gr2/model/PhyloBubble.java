@@ -14,26 +14,31 @@ public class PhyloBubble implements Bubble {
 
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
+  
+  private PhyloFilter filter;
+  private Collection<GraphNode> poppedNodes;
 
   private int size = -1;
   private int level = -1;
-
+  
   private double relativeYPos;
   private double relvativeStartYPos;
   private double relativeEndYPos;
 
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
     this.id = id;
     this.treeNode = treeNode;
+    this.filter = filter;
     this.inEdges = new ArrayList<>();
     this.outEdges = new ArrayList<>();
     this.nestedNodes = new HashSet<>();
   }
 
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode,
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
       Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     this.id = id;
     this.treeNode = treeNode;
+    this.filter = filter;
     this.inEdges = new ArrayList<>(inEdges);
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
@@ -41,10 +46,12 @@ public class PhyloBubble implements Bubble {
     this.nestedNodes = new HashSet<>();
   }
 
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, Collection<GraphNode> nestedNodes) {
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter, 
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, 
+      Collection<GraphNode> nestedNodes) {
     this.id = id;
     this.treeNode = treeNode;
+    this.filter = filter;
     this.inEdges = new ArrayList<>(inEdges);
     this.outEdges = new ArrayList<>(outEdges);
     this.inEdges.trimToSize();
@@ -191,12 +198,12 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public GraphNode copy() {
-    return new PhyloBubble(getId(), treeNode);
+    return new PhyloBubble(getId(), treeNode, filter);
   }
 
   @Override
   public GraphNode copyAll() {
-    return new PhyloBubble(getId(), treeNode, inEdges, outEdges, nestedNodes);
+    return new PhyloBubble(getId(), treeNode, filter, inEdges, outEdges, nestedNodes);
   }
 
   @Override
@@ -205,8 +212,12 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public void pop() {
-
+  public Collection<GraphNode> pop(SequenceGraph graph) {
+    if (poppedNodes == null) {
+      poppedNodes = filter.zoomIn(this, graph);
+      // SORT HERE
+    }
+    return poppedNodes;
   }
 
   @Override

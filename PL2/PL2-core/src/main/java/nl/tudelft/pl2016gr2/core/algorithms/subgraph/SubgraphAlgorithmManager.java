@@ -73,10 +73,9 @@ public class SubgraphAlgorithmManager {
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
     FilterBubbles filter = new FilterBubbles(subgraph);
-    subgraph = filter.filter(treeRoot);
-
-    ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
-    CompareSubgraphs.alignVertically(orderedNodes, subgraph.getRootNodes());
+    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot);
+    
+//    CompareSubgraphs.alignVertically(orderedNodes, subgraph.getRootNodes());
     
     return new OrderedGraph(subgraph, orderedNodes);
   }

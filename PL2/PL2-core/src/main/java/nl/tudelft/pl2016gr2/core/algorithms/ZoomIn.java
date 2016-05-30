@@ -8,6 +8,7 @@ import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -27,7 +28,7 @@ public class ZoomIn {
     this.filter = filter;
   }
   
-  public SequenceGraph zoom(Bubble bubble, SequenceGraph graph) {
+  public Collection<GraphNode> zoom(Bubble bubble, SequenceGraph graph) {
     BubblePhyloVisitor visitor = new BubblePhyloVisitor();
     bubble.accept(visitor);
     IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
@@ -39,13 +40,13 @@ public class ZoomIn {
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
  
-    SequenceGraph zoomedGraph = new HashGraph();
+    List<GraphNode> poppedNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(zoomedGraph, childOne, bubble, newBubbles);
-    debubble(zoomedGraph, childTwo, bubble, newBubbles);
+    debubble(poppedNodes, childOne, bubble, newBubbles);
+    debubble(poppedNodes, childTwo, bubble, newBubbles);
     
  // Add outlink to other bubbles that are not affected
-    GraphNode startNode = zoomedGraph.getNode(inlink.getId());
+    GraphNode startNode = getNode(inlink.getId(), false, poppedNodes);
     GraphNode oldStartNode = graph.getNode(inlink.getId());
     startNode.setInEdges(oldStartNode.getInEdges());
     for (GraphNode curOutlink : oldStartNode.getOutEdges()) {
@@ -55,7 +56,7 @@ public class ZoomIn {
     }
     
     // Add inlink to other bubbles that are not affected
-    GraphNode endNode = zoomedGraph.getNode(outlink.getId());
+    GraphNode endNode = getNode(outlink.getId(), true, poppedNodes);
     GraphNode oldEndNode = graph.getNode(outlink.getId());
     endNode.setOutEdges(oldEndNode.getOutEdges());
     for (GraphNode curInlink : oldEndNode.getInEdges()) {
@@ -64,12 +65,30 @@ public class ZoomIn {
       }
     }
 
-    filter.pruneNodes(zoomedGraph, newBubbles);
-    replace(bubble, graph, zoomedGraph);
-    return graph;
+    filter.pruneNodes(poppedNodes, newBubbles);
+    //replace(bubble, graph, zoomedGraph);
+    return poppedNodes;
   }
   
-  private List<Bubble> debubble(SequenceGraph filteredGraph, IPhylogeneticTreeNode treeNode, 
+  private GraphNode getNode(int id, boolean startEnd, List<GraphNode> nodes) {
+    if (!startEnd) {
+      for (int i = 0; i < nodes.size(); i++) {
+        if (nodes.get(i).getId() == id) {
+          return nodes.get(i);
+        }
+      }
+    } else {
+      for (int i = nodes.size() - 1; i >= 0; i--) {
+        if (nodes.get(i).getId() == id) {
+          return nodes.get(i);
+        }
+      }
+    }
+    
+    return null;
+  }
+  
+  private List<Bubble> debubble(List<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     GraphNode start = originalGraph.getNode(bubble.getInEdges().iterator().next().getId());
     
@@ -78,10 +97,10 @@ public class ZoomIn {
     Set<GraphNode> visited = new HashSet<>();
     toVisit.add(start);
     
-    filter.filterBubbles(toVisit, visited, filteredGraph, leaves, bubble, treeNode, newBubbles);
+    filter.filterBubbles(toVisit, visited, poppedNodes, leaves, bubble, treeNode, newBubbles);
     
     GraphNode end = originalGraph.getNode(bubble.getOutEdges().iterator().next().getId());
-    filteredGraph.add(end.copy());
+    poppedNodes.add(end.copy());
     
     return newBubbles;
   }
