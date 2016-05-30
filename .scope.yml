@@ -1,0 +1,6 @@
+languages:
+ - java
+exclude:
+ - /PL2/PL2-shared/src/main/java/nl/tudelft/pl2016gr2/thirdparty/testing/utility/*
+
+component_depth: 2
