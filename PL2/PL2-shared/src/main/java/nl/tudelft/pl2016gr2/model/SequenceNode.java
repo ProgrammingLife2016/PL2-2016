@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,11 +28,13 @@ public class SequenceNode extends AbstractNode {
    * The level of this node (the depth in the graph.
    */
   private int level;
-  
+
   /**
    * The relative y-position of the node
    */
-  private double relvativeYPos;
+  private double relativeYPos;
+  private double relvativeStartYPos;
+  private double relativeEndYPos;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -187,6 +191,16 @@ public class SequenceNode extends AbstractNode {
     genomes.remove(genome);
   }
 
+  /**
+   * Returns the length of the sequence in this node.
+   *
+   * @return The sequence length
+   */
+  @Override
+  public int size() {
+    return sequence.size();
+  }
+
   @Override
   public GraphNode copy() {
     SequenceNode node = new SequenceNode(this.getId(), sequence, getGenomes());
@@ -229,13 +243,29 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public double getRelvativeYPos() {
-    return relvativeYPos;
+  public double getRelvativeStartYPos() {
+    return relvativeStartYPos;
   }
 
   @Override
-  public void setRelvativeYPos(double relvativeYPos) {
-    this.relvativeYPos = relvativeYPos;
+  public double getRelvativeEndYPos() {
+    return relativeEndYPos;
+  }
+
+  @Override
+  public void setRelvativeYPosDomain(double relvativeStartYPos, double relativeEndYPos) {
+    this.relvativeStartYPos = relvativeStartYPos;
+    this.relativeEndYPos = relativeEndYPos;
+  }
+
+  @Override
+  public double getRelativeYPos() {
+    return relativeYPos;
+  }
+
+  @Override
+  public void setRelativeYPos(double relativeYPos) {
+    this.relativeYPos = relativeYPos;
   }
 
   @Override
@@ -254,5 +284,10 @@ public class SequenceNode extends AbstractNode {
     sb2.append(']');
     return super.toString() + ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.
         toString() + ", outEdges=" + sb2.toString() + '}';
+  }
+
+  @Override
+  public void accept(NodeVisitor visitor) {
+    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 }

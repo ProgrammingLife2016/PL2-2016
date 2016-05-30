@@ -46,16 +46,6 @@ public abstract class AbstractNode implements Node {
     return null;
   }
 
-  /**
-   * Returns the length of the sequence in this node.
-   *
-   * @return The sequence length
-   */
-  @Override
-  public int size() {
-    return getSequence().length();
-  }
-
   @Override
   public Collection<String> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(

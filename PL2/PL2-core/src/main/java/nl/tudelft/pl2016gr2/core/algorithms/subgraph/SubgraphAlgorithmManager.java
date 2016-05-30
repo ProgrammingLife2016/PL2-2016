@@ -4,7 +4,6 @@ import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,37 +24,37 @@ public class SubgraphAlgorithmManager {
   private SubgraphAlgorithmManager() {
   }
 
-  /**
-   * Create, compare and align the nodes of two subgraphs.
-   *
-   * @param topGenomes     the genomes which must be present in the top subgraph.
-   * @param bottomGenomes  the genomes which must be present in the bottom subgraph.
-   * @param mainGraph      the main graph.
-   * @param mainGraphOrder the order of the main graph.
-   * @return a pair containing as left value the ordered graph of the top subgraph and as right
-   *         value the ordered graph of the bottom subgraph.
-   */
-  public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<String> topGenomes,
-      Collection<String> bottomGenomes, SequenceGraph mainGraph,
-      GraphOrdererThread mainGraphOrder) {
-    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
-        topGenomes);
-    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
-        bottomGenomes);
-    topSubGraphThread.start();
-    bottomSubGraphThread.start();
-    
-    Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> alignedGraphs
-        = CompareSubgraphs.compareGraphs(mainGraphOrder.getGraph(),
-            topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    ArrayList<GraphNode> topGraphOrder = alignedGraphs.left;
-    ArrayList<GraphNode> bottomGraphOrder = alignedGraphs.right;
-
-    OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
-    OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
-        bottomGraphOrder);
-    return new Pair<>(orderedTopGraph, orderedBottomGraph);
-  }
+//  /**
+//   * Create, compare and align the nodes of two subgraphs.
+//   *
+//   * @param topGenomes     the genomes which must be present in the top subgraph.
+//   * @param bottomGenomes  the genomes which must be present in the bottom subgraph.
+//   * @param mainGraph      the main graph.
+//   * @param mainGraphOrder the order of the main graph.
+//   * @return a pair containing as left value the ordered graph of the top subgraph and as right
+//   *         value the ordered graph of the bottom subgraph.
+//   */
+//  public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<String> topGenomes,
+//      Collection<String> bottomGenomes, SequenceGraph mainGraph,
+//      GraphOrdererThread mainGraphOrder) {
+//    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
+//        topGenomes);
+//    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
+//        bottomGenomes);
+//    topSubGraphThread.start();
+//    bottomSubGraphThread.start();
+//    
+//    Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> alignedGraphs
+//        = CompareSubgraphs.compareGraphs(mainGraphOrder.getGraph(),
+//            topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
+//    ArrayList<GraphNode> topGraphOrder = alignedGraphs.left;
+//    ArrayList<GraphNode> bottomGraphOrder = alignedGraphs.right;
+//
+//    OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
+//    OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
+//        bottomGraphOrder);
+//    return new Pair<>(orderedTopGraph, orderedBottomGraph);
+//  }
 
   /**
    * Create and align the nodes of a single subgraph.
@@ -73,22 +72,11 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
-    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getGraph(), subgraph);
-    graphOrder.start();
-
-    CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
-//    CompareSubgraphs.alignVertically(graphOrder.getNodeOrder());
-    for (GraphNode nodePosition : graphOrder.getNodeOrder()) {
-      nodePosition.setOverlapping(true);
-    }
-    CompareSubgraphs.shiftLevelsByBaseSize(graphOrder.getNodeOrder());
-    
     FilterBubbles filter = new FilterBubbles(subgraph);
     subgraph = filter.filter(treeRoot);
-    
+
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
-//    CompareSubgraphs.removeEmptyLevels(orderedNodes);
-    
+    CompareSubgraphs.alignVertically(orderedNodes, subgraph.getRootNodes());
     
     return new OrderedGraph(subgraph, orderedNodes);
   }

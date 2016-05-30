@@ -18,6 +18,10 @@ public class PhyloBubble implements Bubble {
   private int size = -1;
   private int level = -1;
 
+  private double relativeYPos;
+  private double relvativeStartYPos;
+  private double relativeEndYPos;
+
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode) {
     this.id = id;
     this.treeNode = treeNode;
@@ -92,9 +96,13 @@ public class PhyloBubble implements Bubble {
   public int size() {
     if (size == -1) {
       size = 0;
-      for (GraphNode nestedNode : nestedNodes) {
-        size += nestedNode.size();
+      int highestInEdgeLevel = 0;
+      for (GraphNode inEdge : inEdges) {
+        if (inEdge.getLevel() > highestInEdgeLevel) {
+          highestInEdgeLevel = inEdge.getLevel();
+        }
       }
+      size = getLevel() - highestInEdgeLevel;
     }
     return size;
   }
@@ -244,15 +252,29 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public double getRelvativeYPos() {
-    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
-        + "bubbles before the bubbles are made.");
+  public double getRelvativeStartYPos() {
+    return relvativeStartYPos;
   }
 
   @Override
-  public void setRelvativeYPos(double relvativeYPos) {
-    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
-        + "bubbles before the bubbles are made.");
+  public double getRelvativeEndYPos() {
+    return relativeEndYPos;
+  }
+
+  @Override
+  public void setRelvativeYPosDomain(double relvativeStartYPos, double relativeEndYPos) {
+    this.relvativeStartYPos = relvativeStartYPos;
+    this.relativeEndYPos = relativeEndYPos;
+  }
+
+  @Override
+  public double getRelativeYPos() {
+    return relativeYPos;
+  }
+
+  @Override
+  public void setRelativeYPos(double relativeYPos) {
+    this.relativeYPos = relativeYPos;
   }
 
   @Override
