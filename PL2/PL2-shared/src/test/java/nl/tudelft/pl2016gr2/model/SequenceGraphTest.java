@@ -74,7 +74,8 @@ public class SequenceGraphTest {
     if (isRoot) {
       Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>());
     } else {
-      Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>(Arrays.asList(10, 5, 25)));
+      Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>(
+          Arrays.asList(mock(GraphNode.class), mock(GraphNode.class), mock(GraphNode.class))));
     }
     return mockedNode;
   }
@@ -93,29 +94,27 @@ public class SequenceGraphTest {
 
     instance.add(mockedNode);
 
-    Collection<Integer> newRootNodes = instance.getRootNodes();
+    Collection<GraphNode> newRootNodes = instance.getRootNodes();
     assertEquals(1, newRootNodes.size());
-    assertTrue(newRootNodes.contains(mockedNode.getId()));
+    assertTrue(newRootNodes.contains(mockedNode));
   }
 
   @Test
   public void addAsRootNodeShouldAddToRootNodes() {
-    final int rootId = 25;
 
     // Mock a non-root node
-    GraphNode mockedNode = mockNode(rootId, false);
+    GraphNode mockedNode = mockNode(30, false);
 
     instance.add(mockedNode);
-    assertFalse(instance.getRootNodes().contains(rootId));
+    assertFalse(instance.getRootNodes().contains(mockedNode));
 
     // Change mock to be a root node
-    Mockito.when(mockedNode.getId()).thenReturn(10);
     Mockito.when(mockedNode.isRoot()).thenReturn(true);
     Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>());
 
-    instance.addAsRootNode(rootId);
+    instance.addAsRootNode(mockedNode);
 
-    assertTrue(instance.getRootNodes().contains(rootId));
+    assertTrue(instance.getRootNodes().contains(mockedNode));
   }
 
   @Test
@@ -164,16 +163,15 @@ public class SequenceGraphTest {
 
   @Test
   public void containsShouldBeFalseWhenNotInGraph() {
-    Assert.assertFalse(instance.contains(25));
+    Assert.assertFalse(instance.contains(mockNode(100, false)));
   }
 
   @Test
   public void containsShouldBeTrueWhenInGraph() {
-    int nodeId = 25;
-    GraphNode mockedNode = mockNode(nodeId, false);
+    GraphNode mockedNode = mockNode(25, false);
     instance.add(mockedNode);
 
-    Assert.assertTrue(instance.contains(nodeId));
+    Assert.assertTrue(instance.contains(mockedNode));
   }
 
   @Test
@@ -192,30 +190,28 @@ public class SequenceGraphTest {
 
   @Test
   public void addSetsRootNode() {
-    int rootId = 10;
-    GraphNode mockedRoot = mockNode(rootId, true);
-    assertFalse(instance.getRootNodes().contains(rootId));
+    GraphNode mockedRoot = mockNode(10, true);
+    assertFalse(instance.getRootNodes().contains(mockedRoot));
 
     instance.add(mockedRoot);
 
-    assertTrue(instance.getRootNodes().contains(rootId));
+    assertTrue(instance.getRootNodes().contains(mockedRoot));
   }
 
   @Test
   public void removeWhenNotPresentShouldReturnNull() {
-    assertNull(instance.remove(25));
+    assertNull(instance.remove(mockNode(100, false)));
   }
 
   @Test
   public void testRemove() {
-    int nodeId = 50;
-    GraphNode mockedNode = mockNode(nodeId, false);
+    GraphNode mockedNode = mockNode(50, false);
     instance.add(mockedNode);
-    assertTrue(instance.contains(nodeId));
+    assertTrue(instance.contains(mockedNode));
 
-    instance.remove(nodeId);
+    instance.remove(mockedNode);
 
-    assertFalse(instance.contains(nodeId));
+    assertFalse(instance.contains(mockedNode));
   }
 
   @Test

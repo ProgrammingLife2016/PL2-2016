@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  */
 public class OverlapThread extends Thread {
 
-  private HashMap<Integer, GraphNode> overlappedNodes;
+  private HashSet<GraphNode> overlappedNodes;
   private final SequenceGraph topGraph;
   private final SequenceGraph bottomGraph;
 
@@ -32,7 +32,7 @@ public class OverlapThread extends Thread {
    *
    * @return the overlapping nodes of the graphs.
    */
-  public HashMap<Integer, GraphNode> getOverlappedNodes() {
+  public HashSet<GraphNode> getOverlappedNodes() {
     try {
       this.join();
     } catch (InterruptedException ex) {
@@ -48,11 +48,11 @@ public class OverlapThread extends Thread {
    * @param bottomGraph the bottom graph.
    * @return the overlapping nodes.
    */
-  private HashMap<Integer, GraphNode> calculateOverlappedNodes() {
-    final HashMap<Integer, GraphNode> overlap = new HashMap<>();
+  private HashSet<GraphNode> calculateOverlappedNodes() {
+    final HashSet<GraphNode> overlap = new HashSet<>();
     for (GraphNode graphNode : topGraph) {
-      if (bottomGraph.contains(graphNode.getId())) {
-        overlap.put(graphNode.getId(), graphNode);
+      if (bottomGraph.contains(graphNode)) {
+        overlap.add(graphNode);
       }
     }
     return overlap;

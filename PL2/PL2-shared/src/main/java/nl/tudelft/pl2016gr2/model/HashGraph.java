@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,8 +11,9 @@ import java.util.Map;
 
 public class HashGraph implements SequenceGraph {
 
+  @TestId(id = "nodes")
   private final HashMap<Integer, GraphNode> nodes;
-  private final ArrayList<Integer> rootNodes;
+  private final ArrayList<GraphNode> rootNodes;
   private final HashSet<String> genomes;
 
   /**
@@ -45,8 +48,8 @@ public class HashGraph implements SequenceGraph {
    * @param rootNodes The root nodes of the graph
    * @param genomes   The genomes that are represented in the graph
    */
-  public HashGraph(Map<Integer, ? extends GraphNode> nodes, Collection<Integer> rootNodes,
-      Collection<String> genomes) {
+  public HashGraph(Map<Integer, ? extends GraphNode> nodes,
+      Collection<? extends GraphNode> rootNodes, Collection<String> genomes) {
     this.nodes = new HashMap<>(nodes);
     this.rootNodes = new ArrayList<>(rootNodes);
     this.genomes = new HashSet<>(genomes);
@@ -60,24 +63,24 @@ public class HashGraph implements SequenceGraph {
    *
    * @return all root nodes.
    */
-  private ArrayList<Integer> parseRootNodes() {
-    ArrayList<Integer> rootNodes = new ArrayList<>();
-    nodes.forEach((Integer elemId, GraphNode elem) -> {
-      if (elem.isRoot()) {
-        rootNodes.add(elemId);
+  private ArrayList<GraphNode> parseRootNodes() {
+    ArrayList<GraphNode> rootNodes = new ArrayList<>();
+    nodes.forEach((Integer id, GraphNode node) -> {
+      if (node.isRoot()) {
+        rootNodes.add(node);
       }
     });
     return rootNodes;
   }
 
   @Override
-  public void addAsRootNode(int identifier) {
-    assert nodes.get(identifier).isRoot() : "Adding non-root node as root. NodeID: " + identifier;
-    rootNodes.add(identifier);
+  public void addAsRootNode(GraphNode rootNode) {
+    assert rootNode.isRoot() : "Adding non-root node as root. NodeID: " + rootNode;
+    rootNodes.add(rootNode);
   }
 
   @Override
-  public Collection<Integer> getRootNodes() {
+  public Collection<GraphNode> getRootNodes() {
     return rootNodes;
   }
 
@@ -109,8 +112,8 @@ public class HashGraph implements SequenceGraph {
   }
 
   @Override
-  public boolean contains(int identifier) {
-    return nodes.containsKey(identifier);
+  public boolean contains(GraphNode node) {
+    return nodes.containsKey(node.getId());
   }
 
   @Override
@@ -123,14 +126,14 @@ public class HashGraph implements SequenceGraph {
     assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
 
     if (node.isRoot()) {
-      rootNodes.add(node.getId());
+      rootNodes.add(node);
     }
     nodes.put(node.getId(), node);
   }
 
   @Override
-  public GraphNode remove(int identifier) {
-    return nodes.remove(identifier);
+  public GraphNode remove(GraphNode node) {
+    return nodes.remove(node.getId());
   }
 
   /**

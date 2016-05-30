@@ -50,10 +50,10 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    *
    * @return the identifiers of all root nodes in this graph.
    */
-  Collection<Integer> getRootNodes();
+  Collection<GraphNode> getRootNodes();
 
   /**
-   * Add the node with the specified identifier as a root node of this graph.
+   * Add the node as a root node of this graph.
    * <p>
    * This does not add the node itself to the graph.
    * In general, there is no need to add root nodes manually, nor is it advisable.
@@ -64,9 +64,9 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * In such a case, one should construct a new instantiation of the graph with new nodes.
    * </p>
    *
-   * @param identifier The ID of the node in this graph to manually add as root
+   * @param rootNode The node in this graph to manually add as root
    */
-  void addAsRootNode(int identifier);
+  void addAsRootNode(GraphNode rootNode);
 
   /**
    * Returns the names of all genomes that exist in this graph.
@@ -109,25 +109,20 @@ public interface SequenceGraph extends Iterable<GraphNode> {
   boolean isEmpty();
 
   /**
-   * Returns true if this graph contains an element with the specified identifier.
-   * <p>
-   * More formally, returns true if and only if this map contains an element for an identifier k
-   * such that
-   * (identifier==null ? k==null : identifier.equals(k)). (There can be at most one such mapping.)
-   * </p>
+   * Returns true if this graph contains the element.
    *
-   * @param identifier identifier of the element whose presence in this graph is to be tested
+   * @param node the element whose presence in this graph is to be tested
    * @return <code>true</code> if this graph contains an element with the specified identifier.
    */
-  boolean contains(int identifier);
+  boolean contains(GraphNode node);
 
   /**
    * Returns the <code>GraphNode</code> with the specified ID.
    *
-   * @param identifier The unique identifier of the desired element
+   * @param id The unique identifier of the desired element
    * @return The desired <code>GraphNode</code> (node), or null if the element was not found
    */
-  GraphNode getNode(int identifier);
+  GraphNode getNode(int id);
 
   // Map-like modification operations
 
@@ -155,10 +150,10 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * identifier.
    * </p>
    *
-   * @param identifier The unique identifier whose element is to be removed from the graph
+   * @param node The element which is to be removed from the graph
    * @return The element that was removed, or <code>null</code> if no such element was found
    */
-  GraphNode remove(int identifier);
+  GraphNode remove(GraphNode node);
 
 
   // Iterable<GraphNode> operations

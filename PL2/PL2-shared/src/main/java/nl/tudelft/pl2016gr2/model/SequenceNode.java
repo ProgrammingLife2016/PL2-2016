@@ -14,8 +14,8 @@ public class SequenceNode extends AbstractNode {
 
   private BaseSequence sequence;
   private HashSet<String> genomes;
-  private ArrayList<Integer> inEdges;
-  private ArrayList<Integer> outEdges;
+  private ArrayList<GraphNode> inEdges;
+  private ArrayList<GraphNode> outEdges;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -71,7 +71,7 @@ public class SequenceNode extends AbstractNode {
    * @param outEdges   The IDs of the nodes that are direct successors of this node
    */
   public SequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes,
-      Collection<Integer> inEdges, Collection<Integer> outEdges) {
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new HashSet<>(genomes);
@@ -101,28 +101,28 @@ public class SequenceNode extends AbstractNode {
    * </p>
    */
   @Override
-  public Collection<Integer> getInEdges() {
+  public Collection<GraphNode> getInEdges() {
     return inEdges;
   }
 
   @Override
-  public void setInEdges(Collection<Integer> edges) {
+  public void setInEdges(Collection<GraphNode> edges) {
     inEdges = new ArrayList<>(edges);
     inEdges.trimToSize();
   }
 
   @Override
-  public void addInEdge(int identifier) {
+  public void addInEdge(GraphNode node) {
     assert !inEdges.contains(
-        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.add(identifier);
+        node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    inEdges.add(node);
   }
 
   @Override
-  public void removeInEdge(int identifier) {
+  public void removeInEdge(GraphNode node) {
     assert inEdges.contains(
-        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
-    inEdges.remove((Integer) identifier);
+        node) : "Removing non-existent in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    inEdges.remove(node);
   }
 
   /**
@@ -132,28 +132,28 @@ public class SequenceNode extends AbstractNode {
    * </p>
    */
   @Override
-  public Collection<Integer> getOutEdges() {
+  public Collection<GraphNode> getOutEdges() {
     return outEdges;
   }
 
   @Override
-  public void setOutEdges(Collection<Integer> edges) {
+  public void setOutEdges(Collection<GraphNode> edges) {
     outEdges = new ArrayList<>(edges);
     outEdges.trimToSize();
   }
 
   @Override
-  public void addOutEdge(int identifier) {
+  public void addOutEdge(GraphNode node) {
     assert !outEdges.contains(
-        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.add(identifier);
+        node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    outEdges.add(node);
   }
 
   @Override
-  public void removeOutEdge(int identifier) {
+  public void removeOutEdge(GraphNode node) {
     assert outEdges.contains(
-        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
-    outEdges.remove((Integer) identifier);
+        node) : "Removing non-existent out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    outEdges.remove(node);
   }
 
   @Override

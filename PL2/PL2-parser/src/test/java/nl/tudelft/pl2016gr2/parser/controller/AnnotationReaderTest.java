@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,7 +39,7 @@ public class AnnotationReaderTest {
         getClass().getClassLoader().getResourceAsStream("TESTMETADATA1.xlsx"),
         tempFile);
 
-    AnnotationReader reader = new AnnotationReader(tempFile);
+    AnnotationReader reader = new AnnotationReader(new FileInputStream(tempFile));
 
     List<Annotation> annotations = reader.read();
 

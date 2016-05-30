@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
+import static nl.tudelft.pl2016gr2.model.SequenceGraphTest.mockNode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -59,8 +60,8 @@ public class SequenceNodeTest {
 
   @Test
   public void testConstructorWithInEdges() {
-    Collection<Integer> inEdges = Arrays.asList(1, 3, 12);
-    Collection<Integer> outEdges = Arrays.asList(2, 4, 14);
+    Collection<GraphNode> inEdges = Arrays.asList(mockNode(10, false), mockNode(1, false));
+    Collection<GraphNode> outEdges = Arrays.asList(mockNode(2, false), mockNode(3, true));
     SequenceNode node = new SequenceNode(
         5, mockedSequence, Collections.singletonList("gen"), inEdges, outEdges);
     assertTrue(node.getInEdges().containsAll(inEdges));
@@ -68,9 +69,9 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void testconstructorWithOutEdgeC() {
-    Collection<Integer> inEdges = Arrays.asList(1, 3, 12);
-    Collection<Integer> outEdges = Arrays.asList(2, 4, 14);
+  public void testConstructorWithOutEdgeC() {
+    Collection<GraphNode> inEdges = Arrays.asList(mockNode(10, false), mockNode(1, false));
+    Collection<GraphNode> outEdges = Arrays.asList(mockNode(2, false), mockNode(3, true));
     SequenceNode node = new SequenceNode(
         5, mockedSequence, Collections.singletonList("gen"), inEdges, outEdges);
     assertTrue(node.getOutEdges().containsAll(outEdges));
@@ -91,45 +92,49 @@ public class SequenceNodeTest {
 
   @Test
   public void getInEdges() {
-    instance.setInEdges(Collections.singletonList(5));
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setInEdges(Collections.singletonList(mockedNode));
 
-    assertTrue(instance.getInEdges().contains(5));
+    assertTrue(instance.getInEdges().contains(mockedNode));
   }
 
   @Test
   public void setInEdgesOverridePreviousElements() {
-    instance.setInEdges(Collections.singletonList(5));
-    instance.setInEdges(Arrays.asList(1, 20, 25));
-    assertFalse(instance.getInEdges().contains(5));
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setInEdges(Collections.singletonList(mockedNode));
+    instance.setInEdges(Collections.singletonList(mockNode(10, false)));
+    assertFalse(instance.getInEdges().contains(mockedNode));
   }
 
   @Test
   public void setInEdgesAddsAllElements() {
-    Collection<Integer> edgeList = Arrays.asList(1, 20, 25);
+    Collection<GraphNode> edgeList = Arrays.asList(mockNode(15, false), mockNode(45, false));
     instance.setInEdges(edgeList);
     assertTrue(instance.getInEdges().containsAll(edgeList));
   }
 
   @Test
   public void addInEdgeAddsNewElement() {
-    assertFalse(instance.getInEdges().contains(10));
+    GraphNode mockedNode = mockNode(50, false);
+    assertFalse(instance.getInEdges().contains(mockedNode));
 
-    instance.addInEdge(10);
+    instance.addInEdge(mockedNode);
 
-    assertTrue(instance.getInEdges().contains(10));
+    assertTrue(instance.getInEdges().contains(mockedNode));
   }
 
   @Test
   public void addInEdgeDoesNotOverrideOldElements() {
-    instance.setInEdges(Collections.singletonList(5));
-    instance.addInEdge(10);
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setInEdges(Collections.singletonList(mockedNode));
+    instance.addInEdge(mockNode(10, false));
 
-    assertTrue(instance.getInEdges().contains(5));
+    assertTrue(instance.getInEdges().contains(mockedNode));
   }
 
   @Test
   public void removeInEdgeRemovesElement() {
-    int edge = 10;
+    GraphNode edge = mockNode(50, false);
     instance.addInEdge(edge);
     assertTrue(instance.getInEdges().contains(edge));
 
@@ -139,11 +144,12 @@ public class SequenceNodeTest {
 
   @Test
   public void removeInEdgeLeavesOtherElements() {
-    instance.setInEdges(Collections.singletonList(5));
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setInEdges(Collections.singletonList(mockedNode));
 
-    instance.addInEdge(10);
+    instance.addInEdge(mockNode(10, true));
 
-    assertTrue(instance.getInEdges().contains(5));
+    assertTrue(instance.getInEdges().contains(mockedNode));
   }
 
   @Test
@@ -153,45 +159,50 @@ public class SequenceNodeTest {
 
   @Test
   public void getOutEdges() {
-    instance.setOutEdges(Collections.singletonList(5));
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setOutEdges(Collections.singletonList(mockedNode));
 
-    assertTrue(instance.getOutEdges().contains(5));
+    assertTrue(instance.getOutEdges().contains(mockedNode));
   }
 
   @Test
   public void setOutEdgesOverridePreviousElements() {
-    instance.setOutEdges(Collections.singletonList(5));
-    instance.setOutEdges(Arrays.asList(1, 20, 25));
-    assertFalse(instance.getOutEdges().contains(5));
+    GraphNode mockedNode = mockNode(5, false);
+    instance.setOutEdges(Collections.singletonList(mockedNode));
+    instance.setOutEdges(Arrays.asList(mockNode(10, false), mockNode(12, false)));
+    assertFalse(instance.getOutEdges().contains(mockedNode));
   }
 
   @Test
   public void setOutEdgesAddsAllElements() {
-    Collection<Integer> edgeList = Arrays.asList(1, 20, 25);
+    Collection<GraphNode> edgeList = Arrays.asList(mockNode(5, false), mockNode(10, true));
     instance.setOutEdges(edgeList);
     assertTrue(instance.getOutEdges().containsAll(edgeList));
   }
 
   @Test
   public void addOutEdgeAddsNewElement() {
-    assertFalse(instance.getOutEdges().contains(10));
+    GraphNode mockedNode = mockNode(10, false);
+    GraphNode newNode = mockNode(5, false);
+    assertFalse(instance.getOutEdges().contains(mockedNode));
 
-    instance.addOutEdge(10);
+    instance.addOutEdge(newNode);
 
-    assertTrue(instance.getOutEdges().contains(10));
+    assertTrue(instance.getOutEdges().contains(newNode));
   }
 
   @Test
   public void addOutEdgeDoesNotOverrideOldElements() {
-    instance.setOutEdges(Collections.singletonList(5));
-    instance.addOutEdge(10);
+    GraphNode mockedNode = mockNode(10, false);
+    instance.setOutEdges(Collections.singletonList(mockedNode));
+    instance.addOutEdge(mockNode(12, true));
 
-    assertTrue(instance.getOutEdges().contains(5));
+    assertTrue(instance.getOutEdges().contains(mockedNode));
   }
 
   @Test
   public void removeOutEdgeRemovesElement() {
-    int edge = 10;
+    GraphNode edge = mockNode(5, false);
     instance.addOutEdge(edge);
     assertTrue(instance.getOutEdges().contains(edge));
 
@@ -201,11 +212,13 @@ public class SequenceNodeTest {
 
   @Test
   public void removeOutEdgeLeavesOtherElements() {
-    instance.setOutEdges(Collections.singletonList(5));
+    GraphNode mockedNode = mockNode(5, false);
+    GraphNode removeNode = mockNode(10, true);
+    instance.setOutEdges(Arrays.asList(mockedNode, removeNode));
 
-    instance.addOutEdge(10);
+    instance.removeOutEdge(removeNode);
 
-    assertTrue(instance.getOutEdges().contains(5));
+    assertTrue(instance.getOutEdges().contains(mockedNode));
   }
 
   @Test
@@ -295,7 +308,7 @@ public class SequenceNodeTest {
 
   @Test
   public void isRootFalseWhenNotRoot() {
-    instance.setInEdges(Collections.singletonList(5));
+    instance.setInEdges(Collections.singletonList(mockNode(10, false)));
     assertFalse(instance.isRoot());
   }
 
