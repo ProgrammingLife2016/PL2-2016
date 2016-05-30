@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,7 +17,8 @@ import java.util.Collection;
  */
 public abstract class AbstractNode implements Node {
 
-  private final int identifier;
+  @TestId(id = "id_field")
+  private int identifier;
 
   /**
    * Construct a bare abstract node with an ID.
@@ -65,7 +68,20 @@ public abstract class AbstractNode implements Node {
 
   @Override
   public String toString() {
-    return "id: " + identifier;
+    return "id: " + getId();
+  }
+
+  @Override
+  public int hashCode() {
+    return identifier;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !getClass().equals(obj.getClass())) {
+      return false;
+    }
+    return identifier == ((AbstractNode) obj).identifier;
   }
 
   @Override

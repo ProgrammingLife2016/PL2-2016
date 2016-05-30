@@ -30,24 +30,24 @@ Code Coverage
 In this chapter we will discuss the code coverage of each module separately.
 
 ### Core
-![core module coverage](./coverage images/sprint 4/core module.png)
-The core module is almost fully tested (everything above 80%).
+![core module coverage](./coverage images/sprint 5/core module.png)
+Only the SubgraphAlgorithmManager and OrderedGraph class are untested. The OrderedGraph class contains very little code (it is used to multithread the execution of code of other classes) and the SubgraphAlgorithmManager is used to call the algorithms of other classes, with a little bit of additional logic. We do intend to test them soon (next sprint, or the sprint after that).
 
 ### Gui
-![gui module coverage](./coverage images/sprint 4/gui module.png)
+![gui module coverage](./coverage images/sprint 5/gui module.png)
 The most important components of the GUI module are covered. See the special cases section for missing coverage.
 
 ### Launcher
-![launcher module coverage](./coverage images/sprint 4/launcher module.png)
+![launcher module coverage](./coverage images/sprint 5/launcher module.png)
 Currently the launcher module decently tested (see special cases).
 
 ### Parser
-![parser module coverage](./coverage images/sprint 4/parser module.png)
+![parser module coverage](./coverage images/sprint 5/parser module.png)
 The parser is fully tested.
 
 ### Shared
-![shared module coverage](./coverage images/sprint 4/shared module.png)
-Most of the shared module classes are tested. Only the OriginalGraph and AbstractNode classes require considerable more coverage. We plan to refactor a large part of the shared module, so we have delayed testing more rigorously till this is completed (which will be next sprint; sprint 5). The TestAnnotationException and AccessPrivate classes are not part of our project (they are third party classes), so please don't consider these classes. They are not removed from the image to make sure the total coverage adds up. We will try to remove them from the coverage reports as soon as possible.
+![shared module coverage](./coverage images/sprint 5/shared module.png)
+Most of the shared module classes are tested. Only the MetaData and Annotation classes require considerable more coverage. These classes almost exclusively contain data fields and a very small amount of logic (also see the small amount of lines in these classes). Their coverage is thus not of large importance. The TestAnnotationException and AccessPrivate classes are not part of our project (they are third party classes), so please don't consider these classes. They are not removed from the image to make sure the total coverage adds up. We will try to remove them from the coverage reports as soon as possible.
 
 Special Cases
 ===================
@@ -120,5 +120,23 @@ These are the coverage reports of the dev branch at the end of sprint 4.
 ###### Shared module
 ![shared module coverage](./coverage images/sprint 4/shared module.png)
 
+### Sprint 4
+These are the coverage reports of the next branch at the end of sprint 5.
 
-> last updated at 20/5/2016 (end of sprint 4)
+###### Core module
+![core module coverage](./coverage images/sprint 5/core module.png)
+
+###### GUI module
+![gui module coverage](./coverage images/sprint 5/gui module.png)
+
+###### Launcher module
+![launcher module coverage](./coverage images/sprint 5/launcher module.png)
+
+###### Parser module
+![parser module coverage](./coverage images/sprint 5/parser module.png)
+
+###### Shared module
+![shared module coverage](./coverage images/sprint 5/shared module.png)
+
+
+> last updated at 28/5/2016 (end of sprint 5)
