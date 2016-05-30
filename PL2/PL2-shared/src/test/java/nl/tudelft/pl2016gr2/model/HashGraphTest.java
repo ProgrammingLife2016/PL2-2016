@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
+import static nl.tudelft.pl2016gr2.model.SequenceGraphTest.mockNode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -28,10 +29,10 @@ public class HashGraphTest {
   @Before
   public void setUp() {
     for (int i = 0; i < 5; i++) {
-      nodes.put(i, SequenceGraphTest.mockNode(i, false));
+      nodes.put(i, mockNode(i, false));
     }
     int rootId = 5;
-    nodes.put(rootId, SequenceGraphTest.mockNode(rootId, true));
+    nodes.put(rootId, mockNode(rootId, true));
 
     for (int i = 0; i < 5; i++) {
       genomes.add("genome" + i);
@@ -42,16 +43,17 @@ public class HashGraphTest {
   public void testHashGraphConstructorForNodesAndGenomes() {
     HashGraph graph = new HashGraph(nodes, genomes);
 
-    nodes.forEach((id, node) -> assertTrue(graph.contains(id)));
+    nodes.forEach((id, node) -> assertTrue(graph.contains(node)));
     assertTrue(graph.getGenomes().containsAll(genomes));
   }
 
   @Test
   public void testHashGraphConstructorIncludingRootNodes() {
-    Collection<Integer> rootNodes = new ArrayList<>(Arrays.asList(5, 10, 25));
+    Collection<GraphNode> rootNodes = new ArrayList<>(
+        Arrays.asList(mockNode(5, true), mockNode(10, true)));
     HashGraph graph = new HashGraph(nodes, rootNodes, genomes);
 
-    nodes.forEach((id, node) -> assertTrue(graph.contains(id)));
+    nodes.forEach((id, node) -> assertTrue(graph.contains(node)));
     assertTrue(graph.getGenomes().containsAll(genomes));
     assertTrue(graph.getRootNodes().containsAll(rootNodes));
   }
@@ -60,7 +62,7 @@ public class HashGraphTest {
   public void testToString() throws Exception {
     HashGraph graph = new HashGraph();
     assertEquals("", graph.toString());
-    graph.add(SequenceGraphTest.mockNode(0, false));
+    graph.add(mockNode(0, false));
     assertNotNull(graph.toString());
   }
 

@@ -133,8 +133,7 @@ public class HashGraph implements SequenceGraph {
 
   @Override
   public GraphNode remove(GraphNode node) {
-    nodes.remove(node.getId());
-    return node;
+    return nodes.remove(node.getId());
   }
 
   /**
