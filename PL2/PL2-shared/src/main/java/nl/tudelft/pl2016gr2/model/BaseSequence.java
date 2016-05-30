@@ -24,6 +24,7 @@ public class BaseSequence {
 
   @TestId(id = "bases")
   private final int[] bases;
+  private final int amountOfBases;
 
   /**
    * Create a base sequence. The characters in the String may only have one of the following values:
@@ -45,7 +46,7 @@ public class BaseSequence {
    * @param endIndex   the index in the array where the bases end.
    */
   public BaseSequence(char[] bases, int startIndex, int endIndex) {
-    int amountOfBases = endIndex - startIndex;
+    amountOfBases = endIndex - startIndex;
     int bitsNeeded = amountOfBases * BITS_PER_BASE;
     int intsNeeded = (int) Math.ceil(bitsNeeded / (double) BITS_PER_INT);
     this.bases = new int[intsNeeded];
@@ -59,14 +60,12 @@ public class BaseSequence {
    */
   public String getBaseSequence() {
     StringBuilder sb = new StringBuilder();
-    for (int i = 0; (i * BITS_PER_BASE) / BITS_PER_INT < bases.length; i++) {
-      int encodedBase = getBase((i * BITS_PER_BASE) / BITS_PER_INT,
-          (i * BITS_PER_BASE) % BITS_PER_INT);
-      if (encodedBase == END_OF_BASES) {
-        break;
-      } else {
-        sb.append(decode(encodedBase));
-      }
+    int i = 0;
+    int encodedBase = getBase(i / BITS_PER_INT, i % BITS_PER_INT);
+    while(encodedBase != END_OF_BASES) {
+      sb.append(decode(encodedBase));
+      i += BITS_PER_BASE;
+      encodedBase = getBase(i / BITS_PER_INT, i % BITS_PER_INT);
     }
     return sb.toString();
   }
@@ -135,14 +134,14 @@ public class BaseSequence {
    */
   private int encode(char base) {
     switch (base) {
-      case 'A':
-        return BASE_A;
-      case 'T':
-        return BASE_T;
       case 'C':
         return BASE_C;
       case 'G':
         return BASE_G;
+      case 'A':
+        return BASE_A;
+      case 'T':
+        return BASE_T;
       case 'N':
         return BASE_UNKNOWN;
       default:
@@ -158,18 +157,27 @@ public class BaseSequence {
    */
   private char decode(int encodedBase) {
     switch (encodedBase) {
-      case BASE_A:
-        return 'A';
-      case BASE_T:
-        return 'T';
       case BASE_C:
         return 'C';
       case BASE_G:
         return 'G';
+      case BASE_A:
+        return 'A';
+      case BASE_T:
+        return 'T';
       case BASE_UNKNOWN:
         return 'N';
       default:
         throw new AssertionError();
     }
+  }
+
+  /**
+   * Get the amount of bases in this sequence.
+   *
+   * @return the amount of bases in this sequence.
+   */
+  public int size() {
+    return amountOfBases;
   }
 }

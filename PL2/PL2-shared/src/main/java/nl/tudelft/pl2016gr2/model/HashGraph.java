@@ -4,7 +4,6 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,7 +13,7 @@ public class HashGraph implements SequenceGraph {
 
   @TestId(id = "nodes")
   private final HashMap<Integer, GraphNode> nodes;
-  private final ArrayList<GraphNode> rootNodes;
+  private final HashSet<GraphNode> rootNodes;
   private final HashSet<String> genomes;
   private int highestId;
 
@@ -23,7 +22,7 @@ public class HashGraph implements SequenceGraph {
    */
   public HashGraph() {
     nodes = new HashMap<>();
-    rootNodes = new ArrayList<>();
+    rootNodes = new HashSet<>();
     genomes = new HashSet<>();
     highestId = 0;
   }
@@ -54,7 +53,7 @@ public class HashGraph implements SequenceGraph {
   public HashGraph(Map<Integer, ? extends GraphNode> nodes,
       Collection<? extends GraphNode> rootNodes, Collection<String> genomes) {
     this.nodes = new HashMap<>(nodes);
-    this.rootNodes = new ArrayList<>(rootNodes);
+    this.rootNodes = new HashSet<>(rootNodes);
     this.genomes = new HashSet<>(genomes);
   }
 
@@ -79,8 +78,8 @@ public class HashGraph implements SequenceGraph {
    *
    * @return all root nodes.
    */
-  private ArrayList<GraphNode> parseRootNodes() {
-    ArrayList<GraphNode> rootNodes = new ArrayList<>();
+  private HashSet<GraphNode> parseRootNodes() {
+    HashSet<GraphNode> rootNodes = new HashSet<>();
     nodes.forEach((Integer id, GraphNode node) -> {
       if (node.isRoot()) {
         rootNodes.add(node);

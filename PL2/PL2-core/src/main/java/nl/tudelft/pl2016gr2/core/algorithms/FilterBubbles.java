@@ -74,8 +74,8 @@ public class FilterBubbles implements PhyloFilter {
    * @param treeRoot the root of the tree.
    * @return a filtered graph.
    */
-  public Collection<GraphNode> filter(IPhylogeneticTreeNode treeRoot) {
-    List<GraphNode> graphNodes = new ArrayList<>();
+  public ArrayList<GraphNode> filter(IPhylogeneticTreeNode treeRoot) {
+    ArrayList<GraphNode> graphNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, treeRoot, newBubbles);
     pruneNodes(graphNodes, newBubbles);

@@ -79,13 +79,11 @@ public class DrawComparedGraphs implements Initializable {
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
   private static final double MIN_VISIBILITY_WIDTH = 2.0;
   private static final double NODE_X_OFFSET = 1.0;
-  private static final double MAX_NODE_RADIUS = 45.0;
-  private static final double MIN_NODE_RADIUS = 5.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
-  private static final double UNIT_INCREMENT_RATE = 1.0;
-  private static final double BLOCK_INCREMENT_RATE = 10.0;
+  private static final double UNIT_INCREMENT_RATE = 100.0;
+  private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
 
@@ -181,10 +179,10 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void initializeScroll() {
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    scrollbar.unitIncrementProperty().bind(new SimpleDoubleProperty(UNIT_INCREMENT_RATE).divide(
-        amountOfLevels).divide(zoomFactor));
-    scrollbar.blockIncrementProperty().bind(new SimpleDoubleProperty(BLOCK_INCREMENT_RATE).divide(
-        amountOfLevels).divide(zoomFactor));
+    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE).divide(
+        amountOfLevels)).divide(zoomFactor));
+    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE).divide(
+        amountOfLevels)).divide(zoomFactor));
     scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(NODE_X_OFFSET)
         .divide(zoomFactor).divide(amountOfLevels));
 
@@ -530,12 +528,12 @@ public class DrawComparedGraphs implements Initializable {
    * Draw and compare two subgraphs of genomes.
    */
   private void compareTwoGraphs() {
-    Pair<OrderedGraph, OrderedGraph> compareRes
-        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, mainGraph,
-            mainGraphOrder);
-    this.topGraph = compareRes.left;
-    this.bottomGraph = compareRes.right;
-    drawTwoGraphs();
+//    Pair<OrderedGraph, OrderedGraph> compareRes
+//        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, mainGraph,
+//            mainGraphOrder);
+//    this.topGraph = compareRes.left;
+//    this.bottomGraph = compareRes.right;
+//    drawTwoGraphs();
   }
 
   /**
@@ -652,7 +650,7 @@ public class DrawComparedGraphs implements Initializable {
       }
     }
     drawNode(pane, circleMap, levelNodes, curLevel, startLevel);
-    repositionOverlappingEdges(graphOrder, startIndex, endIndex, circleMap);
+//    repositionOverlappingEdges(graphOrder, startIndex, endIndex, circleMap);
     drawEdges(pane, graphOrder, graph, startIndex, endIndex, circleMap);
   }
 
@@ -863,49 +861,49 @@ public class DrawComparedGraphs implements Initializable {
     return edgeWith;
   }
 
-  /**
-   * Reposition the nodes, so there are no overlapping (horizontal) edges. It is still possible for
-   * non-horizontal edges to overlap, but this rarely happens.
-   *
-   * @param graphOrder   the graph node order.
-   * @param startIndex   the index where to start in the graph.
-   * @param endIndex     the index where to end in the graph.
-   * @param graphNodeMap a map which maps each node id to a graph node object.
-   */
-  private static void repositionOverlappingEdges(ArrayList<GraphNode> graphOrder,
-      int startIndex, int endIndex, HashMap<GraphNode, IGraphNode> graphNodeMap) {
-    for (int i = startIndex; i < endIndex; i++) {
-      GraphNode node = graphOrder.get(i);
-      IGraphNode graphNode = graphNodeMap.get(node);
-      double subtract = graphNode.getMaxYOffset();
-      while (calculateSameHeightNodes(node, graphNode, graphNodeMap) >= 2) {
-        subtract /= 2.0;
-        graphNode.getRelativeHeightProperty().set(
-            graphNode.getRelativeHeightProperty().doubleValue() - subtract);
-      }
-    }
-  }
-
-  /**
-   * Calculate the amount of nodes which are drawn at the same height as the given node.
-   *
-   * @param node         the given node.
-   * @param graphNode    the graph node object which represents the node.
-   * @param graphNodeMap the map containing all other graph node objects.
-   * @return the amount of found nodes (circles) which are at the same height.
-   */
-  private static int calculateSameHeightNodes(GraphNode node, IGraphNode graphNode,
-      HashMap<GraphNode, IGraphNode> graphNodeMap) {
-    int sameHeight = 0;
-    for (GraphNode inLink : node.getInEdges()) {
-      IGraphNode parent = graphNodeMap.get(inLink);
-      if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
-          graphNode.getRelativeHeightProperty().doubleValue()) == 0) {
-        ++sameHeight;
-      }
-    }
-    return sameHeight;
-  }
+//  /**
+//   * Reposition the nodes, so there are no overlapping (horizontal) edges. It is still possible for
+//   * non-horizontal edges to overlap, but this rarely happens.
+//   *
+//   * @param graphOrder   the graph node order.
+//   * @param startIndex   the index where to start in the graph.
+//   * @param endIndex     the index where to end in the graph.
+//   * @param graphNodeMap a map which maps each node id to a graph node object.
+//   */
+//  private static void repositionOverlappingEdges(ArrayList<GraphNode> graphOrder,
+//      int startIndex, int endIndex, HashMap<GraphNode, IGraphNode> graphNodeMap) {
+//    for (int i = startIndex; i < endIndex; i++) {
+//      GraphNode node = graphOrder.get(i);
+//      IGraphNode graphNode = graphNodeMap.get(node);
+//      double subtract = graphNode.getMaxYOffset();
+//      while (calculateSameHeightNodes(node, graphNode, graphNodeMap) >= 2) {
+//        subtract /= 2.0;
+//        graphNode.getRelativeHeightProperty().set(
+//            graphNode.getRelativeHeightProperty().doubleValue() - subtract);
+//      }
+//    }
+//  }
+//
+//  /**
+//   * Calculate the amount of nodes which are drawn at the same height as the given node.
+//   *
+//   * @param node         the given node.
+//   * @param graphNode    the graph node object which represents the node.
+//   * @param graphNodeMap the map containing all other graph node objects.
+//   * @return the amount of found nodes (circles) which are at the same height.
+//   */
+//  private static int calculateSameHeightNodes(GraphNode node, IGraphNode graphNode,
+//      HashMap<GraphNode, IGraphNode> graphNodeMap) {
+//    int sameHeight = 0;
+//    for (GraphNode inLink : node.getInEdges()) {
+//      IGraphNode parent = graphNodeMap.get(inLink);
+//      if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
+//          graphNode.getRelativeHeightProperty().doubleValue()) == 0) {
+//        ++sameHeight;
+//      }
+//    }
+//    return sameHeight;
+//  }
 
   /**
    * Add a label with the ID of the node to the circle.

@@ -39,19 +39,24 @@ public class GraphOrdererThread extends Thread {
    * @return the node order.
    */
   private void calculateGraphOrder() {
-//    ArrayList<GraphNode> nodeOrder = new ArrayList<>();
     HashMap<GraphNode, Integer> reachedCount = new HashMap<>();
     Set<GraphNode> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
 
-    for (int level = 0; !currentLevel.isEmpty(); level++) {
+    while (!currentLevel.isEmpty()) {
       Set<GraphNode> nextLevel = new HashSet<>();
       ArrayList<ArrayList<GraphNode>> addedOutLinks = new ArrayList<>();
       for (GraphNode node : currentLevel) {
         int count = reachedCount.getOrDefault(node, 0);
         if (node.getInEdges().size() == count) {
-          node.setLevel(level);
-//          nodeOrder.add(node);
+
+          int maxInLevel = 0;
+          for (GraphNode inEdge : node.getInEdges()) {
+            if (inEdge.getLevel() > maxInLevel) {
+              maxInLevel = inEdge.getLevel();
+            }
+          }
+          node.setLevel(maxInLevel + node.size());
           nextLevel.addAll(node.getOutEdges());
           addedOutLinks.add(new ArrayList<>(node.getOutEdges()));
         }
@@ -59,7 +64,6 @@ public class GraphOrdererThread extends Thread {
       updateReachedCount(reachedCount, addedOutLinks);
       currentLevel = nextLevel;
     }
-//    return nodeOrder;
   }
 
   /**
