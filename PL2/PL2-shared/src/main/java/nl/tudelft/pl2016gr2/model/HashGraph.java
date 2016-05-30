@@ -151,7 +151,7 @@ public class HashGraph implements SequenceGraph {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (GraphNode node : nodes.values()) {
-      sb.append(node).append('\n');
+      sb.append(node.toString()).append('\n');
     }
     return sb.toString();
   }
