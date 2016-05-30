@@ -83,17 +83,4 @@ public abstract class AbstractNode implements Node {
     }
     return identifier == ((AbstractNode) obj).identifier;
   }
-
-  @Override
-  public int hashCode() {
-    return identifier;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null || !getClass().equals(obj.getClass())) {
-      return false;
-    }
-    return identifier == ((AbstractNode) obj).identifier;
-  }
 }
