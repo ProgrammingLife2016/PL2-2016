@@ -503,6 +503,7 @@ public class DrawComparedGraphs implements Initializable {
 //    topGraph = new OrderedGraph(curGraph, topGraphOrder);
 //    // END OF CHANGED CODE
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
+    zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
     updateGraphSize();
     updateGraph();
   }
@@ -548,6 +549,7 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       amountOfLevels.set(highestBottomLevel);
     }
+    zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
     updateGraphSize();
     updateGraph();
   }
@@ -901,7 +903,6 @@ public class DrawComparedGraphs implements Initializable {
 //    }
 //    return sameHeight;
 //  }
-
   /**
    * Add a label with the ID of the node to the circle.
    *
