@@ -96,17 +96,19 @@ public class FilterBubbles implements PhyloFilter {
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
 
-    Collection<GraphNode> rootNodes = originalGraph.getRootNodes();
-    //Node rootNode = originalGraph.getRootNodes();
-    GraphNode rootNode = rootNodes.iterator().next();
-    if (FilterHelpers.isShared(rootNode, leaves)) {
-      toVisit.add(rootNode);
-    } else {
-      List<GraphNode> bubbleStart = new ArrayList<>();
-      bubbleStart.add(rootNode);
-      createBubble(treeNode, null, bubbleStart, leaves, toVisit, visited,
-          newBubbles, graphNodes);
+    Iterator<GraphNode> rootIterator = originalGraph.getRootNodes().iterator();
+    while (rootIterator.hasNext()) {
+      GraphNode rootNode = rootIterator.next();
+      if (FilterHelpers.isShared(rootNode, leaves)) {
+        toVisit.add(rootNode);
+      } else {
+        List<GraphNode> bubbleStart = new ArrayList<>();
+        bubbleStart.add(rootNode);
+        createBubble(treeNode, null, bubbleStart, leaves, toVisit, visited,
+            newBubbles, graphNodes);
+      }
     }
+    
     filterBubbles(toVisit, visited, graphNodes, leaves, null, treeNode, newBubbles);
     return newBubbles;
   }
@@ -121,7 +123,6 @@ public class FilterBubbles implements PhyloFilter {
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
-//      GraphNode current = next;
       poppedNodes.add(next.copy());
       if (bubble != null && endNodes.contains(next)) {
         continue;
@@ -191,9 +192,7 @@ public class FilterBubbles implements PhyloFilter {
         bubble.accept(visitor);
 
         for (GraphNode outlink : next.getOutEdges()) {
-          if (!(visited.contains(outlink) || toVisit.contains(outlink))) {
-            toVisit.add(outlink);
-          }
+          FilterHelpers.addToVisit(outlink, toVisit, visited);
         }
       }
     }
@@ -208,8 +207,7 @@ public class FilterBubbles implements PhyloFilter {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
-      ArrayList<String> genomes = new ArrayList<>(outlink.
-          getGenomes());
+      ArrayList<String> genomes = new ArrayList<>(outlink.getGenomes());
 
       for (String leaf : leaves) {
         if (genomes.contains(leaf)) {
