@@ -75,7 +75,7 @@ public class SubgraphAlgorithmManager {
     FilterBubbles filter = new FilterBubbles(subgraph);
     ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot);
     
-//    CompareSubgraphs.alignVertically(orderedNodes, subgraph.getRootNodes());
+    CompareSubgraphs.alignVertically(orderedNodes);
     
     return new OrderedGraph(subgraph, orderedNodes);
   }

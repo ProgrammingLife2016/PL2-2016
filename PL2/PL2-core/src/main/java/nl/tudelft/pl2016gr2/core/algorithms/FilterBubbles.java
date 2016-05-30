@@ -10,6 +10,8 @@ import nl.tudelft.pl2016gr2.visitor.BubbleChildrenVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -80,6 +82,9 @@ public class FilterBubbles implements PhyloFilter {
     debubble(graphNodes, treeRoot, newBubbles);
     pruneNodes(graphNodes, newBubbles);
 
+    Collections.sort(graphNodes, (GraphNode node1, GraphNode node2) -> {
+      return node1.getLevel() - node2.getLevel();
+    });
     return graphNodes;
   }
 
@@ -148,7 +153,7 @@ public class FilterBubbles implements PhyloFilter {
   }
 
   private void createBubble(IPhylogeneticTreeNode treeNode, GraphNode inlink,
-      List<GraphNode> bubbleLinks, List<String> leaves, Queue<GraphNode> toVisit, 
+      List<GraphNode> bubbleLinks, List<String> leaves, Queue<GraphNode> toVisit,
       Set<GraphNode> visited, List<Bubble> newBubbles, List<GraphNode> poppedNodes) {
     if (!bubbleLinks.isEmpty()) {
       Bubble newBubble = new PhyloBubble(mutationId, treeNode, this);

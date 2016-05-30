@@ -33,8 +33,6 @@ public class SequenceNode extends AbstractNode {
    * The relative y-position of the node
    */
   private double relativeYPos;
-  private double relvativeStartYPos;
-  private double relativeEndYPos;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -240,22 +238,6 @@ public class SequenceNode extends AbstractNode {
   @Override
   public void setLevel(int level) {
     this.level = level;
-  }
-
-  @Override
-  public double getRelvativeStartYPos() {
-    return relvativeStartYPos;
-  }
-
-  @Override
-  public double getRelvativeEndYPos() {
-    return relativeEndYPos;
-  }
-
-  @Override
-  public void setRelvativeYPosDomain(double relvativeStartYPos, double relativeEndYPos) {
-    this.relvativeStartYPos = relvativeStartYPos;
-    this.relativeEndYPos = relativeEndYPos;
   }
 
   @Override

@@ -22,8 +22,6 @@ public class PhyloBubble implements Bubble {
   private int level = -1;
   
   private double relativeYPos;
-  private double relvativeStartYPos;
-  private double relativeEndYPos;
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
     this.id = id;
@@ -260,22 +258,6 @@ public class PhyloBubble implements Bubble {
   public void setLevel(int level) {
     throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
         + "bubbles before the bubbles are made.");
-  }
-
-  @Override
-  public double getRelvativeStartYPos() {
-    return relvativeStartYPos;
-  }
-
-  @Override
-  public double getRelvativeEndYPos() {
-    return relativeEndYPos;
-  }
-
-  @Override
-  public void setRelvativeYPosDomain(double relvativeStartYPos, double relativeEndYPos) {
-    this.relvativeStartYPos = relvativeStartYPos;
-    this.relativeEndYPos = relativeEndYPos;
   }
 
   @Override

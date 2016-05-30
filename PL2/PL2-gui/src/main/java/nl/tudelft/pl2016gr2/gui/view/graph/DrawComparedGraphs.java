@@ -33,7 +33,6 @@ import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
-import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
@@ -732,8 +731,7 @@ public class DrawComparedGraphs implements Initializable {
     }
     circle.setCenterX(
         NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
-    circle.centerYProperty().bind(pane.heightProperty().multiply(
-        circle.getRelativeHeightProperty()));
+    circle.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
       circle.setVisible(false);
     } else {
@@ -751,8 +749,7 @@ public class DrawComparedGraphs implements Initializable {
     graphNodeMap.put(node, square);
     square.centerXProperty().set(
         NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
-    square.centerYProperty().bind(pane.heightProperty().multiply(
-        square.getRelativeHeightProperty()));
+    square.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
       square.setVisible(false);
     } else {

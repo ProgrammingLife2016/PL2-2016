@@ -108,10 +108,10 @@ public class SplitGraphs {
       newNodes.put(id, newNode);
     });
     newNodes.forEach((id, node) -> {
-      pruneInLinks(node, newNodes, nodeSet);
-      pruneOutLinks(node, newNodes, nodeSet);
+      node.setInEdges(pruneInLinks(node, newNodes, nodeSet));
+      node.setOutEdges(pruneOutLinks(node, newNodes, nodeSet));
     });
-    return new HashGraph(nodeSet, genomeSet);
+    return new HashGraph(newNodes, genomeSet);
   }
 
   /**
@@ -130,8 +130,7 @@ public class SplitGraphs {
    * @param nodeSet   The set of nodes that should be retained in the pruning process
    * @return A new <code>GraphNode</code> identical to the <code>original</code> after pruning
    */
-  private GraphNode pruneNode(
-      GraphNode original, HashSet<String> genomeSet) {
+  private GraphNode pruneNode(GraphNode original, HashSet<String> genomeSet) {
     GraphNode newNode = original.copy();
 
     pruneGenomes(original, genomeSet).forEach(newNode::addGenome);
