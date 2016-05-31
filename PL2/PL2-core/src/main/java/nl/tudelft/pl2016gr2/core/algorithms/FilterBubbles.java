@@ -11,7 +11,6 @@ import nl.tudelft.pl2016gr2.visitor.BubbleChildrenVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -51,6 +50,7 @@ public class FilterBubbles implements PhyloFilter {
    * @param graph the graph
    * @return a zoomed out graph
    */
+  @Override
   public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
     return zoomOut.zoomOut(bubble, graph);
   }
@@ -62,6 +62,7 @@ public class FilterBubbles implements PhyloFilter {
    * @param graph the graph
    * @return a zoomed in graph
    */
+  @Override
   public Collection<GraphNode> zoomIn(Bubble bubble, SequenceGraph graph) {
     mutationId--;
     return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);

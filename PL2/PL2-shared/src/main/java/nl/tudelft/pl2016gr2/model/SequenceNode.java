@@ -33,6 +33,7 @@ public class SequenceNode extends AbstractNode {
    * The relative y-position of the node
    */
   private double relativeYPos;
+  private double maxHeight;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -270,6 +271,16 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void accept(NodeVisitor visitor) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    throw new UnsupportedOperationException("Invalid opperation.");
+  }
+
+  @Override
+  public double getMaxHeightPercentage() {
+    return maxHeight;
+  }
+
+  @Override
+  public void setMaxHeight(double maxHeight) {
+    this.maxHeight = maxHeight;
   }
 }

@@ -9,22 +9,6 @@ import javafx.beans.property.DoubleProperty;
  */
 public interface IGraphNode {
 
-  public static final double NODE_HEIGHT_RADIUS = 10.0;
-  
-  /**
-   * Get the relative height property.
-   *
-   * @return the relative height property.
-   */
-  DoubleProperty getRelativeHeightProperty();
-
-  /**
-   * Get the maximum y offset (to above).
-   *
-   * @return the maximum y offset (to above).
-   */
-  double getMaxYOffset();
-
   /**
    * Get the center x property.
    *

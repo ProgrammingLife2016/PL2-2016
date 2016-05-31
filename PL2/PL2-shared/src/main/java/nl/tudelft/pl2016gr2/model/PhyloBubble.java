@@ -14,14 +14,15 @@ public class PhyloBubble implements Bubble {
 
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
-  
+
   private PhyloFilter filter;
-  private Collection<GraphNode> poppedNodes;
+  private ArrayList<GraphNode> poppedNodes;
 
   private int size = -1;
   private int level = -1;
-  
+
   private double relativeYPos;
+  private double maxHeight;
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
     this.id = id;
@@ -44,8 +45,8 @@ public class PhyloBubble implements Bubble {
     this.nestedNodes = new HashSet<>();
   }
 
-  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter, 
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, 
+  public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
       Collection<GraphNode> nestedNodes) {
     this.id = id;
     this.treeNode = treeNode;
@@ -212,8 +213,8 @@ public class PhyloBubble implements Bubble {
   @Override
   public Collection<GraphNode> pop(SequenceGraph graph) {
     if (poppedNodes == null) {
-      poppedNodes = filter.zoomIn(this, graph);
-      // SORT HERE
+      poppedNodes = new ArrayList<>(filter.zoomIn(this, graph));
+      poppedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
     }
     return poppedNodes;
   }
@@ -280,5 +281,15 @@ public class PhyloBubble implements Bubble {
       }
     }
     return level;
+  }
+
+  @Override
+  public double getMaxHeightPercentage() {
+    return maxHeight;
+  }
+
+  @Override
+  public void setMaxHeight(double maxHeight) {
+    this.maxHeight = maxHeight;
   }
 }

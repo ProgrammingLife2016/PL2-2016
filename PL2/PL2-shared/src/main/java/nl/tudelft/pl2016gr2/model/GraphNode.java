@@ -248,4 +248,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   double getRelativeYPos();
   
   void setRelativeYPos(double relativeYPos);
+  
+  void setMaxHeight(double maxHeight);
+  double getMaxHeightPercentage();
 }

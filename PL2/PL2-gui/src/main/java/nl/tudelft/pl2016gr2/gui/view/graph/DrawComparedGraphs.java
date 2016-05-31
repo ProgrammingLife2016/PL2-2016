@@ -4,6 +4,8 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -77,7 +79,8 @@ public class DrawComparedGraphs implements Initializable {
 
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
   private static final double MIN_VISIBILITY_WIDTH = 2.0;
-//  private static final double NODE_X_OFFSET = 1.0;
+  private static final double NODE_MARGIN = 0.9;
+  private static final int MINUMUM_BASE_SIZE = 10;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
@@ -102,7 +105,7 @@ public class DrawComparedGraphs implements Initializable {
   private IPhylogeneticTreeRoot treeRoot;
 
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
-  private static final double MAX_ZOOM_FACTOR = 2.0;
+  private static final double MAX_ZOOM_FACTOR = 4.0;
 
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
 
@@ -177,15 +180,20 @@ public class DrawComparedGraphs implements Initializable {
    * Initialize the scrollbar and scroll event.
    */
   private void initializeScroll() {
+    scrollbar.maxProperty().bind(new SimpleDoubleProperty(1.0).add(mainPane.widthProperty().negate().divide(
+        zoomFactor).divide(amountOfLevels)));
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
     scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
         .divide(amountOfLevels)).divide(zoomFactor));
     scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
         .divide(amountOfLevels)).divide(zoomFactor));
-    scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(zoomFactor)
-        .divide(amountOfLevels));
+    scrollbar.visibleAmountProperty().bind(scrollbar.maxProperty().multiply(mainPane.widthProperty().divide(zoomFactor)
+        .divide(amountOfLevels)));
 
-    mainPane.widthProperty().addListener(invalid -> verifyZoomFactor());
+    mainPane.widthProperty().addListener(invalid -> {
+      updateScrollbarValue(scrollbar.getValue());
+      verifyZoomFactor();
+    });
     amountOfLevels.addListener(invalid -> verifyZoomFactor());
 
     mainPane.setOnScroll((ScrollEvent event) -> {
@@ -201,8 +209,8 @@ public class DrawComparedGraphs implements Initializable {
   private void updateScrollbarValue(double newValue) {
     if (newValue < 0.0) {
       scrollbar.setValue(0.0);
-    } else if (newValue > 1.0) {
-      scrollbar.setValue(1.0);
+    } else if (newValue > scrollbar.getMax()) {
+      scrollbar.setValue(scrollbar.getMax());
     } else {
       scrollbar.setValue(newValue);
     }
@@ -217,12 +225,15 @@ public class DrawComparedGraphs implements Initializable {
     if (zoomFactor.get() == MAX_ZOOM_FACTOR) {
       return;
     }
+    double zoomMultiplier = (1.0 + SCROLL_ZOOM_FACTOR * deltaY);
     double drawnLevels = mainPane.getWidth() / zoomFactor.get();
-    double startLevel = (amountOfLevels.get() - drawnLevels) * scrollbar.getValue();
-    double mousePositionLevel = startLevel + drawnLevels * relativeXPos;
-    updateScrollbarValue(((mousePositionLevel + startLevel + drawnLevels / 2.0)
-        / 2.0 / amountOfLevels.get()));
-    zoomFactor.set(zoomFactor.get() * (1.0 + SCROLL_ZOOM_FACTOR * deltaY));
+    double startLevel = amountOfLevels.get() * scrollbar.getValue();
+    double newCenter = relativeXPos - (relativeXPos / zoomMultiplier);
+    newCenter *= drawnLevels;
+    newCenter += startLevel;
+    
+    updateScrollbarValue(newCenter / amountOfLevels.get());
+    zoomFactor.set(zoomFactor.get() * zoomMultiplier);
     verifyZoomFactor();
   }
 
@@ -235,12 +246,15 @@ public class DrawComparedGraphs implements Initializable {
     if (zoomFactor.get() == calcMinZoomFactor()) {
       return;
     }
-    zoomFactor.set(zoomFactor.get() / (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+    double zoomMultiplier = (1.0 + SCROLL_ZOOM_FACTOR * deltaY);
     double drawnLevels = mainPane.getWidth() / zoomFactor.get();
-    double startLevel = (amountOfLevels.get() - drawnLevels) * scrollbar.getValue();
-    double mousePositionLevel = startLevel + drawnLevels * relativeXPos;
-    updateScrollbarValue((((mousePositionLevel - (startLevel + drawnLevels / 2.0)) / 2.0
-        + startLevel + drawnLevels / 2.0) / amountOfLevels.get()));
+    double startLevel = amountOfLevels.get() * scrollbar.getValue();
+    double newCenter = relativeXPos - (relativeXPos * zoomMultiplier);
+    newCenter *= drawnLevels;
+    newCenter += startLevel;
+    
+    updateScrollbarValue(newCenter / amountOfLevels.get());
+    zoomFactor.set(zoomFactor.get() / zoomMultiplier);
     verifyZoomFactor();
   }
 
@@ -602,10 +616,9 @@ public class DrawComparedGraphs implements Initializable {
    * Update the graph by redrawing it.
    */
   private void updateGraph() {
-    double viewPosition = scrollbar.getValue();
     double graphWidth = mainPane.getWidth();
     int levelsToDraw = (int) (graphWidth / zoomFactor.get());
-    int startLevel = (int) ((amountOfLevels.get() - levelsToDraw + 2) * viewPosition);
+    int startLevel = (int) (amountOfLevels.get() * scrollbar.getValue());
     if (startLevel < 0) {
       startLevel = 0;
     }
@@ -724,22 +737,22 @@ public class DrawComparedGraphs implements Initializable {
       ArrayList<GraphNode> nodes, int level, int startLevel) {
     for (int i = 0; i < nodes.size(); i++) {
       GraphNode node = nodes.get(i);
-      double relativeHeight = (i + 0.5) / nodes.size();
       if (node.hasChildren()) {
-        constructBubble(pane, graphNodeMap, node, relativeHeight,
-            0.5 / nodes.size(), level, startLevel);
+        constructBubble(pane, graphNodeMap, node, level, startLevel);
       } else {
-        constructNode(pane, graphNodeMap, node, relativeHeight, 0.5 / nodes.size(),
-            level, startLevel);
+        constructNode(pane, graphNodeMap, node, level, startLevel);
       }
     }
   }
 
   private void constructNode(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
-      GraphNode node, double relativeHeight, double maxYOffset,
-      int level, int startLevel) {
-    GraphNodeCircle circle = new GraphNodeCircle(calculateNodeRadius(node),
-        relativeHeight, maxYOffset);
+      GraphNode node, int level, int startLevel) {
+    double width = calculateNodeWidth(node);
+    double height = node.getMaxHeightPercentage() * mainPane.getHeight();
+    if (height > width) {
+      height = width;
+    }
+    GraphNodeCircle circle = new GraphNodeCircle(width, height);
     pane.getChildren().add(circle);
     graphNodeMap.put(node, circle);
     if (node.isOverlapping()) {
@@ -747,8 +760,7 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       circle.setFill(NO_OVERLAP_COLOR);
     }
-    circle.setCenterX(
-        zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
+    circle.setCenterX(zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     circle.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
       circle.setVisible(false);
@@ -758,15 +770,16 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   private void constructBubble(Pane pane, HashMap<GraphNode, IGraphNode> graphNodeMap,
-      GraphNode node, double relativeHeight, double maxYOffset,
-      int level, int startLevel) {
-    double radius = calculateNodeRadius(node);
-    GraphNodeSquare square = new GraphNodeSquare(radius,
-        relativeHeight, maxYOffset);
+      GraphNode node, int level, int startLevel) {
+    double width = calculateNodeWidth(node);
+    double height = node.getMaxHeightPercentage() * mainPane.getHeight();
+    if (height > width) {
+      height = width;
+    }
+    GraphNodeRectangle square = new GraphNodeRectangle(width, height);
     pane.getChildren().add(square);
     graphNodeMap.put(node, square);
-    square.centerXProperty().set(
-        zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
+    square.centerXProperty().set(zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     square.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
       square.setVisible(false);
@@ -775,48 +788,18 @@ public class DrawComparedGraphs implements Initializable {
     }
   }
 
-//  /**
-//   * Calculate the radius of the bubble.
-//   *
-//   * @param node the node position of the bubble.
-//   * @return the radius.
-//   */
-//  private static double calculateBubbleRadius(NodePosition node) {
-//    double radius = Math.sqrt(node.getNode().size()) * 5.0;
-//    if (radius > MAX_NODE_RADIUS) {
-//      return MAX_NODE_RADIUS;
-//    }
-//    if (radius < MIN_NODE_RADIUS) {
-//      return MIN_NODE_RADIUS;
-//    } else {
-//      return radius;
-//    }
-//  }
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
-   * The mapping function from amount of bases to node radius is completely random (hence the magic
-   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
-   * function was found.
    *
    * @param node the node.
    * @return the radius.
    */
-  private double calculateNodeRadius(GraphNode node) {
-//    int amountOfBases = node.size();
-//    double radius;
-//    if (amountOfBases > 1000) {
-//      radius = (Math.log(amountOfBases) * 4.0 - 17.0) * zoomFactor.get(); // see javadoc
-//      if (radius > MAX_NODE_RADIUS * zoomFactor.get()) {
-//        return MAX_NODE_RADIUS * zoomFactor.get();
-//      }
-//    } else {
-//      radius = (Math.log(amountOfBases) * 0.7 + 5.1) * zoomFactor.get(); // see javadoc
-//      if (radius < MIN_NODE_RADIUS * zoomFactor.get()) {
-//        return MIN_NODE_RADIUS * zoomFactor.get();
-//      }
-//    }
-//    return radius;
-    return node.size() / 2.0 * zoomFactor.get();
+  private double calculateNodeWidth(GraphNode node) {
+    int nodeSize = node.size();
+    if (nodeSize < MINUMUM_BASE_SIZE) {
+      nodeSize = MINUMUM_BASE_SIZE;
+    }
+    return nodeSize * zoomFactor.get() * NODE_MARGIN;
   }
 
   /**
@@ -846,10 +829,10 @@ public class DrawComparedGraphs implements Initializable {
         edge.setStrokeWidth(calculateEdgeWidth(graph.getGenomes().size(), node,
             outlink));
         pane.getChildren().add(edge);
-        edge.startXProperty().bind(fromNode.centerXProperty());
-        edge.startYProperty().bind(fromNode.centerYProperty());
-        edge.endXProperty().bind(toNode.centerXProperty());
-        edge.endYProperty().bind(toNode.centerYProperty());
+        edge.setStartX(fromNode.centerXProperty().get());
+        edge.setStartY(fromNode.centerYProperty().get());
+        edge.setEndX(toNode.centerXProperty().get());
+        edge.setEndY(toNode.centerYProperty().get());
         edge.toBack();
       }
     }
@@ -876,49 +859,6 @@ public class DrawComparedGraphs implements Initializable {
     return edgeWith;
   }
 
-//  /**
-//   * Reposition the nodes, so there are no overlapping (horizontal) edges. It is still possible for
-//   * non-horizontal edges to overlap, but this rarely happens.
-//   *
-//   * @param graphOrder   the graph node order.
-//   * @param startIndex   the index where to start in the graph.
-//   * @param endIndex     the index where to end in the graph.
-//   * @param graphNodeMap a map which maps each node id to a graph node object.
-//   */
-//  private static void repositionOverlappingEdges(ArrayList<GraphNode> graphOrder,
-//      int startIndex, int endIndex, HashMap<GraphNode, IGraphNode> graphNodeMap) {
-//    for (int i = startIndex; i < endIndex; i++) {
-//      GraphNode node = graphOrder.get(i);
-//      IGraphNode graphNode = graphNodeMap.get(node);
-//      double subtract = graphNode.getMaxYOffset();
-//      while (calculateSameHeightNodes(node, graphNode, graphNodeMap) >= 2) {
-//        subtract /= 2.0;
-//        graphNode.getRelativeHeightProperty().set(
-//            graphNode.getRelativeHeightProperty().doubleValue() - subtract);
-//      }
-//    }
-//  }
-//
-//  /**
-//   * Calculate the amount of nodes which are drawn at the same height as the given node.
-//   *
-//   * @param node         the given node.
-//   * @param graphNode    the graph node object which represents the node.
-//   * @param graphNodeMap the map containing all other graph node objects.
-//   * @return the amount of found nodes (circles) which are at the same height.
-//   */
-//  private static int calculateSameHeightNodes(GraphNode node, IGraphNode graphNode,
-//      HashMap<GraphNode, IGraphNode> graphNodeMap) {
-//    int sameHeight = 0;
-//    for (GraphNode inLink : node.getInEdges()) {
-//      IGraphNode parent = graphNodeMap.get(inLink);
-//      if (parent != null && Double.compare(parent.getRelativeHeightProperty().doubleValue(),
-//          graphNode.getRelativeHeightProperty().doubleValue()) == 0) {
-//        ++sameHeight;
-//      }
-//    }
-//    return sameHeight;
-//  }
   /**
    * Add a label with the ID of the node to the circle.
    *
