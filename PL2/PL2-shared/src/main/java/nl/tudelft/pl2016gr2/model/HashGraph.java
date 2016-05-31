@@ -133,8 +133,7 @@ public class HashGraph implements SequenceGraph {
 
   @Override
   public GraphNode remove(GraphNode node) {
-    nodes.remove(node.getId());
-    return node;
+    return nodes.remove(node.getId());
   }
 
   /**
@@ -151,7 +150,7 @@ public class HashGraph implements SequenceGraph {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     for (GraphNode node : nodes.values()) {
-      sb.append(node).append('\n');
+      sb.append(node.toString()).append('\n');
     }
     return sb.toString();
   }

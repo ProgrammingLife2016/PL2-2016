@@ -88,6 +88,9 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public String getSequence() {
+    if (sequence == null) {
+      return null;
+    }
     return sequence.getBaseSequence();
   }
 
