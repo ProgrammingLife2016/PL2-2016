@@ -165,7 +165,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
 
   @Override
   public String getMetaData() {
-    System.out.println("annotation = " + annotation);
     if (annotation == null) {
       return "";
     } else {

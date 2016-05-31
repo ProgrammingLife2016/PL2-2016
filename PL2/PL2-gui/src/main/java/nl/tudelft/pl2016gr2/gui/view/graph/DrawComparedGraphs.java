@@ -77,7 +77,7 @@ public class DrawComparedGraphs implements Initializable {
 
   private static final int OFFSCREEN_DRAWN_LEVELS = 10;
   private static final double MIN_VISIBILITY_WIDTH = 2.0;
-  private static final double NODE_X_OFFSET = 1.0;
+//  private static final double NODE_X_OFFSET = 1.0;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
@@ -178,26 +178,22 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void initializeScroll() {
     scrollbar.valueProperty().addListener(invalidate -> updateGraph());
-    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE).divide(
-        amountOfLevels)).divide(zoomFactor));
-    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE).divide(
-        amountOfLevels)).divide(zoomFactor));
-    scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(NODE_X_OFFSET)
-        .divide(zoomFactor).divide(amountOfLevels));
+    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
+        .divide(amountOfLevels)).divide(zoomFactor));
+    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
+        .divide(amountOfLevels)).divide(zoomFactor));
+    scrollbar.visibleAmountProperty().bind(mainPane.widthProperty().divide(zoomFactor)
+        .divide(amountOfLevels));
 
     mainPane.widthProperty().addListener(invalid -> verifyZoomFactor());
     amountOfLevels.addListener(invalid -> verifyZoomFactor());
 
     mainPane.setOnScroll((ScrollEvent event) -> {
-      double relativePos = event.getX() / mainPane.getWidth();
+      double relativeXPos = event.getX() / mainPane.getWidth();
       if (event.getDeltaY() > 0) {
-        updateScrollbarValue(
-            scrollbar.getValue() + (relativePos - 0.5) * scrollbar.getVisibleAmount() / 9.0);
-        zoomIn(event.getDeltaY());
+        zoomIn(event.getDeltaY(), relativeXPos);
       } else {
-        zoomOut(-event.getDeltaY());
-        updateScrollbarValue(
-            scrollbar.getValue() + (0.5 - relativePos) * scrollbar.getVisibleAmount() / 9.0);
+        zoomOut(-event.getDeltaY(), relativeXPos);
       }
     });
   }
@@ -217,8 +213,16 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param deltaY the delta Y of the scroll wheel event.
    */
-  private void zoomIn(double deltaY) {
-    zoomFactor.set(zoomFactor.get() * (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+  private void zoomIn(double deltaY, double relativeXPos) {
+    if (zoomFactor.get() == MAX_ZOOM_FACTOR) {
+      return;
+    }
+    double drawnLevels = mainPane.getWidth() / zoomFactor.get();
+    double startLevel = (amountOfLevels.get() - drawnLevels) * scrollbar.getValue();
+    double mousePositionLevel = startLevel + drawnLevels * relativeXPos;
+    updateScrollbarValue(((mousePositionLevel + startLevel + drawnLevels / 2.0)
+        / 2.0 / amountOfLevels.get()));
+    zoomFactor.set(zoomFactor.get() * (1.0 + SCROLL_ZOOM_FACTOR * deltaY));
     verifyZoomFactor();
   }
 
@@ -227,8 +231,16 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param deltaY the delta Y of the scroll wheel event.
    */
-  private void zoomOut(double deltaY) {
+  private void zoomOut(double deltaY, double relativeXPos) {
+    if (zoomFactor.get() == calcMinZoomFactor()) {
+      return;
+    }
     zoomFactor.set(zoomFactor.get() / (1.0 + deltaY * SCROLL_ZOOM_FACTOR));
+    double drawnLevels = mainPane.getWidth() / zoomFactor.get();
+    double startLevel = (amountOfLevels.get() - drawnLevels) * scrollbar.getValue();
+    double mousePositionLevel = startLevel + drawnLevels * relativeXPos;
+    updateScrollbarValue((((mousePositionLevel - (startLevel + drawnLevels / 2.0)) / 2.0
+        + startLevel + drawnLevels / 2.0) / amountOfLevels.get()));
     verifyZoomFactor();
   }
 
@@ -239,13 +251,17 @@ public class DrawComparedGraphs implements Initializable {
     if (amountOfLevels.get() <= 0) {
       return;
     }
-    double minZoom = mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get();
+    double minZoom = calcMinZoomFactor();
     if (zoomFactor.get() > MAX_ZOOM_FACTOR && minZoom < MAX_ZOOM_FACTOR) {
       zoomFactor.set(MAX_ZOOM_FACTOR);
     } else if (zoomFactor.get() < minZoom) {
       zoomFactor.set(minZoom);
     }
     updateGraph();
+  }
+
+  private double calcMinZoomFactor() {
+    return mainPane.getWidth() / amountOfLevels.get();
   }
 
   /**
@@ -503,7 +519,7 @@ public class DrawComparedGraphs implements Initializable {
 //    topGraph = new OrderedGraph(curGraph, topGraphOrder);
 //    // END OF CHANGED CODE
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
-    zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
+    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     updateGraphSize();
     updateGraph();
   }
@@ -549,7 +565,7 @@ public class DrawComparedGraphs implements Initializable {
     } else {
       amountOfLevels.set(highestBottomLevel);
     }
-    zoomFactor.set(mainPane.getWidth() / NODE_X_OFFSET / amountOfLevels.get());
+    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     updateGraphSize();
     updateGraph();
   }
@@ -588,7 +604,7 @@ public class DrawComparedGraphs implements Initializable {
   private void updateGraph() {
     double viewPosition = scrollbar.getValue();
     double graphWidth = mainPane.getWidth();
-    int levelsToDraw = (int) (graphWidth / (NODE_X_OFFSET * zoomFactor.get()));
+    int levelsToDraw = (int) (graphWidth / zoomFactor.get());
     int startLevel = (int) ((amountOfLevels.get() - levelsToDraw + 2) * viewPosition);
     if (startLevel < 0) {
       startLevel = 0;
@@ -732,7 +748,7 @@ public class DrawComparedGraphs implements Initializable {
       circle.setFill(NO_OVERLAP_COLOR);
     }
     circle.setCenterX(
-        NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
+        zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     circle.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
       circle.setVisible(false);
@@ -750,7 +766,7 @@ public class DrawComparedGraphs implements Initializable {
     pane.getChildren().add(square);
     graphNodeMap.put(node, square);
     square.centerXProperty().set(
-        NODE_X_OFFSET * zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
+        zoomFactor.get() * (level + 1 - startLevel - node.size() / 2.0));
     square.centerYProperty().bind(pane.heightProperty().multiply(node.getRelativeYPos()));
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
       square.setVisible(false);

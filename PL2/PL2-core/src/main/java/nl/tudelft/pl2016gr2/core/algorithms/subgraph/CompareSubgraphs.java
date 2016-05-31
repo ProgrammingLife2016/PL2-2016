@@ -6,7 +6,6 @@ import nl.tudelft.pl2016gr2.util.Pair;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,7 +20,7 @@ import java.util.List;
  */
 public class CompareSubgraphs {
 
-  private static final int VERTICAL_PRECISION = 1_000_000;
+  private static final int VERTICAL_PRECISION = 1_000_000_000;
 
   /**
    * This is a class with only static methods, so let no one make an instance of it.
@@ -120,6 +119,11 @@ public class CompareSubgraphs {
       }
     }
 
+    private ComplexVerticalArea(SimpleVerticalArea simpleAreas) {
+      areas = new ArrayList<>();
+      areas.add(simpleAreas);
+    }
+
     private SimpleVerticalArea getLargestArea() {
       double maxHeight = 0;
       SimpleVerticalArea largestArea = null;
@@ -140,6 +144,17 @@ public class CompareSubgraphs {
       for (SimpleVerticalArea area : areas) {
         totalHeight += area.getHeight();
       }
+      /////////////////////
+      // TEMPORARY HACK TO AVOID BUG WITH 328 GRAPH:
+      // TOO MANY NODES ARE DRAWN IN THE SAME LOCATION
+      if (totalHeight < nodes.size()) {
+        int start = areas.get(0).startBlock;
+        for (int i = 0; i < nodes.size(); i++) {
+          splitParts.add(new ComplexVerticalArea(new SimpleVerticalArea(start + i, start + i + 1)));
+        }
+        return;
+      }
+      /////////////////////
       int heightPerArea = totalHeight / nodes.size();
       Iterator<SimpleVerticalArea> it = areas.iterator();
       SimpleVerticalArea nextToAdd = it.next();
