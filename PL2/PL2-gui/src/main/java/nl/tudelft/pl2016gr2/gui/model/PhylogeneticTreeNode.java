@@ -36,6 +36,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
 
   /**
+   * If this treenode is part of a highlighted path.
+   */
+  private BooleanProperty inHighlightedPath = new SimpleBooleanProperty(false);
+
+  /**
    * Construct a phylogenetic tree node.
    *
    * @param node   the TreeNode of this node.
@@ -147,6 +152,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   @Override
   public BooleanProperty getDrawnInBottomProperty() {
     return drawnInBottom;
+  }
+
+  @Override
+  public BooleanProperty getInHighlightedPathProperty() {
+    return inHighlightedPath;
   }
 
   @Override
@@ -291,5 +301,15 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
       }
       throw new NoSuchElementException();
     }
+  }
+
+  protected void unhighlightPath() {
+    inHighlightedPath.set(false);
+    parent.unhighlightPath();
+  }
+
+  protected void highlightPath() {
+    inHighlightedPath.set(true);
+    parent.highlightPath();
   }
 }

@@ -4,6 +4,8 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
@@ -73,6 +75,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final SelectionManager selectionManager;
   private boolean isLeaf;
   private Circle lineageCircle;
+  private Line edge;
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -121,6 +124,13 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     });
     dataNode.getDrawnInBottomProperty().addListener(invalid -> {
       resetBorderColor();
+    });
+    dataNode.getInHighlightedPathProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue) {
+        edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
+      } else {
+        edge.setStrokeWidth(EDGE_WIDTH);
+      }
     });
   }
 
@@ -243,7 +253,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
       TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
       node.children.add(child);
-      drawEdge(node, child, graphPane);
+      node.drawEdge(node, child, graphPane);
     }
   }
 
@@ -291,8 +301,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param child     the child node.
    * @param graphPane the pane in which the edge should be drawn.
    */
-  private static void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
-    Line edge = new Line();
+  private void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
+    edge = new Line();
     edge.setSmooth(true);
     edge.startXProperty().bind(parent.centerXProperty());
     edge.startYProperty().bind(parent.centerYProperty());
@@ -300,7 +310,15 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     edge.endYProperty().bind(child.centerYProperty());
     graphPane.getChildren().add(edge);
     edge.toBack();
+    if (dataNode.getInHighlightedPathProperty().get()) {
+      edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
+    } else {
+      edge.setStrokeWidth(EDGE_WIDTH);
+    }
   }
+
+  private double EDGE_WIDTH = 2.0;
+  private double HIGHLIGHTED_EDGE_WIDTH = 6.0;
 
   /**
    * Draw an elipsis after a parent node to indicate that the parent has children, but there is not

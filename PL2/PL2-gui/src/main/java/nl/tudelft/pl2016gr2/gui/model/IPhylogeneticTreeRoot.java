@@ -24,4 +24,12 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    * @param isDrawn if the given genome is added or removed.
    */
   void setDrawnInBottom(int genome, boolean isDrawn);
+
+  /**
+   * Highlight a path in the phylogenetic tree.
+   *
+   * @param oldPath the previously highlighted path.
+   * @param newPath the new highlighted path.
+   */
+  void highlightPath(int oldPath, int newPath);
 }

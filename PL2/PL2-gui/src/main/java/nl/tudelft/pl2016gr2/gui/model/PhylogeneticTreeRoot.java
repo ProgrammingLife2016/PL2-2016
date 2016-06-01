@@ -57,4 +57,16 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   public void setDrawnInBottom(int genome, boolean isDrawn) {
     genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
   }
+
+  @Override
+  public void highlightPath(int oldPath, int newPath) {
+    PhylogeneticTreeNode oldSelection = genomeToTreeMap.get(oldPath);
+    PhylogeneticTreeNode newSelection = genomeToTreeMap.get(newPath);
+    if (oldSelection != null) {
+      oldSelection.unhighlightPath();
+    }
+    if (newSelection != null) {
+      newSelection.highlightPath();
+    }
+  }
 }
