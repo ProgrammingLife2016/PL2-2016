@@ -799,15 +799,6 @@ public class DrawComparedGraphs implements Initializable {
 //    else {
 //      addLabel(pane, square, node.getId());
 //    }
-    if (node.isInBubble()) {
-      square.setFill(Color.PURPLE);
-    } else if (node.isPoint()) {
-      square.setFill(Color.YELLOW);
-    } else if (node.isInDel()) {
-      square.setFill(Color.BLUE);
-    }  else if (node.isOverlapping()) {
-      square.setFill(OVERLAP_COLOR);
-    }
   }
 
   /**

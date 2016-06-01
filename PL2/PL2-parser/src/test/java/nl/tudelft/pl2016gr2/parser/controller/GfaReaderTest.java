@@ -58,10 +58,6 @@ public class GfaReaderTest {
   public void integrationTest() {
     SequenceGraph og = gfaReader.read();
     assertEquals(og.getGenomes().size(), 11);
-<<<<<<< HEAD
-    assertEquals(((Node) og.getNode(3)).getGenomes().size(), 1);
-=======
->>>>>>> feat/zoom-bubbles
   }
 
   /**

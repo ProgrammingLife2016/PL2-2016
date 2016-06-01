@@ -42,18 +42,6 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    */
   int getId();
   
-  void setInDel(boolean bool);
-  
-  boolean isInDel();
-  
-  void setPoint(boolean bool);
-  
-  boolean isPoint();
-  
-  void setInBubble(boolean bool);
-  
-  boolean isInBubble();
-  
   /**
    * Returns true if this node is an aggregate (a bubble) of more nodes, which are its children.
    *

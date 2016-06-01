@@ -187,9 +187,4 @@ public class HashGraph implements SequenceGraph {
     }
     return sb.toString();
   }
-
-  @Override
-  public ArrayList<GraphNode> getNodes() {
-    return new ArrayList<>(nodes.values());
-  }
 }
