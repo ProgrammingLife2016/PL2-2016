@@ -1,0 +1,26 @@
+H	VN:Z:1.0
+H	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;leaf2.fasta;leaf3.fasta;leaf4.fasta;
+S	1	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;leaf2.fasta;leaf3.fasta;leaf4.fasta;leaf5.fasta
+L	1	+	2	+	0M
+L	1	+	9	+	0M
+S	2	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;leaf2.fasta;leaf3.fasta;leaf4.fasta
+L	2	+	3	+	0M
+L	2	+	4	+	0M
+L	2	+	6	+	0M
+S	3	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;
+L	3	+	8	+	0M
+S	4	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf3.fasta;leaf4.fasta;
+L	4	+	5	+	0M
+L	4	+	7	+	0M
+S	5	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf3.fasta;
+L	5	+	8	+	0M
+S	6	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf2.fasta;
+L	6	+	8	+	0M
+S	7	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf4.fasta;
+L	7	+	8	+	0M
+S	8	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;leaf2.fasta;leaf3.fasta;leaf4.fasta;
+L	8	+	10	+	0M
+S	9	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf5.fasta;
+L	9	+	10	+	0M
+S	10	A	*	ORI:Z:MT_H37RV_BRD_V5.ref.fasta;leaf1.fasta;leaf2.fasta;leaf3.fasta;leaf4.fasta;leaf5.fasta
+Z	ditiseentest

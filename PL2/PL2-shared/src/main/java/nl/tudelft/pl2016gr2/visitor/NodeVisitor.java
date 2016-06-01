@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.visitor;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.PhyloBubble;
 
 /**
  * Defines the visitor of a node.
@@ -23,4 +24,11 @@ public interface NodeVisitor {
    * @param node The node to act on
    */
   void visit(GraphNode node);
+  
+  /**
+   * Peforms that action that the visitor must apply to the specified node.
+   *
+   * @param node The node to act on
+   */
+  void visit(PhyloBubble bubble);
 }

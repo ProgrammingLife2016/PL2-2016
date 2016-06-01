@@ -10,10 +10,11 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
@@ -301,5 +302,9 @@ public class TreeManager implements Initializable {
   @TestId(id = "getCurrentLeaves()")
   private ArrayList<TreeNodeCircle> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
+  }
+  
+  public IPhylogeneticTreeRoot getTreeRoot() {
+    return rootNode;
   }
 }
