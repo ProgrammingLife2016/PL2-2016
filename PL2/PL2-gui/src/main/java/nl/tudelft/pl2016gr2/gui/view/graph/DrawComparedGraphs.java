@@ -235,9 +235,8 @@ public class DrawComparedGraphs implements Initializable {
     double newCenter = relativeXPos - (relativeXPos / zoomMultiplier);
     newCenter *= drawnLevels;
     newCenter += startLevel;
-
-    updateScrollbarValue(newCenter / amountOfLevels.get());
     zoomFactor.set(zoomFactor.get() * zoomMultiplier);
+    updateScrollbarValue(newCenter / amountOfLevels.get());
     verifyZoomFactor();
   }
 
@@ -257,8 +256,8 @@ public class DrawComparedGraphs implements Initializable {
     newCenter *= drawnLevels;
     newCenter += startLevel;
 
-    updateScrollbarValue(newCenter / amountOfLevels.get());
     zoomFactor.set(zoomFactor.get() / zoomMultiplier);
+    updateScrollbarValue(newCenter / amountOfLevels.get());
     verifyZoomFactor();
   }
 
