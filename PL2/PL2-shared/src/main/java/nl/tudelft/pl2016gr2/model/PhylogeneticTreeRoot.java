@@ -15,6 +15,7 @@ import java.util.List;
 public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylogeneticTreeRoot {
 
   private final HashMap<String, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
+  private final List<Annotation> annotations;
 
   /**
    * Construct a phylogenetic tree root node.
@@ -27,6 +28,22 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
     for (PhylogeneticTreeNode leafNode : this) {
       genomeToTreeMap.put(leafNode.getLabel(), leafNode);
     }
+    this.annotations = annotations;
+    initLineages(annotations);
+  }
+  
+  /**
+   * Construct a phylogenetic tree root node using a iphylogenetictreenode.
+   *
+   * @param node        the root node of the parsed tree.
+   * @param annotations the read annotations.
+   */
+  public PhylogeneticTreeRoot(IPhylogeneticTreeNode node, List<Annotation> annotations) {
+    super(node);
+    for (PhylogeneticTreeNode leafNode : this) {
+      genomeToTreeMap.put(leafNode.getLabel(), leafNode);
+    }
+    this.annotations = annotations;
     initLineages(annotations);
   }
 
@@ -53,5 +70,10 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   @Override
   public void setDrawnInBottom(String genome, boolean isDrawn) {
     genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
+  }
+  
+  @Override
+  public List<Annotation> getAnnotations() {
+    return annotations;
   }
 }

@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.PhyloBubble;
 import nl.tudelft.pl2016gr2.model.PhyloFilter;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
@@ -76,12 +77,15 @@ public class FilterBubbles implements PhyloFilter {
    * these.
    *
    * @param treeRoot the root of the tree.
+   * @parem genomes the genomes that are selected
    * @return a filtered graph.
    */
-  public ArrayList<GraphNode> filter(IPhylogeneticTreeNode treeRoot) {
+  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
+    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
+    
     ArrayList<GraphNode> graphNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(graphNodes, treeRoot, newBubbles);
+    debubble(graphNodes, newRoot, newBubbles);
     pruneNodes(graphNodes, newBubbles);
 
     Collections.sort(graphNodes, (GraphNode node1, GraphNode node2) -> {

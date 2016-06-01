@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,21 @@ import java.util.ArrayList;
  * @author Faris
  */
 public interface IPhylogeneticTreeNode {
-
+  
+  /**
+   * Returns true if this object contains the original juxtaposer treenode.
+   * 
+   * @return true if the object contains the original juxtaposer treenode.
+   */
+  boolean hasTreeNode();
+  
+  /**
+   * Get the original treenode. Returns null if this is not there.
+   * 
+   * @return the original treenode
+   */
+  TreeNode getTreeNode();
+  
   /**
    * Check if this node has a parent.
    *
@@ -41,6 +56,13 @@ public interface IPhylogeneticTreeNode {
    * @return the total amount of child nodes.
    */
   int getChildCount();
+  
+  /**
+   * Adds a child node to this node.
+   * 
+   * @param child the child node to add.
+   */
+  void addChild(PhylogeneticTreeNode child);
 
   /**
    * Get the child at the given index.
@@ -78,6 +100,13 @@ public interface IPhylogeneticTreeNode {
    * @return if this node is a leaf node.
    */
   boolean isLeaf();
+  
+  /**
+   * Get the label of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the label of this leaf node.
+   */
+  String getLabel();
 
   /**
    * Get the drawn in top property. This property is true iff all of the genomes in this tree node
