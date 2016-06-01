@@ -842,6 +842,21 @@ public class DrawComparedGraphs implements Initializable {
         }
         edge.toBack();
       }
+      for (GraphNode inEdge : graphNode.getInEdges()) {
+        if (!graphNodeMap.containsKey(inEdge)) {
+          Line edge = new Line();
+          edge.setSmooth(true);
+          edge.setStrokeWidth(calculateEdgeWidth(genomeCount, inEdge,
+              graphNode));
+          pane.getChildren().add(edge);
+          edge.setEndX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
+          edge.setEndY(viewNode.centerYProperty().get());
+          edge.setStartX(zoomFactor.get()
+              * (inEdge.getLevel() - startLevel - inEdge.size() *  (1.0 - HALF_NODE_MARGIN)));
+          edge.setStartY(inEdge.getRelativeYPos() * pane.getHeight());
+          edge.toBack();
+        }
+      }
     });
   }
 
