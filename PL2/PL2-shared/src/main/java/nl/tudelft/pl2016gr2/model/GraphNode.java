@@ -244,11 +244,23 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void setLevel(int level);
 
   int getLevel();
-  
+
   double getRelativeYPos();
-  
+
   void setRelativeYPos(double relativeYPos);
-  
+
   void setMaxHeight(double maxHeight);
+
   double getMaxHeightPercentage();
+
+  /**
+   * Pops this bubble.
+   * <p>
+   * Popping is a synonym for zooming in on the bubble, thus revealing the nodes that it stores.
+   * </p>
+   *
+   * @param graph the graph of the bubble.
+   * @return the nodes which are present
+   */
+  Collection<GraphNode> pop(SequenceGraph graph);
 }

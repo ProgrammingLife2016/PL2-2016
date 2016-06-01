@@ -15,7 +15,7 @@ public class PhyloBubble implements Bubble {
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
 
-  private PhyloFilter filter;
+  private final PhyloFilter filter;
   private ArrayList<GraphNode> poppedNodes;
 
   private int size = -1;

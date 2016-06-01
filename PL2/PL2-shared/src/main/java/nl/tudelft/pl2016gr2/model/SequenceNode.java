@@ -283,4 +283,11 @@ public class SequenceNode extends AbstractNode {
   public void setMaxHeight(double maxHeight) {
     this.maxHeight = maxHeight;
   }
+
+  @Override
+  public Collection<GraphNode> pop(SequenceGraph graph) {
+    ArrayList<GraphNode> res = new ArrayList<>(1);
+    res.add(this);
+    return res;
+  }
 }

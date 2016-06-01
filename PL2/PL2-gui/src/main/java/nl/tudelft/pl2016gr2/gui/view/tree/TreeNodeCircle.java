@@ -127,7 +127,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize the click event for this object.
    */
   private void initializeClickedEvent() {
-    setOnMouseClicked((MouseEvent event) -> {
+    this.setMouseTransparent(true);
+    lineageCircle.setOnMouseClicked((MouseEvent event) -> {
       selectionManager.select(this);
       event.consume();
     });
@@ -137,7 +138,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize a drag event initializer.
    */
   private void initializeDragEvent() {
-    setOnDragDetected((MouseEvent event) -> {
+    lineageCircle.setOnDragDetected((MouseEvent event) -> {
       StringBuilder genomeStringBuilder = new StringBuilder();
       for (String genome : dataNode.getGenomes()) {
         genomeStringBuilder.append(genome).append('\n');

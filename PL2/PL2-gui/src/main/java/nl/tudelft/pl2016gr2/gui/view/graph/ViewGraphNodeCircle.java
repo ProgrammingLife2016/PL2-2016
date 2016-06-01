@@ -16,7 +16,7 @@ public class ViewGraphNodeCircle extends Ellipse implements IViewGraphNode {
    * @param height the height of the ellipse.
    */
   public ViewGraphNodeCircle(double width, double height) {
-    super(width / 2.0, height / 2.0);
+    super(width * DrawComparedGraphs.NODE_MARGIN / 2.0, height / 2.0);
   }
 
   @Override
