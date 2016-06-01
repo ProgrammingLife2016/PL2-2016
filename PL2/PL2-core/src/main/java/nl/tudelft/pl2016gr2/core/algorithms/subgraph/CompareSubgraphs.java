@@ -63,7 +63,7 @@ public class CompareSubgraphs {
 
     // todo: recolapse bubble from the graphs
     // todo: check if nodes are really overlapping (taking into account the bubbles)
-    return new Pair<>(orderedTopGraph, orderedBottomGraph);
+    return new Pair<>(topOrderBubbled, bottomOrderBubbled);
   }
 
   private static ArrayList<Position> initStraightInDelPoint(ArrayList<Position> orderedGraph,
