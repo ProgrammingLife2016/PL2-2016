@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.gui.model;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylogeneticTreeRoot {
 
-  private final HashMap<String, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
+  private final HashMap<Integer, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
 
   /**
    * Construct a phylogenetic tree root node.
@@ -26,7 +27,7 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   public PhylogeneticTreeRoot(TreeNode node, List<Annotation> annotations) {
     super(node, null);
     for (PhylogeneticTreeNode leafNode : this) {
-      genomeToTreeMap.put(leafNode.getLabel(), leafNode);
+      genomeToTreeMap.put(leafNode.getGenomeId(), leafNode);
     }
     initLineages(annotations);
   }
@@ -38,21 +39,22 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
    */
   private void initLineages(List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
-      PhylogeneticTreeNode node = genomeToTreeMap.get(annotation.specimenId);
-      if (node == null) {
+      Integer genomeId = GenomeMap.getInstance().getId(annotation.specimenId);
+      if (genomeId == null) {
         continue;
       }
+      PhylogeneticTreeNode node = genomeToTreeMap.get(genomeId);
       node.setAnnotation(annotation);
     }
   }
 
   @Override
-  public void setDrawnInTop(String genome, boolean isDrawn) {
+  public void setDrawnInTop(int genome, boolean isDrawn) {
     genomeToTreeMap.get(genome).setDrawnInTop(isDrawn);
   }
 
   @Override
-  public void setDrawnInBottom(String genome, boolean isDrawn) {
+  public void setDrawnInBottom(int genome, boolean isDrawn) {
     genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
   }
 }

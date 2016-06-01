@@ -33,8 +33,9 @@ public class SelectionManager {
   private ISelectable selected;
   private Timeline timeline;
 
-  private final ObservableSet<String> topGraphGenomes = new ObservableSetWrapper<>(new HashSet<>());
-  private final ObservableSet<String> bottomGraphGenomes
+  private final ObservableSet<Integer> topGraphGenomes
+      = new ObservableSetWrapper<>(new HashSet<>());
+  private final ObservableSet<Integer> bottomGraphGenomes
       = new ObservableSetWrapper<>(new HashSet<>());
 
   /**
@@ -83,7 +84,7 @@ public class SelectionManager {
     }
   }
 
-  protected void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+  protected void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     rootLayoutController.drawGraph(topGenomes, bottomGenomes);
   }
 
@@ -129,11 +130,11 @@ public class SelectionManager {
     timeline.play();
   }
 
-  public ObservableSet<String> getTopGraphGenomes() {
+  public ObservableSet<Integer> getTopGraphGenomes() {
     return topGraphGenomes;
   }
 
-  public ObservableSet<String> getBottomGraphGenomes() {
+  public ObservableSet<Integer> getBottomGraphGenomes() {
     return bottomGraphGenomes;
   }
 }

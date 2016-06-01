@@ -26,6 +26,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -139,8 +140,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private void initializeDragEvent() {
     setOnDragDetected((MouseEvent event) -> {
       StringBuilder genomeStringBuilder = new StringBuilder();
-      for (String genome : dataNode.getGenomes()) {
-        genomeStringBuilder.append(genome).append('\n');
+      for (int genome : dataNode.getGenomes()) {
+        genomeStringBuilder.append(GenomeMap.getInstance().getGenome(genome)).append('\n');
       }
       genomeStringBuilder.deleteCharAt(genomeStringBuilder.length() - 1);
 

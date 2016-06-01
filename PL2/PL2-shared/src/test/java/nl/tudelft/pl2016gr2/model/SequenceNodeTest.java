@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
-import static nl.tudelft.pl2016gr2.model.SequenceGraphTest.mockNode;
+import static nl.tudelft.pl2016gr2.util.TestingUtilities.mockNode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -53,7 +53,7 @@ public class SequenceNodeTest {
 
   @Test
   public void testConstructorWithGenomes() {
-    Collection<String> genomes = Arrays.asList("gen0", "gen1");
+    Collection<Integer> genomes = Arrays.asList(0, 1);
     SequenceNode node = new SequenceNode(5, mockedSequence, genomes);
     assertTrue(node.getGenomes().containsAll(genomes));
   }
@@ -63,7 +63,7 @@ public class SequenceNodeTest {
     Collection<GraphNode> inEdges = Arrays.asList(mockNode(10, false), mockNode(1, false));
     Collection<GraphNode> outEdges = Arrays.asList(mockNode(2, false), mockNode(3, true));
     SequenceNode node = new SequenceNode(
-        5, mockedSequence, Collections.singletonList("gen"), inEdges, outEdges);
+        5, mockedSequence, Collections.singletonList(1), inEdges, outEdges);
     assertTrue(node.getInEdges().containsAll(inEdges));
     outEdges.forEach(edge -> assertFalse(node.getInEdges().contains(edge)));
   }
@@ -73,7 +73,7 @@ public class SequenceNodeTest {
     Collection<GraphNode> inEdges = Arrays.asList(mockNode(10, false), mockNode(1, false));
     Collection<GraphNode> outEdges = Arrays.asList(mockNode(2, false), mockNode(3, true));
     SequenceNode node = new SequenceNode(
-        5, mockedSequence, Collections.singletonList("gen"), inEdges, outEdges);
+        5, mockedSequence, Collections.singletonList(1), inEdges, outEdges);
     assertTrue(node.getOutEdges().containsAll(outEdges));
     inEdges.forEach(edge -> assertFalse(node.getOutEdges().contains(edge)));
   }
@@ -228,23 +228,23 @@ public class SequenceNodeTest {
 
   @Test
   public void getGenomes() {
-    final String testGenome = "testGenome";
+    final int testGenome = 0;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
   }
 
   @Test
   public void addGenomeLeavesOldUnchanged() {
-    final String oldGenome = "oldGenome";
+    final int oldGenome = 0;
     instance.addGenome(oldGenome);
     assertTrue(instance.getGenomes().contains(oldGenome));
-    instance.addGenome("newGenome");
+    instance.addGenome(1);
     assertTrue(instance.getGenomes().contains(oldGenome));
   }
 
   @Test
   public void addGenomeAddsNewElement() {
-    final String testGenome = "testGenome";
+    final int testGenome = 0;
     assertFalse(instance.getGenomes().contains(testGenome));
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
@@ -252,7 +252,7 @@ public class SequenceNodeTest {
 
   @Test
   public void addDuplicateGenomeThrowsAssertion() {
-    final String testGenome = "testGenome";
+    final int testGenome = 1;
     instance.addGenome(testGenome);
     exception.expect(AssertionError.class);
     instance.addGenome(testGenome);
@@ -260,7 +260,7 @@ public class SequenceNodeTest {
 
   @Test
   public void removeGenomeRemovesElement() {
-    final String testGenome = "testNodeGenome";
+    final int testGenome = 0;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
 
@@ -271,8 +271,8 @@ public class SequenceNodeTest {
 
   @Test
   public void removeGenomeLeavesOtherElements() {
-    final String otherElement = "otherElement";
-    final String removedElement = "removedElement";
+    final int otherElement = 0;
+    final int removedElement = 1;
     instance.addGenome(otherElement);
     instance.addGenome(removedElement);
     assertTrue(instance.getGenomes().contains(otherElement));
@@ -285,7 +285,7 @@ public class SequenceNodeTest {
   @Test
   public void removeNonExistentGenomeThrowsAssertion() {
     exception.expect(AssertionError.class);
-    instance.removeGenome("nonExistentGenome");
+    instance.removeGenome(1100);
   }
 
   @Test

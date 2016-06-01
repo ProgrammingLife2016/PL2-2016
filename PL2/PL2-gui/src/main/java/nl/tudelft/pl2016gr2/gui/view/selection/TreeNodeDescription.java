@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 
 /**
  * This class is used by tree nodes to offer a tree node description view to the selection manager.
@@ -22,7 +23,7 @@ public class TreeNodeDescription implements ISelectionInfo {
     public void handle(ActionEvent event) {
       IPhylogeneticTreeNode topNode = treeNode.getChild(0);
       IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
-      selectionManager.drawGraph(topNode.getGenomes(), bottomNode.getGenomes());
+      selectionManager.drawGraph(topNode.getGenomeIds(), bottomNode.getGenomeIds());
     }
   };
 
@@ -80,8 +81,8 @@ public class TreeNodeDescription implements ISelectionInfo {
   private String getGenomes() {
     StringBuilder sb = new StringBuilder("Genomes: ");
     sb.append('\n');
-    for (String genome : treeNode.getGenomes()) {
-      sb.append('\n').append(genome);
+    for (int genomeId : treeNode.getGenomes()) {
+      sb.append('\n').append(GenomeMap.getInstance().getGenome(genomeId));
     }
     return sb.toString();
   }

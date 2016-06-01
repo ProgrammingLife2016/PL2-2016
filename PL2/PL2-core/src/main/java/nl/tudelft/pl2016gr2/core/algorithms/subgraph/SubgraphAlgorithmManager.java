@@ -33,8 +33,8 @@ public class SubgraphAlgorithmManager {
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
-  public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<String> topGenomes,
-      Collection<String> bottomGenomes, SequenceGraph mainGraph,
+  public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
+      Collection<Integer> bottomGenomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
@@ -63,7 +63,7 @@ public class SubgraphAlgorithmManager {
    * @param mainGraphOrder the order of the main graph.
    * @return the ordered graph.
    */
-  public static OrderedGraph alignOneGraph(Collection<String> genomes, SequenceGraph mainGraph,
+  public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
@@ -86,7 +86,7 @@ public class SubgraphAlgorithmManager {
 
     private SequenceGraph subGraph;
     private final SplitGraphs splitGraphs;
-    private final Collection<String> genomes;
+    private final Collection<Integer> genomes;
 
     /**
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
@@ -95,7 +95,7 @@ public class SubgraphAlgorithmManager {
      * @param splitGraphs a {@link SplitGraphs} object.
      * @param genomes     the list of genomes which must be present in the subgraph.
      */
-    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<String> genomes) {
+    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<Integer> genomes) {
       this.splitGraphs = splitGraphs;
       this.genomes = genomes;
     }

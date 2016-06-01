@@ -78,13 +78,13 @@ public class AbstractNodeTest {
     Mockito.when(otherNode.getId()).thenReturn(2);
     AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
 
-    Mockito.when(instance.getGenomes()).thenReturn(Arrays.asList("equal", "gen0"));
-    Mockito.when(otherNode.getGenomes()).thenReturn(Arrays.asList("equal", "gen1"));
+    Mockito.when(instance.getGenomes()).thenReturn(Arrays.asList(1, 5));
+    Mockito.when(otherNode.getGenomes()).thenReturn(Arrays.asList(2, 1));
 
     Mockito.when(otherNode.getInEdges()).thenReturn(Collections.singletonList(instance));
     Mockito.when(instance.getOutEdges()).thenReturn(Collections.singletonList(otherNode));
 
-    assertTrue(instance.getGenomesOverEdge(otherNode).contains("equal"));
+    assertTrue(instance.getGenomesOverEdge(otherNode).contains(1));
     assertEquals(1, instance.getGenomesOverEdge(otherNode).size());
   }
 

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.Node;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
@@ -38,6 +39,12 @@ public class GfaReaderTest {
    */
   @Before
   public void initialize() throws IOException {
+    GenomeMap genomeMap = GenomeMap.getInstance();
+    genomeMap.addGenome("MT_H37RV_BRD_V5");
+    genomeMap.addGenome("TKK_02_0001");
+    genomeMap.addGenome("TKK_02_0005");
+    genomeMap.addGenome("TKK_02_0008");
+
 
     file = File.createTempFile("GfaReaderTest", TEST_GRAPH_RESOURCE);
     FileUtils.copyInputStreamToFile(
@@ -49,6 +56,7 @@ public class GfaReaderTest {
   @After
   public void tearDown() {
     file.delete();
+    AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
   }
 
   /**
@@ -56,8 +64,9 @@ public class GfaReaderTest {
    */
   @Test
   public void integrationTest() {
-    SequenceGraph og = gfaReader.read();
-    assertEquals(og.getGenomes().size(), 11);
+    AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
+    SequenceGraph generatedGraph = gfaReader.read();
+    assertEquals(11, generatedGraph.getGenomes().size());
   }
 
   /**
@@ -65,6 +74,7 @@ public class GfaReaderTest {
    */
   @Test
   public void testRead() {
+    AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
     SequenceGraph actual = gfaReader.read();
     SequenceGraph expected = AccessPrivate.getFieldValue("originalGraph", GfaReader.class,
         gfaReader);
@@ -97,7 +107,7 @@ public class GfaReaderTest {
     Node node = AccessPrivate.callMethod("getNode", GfaReader.class, gfaReader, 3);
     assertEquals("C", node.getSequence());
     assertEquals(1, node.getGenomes().size());
-    assertEquals("TKK_02_0008", node.getGenomes().iterator().next());
+    assertEquals(GenomeMap.getInstance().getId("TKK_02_0008"), node.getGenomes().iterator().next());
   }
 
   /**
@@ -117,11 +127,11 @@ public class GfaReaderTest {
    */
   @Test
   public void testParseNodeGenomes() {
-    char[] chars = "\t*\tORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0005.fasta;\t".toCharArray();
+    char[] chars = "\t*\tORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0005.fasta\t".toCharArray();
     Node node = new SequenceNode(0);
-    AccessPrivate.callMethod("parseNodegenomes", GfaReader.class, null, node, chars, 1);
-    assertTrue(node.getGenomes().contains("MT_H37RV_BRD_V5"));
-    assertTrue(node.getGenomes().contains("TKK_02_0005"));
+    AccessPrivate.callMethod("parseNodeGenomes", GfaReader.class, null, node, chars, 1);
+    assertTrue(node.getGenomes().contains(GenomeMap.getInstance().getId("MT_H37RV_BRD_V5")));
+    assertTrue(node.getGenomes().contains(GenomeMap.getInstance().getId((("TKK_02_0005")))));
   }
 
   /**
@@ -129,11 +139,15 @@ public class GfaReaderTest {
    */
   @Test
   public void testParseHeader() {
+    // Reset GenomeMap because this test will instantiate it.
+    AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
+
     char[] chars = "ORI:Z:MT_H37RV_BRD_V5.ref.fasta;TKK_02_0001.fasta;".toCharArray();
     AccessPrivate.callMethod("parseHeader", GfaReader.class, gfaReader, chars);
-    ArrayList<String> actual = AccessPrivate.getFieldValue("genomes", GfaReader.class, gfaReader);
-    assertTrue(actual.contains("MT_H37RV_BRD_V5"));
-    assertTrue(actual.contains("TKK_02_0001"));
+    //    ArrayList<String> actual = AccessPrivate.getFieldValue("genomes", GfaReader.class,
+    // gfaReader);
+    assertTrue(GenomeMap.getInstance().containsGenome(("MT_H37RV_BRD_V5")));
+    assertTrue(GenomeMap.getInstance().containsGenome(("TKK_02_0001")));
   }
 
   /**
