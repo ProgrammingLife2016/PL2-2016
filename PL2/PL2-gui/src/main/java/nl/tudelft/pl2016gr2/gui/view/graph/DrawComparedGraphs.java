@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -30,7 +31,6 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
@@ -39,10 +39,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -87,6 +87,8 @@ public class DrawComparedGraphs implements Initializable {
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
+  private static final double SCROLL_ZOOM_FACTOR = 0.0025;
+  private static final double MAX_ZOOM_FACTOR = 4.0;
 
   @TestId(id = "topGraph")
   private OrderedGraph topGraph;
@@ -103,8 +105,7 @@ public class DrawComparedGraphs implements Initializable {
   private ContextMenu contextMenu;
   private IPhylogeneticTreeRoot treeRoot;
 
-  private static final double SCROLL_ZOOM_FACTOR = 0.0025;
-  private static final double MAX_ZOOM_FACTOR = 4.0;
+  private final GraphUpdater graphUpdater = new GraphUpdater(this);
 
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
 
@@ -182,7 +183,7 @@ public class DrawComparedGraphs implements Initializable {
     scrollbar.maxProperty().bind(new SimpleDoubleProperty(1.0).add(
         mainPane.widthProperty().negate().divide(
             zoomFactor).divide(amountOfLevels)));
-    scrollbar.valueProperty().addListener(invalidate -> updateGraph());
+    scrollbar.valueProperty().addListener(invalidate -> graphUpdater.update());
     scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
         .divide(amountOfLevels)).divide(zoomFactor));
     scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
@@ -194,10 +195,12 @@ public class DrawComparedGraphs implements Initializable {
     mainPane.widthProperty().addListener(invalid -> {
       updateScrollbarValue(scrollbar.getValue());
       verifyZoomFactor();
+      graphUpdater.update();
     });
     mainPane.heightProperty().addListener(invalid -> {
       updateScrollbarValue(scrollbar.getValue());
       verifyZoomFactor();
+      graphUpdater.update();
     });
     amountOfLevels.addListener(invalid -> verifyZoomFactor());
 
@@ -275,7 +278,7 @@ public class DrawComparedGraphs implements Initializable {
     } else if (zoomFactor.get() < minZoom) {
       zoomFactor.set(minZoom);
     }
-    updateGraph();
+    graphUpdater.update();
   }
 
   private double calcMinZoomFactor() {
@@ -505,7 +508,7 @@ public class DrawComparedGraphs implements Initializable {
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     updateGraphSize();
-    updateGraph();
+    graphUpdater.update();
   }
 
   /**
@@ -551,7 +554,7 @@ public class DrawComparedGraphs implements Initializable {
     }
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     updateGraphSize();
-    updateGraph();
+    graphUpdater.update();
   }
 
   /**
@@ -579,7 +582,7 @@ public class DrawComparedGraphs implements Initializable {
     bottomGraph = null;
     topGraph = null;
     updateGraphSize();
-    updateGraph();
+    graphUpdater.update();
   }
 
   /**
@@ -636,7 +639,7 @@ public class DrawComparedGraphs implements Initializable {
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       int nodeStart = node.getLevel() - node.size();
       int nodeEnd = node.getLevel();
-      if(nodeStart > endLevel || nodeEnd < startLevel) {
+      if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
       drawNode(pane, circleMap, node, startLevel);
@@ -821,5 +824,38 @@ public class DrawComparedGraphs implements Initializable {
   private void deleteBottomGraph() {
     bottomGraphGenomes.clear();
     redrawGraphs();
+  }
+
+  /**
+   * Used to updated the graph at most once every frame.
+   */
+  private static class GraphUpdater extends AnimationTimer {
+
+    private static final boolean PRINT_FRAME_RATE = false;
+    private final DrawComparedGraphs graphComparer;
+    private final AtomicBoolean updateGraph = new AtomicBoolean(false);
+    private long time = System.nanoTime();
+
+    private GraphUpdater(DrawComparedGraphs graphComparer) {
+      this.graphComparer = graphComparer;
+      start();
+    }
+
+    @Override
+    public void handle(long now) {
+      if (PRINT_FRAME_RATE) {
+        double fps = 1_000_000_000.0 / (now - time);
+        System.out.println("FPS = " + fps);
+      }
+      time = now;
+      if (updateGraph.get()) {
+        graphComparer.updateGraph();
+        updateGraph.set(false);
+      }
+    }
+
+    public void update() {
+      updateGraph.set(true);
+    }
   }
 }
