@@ -10,7 +10,7 @@ import javafx.scene.shape.Rectangle;
  *
  * @author Faris
  */
-public class GraphNodeRectangle extends Rectangle implements IGraphNode {
+public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode {
 
   private final DoubleProperty centerXProperty = new SimpleDoubleProperty();
   private final DoubleProperty centerYProperty = new SimpleDoubleProperty();
@@ -21,7 +21,7 @@ public class GraphNodeRectangle extends Rectangle implements IGraphNode {
    * @param width the width of the rectangle.
    * @param height the height of the rectangle.
    */
-  public GraphNodeRectangle(double width, double height) {
+  public ViewGraphNodeRectangle(double width, double height) {
     super(width, height);
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));

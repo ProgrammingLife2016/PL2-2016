@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
@@ -54,7 +55,6 @@ public class SubgraphAlgorithmManager {
 //        bottomGraphOrder);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
-
   /**
    * Create and align the nodes of a single subgraph.
    *
@@ -70,12 +70,12 @@ public class SubgraphAlgorithmManager {
         genomes);
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
+    
+    FilterBubbles filter = new FilterBubbles(subgraph);
+    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot);
 
-//    FilterBubbles filter = new FilterBubbles(subgraph);
-    ArrayList<GraphNode> orderedNodes =subgraph.getOrderedGraph() ;//filter.filter(treeRoot);
-    
     CompareSubgraphs.alignVertically(orderedNodes);
-    
+
     return new OrderedGraph(subgraph, orderedNodes);
   }
 

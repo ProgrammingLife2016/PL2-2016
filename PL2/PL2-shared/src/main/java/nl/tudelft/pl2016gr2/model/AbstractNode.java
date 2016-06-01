@@ -65,7 +65,7 @@ public abstract class AbstractNode implements Node {
 
   @Override
   public int hashCode() {
-    return identifier;
+    return identifier * 37;
   }
 
   @Override

@@ -14,7 +14,6 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
