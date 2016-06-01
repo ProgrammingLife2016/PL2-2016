@@ -7,7 +7,7 @@ import javafx.beans.property.DoubleProperty;
  *
  * @author Faris
  */
-public interface IGraphNode {
+public interface IViewGraphNode {
 
   /**
    * Get the center x property.

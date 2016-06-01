@@ -7,7 +7,7 @@ import javafx.scene.shape.Ellipse;
  *
  * @author Faris
  */
-public class GraphNodeCircle extends Ellipse implements IGraphNode {
+public class ViewGraphNodeCircle extends Ellipse implements IViewGraphNode {
 
   /**
    * Construct a node circle.
@@ -15,7 +15,7 @@ public class GraphNodeCircle extends Ellipse implements IGraphNode {
    * @param width  the width of the ellipse.
    * @param height the height of the ellipse.
    */
-  public GraphNodeCircle(double width, double height) {
+  public ViewGraphNodeCircle(double width, double height) {
     super(width / 2.0, height / 2.0);
   }
 

@@ -11,6 +11,7 @@ import nl.tudelft.pl2016gr2.visitor.BubbleChildrenVisitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -86,6 +87,27 @@ public class FilterBubbles implements PhyloFilter {
     Collections.sort(graphNodes, (GraphNode node1, GraphNode node2) -> {
       return node1.getLevel() - node2.getLevel();
     });
+
+    ////////////////////////////////////////////
+    // TEMPORARY HACK TO GET THE RIGHT EDGES:
+    // currently nodes got in and out edges to the incorrect (main) graph.
+    HashMap<GraphNode, GraphNode> graphMap = new HashMap<>();
+    for (GraphNode graphNode : graphNodes) {
+      graphMap.put(graphNode, graphNode);
+    }
+    for (GraphNode graphNode : graphNodes) {
+      ArrayList<GraphNode> inEdges = new ArrayList<>();
+      for (GraphNode inEdge : graphNode.getInEdges()) {
+        inEdges.add(graphMap.get(inEdge));
+      }
+      graphNode.setInEdges(inEdges);
+      ArrayList<GraphNode> outEdges = new ArrayList<>();
+      for (GraphNode outEdge : graphNode.getOutEdges()) {
+        outEdges.add(graphMap.get(outEdge));
+      }
+      graphNode.setOutEdges(outEdges);
+    }
+    ////////////////////////////////////////////
     return graphNodes;
   }
 
@@ -109,7 +131,7 @@ public class FilterBubbles implements PhyloFilter {
             newBubbles, graphNodes);
       }
     }
-    
+
     filterBubbles(toVisit, visited, graphNodes, leaves, null, treeNode, newBubbles);
     return newBubbles;
   }

@@ -221,7 +221,7 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public int hashCode() {
-    return id;
+    return id * 37;
   }
 
   @Override
