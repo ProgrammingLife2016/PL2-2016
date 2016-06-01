@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -75,10 +76,9 @@ public class DrawComparedGraphs implements Initializable {
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
 
-  private static final int OFFSCREEN_DRAWN_NODES = 10;
+  public static final double NODE_MARGIN = 0.9;
+  private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final double NODE_MARGIN = 0.9;
-  private static final double HALF_NODE_MARGIN = 0.95;
   private static final int MINUMUM_BASE_SIZE = 10;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
@@ -89,6 +89,7 @@ public class DrawComparedGraphs implements Initializable {
   private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
   private static final double MAX_ZOOM_FACTOR = 4.0;
+  private static final double BUBBLE_POP_SIZE = 150.0;
 
   @TestId(id = "topGraph")
   private OrderedGraph topGraph;
@@ -635,39 +636,36 @@ public class DrawComparedGraphs implements Initializable {
   private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
-    HashMap<GraphNode, IViewGraphNode> circleMap = new HashMap<>();
+    HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       int nodeStart = node.getLevel() - node.size();
       int nodeEnd = node.getLevel();
       if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
-      drawNode(pane, circleMap, node, startLevel);
+      drawNode(pane, node, startLevel);
+      drawnGraphNodes.add(node);
     }
-    drawEdges(pane, circleMap, startLevel, genomeCount);
+    drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
   }
 
   /**
    * Draw the given list of nodes as circles in the given pane.
    *
    * @param pane       the pane in which to draw the nodes.
-   * @param circleMap  the circle map to which to add all of the drawn circles (which represent the
-   *                   nodes).
    * @param nodes      the list of nodes to draw.
    * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private void drawNode(Pane pane, HashMap<GraphNode, IViewGraphNode> graphNodeMap,
-      GraphNode node, int startLevel) {
+  private void drawNode(Pane pane, GraphNode node, int startLevel) {
     if (node.hasChildren()) {
-      constructBubble(pane, graphNodeMap, node, node.getLevel(), startLevel);
+      constructBubble(pane, node, node.getLevel(), startLevel);
     } else {
-      constructNode(pane, graphNodeMap, node, node.getLevel(), startLevel);
+      constructNode(pane, node, node.getLevel(), startLevel);
     }
   }
 
-  private void constructNode(Pane pane, HashMap<GraphNode, IViewGraphNode> graphNodeMap,
-      GraphNode node, int level, int startLevel) {
+  private void constructNode(Pane pane, GraphNode node, int level, int startLevel) {
     double width = calculateNodeWidth(node);
     double height = node.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
@@ -675,7 +673,6 @@ public class DrawComparedGraphs implements Initializable {
     }
     ViewGraphNodeCircle circle = new ViewGraphNodeCircle(width, height);
     pane.getChildren().add(circle);
-    graphNodeMap.put(node, circle);
     if (node.isOverlapping()) {
       circle.setFill(OVERLAP_COLOR);
     } else {
@@ -691,8 +688,7 @@ public class DrawComparedGraphs implements Initializable {
 //    }
   }
 
-  private void constructBubble(Pane pane, HashMap<GraphNode, IViewGraphNode> graphNodeMap,
-      GraphNode node, int level, int startLevel) {
+  private void constructBubble(Pane pane, GraphNode node, int level, int startLevel) {
     double width = calculateNodeWidth(node);
     double height = node.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
@@ -700,7 +696,6 @@ public class DrawComparedGraphs implements Initializable {
     }
     ViewGraphNodeRectangle square = new ViewGraphNodeRectangle(width, height);
     pane.getChildren().add(square);
-    graphNodeMap.put(node, square);
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
     square.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
@@ -722,59 +717,48 @@ public class DrawComparedGraphs implements Initializable {
     if (nodeSize < MINUMUM_BASE_SIZE) {
       nodeSize = MINUMUM_BASE_SIZE;
     }
-    return nodeSize * zoomFactor.get() * NODE_MARGIN;
+    return nodeSize * zoomFactor.get();
   }
 
   /**
    * Draw the edges between all of the nodes.
    *
-   * @param pane         the pane to draw the edges in.
-   * @param graphOrder   the graph node order containing the nodes to draw edges between.
-   * @param graph        the graph.
-   * @param startIndex   the index where to start in the graph.
-   * @param endIndex     the index where to end in the graph.
-   * @param graphNodeMap a map which maps each node id to the graph node object which represents the
-   *                     node in the user interface.
+   * @param pane            the pane to draw the edges in.
+   * @param graphOrder      the graph node order containing the nodes to draw edges between.
+   * @param graph           the graph.
+   * @param startIndex      the index where to start in the graph.
+   * @param endIndex        the index where to end in the graph.
+   * @param drawnGraphNodes the drawn graph nodes.
    */
-  private void drawEdges(Pane pane, HashMap<GraphNode, IViewGraphNode> graphNodeMap, int startLevel,
+  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
       int genomeCount) {
-    graphNodeMap.forEach((GraphNode graphNode, IViewGraphNode viewNode) -> {
+    for (GraphNode graphNode : drawnGraphNodes) {
       for (GraphNode outEdge : graphNode.getOutEdges()) {
-        Line edge = new Line();
-        edge.setSmooth(true);
-        edge.setStrokeWidth(calculateEdgeWidth(genomeCount, graphNode,
-            outEdge));
-        pane.getChildren().add(edge);
-        edge.setStartX(viewNode.centerXProperty().get() + viewNode.getWidth() / 2.0);
-        edge.setStartY(viewNode.centerYProperty().get());
-
-        IViewGraphNode outViewNode = graphNodeMap.get(outEdge);
-        if (outViewNode != null) {
-          edge.setEndX(outViewNode.centerXProperty().get() - outViewNode.getWidth() / 2.0);
-          edge.setEndY(outViewNode.centerYProperty().get());
-        } else {
-          edge.setEndX(zoomFactor.get()
-              * (outEdge.getLevel() - startLevel - outEdge.size() * HALF_NODE_MARGIN));
-          edge.setEndY(outEdge.getRelativeYPos() * pane.getHeight());
-        }
-        edge.toBack();
+        double edgeWidth = calculateEdgeWidth(genomeCount, graphNode, outEdge);
+        drawEdge(pane, graphNode, outEdge, edgeWidth, startLevel);
       }
       for (GraphNode inEdge : graphNode.getInEdges()) {
-        if (!graphNodeMap.containsKey(inEdge)) {
-          Line edge = new Line();
-          edge.setSmooth(true);
-          edge.setStrokeWidth(calculateEdgeWidth(genomeCount, inEdge,
-              graphNode));
-          pane.getChildren().add(edge);
-          edge.setEndX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
-          edge.setEndY(viewNode.centerYProperty().get());
-          edge.setStartX(zoomFactor.get()
-              * (inEdge.getLevel() - startLevel - inEdge.size() * (1.0 - HALF_NODE_MARGIN)));
-          edge.setStartY(inEdge.getRelativeYPos() * pane.getHeight());
-          edge.toBack();
+        if (!drawnGraphNodes.contains(inEdge)) {
+          double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, graphNode);
+          drawEdge(pane, inEdge, graphNode, edgeWidth, startLevel);
         }
       }
-    });
+    }
+  }
+
+  private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
+      int startLevel) {
+    Line edge = new Line();
+    edge.setSmooth(true);
+    edge.setStrokeWidth(edgeWidth);
+    pane.getChildren().add(edge);
+    edge.setStartX(zoomFactor.get()
+        * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+    edge.setStartY(fromNode.getRelativeYPos() * pane.getHeight());
+    edge.setEndX(zoomFactor.get()
+        * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+    edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
+    edge.toBack();
   }
 
   /**
