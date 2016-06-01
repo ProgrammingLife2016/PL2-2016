@@ -1,19 +1,45 @@
-//package nl.tudelft.pl2016gr2.core.algorithms.mutations;
-//
-//import nl.tudelft.pl2016gr2.model.GraphNode;
-//import nl.tudelft.pl2016gr2.model.SemanticBubble;
-//
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//import java.util.HashSet;
-//import java.util.Set;
-//
-///**
-// *
-// * @author Faris
-// */
-//public class MutationBubbleAlgorithms {
-//
+package nl.tudelft.pl2016gr2.core.algorithms.mutations;
+
+import nl.tudelft.pl2016gr2.model.GraphNode;
+
+import java.util.ArrayList;
+
+/**
+ *
+ * @author Faris
+ */
+public class MutationBubbleAlgorithms {
+
+  /**
+   * Make bubbles in the given array list of nodes.
+   *
+   * @param orderedNodes the ordered list of nodes (by x coordinate) of the graph.
+   * @return the new array list which contains the newly created bubbles and other nodes of the
+   *         graph.
+   */
+  public static ArrayList<GraphNode> makeBubbels(ArrayList<GraphNode> orderedNodes) {
+    // message to Cas:
+    // This method is called when the straight sequences, indels and point mutations must be wrapped
+    // in bubbles. Replace the nodes in the orderedNodes array list with bubbles where needed,
+    // adjust the in/out links of the other nodes (so the nodes are correctly linked to the new
+    // bubbles).
+    // If you want, you may create a new array list and copy the nodes into it (just make sure a
+    // correct array list of graphnodes which contains all of the nodes of the graph is returned).
+    
+    // First you must fix the bubble classes to store the content of the bubbles (check the 
+    // PhyloBubble class to get an idea of how it should work, you can copy most of that code).
+    // Please don't add any more methods to the interfaces of the bubbles/nodes. They don't need
+    // extra functionality for your code (except that each kind of bubble should get a different
+    // kind of representation, but you can just use the white square for now.
+    
+    // I have deactivated the phylogenetic bubbles for you to make it easier to test your code.
+
+    // if you want to sort the list of nodes again (this shouldn't really be needed), 
+    // uncomment the following line:
+    //orderedNodes.sort((node1, node2) -> node1.getLevel() - node2.getLevel());
+    return orderedNodes;
+  }
+
 //  private static ArrayList<Position> initStraightInDelPoint(ArrayList<Position> orderedGraph,
 //      SequenceGraph graph) {
 //    HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
@@ -152,4 +178,4 @@
 //      bubble.getBubble().setTag("PointMutation");
 //    }
 //  }
-//}
+}

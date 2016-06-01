@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
+import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
@@ -72,10 +73,12 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
     
-    FilterBubbles filter = new FilterBubbles(subgraph);
-    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+//    FilterBubbles filter = new FilterBubbles(subgraph);
+    ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();//filter.filter(treeRoot, genomes);
 
     CompareSubgraphs.alignVertically(orderedNodes);
+    
+    orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
   }
