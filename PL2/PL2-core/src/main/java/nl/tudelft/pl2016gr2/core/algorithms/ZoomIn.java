@@ -2,7 +2,6 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
@@ -18,7 +17,7 @@ import java.util.Set;
 
 public class ZoomIn {
   
-  private final SequenceGraph originalGraph;
+  private final SequenceGraph originalGraph; // unused?
   private final ZoomOut zoomOut;
   private final FilterBubbles filter;
   

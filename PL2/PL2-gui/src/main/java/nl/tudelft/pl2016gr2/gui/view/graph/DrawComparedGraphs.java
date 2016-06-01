@@ -599,11 +599,11 @@ public class DrawComparedGraphs implements Initializable {
 
     if (topGraph != null) {
       drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
-          startLevel, startLevel + levelsToDraw);
+          startLevel, startLevel + levelsToDraw, topGraph.getSubgraph());
     }
     if (bottomGraph != null) {
       drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().
-          size(), startLevel, startLevel + levelsToDraw);
+          size(), startLevel, startLevel + levelsToDraw, bottomGraph.getSubgraph());
     }
   }
 
@@ -634,7 +634,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param endLevel   the level where to stop drawing.
    */
   private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
-      int startLevel, int endLevel) {
+      int startLevel, int endLevel, SequenceGraph graph) {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
     for (GraphNode node : orderedGraph.getGraphOrder()) {
@@ -643,7 +643,7 @@ public class DrawComparedGraphs implements Initializable {
       if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
-      drawNode(pane, node, startLevel);
+      drawNode(pane, node, startLevel, graph);
       drawnGraphNodes.add(node);
     }
     drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
@@ -657,9 +657,9 @@ public class DrawComparedGraphs implements Initializable {
    * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private void drawNode(Pane pane, GraphNode node, int startLevel) {
+  private void drawNode(Pane pane, GraphNode node, int startLevel, SequenceGraph graph) {
     if (node.hasChildren()) {
-      constructBubble(pane, node, node.getLevel(), startLevel);
+      constructBubble(pane, node, node.getLevel(), startLevel, graph);
     } else {
       constructNode(pane, node, node.getLevel(), startLevel);
     }
@@ -688,22 +688,33 @@ public class DrawComparedGraphs implements Initializable {
 //    }
   }
 
-  private void constructBubble(Pane pane, GraphNode node, int level, int startLevel) {
-    double width = calculateNodeWidth(node);
-    double height = node.getMaxHeightPercentage() * mainPane.getHeight();
+  private void constructBubble(Pane pane, GraphNode bubble, int level, int startLevel, 
+      SequenceGraph graph) {
+    double width = calculateNodeWidth(bubble);
+    double height = bubble.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
       height = width;
     }
     ViewGraphNodeRectangle square = new ViewGraphNodeRectangle(width, height);
     pane.getChildren().add(square);
-    square.centerXProperty().set(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
-    square.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
+    square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
+    square.centerYProperty().set(pane.getHeight() * bubble.getRelativeYPos());
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
       square.setVisible(false);
     }
 //    else {
 //      addLabel(pane, square, node.getId());
 //    }
+    if (width > BUBBLE_POP_SIZE) {
+      drawnNestedNodes(bubble, graph);
+    }
+  }
+  
+  private void drawnNestedNodes(GraphNode bubble, SequenceGraph graph) {
+    System.out.println("graph = " + graph);
+    System.out.println("popping bubble: " + bubble);
+    Collection<GraphNode> poppedNodes = bubble.pop(graph);
+    System.out.println("poppedNodes = " + poppedNodes);
   }
 
   /**
@@ -833,8 +844,8 @@ public class DrawComparedGraphs implements Initializable {
       }
       time = now;
       if (updateGraph.get()) {
-        graphComparer.updateGraph();
         updateGraph.set(false);
+        graphComparer.updateGraph();
       }
     }
 
