@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -492,21 +493,6 @@ public class DrawComparedGraphs implements Initializable {
     }
   }
 
-//  //TODO : REMOVE
-//  private Tree tree;
-//  private IPhylogeneticTreeRoot treeRoot;
-//  private FilterBubbles filter;
-//  private SequenceGraph curGraph;
-//
-//  private void loadTree() {
-//    Reader reader = new InputStreamReader(
-//        GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"));
-//    BufferedReader br = new BufferedReader(reader);
-//    TreeParser tp = new TreeParser(br);
-//
-//    tree = tp.tokenize("10tree_custom.rooted.TKK.nwk");
-//    treeRoot = new PhylogeneticTreeRoot(tree.getRoot());
-//  }
   /**
    * Draw the given collection of genomes in the top graph.
    *
@@ -516,25 +502,6 @@ public class DrawComparedGraphs implements Initializable {
     topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder, treeRoot);
     ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
 
-//    // TODO : remove
-//    if (treeRoot == null) {
-//      loadTree();
-//    }
-//    if (filter == null) {
-//      filter = new FilterBubbles(mainGraph);
-//    }
-//
-//    if (curGraph == null) {
-//      curGraph = mainGraph;
-//      curGraph = filter.filter(treeRoot);
-//    }
-//
-//    GraphOrdererThread o = new GraphOrdererThread(curGraph);
-//    o.start();
-//    ArrayList<NodePosition> topGraphOrder = new ArrayList(o.getOrderedGraph().values());
-//    Collections.sort(topGraphOrder);
-//    topGraph = new OrderedGraph(curGraph, topGraphOrder);
-//    // END OF CHANGED CODE
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     updateGraphSize();
@@ -627,11 +594,11 @@ public class DrawComparedGraphs implements Initializable {
     }
 
     if (topGraph != null) {
-      drawGraph(topPane, topGraph.getGraphOrder(), topGraph.getSubgraph().getGenomes().size(),
+      drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
     }
     if (bottomGraph != null) {
-      drawGraph(bottomPane, bottomGraph.getGraphOrder(), bottomGraph.getSubgraph().getGenomes().
+      drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().
           size(), startLevel, startLevel + levelsToDraw);
     }
   }
@@ -662,68 +629,19 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private void drawGraph(Pane pane, ArrayList<GraphNode> graphOrder, int genomeCount,
+  private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
-    int startIndex = calculateStartIndex(graphOrder, startLevel);
     HashMap<GraphNode, IViewGraphNode> circleMap = new HashMap<>();
-    int curLevel = startLevel;
-    int endIndex;
-    ArrayList<GraphNode> levelNodes = new ArrayList<>();
-    for (endIndex = startIndex; endIndex < graphOrder.size() && graphOrder.get(
-        endIndex).getLevel() <= endLevel /*+ OFFSCREEN_DRAWN_LEVELS*/; endIndex++) {
-      GraphNode node = graphOrder.get(endIndex);
-      if (node.getLevel() == curLevel) {
-        levelNodes.add(node);
-      } else {
-        drawNode(pane, circleMap, levelNodes, curLevel, startLevel);
-        curLevel = node.getLevel();
-        levelNodes.clear();
-        levelNodes.add(node);
+    for (GraphNode node : orderedGraph.getGraphOrder()) {
+      int nodeStart = node.getLevel() - node.size();
+      int nodeEnd = node.getLevel();
+      if(nodeStart > endLevel || nodeEnd < startLevel) {
+        continue;
       }
+      drawNode(pane, circleMap, node, startLevel);
     }
-//    OFFSCREEN_DRAWN_NODES
-    drawNode(pane, circleMap, levelNodes, curLevel, startLevel);
     drawEdges(pane, circleMap, startLevel, genomeCount);
-  }
-
-  /**
-   * Calculates the starting index (where to start in the graph with drawing). Lowers the start
-   * index by {@link #OFFSCREEN_DRAWN_LEVELS} to keep some margin at the left of the screen (so the
-   * edges are drawn correctly)
-   *
-   * @param graphOrder the graph node order.
-   * @param startLevel the start level.
-   * @return the start index.
-   */
-  private static int calculateStartIndex(ArrayList<GraphNode> graphOrder, int startLevel) {
-    int actualStartLevel = startLevel /*- OFFSCREEN_DRAWN_LEVELS;*/;
-    if (actualStartLevel < 0) {
-      actualStartLevel = 0;
-    }
-    return findStartIndexOfLevel(graphOrder, actualStartLevel);
-  }
-
-  /**
-   * Finds the first node with the given level in log(n) time (graph must be sorted by level).
-   *
-   * @param graphOrder the graph node order in which to search.
-   * @param level      the level to find.
-   * @return the index of the first occurence of the level.
-   */
-  private static int findStartIndexOfLevel(ArrayList<GraphNode> graphOrder, int level) {
-    GraphNode comparer = new SequenceNode(0);
-    comparer.setLevel(level);
-    int index = Collections.binarySearch(graphOrder, comparer, (GraphNode node1, GraphNode node2)
-        -> node1.getLevel() - node2.getLevel()
-    );
-    while (index > 0 && graphOrder.get(index - 1).getLevel() == level) {
-      --index;
-    }
-    if (index < 0) {
-      index = -index - 1;
-    }
-    return index;
   }
 
   /**
@@ -737,14 +655,11 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel the level at which to start drawing nodes.
    */
   private void drawNode(Pane pane, HashMap<GraphNode, IViewGraphNode> graphNodeMap,
-      ArrayList<GraphNode> nodes, int level, int startLevel) {
-    for (int i = 0; i < nodes.size(); i++) {
-      GraphNode node = nodes.get(i);
-      if (node.hasChildren()) {
-        constructBubble(pane, graphNodeMap, node, level, startLevel);
-      } else {
-        constructNode(pane, graphNodeMap, node, level, startLevel);
-      }
+      GraphNode node, int startLevel) {
+    if (node.hasChildren()) {
+      constructBubble(pane, graphNodeMap, node, node.getLevel(), startLevel);
+    } else {
+      constructNode(pane, graphNodeMap, node, node.getLevel(), startLevel);
     }
   }
 
@@ -851,7 +766,7 @@ public class DrawComparedGraphs implements Initializable {
           edge.setEndX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
           edge.setEndY(viewNode.centerYProperty().get());
           edge.setStartX(zoomFactor.get()
-              * (inEdge.getLevel() - startLevel - inEdge.size() *  (1.0 - HALF_NODE_MARGIN)));
+              * (inEdge.getLevel() - startLevel - inEdge.size() * (1.0 - HALF_NODE_MARGIN)));
           edge.setStartY(inEdge.getRelativeYPos() * pane.getHeight());
           edge.toBack();
         }
