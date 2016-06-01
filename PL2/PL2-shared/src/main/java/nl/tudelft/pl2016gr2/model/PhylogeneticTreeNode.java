@@ -22,6 +22,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
   private Annotation annotation;
+  private final TreeNode node;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
@@ -39,7 +40,8 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param node   the TreeNode of this node.
    * @param parent the parent of this phylogenetic tree node.
    */
-  protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
+  public PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
+    this.node = node;
     this.weight = node.weight;
     this.parent = parent;
 
@@ -55,6 +57,93 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
       this.label = node.label.split("\\.", 2)[0];
     } else {
       label = null;
+    }
+  }
+  
+  /**
+   * Construct a phylogenetic tree node with an existing phylogenetic tree node,
+   * constructing it from top to bottom. This node is added as a child to its parent.
+   * The children of the original node are not added to this node.
+   * 
+   * @param node : the existing phylogenetic tree node.
+   * @param parent : the parent of this node.
+   */
+  public PhylogeneticTreeNode(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
+    this.weight = (float) node.getEdgeLength();
+    this.parent = parent;
+    this.node = null;
+    
+    if (node.getDirectChildCount() == 2) {
+      children = new PhylogeneticTreeNode[2];
+    } else {
+      children = null;
+    }
+    
+    if (node.getDirectChildCount() == 0) {
+      this.label = node.getLabel().split("\\.", 2)[0];
+    } else {
+      this.label = null;
+    }
+    
+    if (parent != null) {
+      this.parent.addChild(this);
+    }
+  }
+  
+  /**
+   * Creates a copy of this node, assuming that it's a root node and that it's
+   * children are instancesof PhylogeneticTreeNodes. 
+   * 
+   * @param node : the node to copy.
+   */
+  public PhylogeneticTreeNode(IPhylogeneticTreeNode node) {
+    this.weight = (float) node.getEdgeLength();
+    this.parent = null;
+    this.node = null;
+    
+    if (node.getDirectChildCount() == 2) {
+      children = new PhylogeneticTreeNode[2];
+      children[0] = (PhylogeneticTreeNode) node.getChild(0);
+      children[1] = (PhylogeneticTreeNode) node.getChild(1);
+    } else {
+      children = null;
+    }
+    
+    if (node.getDirectChildCount() == 0) {
+      this.label = node.getLabel().split("\\.", 2)[0];
+    } else {
+      this.label = null;
+    }
+  }
+  
+  @Override
+  public String toString() {
+    if (isLeaf()) {
+      return "Leaf node: " + this.label;
+    }
+    
+    return "Leaves: " + getGenomes().toString();
+  }
+  
+  @Override
+  public boolean hasTreeNode() {
+    return node != null;
+  }
+  
+  @Override
+  public TreeNode getTreeNode() {
+    return node;
+  }
+  
+  @Override
+  public void addChild(PhylogeneticTreeNode child) {
+    assert (!isLeaf());
+    if (children[0] == null) {
+      children[0] = child;
+    } else if (children[1] == null) {
+      children[1] = child;
+    } else {
+      System.out.println("cannot add another child");
     }
   }
   
