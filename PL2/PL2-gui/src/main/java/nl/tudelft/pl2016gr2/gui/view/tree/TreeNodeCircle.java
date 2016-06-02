@@ -50,6 +50,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
+  private static final double EDGE_WIDTH = 2.0;
+  private static final double HIGHLIGHTED_EDGE_WIDTH = 6.0;
 
   private static final List<Stop> MULTI_GRAPH_GRADIENT_STOPS = new ArrayList<>(2);
 
@@ -71,7 +73,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final Area area;
   private final SelectionManager selectionManager;
   private boolean isLeaf;
-  private Line edge;
+  private final Line edge = new Line();
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -237,7 +239,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
       TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
       node.children.add(child);
-      node.drawEdge(node, child, graphPane);
+      child.drawEdge(node, child, graphPane);
     }
   }
 
@@ -286,7 +288,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param graphPane the pane in which the edge should be drawn.
    */
   private void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
-    edge = new Line();
     edge.setSmooth(true);
     edge.startXProperty().bind(parent.centerXProperty());
     edge.startYProperty().bind(parent.centerYProperty());
@@ -300,9 +301,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       edge.setStrokeWidth(EDGE_WIDTH);
     }
   }
-
-  private double EDGE_WIDTH = 2.0;
-  private double HIGHLIGHTED_EDGE_WIDTH = 6.0;
 
   /**
    * Draw an elipsis after a parent node to indicate that the parent has children, but there is not

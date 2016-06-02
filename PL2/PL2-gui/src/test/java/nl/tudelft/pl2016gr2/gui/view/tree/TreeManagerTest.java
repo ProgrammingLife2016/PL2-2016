@@ -104,6 +104,7 @@ public class TreeManagerTest {
     when(root.isLeaf()).thenReturn(false);
     when(root.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
     when(root.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(root.getInHighlightedPathProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -117,6 +118,7 @@ public class TreeManagerTest {
     when(leafR.isLeaf()).thenReturn(true);
     when(leafR.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
     when(leafR.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(false));
+    when(leafR.getInHighlightedPathProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -134,6 +136,7 @@ public class TreeManagerTest {
     when(leafL.isLeaf()).thenReturn(false);
     when(leafL.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(false));
     when(leafL.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafL.getInHighlightedPathProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -147,6 +150,7 @@ public class TreeManagerTest {
     when(leafLr.isLeaf()).thenReturn(true);
     when(leafLr.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
     when(leafLr.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLr.getInHighlightedPathProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
@@ -160,6 +164,7 @@ public class TreeManagerTest {
     when(leafLl.isLeaf()).thenReturn(true);
     when(leafLl.getDrawnInBottomProperty()).thenReturn(new SimpleBooleanProperty(true));
     when(leafLl.getDrawnInTopProperty()).thenReturn(new SimpleBooleanProperty(true));
+    when(leafLl.getInHighlightedPathProperty()).thenReturn(new SimpleBooleanProperty(false));
   }
 
   /**
