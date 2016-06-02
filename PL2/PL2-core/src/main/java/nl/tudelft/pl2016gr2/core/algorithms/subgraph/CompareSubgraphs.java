@@ -63,7 +63,8 @@ public class CompareSubgraphs {
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
-      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, bubble.getOutEdges()));
+      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble.
+          getOutEdges(), graphOrder)));
     }
     for (GraphNode node : graphOrder) {
       if (areaMap.containsKey(node)) {
@@ -72,6 +73,24 @@ public class CompareSubgraphs {
       assert !node.getInEdges().isEmpty();
       calculateGraphArea(node, areaMap);
     }
+  }
+
+  /**
+   * Get all of the VIP nodes which are contained in the exclusive list.
+   *
+   * @param nodes         the list of nodes to filter.
+   * @param exclusiveList the list of VIP nodes which can get access to the return value.
+   * @return the VIP nodes which were found in the list of nodes.
+   */
+  private static Collection<GraphNode> getExclusiveNodes(Collection<GraphNode> nodes,
+      Collection<GraphNode> exclusiveList) {
+    ArrayList<GraphNode> res = new ArrayList<>();
+    for (GraphNode node : nodes) {
+      if (exclusiveList.contains(node)) {
+        res.add(node);
+      }
+    }
+    return res;
   }
 
   public static void alignVertically(Collection<GraphNode> graphOrder) {

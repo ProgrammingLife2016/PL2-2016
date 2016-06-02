@@ -24,13 +24,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.PhyloBubble;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
@@ -41,12 +41,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -674,6 +672,9 @@ public class DrawComparedGraphs implements Initializable {
   private void constructNode(Pane pane, GraphNode node, int level, int startLevel, int nestedDepth,
       ViewRange viewRange) {
     double width = calculateNodeWidth(node);
+    if (width < MIN_VISIBILITY_WIDTH) {
+      return;
+    }
     double height = node.getMaxHeightPercentage() * viewRange.rangeHeight;
     if (height > width) {
       height = width;
@@ -688,7 +689,6 @@ public class DrawComparedGraphs implements Initializable {
     circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
     circle.centerYProperty().set(
         viewRange.rangeHeight * node.getRelativeYPos() + viewRange.rangeStartY);
-    circle.setVisible(circle.getWidth() >= MIN_VISIBILITY_WIDTH);
 //    else {
 //      addLabel(pane, circle, node.getId());
 //    }
@@ -698,28 +698,31 @@ public class DrawComparedGraphs implements Initializable {
       HashMap<GraphNode, ViewRange> drawnGraphNodes,
       int level, int startLevel, int nestedDepth, ViewRange viewRange) {
     double width = calculateNodeWidth(bubble);
+    if (width < MIN_VISIBILITY_WIDTH) {
+      return;
+    }
     double height = bubble.getMaxHeightPercentage() * viewRange.rangeHeight;
-//    if (height > width) {
-//      height = width;
-//    }
+    if (height > width) {
+      height = width;
+    }
     ViewGraphNodeRectangle square = new ViewGraphNodeRectangle(width, height);
     pane.getChildren().add(square);
+    Color fill = Color.ALICEBLUE;
+    for (int i = 0; i < nestedDepth; i++) {
+      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
+    }
+    square.setFill(fill);
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
     square.centerYProperty().set(
         viewRange.rangeHeight * bubble.getRelativeYPos() + viewRange.rangeStartY);
-    square.setVisible(square.getWidth() >= MIN_VISIBILITY_WIDTH);
-    if (square.isVisible()) {
-      Color fill = Color.ALICEBLUE;
-      for (int i = 0; i < nestedDepth; i++) {
-        fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-      }
-      square.setFill(fill);
-    }
 //    else {
 //      addLabel(pane, square, node.getId());
 //    }
     if (width > BUBBLE_POP_SIZE) {
-      drawNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth, viewRange);
+      ViewRange bubbleViewRange = new ViewRange(
+          square.getLayoutY(),
+          height);
+      drawNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth, bubbleViewRange);
     }
   }
 
@@ -727,12 +730,8 @@ public class DrawComparedGraphs implements Initializable {
       HashMap<GraphNode, ViewRange> drawnGraphNodes,
       int startLevel, int nestedDepth, ViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
-    double nestedRangeHeight = bubble.getMaxHeightPercentage() * viewRange.rangeHeight;
-    double nestedRangeStartY = bubble.getRelativeYPos() * viewRange.rangeHeight - nestedRangeHeight / 2.0 + viewRange.rangeStartY;
     for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1,
-          new ViewRange(nestedRangeStartY, nestedRangeHeight));
-
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1, viewRange);
     }
   }
 
