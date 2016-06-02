@@ -8,11 +8,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.core.GraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
+import nl.tudelft.pl2016gr2.gui.model.LineageColor;
 import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -47,6 +51,10 @@ public class RootLayoutController implements
   private Pane selectionDescriptionPane;
   @FXML
   private SplitPane mainPane;
+  @FXML
+  private LegendController graphLegendController;
+  @FXML
+  private LegendController treeLegendController;
 
   @TestId(id = "treeManager")
   private TreeManager treeManager;
@@ -65,6 +73,7 @@ public class RootLayoutController implements
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
+    initializeLegend();
     treeManager = TreeManager.loadView(selectionManager);
     drawGraphs = DrawComparedGraphs.loadView(selectionManager);
     mainPane.getItems().add(treeManager.getTreePane());
@@ -142,6 +151,41 @@ public class RootLayoutController implements
         event.consume();
       }
     });
+  }
+
+  @SuppressWarnings("checkstyle:methodlength")
+  private void initializeLegend() {
+    graphLegendController.initializeData(
+        "Legend",
+        -5.0, 5.0,
+        new LegendController.LegendItem(
+            "This element represent a bubble.",
+            "Bubble",
+            new Rectangle(20, 20, Color.ALICEBLUE)),
+        new LegendController.LegendItem(
+            "This element represents a sequence.",
+            "Different sequence",
+            new Circle(10, Color.rgb(0, 73, 73))),
+        new LegendController.LegendItem(
+            "This element represents a sequence.",
+            "Equal sequence",
+            new Circle(10, Color.rgb(146, 0, 0))));
+
+
+    List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
+    for (LineageColor color : LineageColor.values()) {
+      treeLegendItems.add(new LegendController.LegendItem(
+          String.format("Lineage color %s", color.name()),
+          color.name(),
+          new Rectangle(20, 5, color.getColor())
+      ));
+    }
+
+    treeLegendController.initializeData(
+        "Legend",
+        10.0, 5.0,
+        treeLegendItems.toArray(new LegendController.LegendItem[treeLegendItems.size()]));
+
   }
 
   @Override

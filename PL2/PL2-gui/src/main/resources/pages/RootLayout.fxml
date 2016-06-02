@@ -20,4 +20,6 @@
             <MenuItem mnemonicParsing="false" text="About"/>
         </Menu>
     </MenuBar>
+    <fx:include fx:id="graphLegend" source="Legend.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+    <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
 </AnchorPane>
