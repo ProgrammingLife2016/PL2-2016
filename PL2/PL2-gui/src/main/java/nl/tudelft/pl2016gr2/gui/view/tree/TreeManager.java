@@ -99,7 +99,7 @@ public class TreeManager implements Initializable {
   private void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
     selectionManager.getBottomGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
+        (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInBottom(change.getElementAdded(), true);
           } else {
@@ -107,7 +107,7 @@ public class TreeManager implements Initializable {
           }
         });
     selectionManager.getTopGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
+        (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInTop(change.getElementAdded(), true);
           } else {

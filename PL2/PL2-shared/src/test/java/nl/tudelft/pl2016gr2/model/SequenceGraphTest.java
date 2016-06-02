@@ -4,9 +4,9 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 
 import junit.framework.Assert;
+import nl.tudelft.pl2016gr2.util.TestingUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,19 +67,6 @@ public class SequenceGraphTest {
     instance = factory.getInstance();
   }
 
-  protected static GraphNode mockNode(int id, boolean isRoot) {
-    GraphNode mockedNode = mock(GraphNode.class);
-    Mockito.when(mockedNode.getId()).thenReturn(id);
-    Mockito.when(mockedNode.isRoot()).thenReturn(isRoot);
-    if (isRoot) {
-      Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>());
-    } else {
-      Mockito.when(mockedNode.getInEdges()).thenReturn(new ArrayList<>(
-          Arrays.asList(mock(GraphNode.class), mock(GraphNode.class), mock(GraphNode.class))));
-    }
-    return mockedNode;
-  }
-
   @Test
   public void getRootNodesShouldReturnNoElementsWhenNoRoots() {
     assertEquals(0, instance.getRootNodes().size());
@@ -90,7 +77,7 @@ public class SequenceGraphTest {
     assertEquals(0, instance.getRootNodes().size());
 
     // Mock a 'root node'
-    GraphNode mockedNode = mockNode(10, true);
+    GraphNode mockedNode = TestingUtilities.mockNode(10, true);
 
     instance.add(mockedNode);
 
@@ -103,7 +90,7 @@ public class SequenceGraphTest {
   public void addAsRootNodeShouldAddToRootNodes() {
 
     // Mock a non-root node
-    GraphNode mockedNode = mockNode(30, false);
+    GraphNode mockedNode = TestingUtilities.mockNode(30, false);
 
     instance.add(mockedNode);
     assertFalse(instance.getRootNodes().contains(mockedNode));
@@ -124,14 +111,14 @@ public class SequenceGraphTest {
 
   @Test
   public void getGenomesShouldReturnGenomeWhenAddedNormally() {
-    String testGenome = "testGenome";
+    int testGenome = 1;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
   }
 
   @Test
   public void removeGenome() {
-    String testGenome = "testGraphGenome";
+    int testGenome = 1;
 
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
@@ -150,7 +137,7 @@ public class SequenceGraphTest {
   public void sizeWhenNonEmpty() {
     int expectedSize = 5;
     for (int i = 0; i < 5; i++) {
-      instance.add(mockNode(i, false));
+      instance.add(TestingUtilities.mockNode(i, false));
     }
     assertEquals(expectedSize, instance.size());
   }
@@ -163,12 +150,12 @@ public class SequenceGraphTest {
 
   @Test
   public void containsShouldBeFalseWhenNotInGraph() {
-    Assert.assertFalse(instance.contains(mockNode(100, false)));
+    Assert.assertFalse(instance.contains(TestingUtilities.mockNode(100, false)));
   }
 
   @Test
   public void containsShouldBeTrueWhenInGraph() {
-    GraphNode mockedNode = mockNode(25, false);
+    GraphNode mockedNode = TestingUtilities.mockNode(25, false);
     instance.add(mockedNode);
 
     Assert.assertTrue(instance.contains(mockedNode));
@@ -182,7 +169,7 @@ public class SequenceGraphTest {
   @Test
   public void getNodeFindsNodeWhenAdded() {
     int nodeId = 10;
-    GraphNode mockedNode = mockNode(nodeId, false);
+    GraphNode mockedNode = TestingUtilities.mockNode(nodeId, false);
     instance.add(mockedNode);
 
     assertEquals(mockedNode, instance.getNode(nodeId));
@@ -190,7 +177,7 @@ public class SequenceGraphTest {
 
   @Test
   public void addSetsRootNode() {
-    GraphNode mockedRoot = mockNode(10, true);
+    GraphNode mockedRoot = TestingUtilities.mockNode(10, true);
     assertFalse(instance.getRootNodes().contains(mockedRoot));
 
     instance.add(mockedRoot);
@@ -200,12 +187,12 @@ public class SequenceGraphTest {
 
   @Test
   public void removeWhenNotPresentShouldReturnNull() {
-    assertNull(instance.remove(mockNode(100, false)));
+    assertNull(instance.remove(TestingUtilities.mockNode(100, false)));
   }
 
   @Test
   public void testRemove() {
-    GraphNode mockedNode = mockNode(50, false);
+    GraphNode mockedNode = TestingUtilities.mockNode(50, false);
     instance.add(mockedNode);
     assertTrue(instance.contains(mockedNode));
 
@@ -218,7 +205,7 @@ public class SequenceGraphTest {
   public void iteratorShouldIterateOnlyOverExistingElements() {
     assertTrue(instance.isEmpty());
     for (int i = 0; i < 5; i++) {
-      instance.add(mockNode(i, false));
+      instance.add(TestingUtilities.mockNode(i, false));
     }
 
     for (GraphNode anInstance : instance) {
@@ -231,7 +218,7 @@ public class SequenceGraphTest {
   public void iteratorShouldIterateOverAllElements() {
     assertTrue(instance.isEmpty());
     for (int i = 0; i < 5; i++) {
-      instance.add(mockNode(i, false));
+      instance.add(TestingUtilities.mockNode(i, false));
     }
 
     Iterator<GraphNode> iterator = instance.iterator();

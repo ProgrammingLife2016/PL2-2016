@@ -55,14 +55,14 @@ public abstract class AbstractNode implements Node {
   }
 
   @Override
-  public Collection<String> getGenomesOverEdge(GraphNode node) {
+  public Collection<Integer> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
-        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is " + "not a"
-        + " direct successor. This = " + this.getId();
+        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is " + "not "
+        + "a" + " direct successor. This = " + this.getId();
 
-    Collection<String> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(
-        genomes::add);
+    Collection<Integer> genomes = new ArrayList<>();
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
+        ::add);
     return genomes;
   }
 

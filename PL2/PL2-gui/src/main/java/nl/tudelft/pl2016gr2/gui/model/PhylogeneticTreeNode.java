@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import java.util.NoSuchElementException;
  */
 public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<PhylogeneticTreeNode> {
 
-  private final String label;
+  private final int genomeId;
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
@@ -53,9 +54,9 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     }
 
     if (node.numberChildren() == 0) {
-      this.label = node.label.split("\\.", 2)[0];
+      genomeId = GenomeMap.getInstance().getId(node.label.split("\\.", 2)[0]);
     } else {
-      label = null;
+      genomeId = -1;
     }
   }
 
@@ -103,13 +104,26 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   @Override
-  public ArrayList<String> getGenomes() {
-    ArrayList<String> res = new ArrayList<>();
+  public ArrayList<Integer> getGenomes() {
+    ArrayList<Integer> res = new ArrayList<>();
     if (isLeaf()) {
-      res.add(label);
+      res.add(GenomeMap.getInstance().getId(getLabel()));
     } else {
       for (PhylogeneticTreeNode child : children) {
         res.addAll(child.getGenomes());
+      }
+    }
+    return res;
+  }
+
+  @Override
+  public ArrayList<Integer> getGenomeIds() {
+    ArrayList<Integer> res = new ArrayList<>();
+    if (isLeaf()) {
+      res.add(genomeId);
+    } else {
+      for (PhylogeneticTreeNode child : children) {
+        res.addAll(child.getGenomeIds());
       }
     }
     return res;
@@ -199,9 +213,19 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    *
    * @return the label of this leaf node.
    */
-  protected String getLabel() {
+  private String getLabel() {
     assert isLeaf();
-    return label;
+    return GenomeMap.getInstance().getGenome(genomeId);
+  }
+
+  /**
+   * Get the genome id of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the genome id of this leaf node.
+   */
+  protected int getGenomeId() {
+    assert isLeaf();
+    return genomeId;
   }
 
   /**

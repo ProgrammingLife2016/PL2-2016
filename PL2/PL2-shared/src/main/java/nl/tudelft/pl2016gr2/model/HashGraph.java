@@ -5,7 +5,6 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class HashGraph implements SequenceGraph {
   @TestId(id = "nodes")
   private final HashMap<Integer, GraphNode> nodes;
   private final ArrayList<GraphNode> rootNodes;
-  private final HashSet<String> genomes;
+  private final ArrayList<Integer> genomes;
 
   /**
    * Constructs an empty <code>HashGraph</code>.
@@ -22,7 +21,7 @@ public class HashGraph implements SequenceGraph {
   public HashGraph() {
     nodes = new HashMap<>();
     rootNodes = new ArrayList<>();
-    genomes = new HashSet<>();
+    genomes = new ArrayList<>();
   }
 
   /**
@@ -31,9 +30,9 @@ public class HashGraph implements SequenceGraph {
    * @param nodes   The nodes of the graph
    * @param genomes The genomes that are represented in the graph
    */
-  public HashGraph(Map<Integer, ? extends GraphNode> nodes, Collection<String> genomes) {
+  public HashGraph(Map<Integer, ? extends GraphNode> nodes, Collection<Integer> genomes) {
     this.nodes = new HashMap<>(nodes);
-    this.genomes = new HashSet<>(genomes);
+    this.genomes = new ArrayList<>(genomes);
     this.rootNodes = parseRootNodes();
   }
 
@@ -49,10 +48,10 @@ public class HashGraph implements SequenceGraph {
    * @param genomes   The genomes that are represented in the graph
    */
   public HashGraph(Map<Integer, ? extends GraphNode> nodes,
-      Collection<? extends GraphNode> rootNodes, Collection<String> genomes) {
+      Collection<? extends GraphNode> rootNodes, Collection<Integer> genomes) {
     this.nodes = new HashMap<>(nodes);
     this.rootNodes = new ArrayList<>(rootNodes);
-    this.genomes = new HashSet<>(genomes);
+    this.genomes = new ArrayList<>(genomes);
   }
 
   /**
@@ -85,20 +84,20 @@ public class HashGraph implements SequenceGraph {
   }
 
   @Override
-  public Collection<String> getGenomes() {
+  public Collection<Integer> getGenomes() {
     return genomes;
   }
 
   @Override
-  public void addGenome(String genome) {
+  public void addGenome(int genome) {
     assert !genomes.contains(genome) : "Adding already existing genome to the graph.";
     genomes.add(genome);
   }
 
   @Override
-  public void removeGenome(String genome) {
+  public void removeGenome(int genome) {
     assert genomes.contains(genome) : "Removing non-existent genome from the graph.";
-    genomes.remove(genome);
+    genomes.remove((Integer) genome);
   }
 
   @Override

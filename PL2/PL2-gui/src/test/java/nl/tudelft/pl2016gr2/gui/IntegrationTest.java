@@ -20,13 +20,16 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * This class performs integration tests on the user interface. It clicks through windows and checks
+ * This class performs integration tests on the user interface. It clicks through windows and
+ * checks
  * for the correct behavior.
  *
  * @author Faris
@@ -36,6 +39,11 @@ public class IntegrationTest {
 
   private static final MouseEvent SOME_MOUSE_EVENT = new MouseEvent(null, 0, 0, 0, 0,
       MouseButton.NONE, 0, true, true, true, true, true, true, true, true, true, true, null);
+
+  @Before
+  public void setUp() {
+    AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
+  }
 
   /**
    * Test if the scene is correctly set when the application is launcher.
@@ -69,10 +77,10 @@ public class IntegrationTest {
     int drawnLevels = AccessPrivate.getFieldValue("amountOfLevels", DrawComparedGraphs.class,
         getDrawComparedGraphs());
     assertTrue(drawnLevels > 0);
-    OrderedGraph topGraph = AccessPrivate.getFieldValue("topGraph",
-        DrawComparedGraphs.class, getDrawComparedGraphs());
-    OrderedGraph bottomGraph = AccessPrivate.getFieldValue("bottomGraph",
-        DrawComparedGraphs.class, getDrawComparedGraphs());
+    OrderedGraph topGraph = AccessPrivate.getFieldValue("topGraph", DrawComparedGraphs.class,
+        getDrawComparedGraphs());
+    OrderedGraph bottomGraph = AccessPrivate.getFieldValue("bottomGraph", DrawComparedGraphs.class,
+        getDrawComparedGraphs());
     assertTrue(topGraph.getGraphOrder().size() > 0);
     assertTrue(bottomGraph.getGraphOrder().size() > 0);
   }
@@ -84,8 +92,9 @@ public class IntegrationTest {
     loadFiles();
     TreeNodeCircle root = AccessPrivate.getFieldValue("currentRoot", TreeManager.class,
         getTreeManager());
-    root.getOnMouseClicked().handle(new MouseEvent(null, 0, 0, 0, 0, MouseButton.NONE, 0, true,
-        true, true, true, true, true, true, true, true, true, null));
+    root.getOnMouseClicked().handle(
+        new MouseEvent(null, 0, 0, 0, 0, MouseButton.NONE, 0, true, true, true, true, true, true,
+            true, true, true, true, null));
     SelectionManager selectionManager = getSelectionManager();
     DescriptionPane description = AccessPrivate.getFieldValue("contentPane", SelectionManager.class,
         selectionManager);

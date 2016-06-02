@@ -59,11 +59,18 @@ public interface IPhylogeneticTreeNode {
   int getChildIndex(IPhylogeneticTreeNode child);
 
   /**
-   * Get all of the genomes whic are present in this branch of the tree.
+   * Get all of the genomes which are present in this branch of the tree.
    *
-   * @return all of the genomes whic are present in this branch of the tree.
+   * @return all of the genomes which are present in this branch of the tree.
    */
-  ArrayList<String> getGenomes();
+  ArrayList<Integer> getGenomes();
+
+  /**
+   * Get all of the genome ids which are present in this branch of the tree.
+   *
+   * @return all of the genome ids which are present in this branch of the tree.
+   */
+  ArrayList<Integer> getGenomeIds();
 
   /**
    * Get the length of the edge to this node.

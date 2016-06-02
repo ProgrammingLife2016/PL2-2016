@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.model;
 
-import static nl.tudelft.pl2016gr2.model.SequenceGraphTest.mockNode;
+import static nl.tudelft.pl2016gr2.util.TestingUtilities.mockNode;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class HashGraphTest {
   private Map<Integer, GraphNode> nodes = new HashMap<>();
-  private Collection<String> genomes = new ArrayList<>();
+  private Collection<Integer> genomes = new ArrayList<>();
 
   /**
    * Sets up the graph structure with mocked nodes.
@@ -35,7 +35,7 @@ public class HashGraphTest {
     nodes.put(rootId, mockNode(rootId, true));
 
     for (int i = 0; i < 5; i++) {
-      genomes.add("genome" + i);
+      genomes.add(i);
     }
   }
 
