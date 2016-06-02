@@ -17,11 +17,9 @@ import java.util.Set;
 
 public class ZoomIn {
   
-  private final SequenceGraph originalGraph; // unused?
   private final FilterBubbles filter;
   
-  protected ZoomIn(SequenceGraph originalGraph, FilterBubbles filter) {
-    this.originalGraph = originalGraph;
+  protected ZoomIn(FilterBubbles filter) {
     this.filter = filter;
   }
   
@@ -72,15 +70,6 @@ public class ZoomIn {
 
     filter.pruneNodes(poppedNodes, newBubbles);
     return poppedNodes;
-  }
-  
-  private GraphNode getNode(Collection<GraphNode> links) {
-    GraphNode node = null;
-    if (!links.isEmpty()) {
-      node = links.iterator().next();
-    }
-    
-    return node;
   }
   
   private GraphNode getNode(int id, boolean startEnd, List<GraphNode> nodes) {

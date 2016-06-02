@@ -29,9 +29,9 @@ import java.util.Set;
  */
 public class FilterBubbles implements PhyloFilter {
 
-  private final SequenceGraph originalGraph;
   private final Map<Integer, Collection<GraphNode>> originalInEdges;
   private final Map<Integer, Collection<GraphNode>> originalOutEdges;
+  private final Collection<GraphNode> rootNodes;
   private int mutationId;
 
   /**
@@ -41,29 +41,19 @@ public class FilterBubbles implements PhyloFilter {
    * @param originalGraph : the graph to be filtered.
    */
   public FilterBubbles(SequenceGraph originalGraph) {
-    this.originalGraph = originalGraph;
+    rootNodes = originalGraph.getRootNodes();
     originalInEdges = new HashMap<>();
     originalOutEdges = new HashMap<>();
+    
     Iterator<GraphNode> graphIterator = originalGraph.iterator();
     while (graphIterator.hasNext()) {
       GraphNode node = graphIterator.next();
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
     }
+    
     mutationId = -1;
   }
-
-  /**
-   * Zooms out on this node, if it's a bubble, in the given graph.
-   *
-   * @param node  bubble to zoom out on
-   * @param graph the graph
-   * @return a zoomed out graph
-   */
-//  @Override
-//  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
-//    return zoomOut.zoomOut(bubble, graph);
-//  }
 
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
@@ -75,7 +65,7 @@ public class FilterBubbles implements PhyloFilter {
   @Override
   public Collection<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
-    List<GraphNode> orderedNodes = new ZoomIn(originalGraph, this).zoom(bubble);
+    List<GraphNode> orderedNodes = new ZoomIn(this).zoom(bubble);
     orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
     
     // temporary fix for exception in alignVertically
@@ -111,24 +101,6 @@ public class FilterBubbles implements PhyloFilter {
     return graphNodes;
   }
 
-  // TODO : REMOVE
-  private void printGraphNodes(List<GraphNode> graphNodes) {
-    for (GraphNode node : graphNodes) {
-      System.out.println(node.getId() + ", in: " + printIds(node.getInEdges())
-          + ", out: " + printIds(node.getOutEdges()));
-    }
-  }
-
-  private String printIds(Collection<GraphNode> nodes) {
-    StringBuilder builder = new StringBuilder();
-    builder.append("[");
-    for (GraphNode node : nodes) {
-      builder.append(node.getId() + ", ");
-    }
-    builder.append("]");
-    return builder.toString();
-  }
-
   private List<Bubble> debubble(List<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
       ArrayList<Bubble> newBubbles) {
     mutationId--;
@@ -136,7 +108,7 @@ public class FilterBubbles implements PhyloFilter {
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
 
-    Iterator<GraphNode> rootIterator = originalGraph.getRootNodes().iterator();
+    Iterator<GraphNode> rootIterator = rootNodes.iterator();
     while (rootIterator.hasNext()) {
       GraphNode rootNode = rootIterator.next();
       if (FilterHelpers.isShared(rootNode, leaves)) {
@@ -162,14 +134,13 @@ public class FilterBubbles implements PhyloFilter {
     }
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
-      visited.add(next);
-      next.setInEdges(new HashSet<>());
-      next.setOutEdges(new HashSet<>());
-      
-      poppedNodes.add(next);
       if (bubble != null && endNodes.contains(next)) {
         continue;
       }
+      next.setInEdges(new HashSet<>());
+      next.setOutEdges(new HashSet<>());
+      visited.add(next);
+      poppedNodes.add(next);
 
       // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
       List<GraphNode> outlinks = calcNodeOutlinks(originalOutEdges.get(next.getId()), 
@@ -232,8 +203,7 @@ public class FilterBubbles implements PhyloFilter {
         endPoints.add(next);
         bubble.addOutEdge(next);
       } else {
-        BubbleChildrenVisitor visitor = new BubbleChildrenVisitor(next);
-        bubble.accept(visitor);
+        bubble.accept(new BubbleChildrenVisitor(next));
 
         for (GraphNode outlink : next.getOutEdges()) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
