@@ -55,6 +55,21 @@ public class CompareSubgraphs {
 ////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
+  public static void alignVertically(Collection<GraphNode> graphOrder,
+      Collection<GraphNode> bubbleInEdges) {
+    HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
+    int index = 0;
+    int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
+    for (GraphNode bubble : bubbleInEdges) {
+      int startY = index * heightPerRoot;
+      int endY = (index + 1) * heightPerRoot;
+      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, bubble.getOutEdges()));
+    }
+    for (GraphNode node : graphOrder) {
+      calculateGraphArea(node, areaMap);
+    }
+  }
+
   public static void alignVertically(Collection<GraphNode> graphOrder) {
     ArrayList<GraphNode> rootNodes = new ArrayList<>();
     for (GraphNode node : graphOrder) {
@@ -63,33 +78,43 @@ public class CompareSubgraphs {
       }
     }
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
-    if (!rootNodes.isEmpty()) {
-      int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
-      int index = 0;
-      for (GraphNode rootNode : rootNodes) {
-        int startY = index * heightPerRoot;
-        int endY = (index + 1) * heightPerRoot;
-        rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
-        areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
-        index++;
-      }
+    int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
+    int index = 0;
+    for (GraphNode rootNode : rootNodes) {
+      int startY = index * heightPerRoot;
+      int endY = (index + 1) * heightPerRoot;
+      rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
+      areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
+      index++;
     }
     for (GraphNode node : graphOrder) {
       if (rootNodes.contains(node)) {
         continue;
       }
-      ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
-      for (GraphNode inEdge : node.getInEdges()) {
-        inAreas.add(areaMap.get(inEdge));
-      }
-      ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
-      areaMap.put(node, complexNodeArea);
-
-      SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
-
-      node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
-      node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+      calculateGraphArea(node, areaMap);
     }
+  }
+
+  private static ComplexVerticalArea calculateGraphArea(GraphNode node,
+      HashMap<GraphNode, ComplexVerticalArea> areaMap) {
+    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
+    for (GraphNode inEdge : node.getInEdges()) {
+      ComplexVerticalArea area = areaMap.get(inEdge);
+      if (area == null) {
+        System.out.println("added backwards edge caused by bubble");
+//        System.out.println("inEdge.getLevel() = " + inEdge.getLevel());
+        area = calculateGraphArea(inEdge, areaMap);
+      }
+      inAreas.add(area);
+    }
+    ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
+    areaMap.put(node, complexNodeArea);
+
+    SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
+
+    node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
+    node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+    return complexNodeArea;
   }
 
   private static class ComplexVerticalArea {

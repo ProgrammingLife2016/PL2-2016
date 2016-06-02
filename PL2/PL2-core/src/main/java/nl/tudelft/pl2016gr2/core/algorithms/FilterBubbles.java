@@ -32,6 +32,7 @@ public class FilterBubbles implements PhyloFilter {
   private final SequenceGraph originalGraph;
   private final ZoomOut zoomOut;
   private int mutationId;
+  private HashMap<GraphNode, GraphNode> graphMap;
 
   /**
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
@@ -70,13 +71,34 @@ public class FilterBubbles implements PhyloFilter {
     List<GraphNode> orderedNodes = new ZoomIn(originalGraph, zoomOut, this).zoom(bubble);
     orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
     
-    // temporary fix for exception in alignVertically
-    for (GraphNode sortedNestedNode : orderedNodes) {
-      sortedNestedNode.setRelativeYPos(0.5);
-      sortedNestedNode.setMaxHeight(0.1);
-    }
-//    CompareSubgraphs.alignVertically(sortedNestedNodes);
 
+    ////////////////////////////////////////////
+    // TEMPORARY HACK TO GET THE RIGHT EDGES:
+    // currently nodes got in and out edges to the incorrect (main) graph.
+    for (GraphNode graphNode : orderedNodes) {
+      graphMap.put(graphNode, graphNode);
+    }
+    for (GraphNode graphNode : orderedNodes) {
+      ArrayList<GraphNode> inEdges = new ArrayList<>();
+      for (GraphNode inEdge : graphNode.getInEdges()) {
+        inEdges.add(graphMap.get(inEdge));
+      }
+      graphNode.setInEdges(inEdges);
+      ArrayList<GraphNode> outEdges = new ArrayList<>();
+      for (GraphNode outEdge : graphNode.getOutEdges()) {
+        outEdges.add(graphMap.get(outEdge));
+      }
+      graphNode.setOutEdges(outEdges);
+    }
+    ////////////////////////////////////////////
+
+    // temporary fix for exception in alignVertically
+//    for (GraphNode orderedNode : orderedNodes) {
+//      orderedNode.setRelativeYPos(0.5);
+//      orderedNode.setMaxHeight(0.1);
+//    }
+    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
+    
     return orderedNodes;
   }
 
@@ -106,7 +128,7 @@ public class FilterBubbles implements PhyloFilter {
     ////////////////////////////////////////////
     // TEMPORARY HACK TO GET THE RIGHT EDGES:
     // currently nodes got in and out edges to the incorrect (main) graph.
-    HashMap<GraphNode, GraphNode> graphMap = new HashMap<>();
+    graphMap = new HashMap<>();
     for (GraphNode graphNode : graphNodes) {
       graphMap.put(graphNode, graphNode);
     }
