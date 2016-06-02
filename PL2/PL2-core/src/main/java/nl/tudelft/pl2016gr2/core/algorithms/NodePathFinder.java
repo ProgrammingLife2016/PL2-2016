@@ -31,8 +31,7 @@ public class NodePathFinder {
    *     of a reference)
    * @return a set with all nodes on the path between start and end.
    */
-  protected static Set<GraphNode> getNodesOnPath(GraphNode start, GraphNode end, 
-      SequenceGraph graph, boolean copy) {
+  protected static Set<GraphNode> getNodesOnPath(GraphNode start, GraphNode end, boolean copy) {
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
     
@@ -42,7 +41,7 @@ public class NodePathFinder {
     toVisit.add(start);
     
     while (!toVisit.isEmpty()) {
-      GraphNode next = graph.getNode(toVisit.poll().getId());
+      GraphNode next = toVisit.poll();
       if (copy) {
         nodesOnPath.add(next.copyAll());
       } else {
@@ -50,7 +49,7 @@ public class NodePathFinder {
       }
       
       for (GraphNode outlink : next.getOutEdges()) {
-        if (hasPath(outlink, end, graph, seenPaths, noPath)) {
+        if (hasPath(outlink, end, seenPaths, noPath)) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
         }
       }
@@ -68,7 +67,7 @@ public class NodePathFinder {
    * @param noPath a set of nodes that are know to not be on the path
    * @return true if there is a path
    */
-  private static boolean hasPath(GraphNode from, GraphNode to, SequenceGraph graph, 
+  private static boolean hasPath(GraphNode from, GraphNode to,
       Set<GraphNode> seenPaths, Set<GraphNode> noPath) {
     if (from == to || seenPaths.contains(from)) {
       return true;
@@ -76,18 +75,17 @@ public class NodePathFinder {
       return false;
     }
 
-    GraphNode node = graph.getNode(from.getId());
-    if (!node.hasChildren() && from.getId() > to.getId()) { // is this really correct? comparing IDs <<<<<<<
+    if (!from.hasChildren() && from.getId() > to.getId()) { // is this really correct? comparing IDs <<<<<<<
       noPath.add(from);
       return false;
     } else {
       boolean hasPath = false;
-      for (GraphNode outEdge : node.getOutEdges()) {
+      for (GraphNode outEdge : from.getOutEdges()) {
         if (outEdge == to) {
           seenPaths.add(from);
           return true;
         }
-        hasPath = hasPath || hasPath(outEdge, to, graph, seenPaths, noPath);
+        hasPath = hasPath || hasPath(outEdge, to, seenPaths, noPath);
       }
       
       if (hasPath) {

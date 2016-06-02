@@ -285,7 +285,7 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public Collection<GraphNode> pop(SequenceGraph graph) {
+  public Collection<GraphNode> pop() {
     ArrayList<GraphNode> res = new ArrayList<>(1);
     res.add(this);
     return res;

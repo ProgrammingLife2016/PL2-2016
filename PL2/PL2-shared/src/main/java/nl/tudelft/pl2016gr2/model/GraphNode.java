@@ -262,5 +262,5 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @param graph the graph of the bubble.
    * @return the nodes which are present
    */
-  Collection<GraphNode> pop(SequenceGraph graph);
+  Collection<GraphNode> pop();
 }

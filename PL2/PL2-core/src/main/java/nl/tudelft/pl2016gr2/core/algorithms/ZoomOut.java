@@ -44,8 +44,8 @@ public class ZoomOut {
    * @param end the id of the end node from where the view should be saved.
    * @param graph the graph
    */
-  protected void addOldView(GraphNode start, GraphNode end, SequenceGraph graph) {
-    Set<GraphNode> oldView = NodePathFinder.getNodesOnPath(start, end, graph, true);
+  protected void addOldView(GraphNode start, GraphNode end) {
+    Set<GraphNode> oldView = NodePathFinder.getNodesOnPath(start, end, true);
     
     if (oldGraphs.containsKey(start)) {
       if (oldGraphs.get(start).containsKey(end)) {
@@ -153,7 +153,7 @@ public class ZoomOut {
       return graph;
     }
     
-    Set<GraphNode> nodesToRemove = NodePathFinder.getNodesOnPath(start, end, graph, false);
+    Set<GraphNode> nodesToRemove = NodePathFinder.getNodesOnPath(start, end, false);
     // get current in and outlinks of start and end node
     Collection<GraphNode> startInEdges = graph.getNode(start.getId()).getInEdges();
     Collection<GraphNode> endOutEdges = graph.getNode(end.getId()).getOutEdges();

@@ -211,9 +211,9 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public Collection<GraphNode> pop(SequenceGraph graph) {
+  public Collection<GraphNode> pop() {
     if (poppedNodes == null) {
-      poppedNodes = new ArrayList<>(filter.zoomIn(this, graph));
+      poppedNodes = new ArrayList<>(filter.zoomIn(this));
       poppedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
     }
     return poppedNodes;

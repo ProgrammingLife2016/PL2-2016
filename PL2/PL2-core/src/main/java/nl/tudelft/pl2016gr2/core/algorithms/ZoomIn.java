@@ -27,7 +27,7 @@ public class ZoomIn {
     this.filter = filter;
   }
   
-  public Collection<GraphNode> zoom(Bubble bubble, SequenceGraph graph) {
+  public Collection<GraphNode> zoom(Bubble bubble) {
     BubblePhyloVisitor visitor = new BubblePhyloVisitor();
     bubble.accept(visitor);
     IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
@@ -35,7 +35,7 @@ public class ZoomIn {
     Collection<GraphNode> inlinks = bubble.getInEdges();
     Collection<GraphNode> outlinks = bubble.getOutEdges();
     // THIS MIGHT NOT WORK WITH THE FIRST/LAST NODE
-    zoomOut.addOldView(getNode(inlinks), getNode(outlinks), graph);
+    zoomOut.addOldView(getNode(inlinks), getNode(outlinks));
     
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);

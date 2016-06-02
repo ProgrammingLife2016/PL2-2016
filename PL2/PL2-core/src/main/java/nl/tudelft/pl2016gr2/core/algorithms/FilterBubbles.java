@@ -64,9 +64,9 @@ public class FilterBubbles implements PhyloFilter {
    * @return a zoomed in graph
    */
   @Override
-  public Collection<GraphNode> zoomIn(Bubble bubble, SequenceGraph graph) {
+  public Collection<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
-    return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble, graph);
+    return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble);
   }
 
   /**
