@@ -16,7 +16,7 @@ public class PhyloBubble implements Bubble {
   private ArrayList<GraphNode> outEdges;
 
   private final PhyloFilter filter;
-  private ArrayList<GraphNode> poppedNodes;
+  private Collection<GraphNode> poppedNodes;
 
   private int size = -1;
   private int level = -1;
@@ -213,8 +213,7 @@ public class PhyloBubble implements Bubble {
   @Override
   public Collection<GraphNode> pop() {
     if (poppedNodes == null) {
-      poppedNodes = new ArrayList<>(filter.zoomIn(this));
-      poppedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+      poppedNodes = filter.zoomIn(this);
     }
     return poppedNodes;
   }

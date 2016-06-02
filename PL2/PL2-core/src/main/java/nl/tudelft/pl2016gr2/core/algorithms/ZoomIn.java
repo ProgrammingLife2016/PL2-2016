@@ -27,7 +27,7 @@ public class ZoomIn {
     this.filter = filter;
   }
   
-  public Collection<GraphNode> zoom(Bubble bubble) {
+  public List<GraphNode> zoom(Bubble bubble) {
     BubblePhyloVisitor visitor = new BubblePhyloVisitor();
     bubble.accept(visitor);
     IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
