@@ -80,7 +80,7 @@ public class DrawComparedGraphs implements Initializable {
   public static final double NODE_MARGIN = 0.9;
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final int MINUMUM_BASE_SIZE = 10;
+  private static final int MINUMUM_BASE_SIZE = 1;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
@@ -717,10 +717,10 @@ public class DrawComparedGraphs implements Initializable {
 
   private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
       int startLevel, int nestedDepth) {
-    Collection<GraphNode> poppedNodes = bubble.pop();
-    for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
-    }
+//    Collection<GraphNode> poppedNodes = bubble.pop();
+//    for (GraphNode poppedNode : poppedNodes) {
+//      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
+//    }
   }
 
   /**
@@ -769,11 +769,21 @@ public class DrawComparedGraphs implements Initializable {
     edge.setSmooth(true);
     edge.setStrokeWidth(edgeWidth);
     pane.getChildren().add(edge);
-    edge.setStartX(zoomFactor.get()
-        * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+    if (fromNode.hasChildren()) {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+    } else {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+    }
+    if (toNode.hasChildren()) {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
+    } else {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+    }
     edge.setStartY(fromNode.getRelativeYPos() * pane.getHeight());
-    edge.setEndX(zoomFactor.get()
-        * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
     edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
 //    edge.toBack();
   }
