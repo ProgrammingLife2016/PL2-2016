@@ -46,18 +46,19 @@ public class ZoomIn {
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
  
-    List<GraphNode> poppedNodes = new ArrayList<>();
+    Set<GraphNode> poppedNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(poppedNodes, childOne, bubble, newBubbles);
     debubble(poppedNodes, childTwo, bubble, newBubbles);
     
     pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
     pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
-    filter.pruneNodes(poppedNodes, newBubbles);
-    return poppedNodes;
+    ArrayList<GraphNode> graphNodes = new ArrayList<>(poppedNodes);
+    filter.pruneNodes(graphNodes, newBubbles);
+    return graphNodes;
   }
   
-  protected void pruneStart(Collection<GraphNode> bubbleInEdges, 
+  private void pruneStart(Collection<GraphNode> bubbleInEdges, 
       Map<Integer, Collection<GraphNode>> inEdges, Map<Integer, Collection<GraphNode>> outEdges,
       int bubbleId) {
     Iterator<GraphNode> inlinkIterator = bubbleInEdges.iterator();
@@ -72,7 +73,7 @@ public class ZoomIn {
     }
   }
   
-  protected void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
+  private void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
       Map<Integer, Collection<GraphNode>> outEdges, Map<Integer, Collection<GraphNode>> inEdges,
       int bubbleId) {
     Iterator<GraphNode> outlinkIterator = bubbleOutEdges.iterator();
@@ -105,7 +106,7 @@ public class ZoomIn {
     return null;
   }
   
-  private List<Bubble> debubble(List<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
+  private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     Collection<GraphNode> startNodes = bubble.getInEdges();
     

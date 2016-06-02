@@ -111,18 +111,19 @@ public class FilterBubbles implements PhyloFilter {
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
-    ArrayList<GraphNode> graphNodes = new ArrayList<>();
+    Set<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
-    pruneNodes(graphNodes, newBubbles);
+    ArrayList<GraphNode> poppedNodes = new ArrayList<>(graphNodes);
+    pruneNodes(poppedNodes, newBubbles);
 
-    Collections.sort(graphNodes, (GraphNode node1, GraphNode node2) -> {
+    Collections.sort(poppedNodes, (GraphNode node1, GraphNode node2) -> {
       return node1.getLevel() - node2.getLevel();
     });
-    return graphNodes;
+    return poppedNodes;
   }
 
-  private List<Bubble> debubble(List<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
+  private List<Bubble> debubble(Set<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
       ArrayList<Bubble> newBubbles) {
     mutationId--;
     ArrayList<String> leaves = treeNode.getGenomes();
@@ -147,7 +148,7 @@ public class FilterBubbles implements PhyloFilter {
   }
 
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
-      List<GraphNode> poppedNodes, ArrayList<String> leaves, Bubble bubble,
+      Set<GraphNode> poppedNodes, ArrayList<String> leaves, Bubble bubble,
       IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
     Set<GraphNode> endNodes = new HashSet<>();
     if (bubble != null) {
@@ -191,7 +192,7 @@ public class FilterBubbles implements PhyloFilter {
 
   private void createBubble(IPhylogeneticTreeNode treeNode, GraphNode inlink,
       List<GraphNode> bubbleLinks, List<String> leaves, Queue<GraphNode> toVisit,
-      Set<GraphNode> visited, List<Bubble> newBubbles, List<GraphNode> poppedNodes) {
+      Set<GraphNode> visited, List<Bubble> newBubbles, Set<GraphNode> poppedNodes) {
     if (!bubbleLinks.isEmpty()) {
       Bubble newBubble = new PhyloBubble(mutationId, treeNode, this);
       if (inlink != null) {
