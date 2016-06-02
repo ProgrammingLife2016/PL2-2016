@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -638,15 +639,16 @@ public class DrawComparedGraphs implements Initializable {
   private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
-    HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
+    HashMap<GraphNode, ViewRange> drawnGraphNodes = new HashMap<>();
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       int nodeStart = node.getLevel() - node.size();
       int nodeEnd = node.getLevel();
       if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
-      drawNode(pane, node, drawnGraphNodes, startLevel, 0);
-//      drawnGraphNodes.add(node);
+      drawNode(pane, node, drawnGraphNodes, startLevel, 0,
+          new ViewRange(0, pane.getHeight()));
+//          pane.getHeight() * (1.0 - HALF_NODE_MARGIN), pane.getHeight() * NODE_MARGIN);
     }
     drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
   }
@@ -658,19 +660,21 @@ public class DrawComparedGraphs implements Initializable {
    * @param nodes      the list of nodes to draw.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int nestedDepth) {
+  private void drawNode(Pane pane, GraphNode node, HashMap<GraphNode, ViewRange> drawnGraphNodes,
+      int startLevel, int nestedDepth, ViewRange viewRange) {
     if (node.hasChildren()) {
-      constructBubble(pane, node, drawnGraphNodes, node.getLevel(), startLevel, nestedDepth);
+      constructBubble(pane, node, drawnGraphNodes, node.getLevel(), startLevel, nestedDepth,
+          viewRange);
     } else {
-      constructNode(pane, node, node.getLevel(), startLevel, nestedDepth);
+      constructNode(pane, node, node.getLevel(), startLevel, nestedDepth, viewRange);
     }
-    drawnGraphNodes.add(node);
+    drawnGraphNodes.put(node, viewRange);
   }
 
-  private void constructNode(Pane pane, GraphNode node, int level, int startLevel, int nestedDepth) {
+  private void constructNode(Pane pane, GraphNode node, int level, int startLevel, int nestedDepth,
+      ViewRange viewRange) {
     double width = calculateNodeWidth(node);
-    double height = node.getMaxHeightPercentage() * mainPane.getHeight();
+    double height = node.getMaxHeightPercentage() * viewRange.rangeHeight;
     if (height > width) {
       height = width;
     }
@@ -682,24 +686,27 @@ public class DrawComparedGraphs implements Initializable {
       circle.setFill(NO_OVERLAP_COLOR);
     }
     circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
-    circle.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
+    circle.centerYProperty().set(
+        viewRange.rangeHeight * node.getRelativeYPos() + viewRange.rangeStartY);
     circle.setVisible(circle.getWidth() >= MIN_VISIBILITY_WIDTH);
 //    else {
 //      addLabel(pane, circle, node.getId());
 //    }
   }
 
-  private void constructBubble(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int level, int startLevel, int nestedDepth) {
+  private void constructBubble(Pane pane, GraphNode bubble,
+      HashMap<GraphNode, ViewRange> drawnGraphNodes,
+      int level, int startLevel, int nestedDepth, ViewRange viewRange) {
     double width = calculateNodeWidth(bubble);
-    double height = bubble.getMaxHeightPercentage() * mainPane.getHeight();
-    if (height > width) {
-      height = width;
-    }
+    double height = bubble.getMaxHeightPercentage() * viewRange.rangeHeight;
+//    if (height > width) {
+//      height = width;
+//    }
     ViewGraphNodeRectangle square = new ViewGraphNodeRectangle(width, height);
     pane.getChildren().add(square);
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
-    square.centerYProperty().set(pane.getHeight() * bubble.getRelativeYPos());
+    square.centerYProperty().set(
+        viewRange.rangeHeight * bubble.getRelativeYPos() + viewRange.rangeStartY);
     square.setVisible(square.getWidth() >= MIN_VISIBILITY_WIDTH);
     if (square.isVisible()) {
       Color fill = Color.ALICEBLUE;
@@ -712,16 +719,21 @@ public class DrawComparedGraphs implements Initializable {
 //      addLabel(pane, square, node.getId());
 //    }
     if (width > BUBBLE_POP_SIZE) {
-      drawnNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth);
+      drawNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth, viewRange);
     }
   }
 
-  private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int nestedDepth) {
+  private void drawNestedNodes(Pane pane, GraphNode bubble,
+      HashMap<GraphNode, ViewRange> drawnGraphNodes,
+      int startLevel, int nestedDepth, ViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
-//    for (GraphNode poppedNode : poppedNodes) {
-//      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
-//    }
+    double nestedRangeHeight = bubble.getMaxHeightPercentage() * viewRange.rangeHeight;
+    double nestedRangeStartY = bubble.getRelativeYPos() * viewRange.rangeHeight - nestedRangeHeight / 2.0 + viewRange.rangeStartY;
+    for (GraphNode poppedNode : poppedNodes) {
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1,
+          new ViewRange(nestedRangeStartY, nestedRangeHeight));
+
+    }
   }
 
   /**
@@ -748,24 +760,24 @@ public class DrawComparedGraphs implements Initializable {
    * @param endIndex        the index where to end in the graph.
    * @param drawnGraphNodes the drawn graph nodes.
    */
-  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
+  private void drawEdges(Pane pane, HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel,
       int genomeCount) {
-    for (GraphNode graphNode : drawnGraphNodes) {
-      for (GraphNode outEdge : graphNode.getOutEdges()) {
-        double edgeWidth = calculateEdgeWidth(genomeCount, graphNode, outEdge);
-        drawEdge(pane, graphNode, outEdge, edgeWidth, startLevel);
+    drawnGraphNodes.forEach((GraphNode node, ViewRange range) -> {
+      for (GraphNode outEdge : node.getOutEdges()) {
+        double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
+        drawEdge(pane, node, outEdge, edgeWidth, startLevel, range);
       }
-      for (GraphNode inEdge : graphNode.getInEdges()) {
-        if (!drawnGraphNodes.contains(inEdge)) {
-          double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, graphNode);
-          drawEdge(pane, inEdge, graphNode, edgeWidth, startLevel);
+      for (GraphNode inEdge : node.getInEdges()) {
+        if (!drawnGraphNodes.containsKey(inEdge)) {
+          double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
+          drawEdge(pane, inEdge, node, edgeWidth, startLevel, range);
         }
       }
-    }
+    });
   }
 
   private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
-      int startLevel) {
+      int startLevel, ViewRange range) {
     Line edge = new Line();
     edge.setSmooth(true);
     edge.setStrokeWidth(edgeWidth);
@@ -784,8 +796,8 @@ public class DrawComparedGraphs implements Initializable {
       edge.setEndX(zoomFactor.get()
           * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
     }
-    edge.setStartY(fromNode.getRelativeYPos() * pane.getHeight());
-    edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
+    edge.setStartY(fromNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    edge.setEndY(toNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
 //    edge.toBack();
   }
 
@@ -836,6 +848,17 @@ public class DrawComparedGraphs implements Initializable {
   private void deleteBottomGraph() {
     bottomGraphGenomes.clear();
     redrawGraphs();
+  }
+
+  private static class ViewRange {
+
+    private final double rangeStartY;
+    private final double rangeHeight;
+
+    private ViewRange(double rangeStartY, double rangeHeight) {
+      this.rangeStartY = rangeStartY;
+      this.rangeHeight = rangeHeight;
+    }
   }
 
   /**

@@ -66,6 +66,9 @@ public class CompareSubgraphs {
       areaMap.put(bubble, new ComplexVerticalArea(startY, endY, bubble.getOutEdges()));
     }
     for (GraphNode node : graphOrder) {
+      if (areaMap.containsKey(node)) {
+        continue;
+      }
       assert !node.getInEdges().isEmpty();
       calculateGraphArea(node, areaMap);
     }

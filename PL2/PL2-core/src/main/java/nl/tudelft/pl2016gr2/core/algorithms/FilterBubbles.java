@@ -45,32 +45,18 @@ public class FilterBubbles implements PhyloFilter {
     rootNodes = originalGraph.getRootNodes();
     originalInEdges = new HashMap<>();
     originalOutEdges = new HashMap<>();
-    
+
     Iterator<GraphNode> graphIterator = originalGraph.iterator();
     while (graphIterator.hasNext()) {
       GraphNode node = graphIterator.next();
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
     }
-    
+
     mutationId = -1;
   }
 
   /**
-<<<<<<< HEAD
-   * Zooms out on this node, if it's a bubble, in the given graph.
-   *
-   * @param node  bubble to zoom out on
-   * @param graph the graph
-   * @return a zoomed out graph
-   */
-//  @Override
-//  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
-//    return zoomOut.zoomOut(bubble, graph);
-//  }
-  /**
-=======
->>>>>>> origin/feat/zoom-bubbles
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
    *
    * @param node  the node to zoom in on
@@ -83,18 +69,21 @@ public class FilterBubbles implements PhyloFilter {
     List<GraphNode> orderedNodes = new ZoomIn(this).zoom(bubble);
     orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
 
+    orderedNodes.remove(orderedNodes.size() - 1);
+    orderedNodes.remove(0);
+
     // temporary fix for exception in alignVertically
-    for (GraphNode orderedNode : orderedNodes) {
-      if (orderedNode.getInEdges().isEmpty()) {
-        System.out.println("error: node without in edges!");
-      }
-      if(orderedNode.getOutEdges().isEmpty()) {
-        System.out.println("error: node without out edges!");
-      }
-      orderedNode.setRelativeYPos(0.5);
-      orderedNode.setMaxHeight(0.1);
-    }
-//    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
+//    for (GraphNode orderedNode : orderedNodes) {
+//      if (orderedNode.getInEdges().isEmpty()) {
+//        System.out.println("error: node without in edges!");
+//      }
+//      if(orderedNode.getOutEdges().isEmpty()) {
+//        System.out.println("error: node without out edges!");
+//      }
+//      orderedNode.setRelativeYPos(0.5);
+//      orderedNode.setMaxHeight(0.1);
+//    }
+    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
 
     return orderedNodes;
   }
@@ -290,7 +279,7 @@ public class FilterBubbles implements PhyloFilter {
     });
   }
 
-  private Collection<GraphNode> pruneLinks(Collection<GraphNode> links, 
+  private Collection<GraphNode> pruneLinks(Collection<GraphNode> links,
       List<GraphNode> graphNodes) {
     Collection<GraphNode> prunedLinks = new ArrayList<>();
     links.forEach(link -> {
