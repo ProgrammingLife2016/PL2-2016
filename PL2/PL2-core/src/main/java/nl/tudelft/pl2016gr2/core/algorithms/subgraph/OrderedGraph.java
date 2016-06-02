@@ -13,7 +13,8 @@ import java.util.ArrayList;
 public class OrderedGraph {
 
   private final SequenceGraph subgraph;
-  private final ArrayList<GraphNode> graphOrder;
+//  private final ArrayList<GraphNode> graphOrderStartX;
+  private final ArrayList<GraphNode> graphOrderEndX;
 
   /**
    * Construct an ordered graph.
@@ -23,7 +24,10 @@ public class OrderedGraph {
    */
   public OrderedGraph(SequenceGraph subgraph, ArrayList<GraphNode> graphOrder) {
     this.subgraph = subgraph;
-    this.graphOrder = graphOrder;
+    this.graphOrderEndX = graphOrder;
+//    graphOrderStartX = new ArrayList<>(graphOrder);
+//    graphOrderStartX.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node1.size()
+//        - (node2.getLevel() - node2.size()));
   }
 
   public SequenceGraph getSubgraph() {
@@ -31,6 +35,10 @@ public class OrderedGraph {
   }
 
   public ArrayList<GraphNode> getGraphOrder() {
-    return graphOrder;
+    return graphOrderEndX;
   }
+
+//  public ArrayList<GraphNode> getGraphOrderByStartXPosition() {
+//    return graphOrderStartX;
+//  }
 }
