@@ -719,9 +719,9 @@ public class DrawComparedGraphs implements Initializable {
   private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
       int startLevel, int nestedDepth) {
     Collection<GraphNode> poppedNodes = bubble.pop();
-    for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
-    }
+//    for (GraphNode poppedNode : poppedNodes) {
+//      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
+//    }
   }
 
   /**
