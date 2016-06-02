@@ -81,8 +81,10 @@ public class TreeNodeDescription implements ISelectionInfo {
   private String getGenomes() {
     StringBuilder sb = new StringBuilder("Genomes: ");
     sb.append('\n');
-    for (int genomeId : treeNode.getGenomes()) {
-      sb.append('\n').append(GenomeMap.getInstance().getGenome(genomeId));
+    for (Integer genomeId : treeNode.getGenomes()) {
+      if (genomeId != null) {
+        sb.append('\n').append(GenomeMap.getInstance().getGenome(genomeId));
+      }
     }
     return sb.toString();
   }
