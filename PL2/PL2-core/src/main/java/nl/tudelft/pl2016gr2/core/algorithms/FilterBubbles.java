@@ -41,7 +41,6 @@ public class FilterBubbles implements PhyloFilter {
   public FilterBubbles(SequenceGraph originalGraph) {
     this.originalGraph = originalGraph;
     zoomOut = new ZoomOut(originalGraph);
-    // This should be based on highest id just to be safe (instead of size)
     mutationId = -1;
   }
 
@@ -114,11 +113,28 @@ public class FilterBubbles implements PhyloFilter {
     ////////////////////////////////////////////
     return graphNodes;
   }
+  
+  // TODO : REMOVE
+  private void printGraphNodes(List<GraphNode> graphNodes) {
+    for (GraphNode node : graphNodes) {
+      System.out.println(node.getId() + ", in: " + printIds(node.getInEdges()) 
+          + ", out: " + printIds(node.getOutEdges()));
+    }
+  }
+  
+  private String printIds(Collection<GraphNode> nodes) {
+    StringBuilder builder = new StringBuilder();
+    builder.append("[");
+    for (GraphNode node : nodes) {
+      builder.append(node.getId() + ", ");
+    }
+    builder.append("]");
+    return builder.toString();
+  }
 
   private List<Bubble> debubble(List<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
       ArrayList<Bubble> newBubbles) {
     mutationId--;
-
     ArrayList<String> leaves = treeNode.getGenomes();
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
@@ -227,7 +243,8 @@ public class FilterBubbles implements PhyloFilter {
     return endPoints;
   }
 
-  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves, Bubble bubble) {
+  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves, 
+      Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
 
     for (GraphNode outlink : node.getOutEdges()) {
@@ -248,19 +265,7 @@ public class FilterBubbles implements PhyloFilter {
   }
 
   protected void pruneNodes(List<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
-    newBubbles.forEach(bubble -> {
-      Collection<GraphNode> inlinks = bubble.getInEdges();
-      if (!inlinks.isEmpty()) {
-        inlinks.iterator().next().addOutEdge(bubble);
-      }
-
-      Collection<GraphNode> outlinks = bubble.getOutEdges();
-      if (!outlinks.isEmpty()) {
-        outlinks.forEach(outlink -> {
-          outlink.addInEdge(bubble);
-        });
-      }
-    });
+    pruneBubbles(newBubbles);
 
     Iterator<GraphNode> iterator = graphNodes.iterator();
     while (iterator.hasNext()) {
@@ -268,31 +273,37 @@ public class FilterBubbles implements PhyloFilter {
       if (node.hasChildren()) {
         continue;
       }
-      Collection<GraphNode> inlinks = pruneInlinks(originalGraph.getNode(node.getId()), graphNodes);
+      // Get the original inedges and see which ones are still in the graph
+      Collection<GraphNode> inlinks = pruneLinks(
+          originalGraph.getNode(node.getId()).getInEdges(), graphNodes);
       inlinks.forEach(node::addInEdge);
-      Collection<GraphNode> outlinks = pruneOutlinks(originalGraph.getNode(node.getId()),
-          graphNodes);
+      Collection<GraphNode> outlinks = pruneLinks(
+          originalGraph.getNode(node.getId()).getOutEdges(), graphNodes);
       outlinks.forEach(node::addOutEdge);
     }
   }
+  
+  private void pruneBubbles(ArrayList<Bubble> newBubbles) {
+    newBubbles.forEach(bubble -> {
+      Iterator<GraphNode> inlinks = bubble.getInEdges().iterator();
+      while (inlinks.hasNext()) {
+        inlinks.next().addOutEdge(bubble);
+      }
 
-  private Collection<GraphNode> pruneInlinks(GraphNode original, List<GraphNode> graphNodes) {
-    Collection<GraphNode> prunedInlinks = new ArrayList<>();
-    original.getInEdges().forEach(link -> {
-      if (graphNodes.contains(link)) {
-        prunedInlinks.add(link);
+      Iterator<GraphNode> outlinks = bubble.getOutEdges().iterator();
+      while (outlinks.hasNext()) {
+        outlinks.next().addInEdge(bubble);
       }
     });
-    return prunedInlinks;
   }
-
-  private Collection<GraphNode> pruneOutlinks(GraphNode original, List<GraphNode> graphNodes) {
-    Collection<GraphNode> prunedOutlinks = new ArrayList<>();
-    original.getOutEdges().forEach(link -> {
+  
+  private Collection<GraphNode> pruneLinks(Collection<GraphNode> links, List<GraphNode> graphNodes) {
+    Collection<GraphNode> prunedLinks = new ArrayList<>();
+    links.forEach(link -> {
       if (graphNodes.contains(link)) {
-        prunedOutlinks.add(link);
+        prunedLinks.add(link);
       }
     });
-    return prunedOutlinks;
+    return prunedLinks;
   }
 }
