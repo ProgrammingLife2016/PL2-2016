@@ -184,7 +184,8 @@ public class FilterBubbles implements PhyloFilter {
       }
 
       // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<GraphNode> outlinks = calcNodeOutlinks(next, leaves, bubble);
+      List<GraphNode> outlinks = calcNodeOutlinks(originalGraph.getNode(
+          next.getId()).getOutEdges(), leaves, bubble);
       List<GraphNode> bubbleLinks = new ArrayList<>();
 
       for (GraphNode outlink : outlinks) {
@@ -255,11 +256,11 @@ public class FilterBubbles implements PhyloFilter {
     return endPoints;
   }
 
-  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves,
+  private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges, ArrayList<String> leaves,
       Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
 
-    for (GraphNode outlink : node.getOutEdges()) {
+    for (GraphNode outlink : outEdges) {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }

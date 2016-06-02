@@ -60,14 +60,17 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public String toString() {
-    String nested = "[";
-    for (GraphNode node : nestedNodes) {
-      nested = nested + ", " + node.getId();
+    return "id: " + id + ", in: " + getIds(inEdges) + ", out: " + getIds(outEdges)
+        + ", nested: " + getIds(nestedNodes) + ", tree leaves: " + treeNode.getGenomes();
+  }
+  
+  private String getIds(Collection<GraphNode> nodes) {
+    StringBuilder builder = new StringBuilder("[");
+    for (GraphNode node : nodes) {
+      builder.append(node.getId() + ", ");
     }
-    nested += "]";
-
-    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
-        + ", nested: " + nested + ", tree leaves: " + treeNode.getGenomes();
+    builder.append("]");
+    return builder.toString();
   }
 
   @Override
