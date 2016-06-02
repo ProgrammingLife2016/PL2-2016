@@ -100,8 +100,6 @@ public class FilterBubbles implements PhyloFilter {
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
-    System.out.println("Genomes of new tree: " + newRoot.getGenomes());
-
     ArrayList<GraphNode> graphNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
@@ -110,27 +108,6 @@ public class FilterBubbles implements PhyloFilter {
     Collections.sort(graphNodes, (GraphNode node1, GraphNode node2) -> {
       return node1.getLevel() - node2.getLevel();
     });
-
-    ////////////////////////////////////////////
-    // TEMPORARY HACK TO GET THE RIGHT EDGES:
-    // currently nodes got in and out edges to the incorrect (main) graph.
-//    HashMap<GraphNode, GraphNode> graphMap = new HashMap<>();
-//    for (GraphNode graphNode : graphNodes) {
-//      graphMap.put(graphNode, graphNode);
-//    }
-//    for (GraphNode graphNode : graphNodes) {
-//      ArrayList<GraphNode> inEdges = new ArrayList<>();
-//      for (GraphNode inEdge : graphNode.getInEdges()) {
-//        inEdges.add(graphMap.get(inEdge));
-//      }
-//      graphNode.setInEdges(inEdges);
-//      ArrayList<GraphNode> outEdges = new ArrayList<>();
-//      for (GraphNode outEdge : graphNode.getOutEdges()) {
-//        outEdges.add(graphMap.get(outEdge));
-//      }
-//      graphNode.setOutEdges(outEdges);
-//    }
-    ////////////////////////////////////////////
     return graphNodes;
   }
 
