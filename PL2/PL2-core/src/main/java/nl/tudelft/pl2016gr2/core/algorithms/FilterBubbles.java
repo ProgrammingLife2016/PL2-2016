@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
@@ -66,7 +67,17 @@ public class FilterBubbles implements PhyloFilter {
   @Override
   public Collection<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
-    return new ZoomIn(originalGraph, zoomOut, this).zoom(bubble);
+    List<GraphNode> orderedNodes = new ZoomIn(originalGraph, zoomOut, this).zoom(bubble);
+    orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+    
+    // temporary fix for exception in alignVertically
+    for (GraphNode sortedNestedNode : orderedNodes) {
+      sortedNestedNode.setRelativeYPos(0.5);
+      sortedNestedNode.setMaxHeight(0.1);
+    }
+//    CompareSubgraphs.alignVertically(sortedNestedNodes);
+
+    return orderedNodes;
   }
 
   /**
@@ -82,7 +93,7 @@ public class FilterBubbles implements PhyloFilter {
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
     System.out.println("Genomes of new tree: " + newRoot.getGenomes());
-    
+
     ArrayList<GraphNode> graphNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
@@ -114,15 +125,15 @@ public class FilterBubbles implements PhyloFilter {
     ////////////////////////////////////////////
     return graphNodes;
   }
-  
+
   // TODO : REMOVE
   private void printGraphNodes(List<GraphNode> graphNodes) {
     for (GraphNode node : graphNodes) {
-      System.out.println(node.getId() + ", in: " + printIds(node.getInEdges()) 
+      System.out.println(node.getId() + ", in: " + printIds(node.getInEdges())
           + ", out: " + printIds(node.getOutEdges()));
     }
   }
-  
+
   private String printIds(Collection<GraphNode> nodes) {
     StringBuilder builder = new StringBuilder();
     builder.append("[");
@@ -244,7 +255,7 @@ public class FilterBubbles implements PhyloFilter {
     return endPoints;
   }
 
-  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves, 
+  private List<GraphNode> calcNodeOutlinks(GraphNode node, ArrayList<String> leaves,
       Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
 
@@ -283,7 +294,7 @@ public class FilterBubbles implements PhyloFilter {
       outlinks.forEach(node::addOutEdge);
     }
   }
-  
+
   private void pruneBubbles(ArrayList<Bubble> newBubbles) {
     newBubbles.forEach(bubble -> {
       Iterator<GraphNode> inlinks = bubble.getInEdges().iterator();
@@ -297,7 +308,7 @@ public class FilterBubbles implements PhyloFilter {
       }
     });
   }
-  
+
   private Collection<GraphNode> pruneLinks(Collection<GraphNode> links, List<GraphNode> graphNodes) {
     Collection<GraphNode> prunedLinks = new ArrayList<>();
     links.forEach(link -> {

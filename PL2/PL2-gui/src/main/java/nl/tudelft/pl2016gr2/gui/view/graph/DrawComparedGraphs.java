@@ -30,6 +30,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.PhyloBubble;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
@@ -643,8 +644,8 @@ public class DrawComparedGraphs implements Initializable {
       if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
-      drawNode(pane, node, startLevel);
-      drawnGraphNodes.add(node);
+      drawNode(pane, node, drawnGraphNodes, startLevel, 0);
+//      drawnGraphNodes.add(node);
     }
     drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
   }
@@ -654,18 +655,19 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param pane       the pane in which to draw the nodes.
    * @param nodes      the list of nodes to draw.
-   * @param level      the level in the tree at which to draw the nodes.
    * @param startLevel the level at which to start drawing nodes.
    */
-  private void drawNode(Pane pane, GraphNode node, int startLevel) {
+  private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
+      int startLevel, int nestedDepth) {
     if (node.hasChildren()) {
-      constructBubble(pane, node, node.getLevel(), startLevel);
+      constructBubble(pane, node, drawnGraphNodes, node.getLevel(), startLevel, nestedDepth);
     } else {
-      constructNode(pane, node, node.getLevel(), startLevel);
+      constructNode(pane, node, node.getLevel(), startLevel, nestedDepth);
     }
+    drawnGraphNodes.add(node);
   }
 
-  private void constructNode(Pane pane, GraphNode node, int level, int startLevel) {
+  private void constructNode(Pane pane, GraphNode node, int level, int startLevel, int nestedDepth) {
     double width = calculateNodeWidth(node);
     double height = node.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
@@ -680,15 +682,22 @@ public class DrawComparedGraphs implements Initializable {
     }
     circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
     circle.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
+    if (nestedDepth > 0) {
+//      System.out.println("circle.getCenterX() = " + circle.getCenterX());
+//      System.out.println("circle.getCenterY() = " + circle.getCenterY());
+//      System.out.println("");
+    }
     if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
-      circle.setVisible(false);
+      circle.setVisible(nestedDepth > 0);//false);
     }
 //    else {
 //      addLabel(pane, circle, node.getId());
 //    }
   }
 
-  private void constructBubble(Pane pane, GraphNode bubble, int level, int startLevel) {
+  private void constructBubble(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
+      int level, int startLevel,
+      int nestedDepth) {
     double width = calculateNodeWidth(bubble);
     double height = bubble.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
@@ -698,22 +707,30 @@ public class DrawComparedGraphs implements Initializable {
     pane.getChildren().add(square);
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
     square.centerYProperty().set(pane.getHeight() * bubble.getRelativeYPos());
+    if (nestedDepth > 0) {
+      square.setFill(Color.RED);
+//      System.out.println("square.getCenterX() = " + square.centerXProperty().get());
+//      System.out.println("square.getCenterY() = " + square.centerYProperty().get());
+//      System.out.println("");
+    }
     if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
-      square.setVisible(false);
+      square.setVisible(nestedDepth > 0);//false);
     }
 //    else {
 //      addLabel(pane, square, node.getId());
 //    }
     if (width > BUBBLE_POP_SIZE) {
-      drawnNestedNodes(bubble);
+      drawnNestedNodes(pane, bubble, drawnGraphNodes, startLevel);
     }
   }
-  
-  private void drawnNestedNodes(GraphNode bubble) {
-    //System.out.println("graph = " + graph);
-    System.out.println("popping bubble: " + bubble);
+
+  private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
+      int startLevel) {
     Collection<GraphNode> poppedNodes = bubble.pop();
-    //System.out.println("poppedNodes = " + poppedNodes);
+    for (GraphNode poppedNode : poppedNodes) {
+//      System.out.println("poppedNode = " + poppedNode);
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, 1);
+    }
   }
 
   /**
@@ -768,7 +785,7 @@ public class DrawComparedGraphs implements Initializable {
     edge.setEndX(zoomFactor.get()
         * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
     edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
-    edge.toBack();
+//    edge.toBack();
   }
 
   /**

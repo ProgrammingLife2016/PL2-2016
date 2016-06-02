@@ -28,7 +28,7 @@ public interface NodeVisitor {
   /**
    * Peforms that action that the visitor must apply to the specified node.
    *
-   * @param node The node to act on
+   * @param bubble The bubble to act on
    */
   void visit(PhyloBubble bubble);
 }

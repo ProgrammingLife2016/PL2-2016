@@ -55,7 +55,7 @@ public class CompareSubgraphs {
 ////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
-  public static void alignVertically(ArrayList<GraphNode> graphOrder) {
+  public static void alignVertically(Collection<GraphNode> graphOrder) {
     ArrayList<GraphNode> rootNodes = new ArrayList<>();
     for (GraphNode node : graphOrder) {
       if (node.getInEdges().isEmpty()) {
@@ -63,14 +63,16 @@ public class CompareSubgraphs {
       }
     }
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
-    int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
-    int index = 0;
-    for (GraphNode rootNode : rootNodes) {
-      int startY = index * heightPerRoot;
-      int endY = (index + 1) * heightPerRoot;
-      rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
-      areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
-      index++;
+    if (!rootNodes.isEmpty()) {
+      int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
+      int index = 0;
+      for (GraphNode rootNode : rootNodes) {
+        int startY = index * heightPerRoot;
+        int endY = (index + 1) * heightPerRoot;
+        rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
+        areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
+        index++;
+      }
     }
     for (GraphNode node : graphOrder) {
       if (rootNodes.contains(node)) {
