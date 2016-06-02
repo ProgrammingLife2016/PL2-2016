@@ -42,8 +42,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
 
   private static final Color LEAF_COLOR = Color.BLACK;
   private static final Color NODE_COLOR = Color.ALICEBLUE;
-  private static final double NODE_RADIUS = 7.0;
-  private static final double LINEAGE_RADIUS = 12.0;
+  private static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
   private static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
@@ -51,6 +50,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
+  private static final double EDGE_WIDTH = 2.0;
+  private static final double HIGHLIGHTED_EDGE_WIDTH = 6.0;
 
   private static final List<Stop> MULTI_GRAPH_GRADIENT_STOPS = new ArrayList<>(2);
 
@@ -72,7 +73,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final Area area;
   private final SelectionManager selectionManager;
   private boolean isLeaf;
-  private Circle lineageCircle;
+  private final Line edge = new Line();
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -89,7 +90,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     this.area = graphArea;
     this.selectionManager = selectionManager;
 
-    initializeLineageCircle();
     setColor();
     resetBorderColor();
     initializeNodeListeners();
@@ -98,17 +98,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     this.setCenterY(graphArea.getCenterY());
     initializeClickedEvent();
     initializeDragEvent();
-  }
-
-  /**
-   * Initialize the lineage circle.
-   */
-  private void initializeLineageCircle() {
-    lineageCircle = new Circle(LINEAGE_RADIUS);
-    lineageCircle.centerXProperty().bind(centerXProperty());
-    lineageCircle.centerYProperty().bind(centerYProperty());
-    lineageCircle.scaleXProperty().bind(scaleXProperty());
-    lineageCircle.scaleYProperty().bind(scaleYProperty());
   }
 
   /**
@@ -121,6 +110,13 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     });
     dataNode.getDrawnInBottomProperty().addListener(invalid -> {
       resetBorderColor();
+    });
+    dataNode.getInHighlightedPathProperty().addListener((observable, oldValue, newValue) -> {
+      if (newValue) {
+        edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
+      } else {
+        edge.setStrokeWidth(EDGE_WIDTH);
+      }
     });
   }
 
@@ -181,7 +177,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     } else {
       setFill(NODE_COLOR);
     }
-    lineageCircle.setFill(dataNode.getLineageColor());
+    edge.setStroke(dataNode.getLineageColor());
   }
 
   /**
@@ -209,7 +205,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       return null; // box too small to draw node.
     }
     TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
-    graphPane.getChildren().addAll(node.lineageCircle, node);
+    graphPane.getChildren().add(node);
     drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
     return node;
   }
@@ -243,7 +239,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
       TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
       node.children.add(child);
-      drawEdge(node, child, graphPane);
+      child.drawEdge(node, child, graphPane);
     }
   }
 
@@ -291,8 +287,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param child     the child node.
    * @param graphPane the pane in which the edge should be drawn.
    */
-  private static void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
-    Line edge = new Line();
+  private void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
     edge.setSmooth(true);
     edge.startXProperty().bind(parent.centerXProperty());
     edge.startYProperty().bind(parent.centerYProperty());
@@ -300,6 +295,11 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     edge.endYProperty().bind(child.centerYProperty());
     graphPane.getChildren().add(edge);
     edge.toBack();
+    if (dataNode.getInHighlightedPathProperty().get()) {
+      edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
+    } else {
+      edge.setStrokeWidth(EDGE_WIDTH);
+    }
   }
 
   /**

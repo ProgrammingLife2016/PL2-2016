@@ -24,6 +24,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
   private Annotation annotation;
+  private LineageColor lineageColor = LineageColor.NONE;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
@@ -34,6 +35,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * If all of the child nodes of this node are drawn in the bottom graph.
    */
   private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
+
+  /**
+   * If this treenode is part of a highlighted path.
+   */
+  private final BooleanProperty inHighlightedPath = new SimpleBooleanProperty(false);
 
   /**
    * Construct a phylogenetic tree node.
@@ -54,10 +60,13 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     }
 
     if (node.numberChildren() == 0) {
-      genomeId = GenomeMap.getInstance().getId(node.label.split("\\.", 2)[0]);
-    } else {
-      genomeId = -1;
+      Integer id = GenomeMap.getInstance().getId(node.label.split("\\.", 2)[0]);
+      if (id != null) {
+        genomeId = id;
+        return;
+      }
     }
+    genomeId = -1;
   }
 
   @Override
@@ -150,12 +159,13 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   @Override
+  public BooleanProperty getInHighlightedPathProperty() {
+    return inHighlightedPath;
+  }
+
+  @Override
   public Color getLineageColor() {
-    if (annotation != null) {
-      return LineageColor.toLineage(annotation.lineage).getColor();
-    } else {
-      return LineageColor.NONE.getColor();
-    }
+    return lineageColor.getColor();
   }
 
   /**
@@ -246,8 +256,46 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
   }
 
+  /**
+   * Set the annotation of this node.
+   *
+   * @param annotation the annotation.
+   */
   protected void setAnnotation(Annotation annotation) {
     this.annotation = annotation;
+    setLineageColor(LineageColor.toLineage(annotation.lineage));
+  }
+
+  /**
+   * Recursively set the lineage color of this node and all parent nodes (if both of the parents
+   * children have the same lineage color).
+   *
+   * @param lineageColor the lineage color.
+   */
+  private void setLineageColor(LineageColor lineageColor) {
+    if (isLeaf() || children[0].lineageColor.equals(lineageColor)
+        && children[1].lineageColor.equals(lineageColor)) {
+      this.lineageColor = lineageColor;
+      if (parent != null) {
+        parent.setLineageColor(lineageColor);
+      }
+    }
+  }
+
+  /**
+   * Unhighlight this tree node.
+   */
+  protected void unhighlightPath() {
+    inHighlightedPath.set(false);
+    parent.unhighlightPath();
+  }
+
+  /**
+   * Highlight this tree node.
+   */
+  protected void highlightPath() {
+    inHighlightedPath.set(true);
+    parent.highlightPath();
   }
 
   /**

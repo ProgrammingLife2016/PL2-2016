@@ -110,6 +110,14 @@ public interface IPhylogeneticTreeNode {
   Color getLineageColor();
 
   /**
+   * Get the property which contains the value which states if this node is in a highlighted path.
+   *
+   * @return the property which contains the value which states if this node is in a highlighted
+   *         path.
+   */
+  BooleanProperty getInHighlightedPathProperty();
+
+  /**
    * Get a string containing metadata about the genome in the leaf node. Returns an empty string if
    * it is called on a non-leaf node.
    *
