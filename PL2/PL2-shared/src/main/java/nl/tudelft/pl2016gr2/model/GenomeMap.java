@@ -189,6 +189,18 @@ public class GenomeMap {
   }
 
   /**
+   * Clears all elements from the map.
+   * <p>
+   * Can be used to reset the map. <b>All</b> data stored will be lost.
+   * </p>
+   */
+  public void clear() {
+    genomes = new ArrayList<>();
+    identifierMap = new HashMap<>(INIT_CAPACITY, LOAD_FACTOR);
+    referenceId = null;
+  }
+
+  /**
    * Trims unused space in the memory of this map.
    * <p>
    * This method should be called after the map has been constructed.

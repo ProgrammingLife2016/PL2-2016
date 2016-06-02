@@ -213,6 +213,14 @@ public class GenomeMapTest {
     assertEquals(newGenomes.size(), mappedGenomes.size());
   }
 
+  @Test
+  public void clearShouldRemoveAllEntries() {
+    assertTrue(map.containsGenome(FIRST_GENOME));
+    assertTrue(map.containsGenome(SECOND_GENOME));
+    map.clear();
+    assertFalse(map.containsGenome(FIRST_GENOME));
+    assertFalse(map.containsGenome(SECOND_GENOME));
+  }
 
   @Test
   public void testTrimToSizeShouldFreeMemory() {

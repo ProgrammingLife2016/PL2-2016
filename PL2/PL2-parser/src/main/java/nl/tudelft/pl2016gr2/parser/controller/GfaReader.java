@@ -181,6 +181,9 @@ public class GfaReader {
    */
   @TestId(id = "parseHeader")
   private void parseHeader(char[] chars) {
+    // Clears the genome map from potential old entries.
+    GenomeMap.getInstance().clear();
+
     int index = 0;
     index = skipTillCharacter(chars, index, ':', 2) + 1;
     int start = index;
