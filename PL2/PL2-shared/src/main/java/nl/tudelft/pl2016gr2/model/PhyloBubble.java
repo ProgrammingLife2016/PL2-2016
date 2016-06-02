@@ -216,12 +216,12 @@ public class PhyloBubble implements Bubble {
   @Override
   public Collection<GraphNode> pop() {
     if (poppedNodes == null) {
-      System.out.println("bubble to pop: "  + this);
+//      System.out.println("bubble to pop: "  + this);
       poppedNodes = filter.zoomIn(this);
-      for (GraphNode node : poppedNodes) {
-        System.out.println(node);
-      }
-      System.out.println("---------------------");
+//      for (GraphNode node : poppedNodes) {
+//        System.out.println(node);
+//      }
+      //System.out.println("---------------------");
     }
     return poppedNodes;
   }
