@@ -265,7 +265,7 @@ public class SequenceNode extends AbstractNode {
       sb2.append(outEdge.getId()).append(", ");
     }
     sb2.append(']');
-    return super.toString() + ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.
+    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.
         toString() + ", outEdges=" + sb2.toString() + '}';
   }
 

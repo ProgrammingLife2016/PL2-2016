@@ -3,15 +3,16 @@ package nl.tudelft.pl2016gr2.core.algorithms;
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -31,6 +32,17 @@ public class ZoomIn {
     // THIS MIGHT NOT WORK WITH THE FIRST/LAST NODE
     //zoomOut.addOldView(getNode(inlinks), getNode(outlinks));
     
+    Map<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
+    Map<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
+    bubble.getInEdges().forEach(node -> {
+      originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
+      originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
+    });
+    bubble.getOutEdges().forEach(node -> {
+      originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
+      originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
+    });
+    
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
  
@@ -39,37 +51,40 @@ public class ZoomIn {
     debubble(poppedNodes, childOne, bubble, newBubbles);
     debubble(poppedNodes, childTwo, bubble, newBubbles);
     
-    // Add outlink to other bubbles that are not affected
-    Collection<GraphNode> inlinks = bubble.getInEdges();
-    Iterator<GraphNode> inlinkIterator = inlinks.iterator();
+    pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
+    pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
+    filter.pruneNodes(poppedNodes, newBubbles);
+    return poppedNodes;
+  }
+  
+  protected void pruneStart(Collection<GraphNode> bubbleInEdges, 
+      Map<Integer, Collection<GraphNode>> inEdges, Map<Integer, Collection<GraphNode>> outEdges,
+      int bubbleId) {
+    Iterator<GraphNode> inlinkIterator = bubbleInEdges.iterator();
     while (inlinkIterator.hasNext()) {
-      GraphNode oldStartNode = inlinkIterator.next();
-      GraphNode startNode = getNode(oldStartNode.getId(), false, poppedNodes);
-      //GraphNode oldStartNode = graph.getNode(next.getId());
-      startNode.setInEdges(oldStartNode.getInEdges());
-      for (GraphNode curOutlink : oldStartNode.getOutEdges()) {
-        if (curOutlink.getId() != bubble.getId() && !startNode.getOutEdges().contains(curOutlink)) {
+      GraphNode startNode = inlinkIterator.next();
+      startNode.setInEdges(inEdges.get(startNode.getId()));
+      for (GraphNode curOutlink : outEdges.get(startNode.getId())) {
+        if (curOutlink.getId() != bubbleId && !startNode.getOutEdges().contains(curOutlink)) {
           startNode.addOutEdge(curOutlink);
         }
       }
     }
-    
-    // Add inlink to other bubbles that are not affected
-    Collection<GraphNode> outlinks = bubble.getOutEdges();
-    Iterator<GraphNode> outlinkIterator = outlinks.iterator();
+  }
+  
+  protected void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
+      Map<Integer, Collection<GraphNode>> outEdges, Map<Integer, Collection<GraphNode>> inEdges,
+      int bubbleId) {
+    Iterator<GraphNode> outlinkIterator = bubbleOutEdges.iterator();
     while (outlinkIterator.hasNext()) {
-      GraphNode oldEndNode = outlinkIterator.next();
-      GraphNode endNode = getNode(oldEndNode.getId(), true, poppedNodes);
-      endNode.setOutEdges(oldEndNode.getOutEdges());
-      for (GraphNode curInlink : oldEndNode.getInEdges()) {
-        if (curInlink.getId() != bubble.getId() && !endNode.getInEdges().contains(curInlink)) {
-          endNode.addInEdge(curInlink);
+      GraphNode endNode = outlinkIterator.next();
+      endNode.setOutEdges(outEdges.get(endNode.getId()));
+      for (GraphNode curOutlink : inEdges.get(endNode.getId())) {
+        if (curOutlink.getId() != bubbleId && !endNode.getInEdges().contains(curOutlink)) {
+          endNode.addOutEdge(curOutlink);
         }
       }
     }
-
-    filter.pruneNodes(poppedNodes, newBubbles);
-    return poppedNodes;
   }
   
   private GraphNode getNode(int id, boolean startEnd, List<GraphNode> nodes) {

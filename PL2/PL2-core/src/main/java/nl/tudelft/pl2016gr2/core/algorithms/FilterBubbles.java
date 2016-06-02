@@ -289,7 +289,8 @@ public class FilterBubbles implements PhyloFilter {
     });
   }
 
-  private Collection<GraphNode> pruneLinks(Collection<GraphNode> links, List<GraphNode> graphNodes) {
+  private Collection<GraphNode> pruneLinks(Collection<GraphNode> links, 
+      List<GraphNode> graphNodes) {
     Collection<GraphNode> prunedLinks = new ArrayList<>();
     links.forEach(link -> {
       if (graphNodes.contains(link)) {
