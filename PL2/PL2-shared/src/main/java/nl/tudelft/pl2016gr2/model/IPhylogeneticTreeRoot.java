@@ -1,4 +1,7 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
+
+import java.util.List;
+
 
 /**
  * This interface must be implemented by the root of the phylogenetic tree.
@@ -24,4 +27,11 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    * @param isDrawn if the given genome is added or removed.
    */
   void setDrawnInBottom(String genome, boolean isDrawn);
+  
+  /**
+   * Gets the list of annotations.
+   * 
+   * @return the list of annotations.
+   */
+  List<Annotation> getAnnotations();
 }

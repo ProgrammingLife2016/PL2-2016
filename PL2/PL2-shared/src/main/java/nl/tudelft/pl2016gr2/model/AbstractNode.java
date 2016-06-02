@@ -35,37 +35,44 @@ public abstract class AbstractNode implements Node {
   public boolean hasChildren() {
     return false;
   }
+  
+  @Override
+  public boolean hasChild(GraphNode child) {
+    return false;
+  }
 
   @Override
-  public Collection<Integer> getChildren() {
+  public Collection<GraphNode> getChildren() {
     return null;
   }
-
-  /**
-   * Returns the length of the sequence in this node.
-   *
-   * @return The sequence length
-   */
-  @Override
-  public int size() {
-    return getSequence().length();
-  }
-
 
   @Override
   public Collection<String> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
-        node.getId()) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
+        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
         + "not a direct successor. This = " + this.getId();
 
     Collection<String> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
-        ::add);
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome))
+        .forEach(genomes::add);
     return genomes;
   }
 
   @Override
   public String toString() {
     return "id: " + identifier;
+  }
+
+  @Override
+  public int hashCode() {
+    return identifier * 37;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null || !getClass().equals(obj.getClass())) {
+      return false;
+    }
+    return identifier == ((AbstractNode) obj).identifier;
   }
 }

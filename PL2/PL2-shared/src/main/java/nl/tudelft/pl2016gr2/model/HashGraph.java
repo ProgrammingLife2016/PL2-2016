@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,17 +11,20 @@ import java.util.Map;
 
 public class HashGraph implements SequenceGraph {
 
+  @TestId(id = "nodes")
   private final HashMap<Integer, GraphNode> nodes;
-  private final ArrayList<Integer> rootNodes;
+  private final HashSet<GraphNode> rootNodes;
   private final HashSet<String> genomes;
+  private int highestId;
 
   /**
    * Constructs an empty <code>HashGraph</code>.
    */
   public HashGraph() {
     nodes = new HashMap<>();
-    rootNodes = new ArrayList<>();
+    rootNodes = new HashSet<>();
     genomes = new HashSet<>();
+    highestId = 0;
   }
 
   /**
@@ -45,11 +50,24 @@ public class HashGraph implements SequenceGraph {
    * @param rootNodes The root nodes of the graph
    * @param genomes   The genomes that are represented in the graph
    */
-  public HashGraph(Map<Integer, ? extends GraphNode> nodes, Collection<Integer> rootNodes,
-      Collection<String> genomes) {
+  public HashGraph(Map<Integer, ? extends GraphNode> nodes,
+      Collection<? extends GraphNode> rootNodes, Collection<String> genomes) {
     this.nodes = new HashMap<>(nodes);
-    this.rootNodes = new ArrayList<>(rootNodes);
+    this.rootNodes = new HashSet<>(rootNodes);
     this.genomes = new HashSet<>(genomes);
+  }
+
+  public void print() {
+    nodes.forEach((id, node) -> {
+      System.out.println(node);
+    });
+  }
+
+  @Override
+  public ArrayList<GraphNode> getOrderedGraph() {
+    ArrayList<GraphNode> graphOrder = new ArrayList<>(nodes.values());
+    graphOrder.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+    return graphOrder;
   }
 
   /**
@@ -60,24 +78,24 @@ public class HashGraph implements SequenceGraph {
    *
    * @return all root nodes.
    */
-  private ArrayList<Integer> parseRootNodes() {
-    ArrayList<Integer> rootNodes = new ArrayList<>();
-    nodes.forEach((Integer elemId, GraphNode elem) -> {
-      if (elem.isRoot()) {
-        rootNodes.add(elemId);
+  private HashSet<GraphNode> parseRootNodes() {
+    HashSet<GraphNode> rootNodes = new HashSet<>();
+    nodes.forEach((Integer id, GraphNode node) -> {
+      if (node.isRoot()) {
+        rootNodes.add(node);
       }
     });
     return rootNodes;
   }
 
   @Override
-  public void addAsRootNode(int identifier) {
-    assert nodes.get(identifier).isRoot() : "Adding non-root node as root. NodeID: " + identifier;
-    rootNodes.add(identifier);
+  public void addAsRootNode(GraphNode rootNode) {
+    assert rootNode.isRoot() : "Adding non-root node as root. NodeID: " + rootNode;
+    rootNodes.add(rootNode);
   }
 
   @Override
-  public Collection<Integer> getRootNodes() {
+  public Collection<GraphNode> getRootNodes() {
     return rootNodes;
   }
 
@@ -109,8 +127,8 @@ public class HashGraph implements SequenceGraph {
   }
 
   @Override
-  public boolean contains(int identifier) {
-    return nodes.containsKey(identifier);
+  public boolean contains(GraphNode node) {
+    return nodes.containsKey(node.getId());
   }
 
   @Override
@@ -120,17 +138,35 @@ public class HashGraph implements SequenceGraph {
 
   @Override
   public void add(GraphNode node) {
-    assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
+    //assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
+    if (node.getId() > highestId) {
+      highestId = node.getId();
+    }
 
     if (node.isRoot()) {
-      rootNodes.add(node.getId());
+      rootNodes.add(node);
     }
     nodes.put(node.getId(), node);
   }
 
   @Override
-  public GraphNode remove(int identifier) {
-    return nodes.remove(identifier);
+  public void remove(GraphNode node, boolean updateInEdges, boolean updateOutEdges) {
+    if (updateInEdges) {
+      node.getInEdges().forEach(inEdge -> {
+        if (nodes.containsKey(inEdge.getId())) {
+          inEdge.removeOutEdge(node);
+        }
+      });
+    }
+    
+    if (updateOutEdges) {
+      node.getOutEdges().forEach(outEdge -> {
+        if (nodes.containsKey(outEdge.getId())) {
+          outEdge.removeInEdge(node);
+        }
+      });
+    }
+    nodes.remove(node.getId());
   }
 
   /**
@@ -150,10 +186,5 @@ public class HashGraph implements SequenceGraph {
       sb.append(node).append('\n');
     }
     return sb.toString();
-  }
-
-  @Override
-  public ArrayList<GraphNode> getNodes() {
-    return new ArrayList<>(nodes.values());
   }
 }

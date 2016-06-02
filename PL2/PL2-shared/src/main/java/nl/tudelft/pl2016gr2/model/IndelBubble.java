@@ -15,7 +15,7 @@ public class IndelBubble extends Bubble {
     super(id, inEdges, outEdges, nestedNodes);
   }
 
-  private IndelBubble(Bubble bubble) {
+  public IndelBubble(Bubble bubble) {
     super(bubble);
   }
 

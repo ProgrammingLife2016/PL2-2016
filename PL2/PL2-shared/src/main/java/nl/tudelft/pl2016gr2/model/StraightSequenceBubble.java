@@ -15,7 +15,7 @@ public class StraightSequenceBubble extends Bubble {
     super(id, inEdges, outEdges, nestedNodes);
   }
 
-  private StraightSequenceBubble(Bubble bubble) {
+  public StraightSequenceBubble(Bubble bubble) {
     super(bubble);
   }
 

@@ -19,6 +19,10 @@ public class SimpleBubble extends Bubble {
       Collection<GraphNode> outEdges, GraphNode node) {
     super(id, inEdges, outEdges, node);
   }
+  
+  public SimpleBubble(int id, Collection<GraphNode> inEdges, GraphNode node) {
+    super(id, inEdges, node);
+  }
 
   public SimpleBubble(Bubble bubble) {
     super(bubble);

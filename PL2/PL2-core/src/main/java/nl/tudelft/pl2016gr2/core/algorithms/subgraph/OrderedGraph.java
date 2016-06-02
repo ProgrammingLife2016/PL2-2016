@@ -1,7 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.Position;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
@@ -14,24 +13,32 @@ import java.util.ArrayList;
 public class OrderedGraph {
 
   private final SequenceGraph subgraph;
-  private final ArrayList<Position> graphOrder;
+//  private final ArrayList<GraphNode> graphOrderStartX;
+  private final ArrayList<GraphNode> graphOrderEndX;
 
   /**
    * Construct an ordered graph.
    *
    * @param subgraph   the subgraph.
-   * @param arrayList the graph order.
+   * @param graphOrder the graph order.
    */
-  public OrderedGraph(SequenceGraph subgraph, ArrayList<Position> arrayList) {
+  public OrderedGraph(SequenceGraph subgraph, ArrayList<GraphNode> graphOrder) {
     this.subgraph = subgraph;
-    this.graphOrder = arrayList;
+    this.graphOrderEndX = graphOrder;
+//    graphOrderStartX = new ArrayList<>(graphOrder);
+//    graphOrderStartX.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node1.size()
+//        - (node2.getLevel() - node2.size()));
   }
 
   public SequenceGraph getSubgraph() {
     return subgraph;
   }
 
-  public ArrayList<Position> getGraphOrder() {
-    return graphOrder;
+  public ArrayList<GraphNode> getGraphOrder() {
+    return graphOrderEndX;
   }
+
+//  public ArrayList<GraphNode> getGraphOrderByStartXPosition() {
+//    return graphOrderStartX;
+//  }
 }

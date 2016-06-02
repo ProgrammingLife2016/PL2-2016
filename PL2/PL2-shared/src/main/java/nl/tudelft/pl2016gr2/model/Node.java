@@ -12,7 +12,7 @@ public interface Node extends GraphNode {
    *
    * @param sequence The sequence to set this node to
    */
-  void setSequence(String sequence);
+  void setSequence(BaseSequence sequence);
 
   /**
    * Returns a string representation of the sequence that this node contains.
@@ -20,8 +20,12 @@ public interface Node extends GraphNode {
    * @return The sequence of this node
    */
   String getSequence();
-  
-  void setInBubble(boolean bool);
-  
-  boolean isInBubble();
+
+//  @Override
+//  public Node copyAll() {
+//    Node node = new Node(getId(), getSequenceLength(), this.genomes, this.snips);
+//    node.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
+//    node.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
+//    return node;
+//  }
 }

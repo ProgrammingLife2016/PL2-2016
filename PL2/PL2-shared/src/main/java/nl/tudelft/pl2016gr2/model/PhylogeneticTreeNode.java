@@ -1,7 +1,8 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
@@ -20,16 +21,18 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
+  private Annotation annotation;
+  private final TreeNode node;
 
   /**
    * If all of the child nodes of this node are drawn in the top graph.
    */
-  private BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
 
   /**
    * If all of the child nodes of this node are drawn in the bottom graph.
    */
-  private BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
+  private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
 
   /**
    * Construct a phylogenetic tree node.
@@ -37,8 +40,8 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param node   the TreeNode of this node.
    * @param parent the parent of this phylogenetic tree node.
    */
-  protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
-    this.label = node.label;
+  public PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
+    this.node = node;
     this.weight = node.weight;
     this.parent = parent;
 
@@ -49,8 +52,101 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     } else { // leaf node
       children = null;
     }
-  }
 
+    if (node.numberChildren() == 0) {
+      this.label = node.label.split("\\.", 2)[0];
+    } else {
+      label = null;
+    }
+  }
+  
+  /**
+   * Construct a phylogenetic tree node with an existing phylogenetic tree node,
+   * constructing it from top to bottom. This node is added as a child to its parent.
+   * The children of the original node are not added to this node.
+   * 
+   * @param node : the existing phylogenetic tree node.
+   * @param parent : the parent of this node.
+   */
+  public PhylogeneticTreeNode(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
+    this.weight = (float) node.getEdgeLength();
+    this.parent = parent;
+    this.node = null;
+    
+    if (node.getDirectChildCount() == 2) {
+      children = new PhylogeneticTreeNode[2];
+    } else {
+      children = null;
+    }
+    
+    if (node.getDirectChildCount() == 0) {
+      this.label = node.getLabel().split("\\.", 2)[0];
+    } else {
+      this.label = null;
+    }
+    
+    if (parent != null) {
+      this.parent.addChild(this);
+    }
+  }
+  
+  /**
+   * Creates a copy of this node, assuming that it's a root node and that it's
+   * children are instancesof PhylogeneticTreeNodes. 
+   * 
+   * @param node : the node to copy.
+   */
+  public PhylogeneticTreeNode(IPhylogeneticTreeNode node) {
+    this.weight = (float) node.getEdgeLength();
+    this.parent = null;
+    this.node = null;
+    
+    if (node.getDirectChildCount() == 2) {
+      children = new PhylogeneticTreeNode[2];
+      children[0] = (PhylogeneticTreeNode) node.getChild(0);
+      children[1] = (PhylogeneticTreeNode) node.getChild(1);
+    } else {
+      children = null;
+    }
+    
+    if (node.getDirectChildCount() == 0) {
+      this.label = node.getLabel().split("\\.", 2)[0];
+    } else {
+      this.label = null;
+    }
+  }
+  
+  @Override
+  public String toString() {
+    if (isLeaf()) {
+      return "Leaf node: " + this.label;
+    }
+    
+    return "Leaves: " + getGenomes().toString();
+  }
+  
+  @Override
+  public boolean hasTreeNode() {
+    return node != null;
+  }
+  
+  @Override
+  public TreeNode getTreeNode() {
+    return node;
+  }
+  
+  @Override
+  public void addChild(PhylogeneticTreeNode child) {
+    assert (!isLeaf());
+    if (children[0] == null) {
+      children[0] = child;
+    } else if (children[1] == null) {
+      children[1] = child;
+    } else {
+      System.out.println("cannot add another child");
+    }
+  }
+  
   @Override
   public boolean hasParent() {
     return parent != null;
@@ -127,6 +223,15 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     return drawnInBottom;
   }
 
+  @Override
+  public Color getLineageColor() {
+    if (annotation != null) {
+      return LineageColor.toLineage(annotation.lineage).getColor();
+    } else {
+      return LineageColor.NONE.getColor();
+    }
+  }
+
   /**
    * Creates an iterator which iterates over all of the leaf nodes of the tree.
    *
@@ -136,6 +241,25 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   public Iterator<PhylogeneticTreeNode> iterator() {
     return new LeafNodeIterator();
   }
+  
+  /**
+   * Get the label of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the label of this leaf node.
+   */
+  public String getLabel() {
+    assert isLeaf();
+    return label;
+  }
+
+  @Override
+  public String getMetaData() {
+    if (annotation == null) {
+      return "";
+    } else {
+      return annotation.buildMetaDataString();
+    }
+  }
 
   /**
    * Set the value of drawnInTop. If it is different from the previous value, update the parent node
@@ -143,7 +267,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    *
    * @param isDrawn if this node is drawn in the top graph.
    */
-  protected void setDrawnInTop(boolean isDrawn) {
+  public void setDrawnInTop(boolean isDrawn) {
     if (drawnInTop.get() != isDrawn && (!isDrawn || childrenAreDrawnInTop())) {
       drawnInTop.set(isDrawn);
       if (hasParent()) {
@@ -158,23 +282,13 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    *
    * @param isDrawn if this node is drawn in the bottom graph.
    */
-  protected void setDrawnInBottom(boolean isDrawn) {
+  public void setDrawnInBottom(boolean isDrawn) {
     if (drawnInBottom.get() != isDrawn && (!isDrawn || childrenAreDrawnInBottom())) {
       drawnInBottom.set(isDrawn);
       if (hasParent()) {
         parent.setDrawnInBottom(isDrawn);
       }
     }
-  }
-
-  /**
-   * Get the label of this leaf node. Note: this must be a leaf node!
-   *
-   * @return the label of this leaf node.
-   */
-  protected String getLabel() {
-    assert isLeaf();
-    return label;
   }
 
   /**
@@ -193,6 +307,10 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   private boolean childrenAreDrawnInBottom() {
     return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
+  }
+
+  protected void setAnnotation(Annotation annotation) {
+    this.annotation = annotation;
   }
 
   /**

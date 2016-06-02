@@ -14,6 +14,7 @@ import java.util.Set;
 /**
  *
  * @author Cas
+
  */
 public class MutationBubbleAlgorithms {
 
@@ -48,6 +49,7 @@ public class MutationBubbleAlgorithms {
   }
 
   private static ArrayList<GraphNode> initStraightInDelPoint(ArrayList<GraphNode> orderedGraph) {
+
 //    HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
 //    for (int i = 0; i < orderedGraph.size(); i++) {
 //      NodePosition nodeOrder = (NodePosition) orderedGraph.get(i);
@@ -77,6 +79,7 @@ public class MutationBubbleAlgorithms {
           if (bubble == null) {
             //je wilt aan de semantic bubble waarschijnlijk een andere id meegeven
             bubble = new SimpleBubble(node.getId(), node.getInEdges(), node);
+
 //            if (nodeInEdges.size() > 0) {
 //              GraphNode graphNode = graph.getNode(nodeInEdges.get(0));
 //              graphNode.setInBubble(true);
@@ -108,6 +111,7 @@ public class MutationBubbleAlgorithms {
             bubble = new StraightSequenceBubble(bubble);
 //            ArrayList<GraphNode> nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
 //            bubble.setOutEdges(nodeOutEdges);
+
 //            ArrayList<Integer> nodeOutEdges = (ArrayList<Integer>) node.getOutEdges();
 //            GraphNode graphNode = graph.getNode(nodeOutEdges.get(0));
 //            bubblePosition.getBubble().addNode(graphNode);

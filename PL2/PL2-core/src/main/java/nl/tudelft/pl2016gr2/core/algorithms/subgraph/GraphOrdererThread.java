@@ -1,8 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.Position;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class GraphOrdererThread extends Thread {
 
-  private HashMap<Integer, Position> orderedGraph;
+//  private ArrayList<GraphNode> orderedGraph;
   private final SequenceGraph graph;
 
   /**
@@ -36,24 +34,26 @@ public class GraphOrdererThread extends Thread {
    * list contains the nodes in order from left to right. Nodes which are at the same horizontal
    * position have sequential positions in the array list and have the same value for their level
    * field.
-   *
-   * @param graph the graph.
-   * @return the node order.
    */
-  private static HashMap<Integer, Position> calculateGraphOrder(SequenceGraph graph) {
-    HashMap<Integer, Position> nodeOrder = new HashMap<>();
-    HashMap<Integer, Integer> reachedCount = new HashMap<>();
-    Set<Integer> currentLevel = new HashSet<>();
+  private void calculateGraphOrder() {
+    HashMap<GraphNode, Integer> reachedCount = new HashMap<>();
+    Set<GraphNode> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
 
-    for (int level = 0; !currentLevel.isEmpty(); level++) {
-      Set<Integer> nextLevel = new HashSet<>();
-      ArrayList<ArrayList<Integer>> addedOutLinks = new ArrayList<>();
-      for (Integer nodeId : currentLevel) {
-        GraphNode node = graph.getNode(nodeId);
-        int count = reachedCount.getOrDefault(nodeId, 0);
+    while (!currentLevel.isEmpty()) {
+      Set<GraphNode> nextLevel = new HashSet<>();
+      ArrayList<ArrayList<GraphNode>> addedOutLinks = new ArrayList<>();
+      for (GraphNode node : currentLevel) {
+        int count = reachedCount.getOrDefault(node, 0);
         if (node.getInEdges().size() == count) {
-          nodeOrder.put(nodeId, new NodePosition(node, level));
+
+          int maxInLevel = 0;
+          for (GraphNode inEdge : node.getInEdges()) {
+            if (inEdge.getLevel() > maxInLevel) {
+              maxInLevel = inEdge.getLevel();
+            }
+          }
+          node.setLevel(maxInLevel + node.size());
           nextLevel.addAll(node.getOutEdges());
           addedOutLinks.add(new ArrayList<>(node.getOutEdges()));
         }
@@ -61,7 +61,6 @@ public class GraphOrdererThread extends Thread {
       updateReachedCount(reachedCount, addedOutLinks);
       currentLevel = nextLevel;
     }
-    return nodeOrder;
   }
 
   /**
@@ -70,10 +69,10 @@ public class GraphOrdererThread extends Thread {
    * @param reachedCount  the reached count map.
    * @param addedOutLinks the outlinks which have been iterated over.
    */
-  private static void updateReachedCount(HashMap<Integer, Integer> reachedCount,
-      ArrayList<ArrayList<Integer>> addedOutLinks) {
-    for (ArrayList<Integer> outEdges : addedOutLinks) {
-      for (Integer outEdge : outEdges) {
+  private static void updateReachedCount(HashMap<GraphNode, Integer> reachedCount,
+      ArrayList<ArrayList<GraphNode>> addedOutLinks) {
+    for (ArrayList<GraphNode> outEdges : addedOutLinks) {
+      for (GraphNode outEdge : outEdges) {
         reachedCount.put(outEdge, reachedCount.getOrDefault(outEdge, 0) + 1);
       }
     }
@@ -84,13 +83,13 @@ public class GraphOrdererThread extends Thread {
    *
    * @return a hashmap containing an id, node order mapping.
    */
-  public HashMap<Integer, Position> getOrderedGraph() {
+  public SequenceGraph getGraph() {
     try {
       this.join();
     } catch (InterruptedException ex) {
       Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return orderedGraph;
+    return graph;
   }
 
   /**
@@ -98,6 +97,6 @@ public class GraphOrdererThread extends Thread {
    */
   @Override
   public void run() {
-    orderedGraph = calculateGraphOrder(graph);
+    calculateGraphOrder();
   }
 }

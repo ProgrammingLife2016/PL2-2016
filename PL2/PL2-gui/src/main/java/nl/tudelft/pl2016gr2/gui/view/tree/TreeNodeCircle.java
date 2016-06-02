@@ -18,14 +18,14 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.gui.view.selection.TextDescription;
+import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
+import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -41,7 +41,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
 
   private static final Color LEAF_COLOR = Color.BLACK;
   private static final Color NODE_COLOR = Color.ALICEBLUE;
-  private static final double NODE_RADIUS = 10.0;
+  private static final double NODE_RADIUS = 7.0;
+  private static final double LINEAGE_RADIUS = 12.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
   private static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
@@ -70,6 +71,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final Area area;
   private final SelectionManager selectionManager;
   private boolean isLeaf;
+  private Circle lineageCircle;
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -86,7 +88,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     this.area = graphArea;
     this.selectionManager = selectionManager;
 
-    resetColor();
+    initializeLineageCircle();
+    setColor();
+    resetBorderColor();
     initializeNodeListeners();
 
     this.setCenterX(graphArea.getEndX() - this.getRadius());
@@ -96,15 +100,26 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   }
 
   /**
+   * Initialize the lineage circle.
+   */
+  private void initializeLineageCircle() {
+    lineageCircle = new Circle(LINEAGE_RADIUS);
+    lineageCircle.centerXProperty().bind(centerXProperty());
+    lineageCircle.centerYProperty().bind(centerYProperty());
+    lineageCircle.scaleXProperty().bind(scaleXProperty());
+    lineageCircle.scaleYProperty().bind(scaleYProperty());
+  }
+
+  /**
    * Initialize listeners which listen to the dataNode properties and change the node properties
    * accordingly.
    */
   private void initializeNodeListeners() {
     dataNode.getDrawnInTopProperty().addListener(invalid -> {
-      resetColor();
+      resetBorderColor();
     });
     dataNode.getDrawnInBottomProperty().addListener(invalid -> {
-      resetColor();
+      resetBorderColor();
     });
   }
 
@@ -112,7 +127,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize the click event for this object.
    */
   private void initializeClickedEvent() {
-    setOnMouseClicked((MouseEvent event) -> {
+    this.setMouseTransparent(true);
+    lineageCircle.setOnMouseClicked((MouseEvent event) -> {
       selectionManager.select(this);
       event.consume();
     });
@@ -122,7 +138,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize a drag event initializer.
    */
   private void initializeDragEvent() {
-    setOnDragDetected((MouseEvent event) -> {
+    lineageCircle.setOnDragDetected((MouseEvent event) -> {
       StringBuilder genomeStringBuilder = new StringBuilder();
       for (String genome : dataNode.getGenomes()) {
         genomeStringBuilder.append(genome).append('\n');
@@ -139,14 +155,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       dragboard.setDragView(snapshot(snapshotParams, null));
       event.consume();
     });
-  }
-
-  /**
-   * Recalculate the color of this node.
-   */
-  private void resetColor() {
-    resetBorderColor();
-    setDefaultColor();
   }
 
   /**
@@ -167,12 +175,13 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   /**
    * Set the default color of this node.
    */
-  private void setDefaultColor() {
+  private void setColor() {
     if (dataNode.isLeaf()) {
       setFill(LEAF_COLOR);
     } else {
       setFill(NODE_COLOR);
     }
+    lineageCircle.setFill(dataNode.getLineageColor());
   }
 
   /**
@@ -200,7 +209,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       return null; // box too small to draw node.
     }
     TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
-    graphPane.getChildren().add(node);
+    graphPane.getChildren().addAll(node.lineageCircle, node);
     drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
     return node;
   }
@@ -459,8 +468,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
 
   @Override
   public void select() {
-    setScaleX(1.75);
-    setScaleY(1.75);
+    setScaleX(1.5);
+    setScaleY(1.5);
   }
 
   @Override
@@ -474,6 +483,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     if (dataNode.getChildCount() != 0) {
       return new TreeNodeDescription(selectionManager, dataNode);
     }
-    return new TextDescription("this is a root node");
+    return new TreeLeafDescription(dataNode);
   }
 }

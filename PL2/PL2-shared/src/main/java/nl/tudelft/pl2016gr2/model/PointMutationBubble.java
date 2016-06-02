@@ -15,7 +15,7 @@ public class PointMutationBubble extends Bubble {
     super(id, inEdges, outEdges, nestedNodes);
   }
 
-  private PointMutationBubble(Bubble bubble) {
+  public PointMutationBubble(Bubble bubble) {
     super(bubble);
   }
 

@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.launcher;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
@@ -42,6 +43,7 @@ public class Dnav extends Application {
     primaryStage.setScene(scene);
     if (!Boolean.getBoolean("test")) {
       primaryStage.show();
+      rootLayout.promptFileChooser();
     }
   }
 

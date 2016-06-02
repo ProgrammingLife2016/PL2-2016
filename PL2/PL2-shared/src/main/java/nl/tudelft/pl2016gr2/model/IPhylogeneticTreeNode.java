@@ -1,6 +1,8 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
+import javafx.scene.paint.Color;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
 
@@ -11,7 +13,21 @@ import java.util.ArrayList;
  * @author Faris
  */
 public interface IPhylogeneticTreeNode {
-
+  
+  /**
+   * Returns true if this object contains the original juxtaposer treenode.
+   * 
+   * @return true if the object contains the original juxtaposer treenode.
+   */
+  boolean hasTreeNode();
+  
+  /**
+   * Get the original treenode. Returns null if this is not there.
+   * 
+   * @return the original treenode
+   */
+  TreeNode getTreeNode();
+  
   /**
    * Check if this node has a parent.
    *
@@ -40,6 +56,13 @@ public interface IPhylogeneticTreeNode {
    * @return the total amount of child nodes.
    */
   int getChildCount();
+  
+  /**
+   * Adds a child node to this node.
+   * 
+   * @param child the child node to add.
+   */
+  void addChild(PhylogeneticTreeNode child);
 
   /**
    * Get the child at the given index.
@@ -58,7 +81,7 @@ public interface IPhylogeneticTreeNode {
   int getChildIndex(IPhylogeneticTreeNode child);
 
   /**
-   * Get all of the genomes whic are present in this branch of the tree.
+   * Get all of the genomes which are present in this branch of the tree.
    *
    * @return all of the genomes whic are present in this branch of the tree.
    */
@@ -77,6 +100,13 @@ public interface IPhylogeneticTreeNode {
    * @return if this node is a leaf node.
    */
   boolean isLeaf();
+  
+  /**
+   * Get the label of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the label of this leaf node.
+   */
+  String getLabel();
 
   /**
    * Get the drawn in top property. This property is true iff all of the genomes in this tree node
@@ -93,4 +123,19 @@ public interface IPhylogeneticTreeNode {
    * @return the drawn in bottom property
    */
   BooleanProperty getDrawnInBottomProperty();
+
+  /**
+   * Get the lineage color of this node.
+   *
+   * @return the lineage color of this node.
+   */
+  Color getLineageColor();
+
+  /**
+   * Get a string containing metadata about the genome in the leaf node. Returns an empty string if
+   * it is called on a non-leaf node.
+   *
+   * @return a string containing metadata about the genome in the leaf node.
+   */
+  String getMetaData();
 }
