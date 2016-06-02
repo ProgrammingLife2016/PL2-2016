@@ -42,6 +42,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -717,10 +718,10 @@ public class DrawComparedGraphs implements Initializable {
 
   private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
       int startLevel, int nestedDepth) {
-//    Collection<GraphNode> poppedNodes = bubble.pop();
-//    for (GraphNode poppedNode : poppedNodes) {
-//      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
-//    }
+    Collection<GraphNode> poppedNodes = bubble.pop();
+    for (GraphNode poppedNode : poppedNodes) {
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
+    }
   }
 
   /**
@@ -843,9 +844,11 @@ public class DrawComparedGraphs implements Initializable {
   private static class GraphUpdater extends AnimationTimer {
 
     private static final boolean PRINT_FRAME_RATE = false;
+    private static final boolean PRINT_MEMORY = false;
     private final DrawComparedGraphs graphComparer;
     private final AtomicBoolean updateGraph = new AtomicBoolean(false);
     private long time = System.nanoTime();
+    private int count = 0;
 
     private GraphUpdater(DrawComparedGraphs graphComparer) {
       this.graphComparer = graphComparer;
@@ -857,6 +860,12 @@ public class DrawComparedGraphs implements Initializable {
       if (PRINT_FRAME_RATE) {
         double fps = 1_000_000_000.0 / (now - time);
         System.out.println("FPS = " + fps);
+      }
+      if (PRINT_MEMORY && count++ % 60 == 0) {
+        Runtime runtime = Runtime.getRuntime();
+        long bytes = (runtime.totalMemory() - runtime.freeMemory());
+        double megabytes = bytes / 1024.0 / 1024.0;
+        System.out.println("memory = " + String.format(Locale.US, "%.3f", megabytes) + " MB");
       }
       time = now;
       if (updateGraph.get()) {

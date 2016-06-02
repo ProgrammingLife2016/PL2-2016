@@ -34,7 +34,6 @@ public class FilterBubbles implements PhyloFilter {
   private final Map<Integer, Collection<GraphNode>> originalInEdges;
   private final Map<Integer, Collection<GraphNode>> originalOutEdges;
   private int mutationId;
-  private HashMap<GraphNode, GraphNode> graphMap;
 
   /**
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
@@ -66,7 +65,6 @@ public class FilterBubbles implements PhyloFilter {
 //  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
 //    return zoomOut.zoomOut(bubble, graph);
 //  }
-
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
    *
@@ -79,35 +77,20 @@ public class FilterBubbles implements PhyloFilter {
     mutationId--;
     List<GraphNode> orderedNodes = new ZoomIn(originalGraph, this).zoom(bubble);
     orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
-    
-//
-//    ////////////////////////////////////////////
-//    // TEMPORARY HACK TO GET THE RIGHT EDGES:
-//    // currently nodes got in and out edges to the incorrect (main) graph.
-//    for (GraphNode graphNode : orderedNodes) {
-//      graphMap.put(graphNode, graphNode);
-//    }
-//    for (GraphNode graphNode : orderedNodes) {
-//      ArrayList<GraphNode> inEdges = new ArrayList<>();
-//      for (GraphNode inEdge : graphNode.getInEdges()) {
-//        inEdges.add(graphMap.get(inEdge));
-//      }
-//      graphNode.setInEdges(inEdges);
-//      ArrayList<GraphNode> outEdges = new ArrayList<>();
-//      for (GraphNode outEdge : graphNode.getOutEdges()) {
-//        outEdges.add(graphMap.get(outEdge));
-//      }
-//      graphNode.setOutEdges(outEdges);
-//    }
-//    ////////////////////////////////////////////
-//
-//    // temporary fix for exception in alignVertically
-////    for (GraphNode orderedNode : orderedNodes) {
-////      orderedNode.setRelativeYPos(0.5);
-////      orderedNode.setMaxHeight(0.1);
-////    }
-    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
-    
+
+    // temporary fix for exception in alignVertically
+    for (GraphNode orderedNode : orderedNodes) {
+      if (orderedNode.getInEdges().isEmpty()) {
+        System.out.println("error: node without in edges!");
+      }
+      if(orderedNode.getOutEdges().isEmpty()) {
+        System.out.println("error: node without out edges!");
+      }
+      orderedNode.setRelativeYPos(0.5);
+      orderedNode.setMaxHeight(0.1);
+    }
+//    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
+
     return orderedNodes;
   }
 
@@ -188,14 +171,14 @@ public class FilterBubbles implements PhyloFilter {
       visited.add(next);
       next.setInEdges(new HashSet<>());
       next.setOutEdges(new HashSet<>());
-      
+
       poppedNodes.add(next);
       if (bubble != null && endNodes.contains(next)) {
         continue;
       }
 
       // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<GraphNode> outlinks = calcNodeOutlinks(originalOutEdges.get(next.getId()), 
+      List<GraphNode> outlinks = calcNodeOutlinks(originalOutEdges.get(next.getId()),
           leaves, bubble);
       List<GraphNode> bubbleLinks = new ArrayList<>();
 
