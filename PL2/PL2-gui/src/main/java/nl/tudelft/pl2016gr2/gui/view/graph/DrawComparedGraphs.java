@@ -80,7 +80,7 @@ public class DrawComparedGraphs implements Initializable {
   public static final double NODE_MARGIN = 0.9;
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final int MINUMUM_BASE_SIZE = 10;
+  private static final int MINUMUM_BASE_SIZE = 1;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
@@ -682,22 +682,14 @@ public class DrawComparedGraphs implements Initializable {
     }
     circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
     circle.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
-    if (nestedDepth > 0) {
-//      System.out.println("circle.getCenterX() = " + circle.getCenterX());
-//      System.out.println("circle.getCenterY() = " + circle.getCenterY());
-//      System.out.println("");
-    }
-    if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
-      circle.setVisible(nestedDepth > 0);//false);
-    }
+    circle.setVisible(circle.getWidth() >= MIN_VISIBILITY_WIDTH);
 //    else {
 //      addLabel(pane, circle, node.getId());
 //    }
   }
 
   private void constructBubble(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int level, int startLevel,
-      int nestedDepth) {
+      int level, int startLevel, int nestedDepth) {
     double width = calculateNodeWidth(bubble);
     double height = bubble.getMaxHeightPercentage() * mainPane.getHeight();
     if (height > width) {
@@ -707,30 +699,28 @@ public class DrawComparedGraphs implements Initializable {
     pane.getChildren().add(square);
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
     square.centerYProperty().set(pane.getHeight() * bubble.getRelativeYPos());
-    if (nestedDepth > 0) {
-      square.setFill(Color.RED);
-//      System.out.println("square.getCenterX() = " + square.centerXProperty().get());
-//      System.out.println("square.getCenterY() = " + square.centerYProperty().get());
-//      System.out.println("");
-    }
-    if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
-      square.setVisible(nestedDepth > 0);//false);
+    square.setVisible(square.getWidth() >= MIN_VISIBILITY_WIDTH);
+    if (square.isVisible()) {
+      Color fill = Color.ALICEBLUE;
+      for (int i = 0; i < nestedDepth; i++) {
+        fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
+      }
+      square.setFill(fill);
     }
 //    else {
 //      addLabel(pane, square, node.getId());
 //    }
     if (width > BUBBLE_POP_SIZE) {
-      drawnNestedNodes(pane, bubble, drawnGraphNodes, startLevel);
+      drawnNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth);
     }
   }
 
   private void drawnNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel) {
-    //System.out.println("Bubble to pop: " + bubble);
-    Collection<GraphNode> poppedNodes = bubble.pop();
-    for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, 1);
-    }
+      int startLevel, int nestedDepth) {
+//    Collection<GraphNode> poppedNodes = bubble.pop();
+//    for (GraphNode poppedNode : poppedNodes) {
+//      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1);
+//    }
   }
 
   /**
@@ -779,11 +769,21 @@ public class DrawComparedGraphs implements Initializable {
     edge.setSmooth(true);
     edge.setStrokeWidth(edgeWidth);
     pane.getChildren().add(edge);
-    edge.setStartX(zoomFactor.get()
-        * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+    if (fromNode.hasChildren()) {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+    } else {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+    }
+    if (toNode.hasChildren()) {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
+    } else {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+    }
     edge.setStartY(fromNode.getRelativeYPos() * pane.getHeight());
-    edge.setEndX(zoomFactor.get()
-        * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
     edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
 //    edge.toBack();
   }
