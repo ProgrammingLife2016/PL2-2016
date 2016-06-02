@@ -84,10 +84,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
     } else {
       this.label = null;
     }
-    
-    if (parent != null) {
-      this.parent.addChild(this);
-    }
   }
   
   /**

@@ -81,6 +81,7 @@ public class FilterBubbles implements PhyloFilter {
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
+    System.out.println("Genomes of new tree: " + newRoot.getGenomes());
     
     ArrayList<GraphNode> graphNodes = new ArrayList<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
