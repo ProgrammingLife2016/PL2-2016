@@ -220,8 +220,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return An exact copy of the class
    */
-  @Override
-  GraphNode copy();
+  //@Override
+  //GraphNode copy();
 
   /**
    * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.

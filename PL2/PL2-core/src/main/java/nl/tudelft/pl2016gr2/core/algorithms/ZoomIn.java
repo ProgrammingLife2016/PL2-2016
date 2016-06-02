@@ -18,12 +18,10 @@ import java.util.Set;
 public class ZoomIn {
   
   private final SequenceGraph originalGraph; // unused?
-  private final ZoomOut zoomOut;
   private final FilterBubbles filter;
   
-  protected ZoomIn(SequenceGraph originalGraph, ZoomOut zoomOut, FilterBubbles filter) {
+  protected ZoomIn(SequenceGraph originalGraph, FilterBubbles filter) {
     this.originalGraph = originalGraph;
-    this.zoomOut = zoomOut;
     this.filter = filter;
   }
   
@@ -32,10 +30,8 @@ public class ZoomIn {
     bubble.accept(visitor);
     IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
     
-    Collection<GraphNode> inlinks = bubble.getInEdges();
-    Collection<GraphNode> outlinks = bubble.getOutEdges();
     // THIS MIGHT NOT WORK WITH THE FIRST/LAST NODE
-    zoomOut.addOldView(getNode(inlinks), getNode(outlinks));
+    //zoomOut.addOldView(getNode(inlinks), getNode(outlinks));
     
     IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
@@ -46,6 +42,7 @@ public class ZoomIn {
     debubble(poppedNodes, childTwo, bubble, newBubbles);
     
     // Add outlink to other bubbles that are not affected
+    Collection<GraphNode> inlinks = bubble.getInEdges();
     Iterator<GraphNode> inlinkIterator = inlinks.iterator();
     while (inlinkIterator.hasNext()) {
       GraphNode oldStartNode = inlinkIterator.next();
@@ -60,6 +57,7 @@ public class ZoomIn {
     }
     
     // Add inlink to other bubbles that are not affected
+    Collection<GraphNode> outlinks = bubble.getOutEdges();
     Iterator<GraphNode> outlinkIterator = outlinks.iterator();
     while (outlinkIterator.hasNext()) {
       GraphNode oldEndNode = outlinkIterator.next();
@@ -73,7 +71,6 @@ public class ZoomIn {
     }
 
     filter.pruneNodes(poppedNodes, newBubbles);
-    //replace(bubble, graph, zoomedGraph);
     return poppedNodes;
   }
   
@@ -117,19 +114,12 @@ public class ZoomIn {
     
     Iterator<GraphNode> iterator = bubble.getOutEdges().iterator();
     while (iterator.hasNext()) {
-      poppedNodes.add(iterator.next().copy());
+      GraphNode next = iterator.next();
+      next.setInEdges(new HashSet<>());
+      next.setOutEdges(new HashSet<>());
+      poppedNodes.add(next);
     }
     
     return newBubbles;
-  }
-  
-  private void replace(Bubble bubble, SequenceGraph completeGraph, SequenceGraph partGraph) {
-    completeGraph.remove(bubble, false, false);
-    
-    Iterator<GraphNode> iterator = partGraph.iterator();
-    while (iterator.hasNext()) {
-      GraphNode next = iterator.next();
-      completeGraph.add(next);
-    }
   }
 }

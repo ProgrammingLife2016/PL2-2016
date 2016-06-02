@@ -728,12 +728,12 @@ public class DrawComparedGraphs implements Initializable {
       int startLevel) {
     System.out.println("Bubble to pop: " + bubble);
     Collection<GraphNode> poppedNodes = bubble.pop();
-    //System.out.println("---------------------");
+    System.out.println("---------------------");
     for (GraphNode poppedNode : poppedNodes) {
-      //System.out.println("poppedNode = " + poppedNode);
+      System.out.println("poppedNode = " + poppedNode);
       drawNode(pane, poppedNode, drawnGraphNodes, startLevel, 1);
     }
-    //System.out.println("-----------------------");
+    System.out.println("-----------------------");
   }
 
   /**

@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.model.Bubble;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
@@ -18,6 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -30,7 +30,8 @@ import java.util.Set;
 public class FilterBubbles implements PhyloFilter {
 
   private final SequenceGraph originalGraph;
-  private final ZoomOut zoomOut;
+  private final Map<Integer, Collection<GraphNode>> originalInEdges;
+  private final Map<Integer, Collection<GraphNode>> originalOutEdges;
   private int mutationId;
 
   /**
@@ -41,7 +42,14 @@ public class FilterBubbles implements PhyloFilter {
    */
   public FilterBubbles(SequenceGraph originalGraph) {
     this.originalGraph = originalGraph;
-    zoomOut = new ZoomOut(originalGraph);
+    originalInEdges = new HashMap<>();
+    originalOutEdges = new HashMap<>();
+    Iterator<GraphNode> graphIterator = originalGraph.iterator();
+    while (graphIterator.hasNext()) {
+      GraphNode node = graphIterator.next();
+      originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
+      originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
+    }
     mutationId = -1;
   }
 
@@ -52,10 +60,10 @@ public class FilterBubbles implements PhyloFilter {
    * @param graph the graph
    * @return a zoomed out graph
    */
-  @Override
-  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
-    return zoomOut.zoomOut(bubble, graph);
-  }
+//  @Override
+//  public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph) {
+//    return zoomOut.zoomOut(bubble, graph);
+//  }
 
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
@@ -67,7 +75,7 @@ public class FilterBubbles implements PhyloFilter {
   @Override
   public Collection<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
-    List<GraphNode> orderedNodes = new ZoomIn(originalGraph, zoomOut, this).zoom(bubble);
+    List<GraphNode> orderedNodes = new ZoomIn(originalGraph, this).zoom(bubble);
     orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
     
     // temporary fix for exception in alignVertically
@@ -106,22 +114,22 @@ public class FilterBubbles implements PhyloFilter {
     ////////////////////////////////////////////
     // TEMPORARY HACK TO GET THE RIGHT EDGES:
     // currently nodes got in and out edges to the incorrect (main) graph.
-    HashMap<GraphNode, GraphNode> graphMap = new HashMap<>();
-    for (GraphNode graphNode : graphNodes) {
-      graphMap.put(graphNode, graphNode);
-    }
-    for (GraphNode graphNode : graphNodes) {
-      ArrayList<GraphNode> inEdges = new ArrayList<>();
-      for (GraphNode inEdge : graphNode.getInEdges()) {
-        inEdges.add(graphMap.get(inEdge));
-      }
-      graphNode.setInEdges(inEdges);
-      ArrayList<GraphNode> outEdges = new ArrayList<>();
-      for (GraphNode outEdge : graphNode.getOutEdges()) {
-        outEdges.add(graphMap.get(outEdge));
-      }
-      graphNode.setOutEdges(outEdges);
-    }
+//    HashMap<GraphNode, GraphNode> graphMap = new HashMap<>();
+//    for (GraphNode graphNode : graphNodes) {
+//      graphMap.put(graphNode, graphNode);
+//    }
+//    for (GraphNode graphNode : graphNodes) {
+//      ArrayList<GraphNode> inEdges = new ArrayList<>();
+//      for (GraphNode inEdge : graphNode.getInEdges()) {
+//        inEdges.add(graphMap.get(inEdge));
+//      }
+//      graphNode.setInEdges(inEdges);
+//      ArrayList<GraphNode> outEdges = new ArrayList<>();
+//      for (GraphNode outEdge : graphNode.getOutEdges()) {
+//        outEdges.add(graphMap.get(outEdge));
+//      }
+//      graphNode.setOutEdges(outEdges);
+//    }
     ////////////////////////////////////////////
     return graphNodes;
   }
@@ -178,14 +186,17 @@ public class FilterBubbles implements PhyloFilter {
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
-      poppedNodes.add(next.copy());
+      next.setInEdges(new HashSet<>());
+      next.setOutEdges(new HashSet<>());
+      
+      poppedNodes.add(next);
       if (bubble != null && endNodes.contains(next)) {
         continue;
       }
 
       // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<GraphNode> outlinks = calcNodeOutlinks(originalGraph.getNode(
-          next.getId()).getOutEdges(), leaves, bubble);
+      List<GraphNode> outlinks = calcNodeOutlinks(originalOutEdges.get(next.getId()), 
+          leaves, bubble);
       List<GraphNode> bubbleLinks = new ArrayList<>();
 
       for (GraphNode outlink : outlinks) {
@@ -288,10 +299,10 @@ public class FilterBubbles implements PhyloFilter {
       }
       // Get the original inedges and see which ones are still in the graph
       Collection<GraphNode> inlinks = pruneLinks(
-          originalGraph.getNode(node.getId()).getInEdges(), graphNodes);
+          originalInEdges.get(node.getId()), graphNodes);
       inlinks.forEach(node::addInEdge);
       Collection<GraphNode> outlinks = pruneLinks(
-          originalGraph.getNode(node.getId()).getOutEdges(), graphNodes);
+          originalOutEdges.get(node.getId()), graphNodes);
       outlinks.forEach(node::addOutEdge);
     }
   }
