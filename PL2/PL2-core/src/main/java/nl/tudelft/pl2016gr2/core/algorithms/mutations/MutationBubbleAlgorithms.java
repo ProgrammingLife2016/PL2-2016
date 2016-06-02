@@ -66,14 +66,17 @@ public class MutationBubbleAlgorithms {
     for (int i = 0; i < orderedGraph.size(); i++) {
       //NodePosition order = (NodePosition) orderedGraph.get(i);
       GraphNode node = orderedGraph.get(i);
+      GraphNode lastNode = node;
       if (!visited.contains(node)) {
         int oldLevel = node.getLevel();
         int newLevel = node.getLevel();
         boolean oldOverlap = node.isOverlapping();
         boolean newOverlap = node.isOverlapping();
         Bubble bubble = null;
-        while (oldOverlap == newOverlap && node.getOutEdges().size() == 1
-            && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
+        while (oldOverlap == newOverlap && node.getOutEdges().size() <= 1
+            && (node.getInEdges().size() <= 1 || (node.getInEdges().size() > 1 && bubble == null)) 
+            //Die laatste statement herkent het begin van een bubble na samenkomen van een afsplitsing
+            && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
           // De visited hierboven kan wrs weg omdat het niet voor kan komen
           if (bubble == null) {
@@ -92,23 +95,32 @@ public class MutationBubbleAlgorithms {
           }
           visited.add(node);
           //node.setInBubble(true);
-          node = ((ArrayList<GraphNode>) node.getOutEdges()).get(0);
-          //order = (NodePosition) orderedGraph.get(location.get(node.getId()));
-          oldLevel = newLevel;
-          newLevel = node.getLevel();
-          oldOverlap = newOverlap;
-          newOverlap = node.isOverlapping();
+          if (node.getOutEdges() != null && node.getOutEdges().size() > 0) {
+            lastNode = node;
+            node = ((ArrayList<GraphNode>) node.getOutEdges()).get(0);
+            //order = (NodePosition) orderedGraph.get(location.get(node.getId()));
+            oldLevel = newLevel;
+            newLevel = node.getLevel();
+            oldOverlap = newOverlap;
+            newOverlap = node.isOverlapping(); 
+          } else {
+            lastNode = node;
+            break;
+          }         
         }
+        boolean stop = false;
         if (bubble != null) {
           if (bubble.getChildren().size() == 1) {
             // Een bubble van size 1 is een in/del of point mutation,
             // die kunnen we hier dus gelijk filteren.
             //bubble = checkInDel(bubble);
             //bubble = checkPoint(bubble);
-            //bubblePosition.getBubble().getNodes().get(0).setInBubble(false);
-          } else /*if (oldOverlap == newOverlap && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
-              && !visited.contains(node))*/ {
+          } else if (oldOverlap == newOverlap && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
+              && !visited.contains(node)) {
+            bubble.addChild(node);
+            visited.add(node);
             bubble = new StraightSequenceBubble(bubble);
+            stop = true;
 //            ArrayList<GraphNode> nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
 //            bubble.setOutEdges(nodeOutEdges);
 
@@ -117,8 +129,15 @@ public class MutationBubbleAlgorithms {
 //            bubblePosition.getBubble().addNode(graphNode);
 //            bubblePosition.getBubble().setOutEdges(graphNode.getOutEdges());
 //            bubblePosition.getBubble().setTag("Straight");
+          } else {
+            bubble = new StraightSequenceBubble(bubble);
           }
-          ArrayList<GraphNode> nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
+          ArrayList<GraphNode> nodeOutEdges;
+          if (stop) {
+            nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
+          } else {
+            nodeOutEdges = (ArrayList<GraphNode>) lastNode.getOutEdges();
+          }
           bubble.setOutEdges(nodeOutEdges);
         } else {
           //node.setInBubble(false);

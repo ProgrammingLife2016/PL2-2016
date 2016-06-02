@@ -276,7 +276,8 @@ public abstract class Bubble implements GraphNode {
     }
     nested += "]";
 
-    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
-        + ", nested: " + nested;
+//    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
+//        + ", nested: " + nested;
+    return "bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;
   }
 }
