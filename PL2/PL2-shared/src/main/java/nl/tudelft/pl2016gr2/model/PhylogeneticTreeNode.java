@@ -96,7 +96,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    * @param parent : the parent of this node.
    */
   public PhylogeneticTreeNode(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent, boolean bool) {
-
     this.weight = (float) node.getEdgeLength();
     this.parent = parent;
 

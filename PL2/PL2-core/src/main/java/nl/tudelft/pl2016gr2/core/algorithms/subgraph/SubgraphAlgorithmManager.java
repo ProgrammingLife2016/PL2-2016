@@ -7,6 +7,7 @@ import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,7 +56,6 @@ public class SubgraphAlgorithmManager {
 //        bottomGraphOrder);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
-    
   /**
    * Create and align the nodes of a single subgraph.
    *
@@ -71,7 +71,7 @@ public class SubgraphAlgorithmManager {
         genomes);
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
-    
+
     FilterBubbles filter = new FilterBubbles(subgraph);
     ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
     CompareSubgraphs.alignVertically(orderedNodes);

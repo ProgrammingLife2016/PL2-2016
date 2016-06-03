@@ -70,7 +70,6 @@ public class CompareSubgraphs {
       if (areaMap.containsKey(node)) {
         continue;
       }
-      assert !node.getInEdges().isEmpty();
       calculateGraphArea(node, areaMap);
     }
   }
@@ -120,18 +119,18 @@ public class CompareSubgraphs {
 
   private static ComplexVerticalArea calculateGraphArea(GraphNode node,
       HashMap<GraphNode, ComplexVerticalArea> areaMap) {
+    if (areaMap.containsKey(node)) {
+      return areaMap.get(node);
+    }
     ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
-    assert !node.getInEdges().isEmpty();
     for (GraphNode inEdge : node.getInEdges()) {
       ComplexVerticalArea area = areaMap.get(inEdge);
       if (area == null) {
         System.out.println("added backwards edge caused by bubble");
-//        System.out.println("inEdge.getLevel() = " + inEdge.getLevel());
         area = calculateGraphArea(inEdge, areaMap);
       }
       inAreas.add(area);
     }
-    assert !inAreas.isEmpty();
     ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
     areaMap.put(node, complexNodeArea);
 
@@ -148,8 +147,8 @@ public class CompareSubgraphs {
     private final ArrayList<ComplexVerticalArea> splitParts = new ArrayList<>(1);
     private int curPart = 0;
 
-    private ComplexVerticalArea(List<ComplexVerticalArea> complexAreas, Collection<GraphNode> nodes) {
-      assert !complexAreas.isEmpty();
+    private ComplexVerticalArea(List<ComplexVerticalArea> complexAreas, 
+        Collection<GraphNode> nodes) {
       areas = new LinkedList<>();
       for (ComplexVerticalArea complexArea : complexAreas) {
         areas.addAll(complexArea.getPart().areas);
@@ -165,7 +164,6 @@ public class CompareSubgraphs {
     }
 
     private ComplexVerticalArea(List<SimpleVerticalArea> simpleAreas) {
-      assert !simpleAreas.isEmpty();
       areas = new ArrayList<>();
       for (SimpleVerticalArea simpleArea : simpleAreas) {
         if (simpleArea.getHeight() > 0) {

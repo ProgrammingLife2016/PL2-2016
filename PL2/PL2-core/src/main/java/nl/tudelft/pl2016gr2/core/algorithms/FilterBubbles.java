@@ -99,10 +99,10 @@ public class FilterBubbles implements PhyloFilter {
    * @return a filtered graph.
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
-//    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
+    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(graphNodes, treeRoot, newBubbles);
+    debubble(graphNodes, newRoot, newBubbles);
     ArrayList<GraphNode> poppedNodes = new ArrayList<>(graphNodes);
     pruneNodes(poppedNodes, newBubbles);
 

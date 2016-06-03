@@ -740,12 +740,6 @@ public class DrawComparedGraphs implements Initializable {
 
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
-<<<<<<< HEAD
-=======
-   * The mapping function from amount of bases to node radius is completely random (hence the magic
-   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
-   * function was found.
->>>>>>> a2c14f093d722a6ba0accb3cd299eeac691bd83a
    *
    * @param node the node.
    * @return the radius.
