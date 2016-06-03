@@ -10,34 +10,30 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox fx:id="root" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.FileChooserController">
- <children>
+    <padding>
+        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0"/>
+    </padding>
     <GridPane>
-      <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" />
-            <ColumnConstraints hgrow="NEVER" maxWidth="15.0" minWidth="15.0" prefWidth="15.0" />
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" />
-      </columnConstraints>
-      <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" />
-      </rowConstraints>
-       <children>
-          <Label text="Tree file (.nwk)" GridPane.rowIndex="1" />
-          <Label text="Graph file (.gfa)" GridPane.rowIndex="2" />
-          <Button fx:id="openButton" mnemonicParsing="false" text="Open" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" />
-          <Button fx:id="workspaceBrowseButton" mnemonicParsing="false" text="Browse workspace" GridPane.columnIndex="2" GridPane.halignment="CENTER" />
-          <Label text="Metadata (.xlsx)" GridPane.rowIndex="3" />
-          <ComboBox fx:id="treeComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-          <ComboBox fx:id="graphComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-          <ComboBox fx:id="metadataComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-       </children>
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0"/>
+            <ColumnConstraints hgrow="NEVER" maxWidth="15.0" minWidth="15.0" prefWidth="15.0"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="10.0"/>
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+            <RowConstraints/>
+            <RowConstraints minHeight="10.0" prefHeight="30.0"/>
+        </rowConstraints>
+        <Label text="Tree file (.nwk)" GridPane.rowIndex="1"/>
+        <Label text="Graph file (.gfa)" GridPane.rowIndex="2"/>
+        <Button fx:id="openButton" mnemonicParsing="false" text="Open" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5"/>
+        <Button fx:id="workspaceBrowseButton" mnemonicParsing="false" text="Browse workspace" GridPane.columnIndex="2" GridPane.halignment="CENTER"/>
+        <Label text="Metadata (.xlsx)" GridPane.rowIndex="3"/>
+        <ComboBox fx:id="treeComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+        <ComboBox fx:id="graphComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="2"/>
+        <ComboBox fx:id="metadataComboBox" prefWidth="450.0" GridPane.columnIndex="2" GridPane.rowIndex="3"/>
     </GridPane>
- </children>
-   <padding>
-      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-   </padding>
 </VBox>
