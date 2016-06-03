@@ -2,13 +2,21 @@ package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -24,8 +32,13 @@ import nl.tudelft.pl2016gr2.model.GenomeMap;
 
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@SuppressWarnings("AbbreviationAsWordInName")
 public class SearchPaneController implements Initializable {
 
   @FXML
@@ -36,14 +49,29 @@ public class SearchPaneController implements Initializable {
   @FXML
   private TableView<Annotation> annotationTable;
 
+  @FXML private TableColumn<Annotation, String> specimenIdColumn;
+  @FXML private TableColumn<Annotation, String> specimentTypeColumn;
+  @FXML private TableColumn<Annotation, String> genotypicDSTPatternColumn;
+  @FXML private TableColumn<Annotation, String> phenotypicDSTPatternColumn;
+  @FXML private TableColumn<Annotation, String> lineageColumn;
+
+  private ObservableSet<String> setGenotypicDSTpattern
+      = FXCollections.observableSet(new HashSet<>());
+  private ObservableSet<String> setPhenotypicDSTPattern
+      = FXCollections.observableSet(new HashSet<>());
+
   @FXML
-  private TableColumn<Annotation, String> specimenIdColumn;
+  private ComboBox<String> genotypicDSTPatternComboBox;
   @FXML
-  private TableColumn<Annotation, String> specimentTypeColumn;
+  private Button genotypicDSTPatternButton;
   @FXML
-  private TableColumn<Annotation, String> lineageColumn;
+  private ComboBox<String> phenotypicDSTPatternComboBox;
+  @FXML
+  private Button phenotypicDSTPatternButton;
 
   private final ObservableList<Annotation> masterData = FXCollections.observableArrayList();
+
+  private final FilteredList<Annotation> filteredData = new FilteredList<>(masterData, p -> true);
 
   private SelectionManager selectionManager;
 
@@ -51,7 +79,6 @@ public class SearchPaneController implements Initializable {
   }
 
   @Override
-  @SuppressWarnings("checkstyle:MethodLength")
   public void initialize(URL url, ResourceBundle resourceBundle) {
 
     root.visibleProperty().addListener((observable, oldValue, newValue) -> {
@@ -59,47 +86,48 @@ public class SearchPaneController implements Initializable {
         filterField.requestFocus();
       }
     });
+    initializeTable();
+    initializeExtendedSearchPane();
+  }
 
+  @SuppressWarnings("checkstyle:MethodLength")
+  private void initializeTable() {
     // from http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
-    // 0. Initialize the columns.
-    // JK: Annotation just has String members, no Property members. JavaFX wants Properties...
+    annotationTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    annotationTable.getSelectionModel().getSelectedItems().addListener(
+        (ListChangeListener<Annotation>) c -> {
+          System.out.println("SELECTED: ");
+          selectionManager.getSearchBoxSelectedGenomes().setAll(
+              c.getList().stream().map(
+                  a -> GenomeMap.getInstance().getId(a.specimenId)
+              ).collect(Collectors.toList())
+          );
+        }
+    );
+
     specimenIdColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenId));
     specimentTypeColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenType));
+    genotypicDSTPatternColumn.setCellValueFactory(
+        cellData -> new SimpleStringProperty(cellData.getValue().genotypicDSTPattern));
+    phenotypicDSTPatternColumn.setCellValueFactory(
+        cellData -> new SimpleStringProperty(cellData.getValue().phenotypicDSTPattern));
     lineageColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().lineage));
 
-    // 1. Wrap the ObservableList in a FilteredList
-    FilteredList<Annotation> filteredData = new FilteredList<>(masterData, p -> false);
-
-    // 2. Set the filter Predicate whenever the filter changes.
+    // Set the filter Predicate whenever the filter changes.
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
-      filteredData.setPredicate(annotation -> {
-        // If filter text is empty
-        if (newValue == null || newValue.isEmpty()) {
-          return false;
-        }
-
-        // Compare first name and last name of every annotation with filter text.
-        String lowerCaseFilter = newValue.toLowerCase();
-
-        if (annotation.specimenId.toLowerCase().contains(lowerCaseFilter)) {
-          return true; // Filter matches first name.
-        } else if (annotation.specimenType.toLowerCase().contains(lowerCaseFilter)) {
-          return true; // Filter matches last name.
-        }
-        return false; // Does not match.
-      });
+      updateTable();
     });
 
-    // 3. Wrap the FilteredList in a SortedList.
+    // Wrap the FilteredList in a SortedList.
     SortedList<Annotation> sortedData = new SortedList<>(filteredData);
 
-    // 4. Bind the SortedList comparator to the TableView comparator.
+    // Bind the SortedList comparator to the TableView comparator.
     sortedData.comparatorProperty().bind(annotationTable.comparatorProperty());
 
-    // 5. Add sorted (and filtered) data to the table.
+    // Add sorted (and filtered) data to the table.
     annotationTable.setItems(sortedData);
 
     annotationTable.setRowFactory(tv -> {
@@ -117,17 +145,75 @@ public class SearchPaneController implements Initializable {
         event.consume();
       });
 
-      row.setOnMouseClicked(event -> {
-        if (!row.isEmpty()) {
-          Annotation annotation = row.getItem();
-          Integer id = GenomeMap.getInstance().getId(annotation.specimenId);
-          selectionManager.getSearchBoxSelectedGenome().set(id);
-        }
-      });
-
       return row;
     });
+  }
 
+  /**
+   * call this whenever data changes.
+   */
+  private void updateTable() {
+    filteredData.setPredicate(annotation -> {
+      // If filter text is empty
+      String searchString = filterField.getText();
+
+      if (isNotSelected(genotypicDSTPatternComboBox, annotation.genotypicDSTPattern)
+          || isNotSelected(phenotypicDSTPatternComboBox, annotation.phenotypicDSTPattern)) {
+        return false;
+      }
+
+      if (searchString == null || searchString.isEmpty()) {
+        return true;
+      }
+
+      String lowerCaseFilter = searchString.toLowerCase();
+      return annotation.specimenId.toLowerCase().contains(lowerCaseFilter)
+          || annotation.specimenType.toLowerCase().contains(lowerCaseFilter)
+          || annotation.genotypicDSTPattern.toLowerCase().contains(lowerCaseFilter)
+          || annotation.phenotypicDSTPattern.toLowerCase().contains(lowerCaseFilter);
+    });
+  }
+
+  /**
+   * @return true when ComboBox has NOT selected checkAgainst.
+   */
+  private boolean isNotSelected(ComboBox<String> comboBox, String checkAgainst) {
+    String selectedItem = comboBox.getSelectionModel().getSelectedItem();
+    return selectedItem != null && !checkAgainst.equals(selectedItem);
+  }
+
+  @SuppressWarnings("checkstyle:MethodLength")
+  private void initializeExtendedSearchPane() {
+    masterData.addListener((ListChangeListener<Annotation>) c -> {
+      Stream.of(setGenotypicDSTpattern, setPhenotypicDSTPattern).forEach(Set::clear);
+      c.getList().forEach(annotation -> {
+        setGenotypicDSTpattern.add(annotation.genotypicDSTPattern);
+        setPhenotypicDSTPattern.add(annotation.phenotypicDSTPattern);
+      });
+    });
+    // add set listeners
+    setGenotypicDSTpattern.addListener(setChangeListener(genotypicDSTPatternComboBox));
+    setPhenotypicDSTPattern.addListener(setChangeListener(phenotypicDSTPatternComboBox));
+
+    // add comboBox listeners
+    genotypicDSTPatternComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+      updateTable();
+    });
+    phenotypicDSTPatternComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+      updateTable();
+    });
+
+    // set button actions
+    genotypicDSTPatternButton.setOnAction(getButtonAction(genotypicDSTPatternComboBox));
+    phenotypicDSTPatternButton.setOnAction(getButtonAction(phenotypicDSTPatternComboBox));
+  }
+
+  private SetChangeListener<String> setChangeListener(ComboBox<String> comboBox) {
+    return change -> comboBox.setItems(FXCollections.observableArrayList(change.getSet()));
+  }
+
+  private EventHandler<ActionEvent> getButtonAction(ComboBox<String> genotypicDSTPatternComboBox) {
+    return event -> genotypicDSTPatternComboBox.getSelectionModel().clearSelection();
   }
 
   public void setData(Collection<Annotation> annotations) {
