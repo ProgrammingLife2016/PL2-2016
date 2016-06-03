@@ -2,7 +2,6 @@ package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;
-import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
 

@@ -1,30 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.image.*?>
-<?import javafx.scene.paint.*?>
 <?import javafx.scene.shape.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
 <AnchorPane id="AnchorPane" fx:id="mainPane" minWidth="200.0" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs">
-   <children>
-      <Pane fx:id="topGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(204, 114, 24, 0.08);" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Pane fx:id="bottomGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(24, 114, 204, 0.08);" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
-      <Pane fx:id="topPane" layoutX="37.0" layoutY="-33.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <children>
-            <Label layoutX="50.0" layoutY="190.0" text="Drag a node from the phylogenetic tree to this area to draw a graph of its genomes" />
-         </children></Pane>
-      <Pane fx:id="bottomPane" layoutX="66.0" layoutY="167.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Rectangle fx:id="topGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#cc7218" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-      <Rectangle fx:id="bottomGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#1872cc" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" />
-      <ScrollBar fx:id="scrollbar" blockIncrement="0.1" max="1.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" unitIncrement="0.01" visibleAmount="0.01" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <ImageView fx:id="deleteBottomGraphImage" fitHeight="25.0" fitWidth="25.0" onMouseClicked="#deleteBottomGraph" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="5.0">
-         <image>
-            <Image url="@../icons/cross.png" />
-         </image>
-      </ImageView>
-   </children>
+    <Pane fx:id="topGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(204, 114, 24, 0.08);" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <Pane fx:id="bottomGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(24, 114, 204, 0.08);" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+    <Pane fx:id="topPane" layoutX="37.0" layoutY="-33.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Label layoutX="50.0" layoutY="190.0" text="Drag a node from the phylogenetic tree to this area to draw a graph of its genomes"/>
+    </Pane>
+    <Pane fx:id="bottomPane" layoutX="66.0" layoutY="167.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <Rectangle fx:id="topGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#cc7218" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <Rectangle fx:id="bottomGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#1872cc" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" />
+    <ScrollBar fx:id="scrollbar" blockIncrement="0.1" max="1.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" unitIncrement="0.01" visibleAmount="0.01" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <ImageView fx:id="deleteBottomGraphImage" fitHeight="25.0" fitWidth="25.0" onMouseClicked="#deleteBottomGraph" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="5.0">
+        <Image url="@../icons/cross.png"/>
+    </ImageView>
 </AnchorPane>

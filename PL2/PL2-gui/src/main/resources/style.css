@@ -54,7 +54,7 @@
  *                                                                             *
  ******************************************************************************/
 
-.button {
+.button.BigButton {
   -fx-background-radius: 8;
   -fx-font: 14pt 'Verdana';
   -fx-font-weight: bold;

@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -81,14 +82,18 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   }
 
   @Override
-  public void highlightPath(int oldPath, int newPath) {
-    PhylogeneticTreeNode oldSelection = genomeToTreeMap.get(oldPath);
-    PhylogeneticTreeNode newSelection = genomeToTreeMap.get(newPath);
-    if (oldSelection != null) {
-      oldSelection.unhighlightPath();
+  public void highlightPaths(Collection<Integer> oldPaths, Collection<Integer> newPaths) {
+    for (Integer oldPath : oldPaths) {
+      PhylogeneticTreeNode oldSelection = genomeToTreeMap.get(oldPath);
+      if (oldSelection != null) {
+        oldSelection.unhighlightPath();
+      }
     }
-    if (newSelection != null) {
-      newSelection.highlightPath();
+    for (Integer newPath : newPaths) {
+      PhylogeneticTreeNode newSelection = genomeToTreeMap.get(newPath);
+      if (newSelection != null) {
+        newSelection.highlightPath();
+      }
     }
   }
 }

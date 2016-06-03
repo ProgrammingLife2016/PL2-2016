@@ -2,6 +2,8 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.List;
 
+import java.util.Collection;
+
 /**
  * This interface must be implemented by the root of the phylogenetic tree.
  *
@@ -30,10 +32,10 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
   /**
    * Highlight a path in the phylogenetic tree.
    *
-   * @param oldPath the previously highlighted path.
-   * @param newPath the new highlighted path.
+   * @param oldPath the previously highlighted paths.
+   * @param newPath the new highlighted paths.
    */
-  void highlightPath(int oldPath, int newPath);
-
   List<Annotation> getAnnotations();
+
+  void highlightPaths(Collection<Integer> oldPath, Collection<Integer> newPath);
 }
