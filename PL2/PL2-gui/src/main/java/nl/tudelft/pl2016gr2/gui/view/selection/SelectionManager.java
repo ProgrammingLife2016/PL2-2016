@@ -6,8 +6,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -43,7 +43,8 @@ public class SelectionManager {
   /**
    * The selected genome in the search box. -1 means no genome is selected.
    */
-  private final IntegerProperty searchBoxSelectedGenome = new SimpleIntegerProperty(-1);
+  private final ObservableList<Integer> searchBoxSelectedGenomes
+      = FXCollections.observableArrayList();
 
   /**
    * Create a selection manager.
@@ -145,7 +146,7 @@ public class SelectionManager {
     return bottomGraphGenomes;
   }
 
-  public IntegerProperty getSearchBoxSelectedGenome() {
-    return searchBoxSelectedGenome;
+  public ObservableList<Integer> getSearchBoxSelectedGenomes() {
+    return searchBoxSelectedGenomes;
   }
 }

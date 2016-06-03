@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +20,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -136,10 +137,19 @@ public class TreeManager implements Initializable {
    * Initialize the listener to the selected search box genome.
    */
   private void initializeSearchBoxSelectionManager() {
-    selectionManager.getSearchBoxSelectedGenome().addListener(
-        (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
-          rootNode.highlightPath(oldValue.intValue(), newValue.intValue());
-        });
+    selectionManager.getSearchBoxSelectedGenomes().addListener((ListChangeListener<Integer>) c -> {
+      List<Integer> added = new ArrayList<>();
+      List<Integer> removed = new ArrayList<>();
+      while (c.next()) {
+        if (c.wasAdded()) {
+          added.addAll(c.getAddedSubList());
+        }
+        if (c.wasRemoved()) {
+          removed.addAll(c.getRemoved());
+        }
+      }
+      rootNode.highlightPaths(removed, added);
+    });
   }
 
   /**

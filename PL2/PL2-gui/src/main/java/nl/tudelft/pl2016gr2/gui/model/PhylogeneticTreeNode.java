@@ -287,7 +287,9 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   protected void unhighlightPath() {
     inHighlightedPath.set(false);
-    parent.unhighlightPath();
+    if (parent != null) {
+      parent.unhighlightPath();
+    }
   }
 
   /**
@@ -295,7 +297,9 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
    */
   protected void highlightPath() {
     inHighlightedPath.set(true);
-    parent.highlightPath();
+    if (parent != null) {
+      parent.highlightPath();
+    }
   }
 
   /**
