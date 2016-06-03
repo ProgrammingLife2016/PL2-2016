@@ -22,4 +22,7 @@
     </MenuBar>
     <fx:include fx:id="graphLegend" source="Legend.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
     <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
+    <HBox alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" pickOnBounds="false">
+        <fx:include visible="false" fx:id="searchPane" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
+    </HBox>
 </AnchorPane>

@@ -1,9 +1,13 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
@@ -32,6 +36,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,6 +60,11 @@ public class RootLayoutController implements
   private LegendController graphLegendController;
   @FXML
   private LegendController treeLegendController;
+
+  @FXML
+  private Pane searchPane;
+  @FXML
+  private SearchPaneController searchPaneController;
 
   @TestId(id = "treeManager")
   private TreeManager treeManager;
@@ -82,6 +92,18 @@ public class RootLayoutController implements
     mainPane.getItems().add(graphRegion);
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
+
+    rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
+      @Override
+      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, 
+          Scene newValue) {
+        if (newValue != null) {
+          initializeSearchPaneController();
+          // fire this only once when scene is set.
+          rootPane.sceneProperty().removeListener(this);
+        }
+      }
+    });
   }
 
   /**
@@ -188,6 +210,25 @@ public class RootLayoutController implements
 
   }
 
+  private void initializeSearchPaneController() {
+    String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+    boolean isOSx = os.contains("mac") || os.contains("darwin");
+
+    rootPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+      System.out.println("KEYEVENT");
+      switch (keyEvent.getCode()) {
+        case F:
+          if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
+            searchPane.setVisible(!searchPane.isVisible());
+            keyEvent.consume();
+          }
+          break;
+        default:
+      }
+    });
+    searchPaneController.setSelectionManager(selectionManager);
+  }
+
   @Override
   public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
     try {
@@ -198,10 +239,12 @@ public class RootLayoutController implements
 
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
+      List<Annotation> annotations = new AnnotationReader(metadataFile).read();
 
       if (graph != null && tree != null) {
         loadGraph(graph);
-        loadTree(tree, new AnnotationReader(metadataFile).read());
+        loadTree(tree, annotations);
+        searchPaneController.setData(annotations);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE,
