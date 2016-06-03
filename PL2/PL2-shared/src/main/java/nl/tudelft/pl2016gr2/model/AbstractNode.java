@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -15,7 +17,8 @@ import java.util.Collection;
  */
 public abstract class AbstractNode implements Node {
 
-  private final int identifier;
+  @TestId(id = "id_field")
+  private int identifier;
 
   /**
    * Construct a bare abstract node with an ID.
@@ -47,20 +50,20 @@ public abstract class AbstractNode implements Node {
   }
 
   @Override
-  public Collection<String> getGenomesOverEdge(GraphNode node) {
+  public Collection<Integer> getGenomesOverEdge(GraphNode node) {
 //    assert getOutEdges().contains(
 //        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
 //        + "not a direct successor. This = " + this.getId();
 
-    Collection<String> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome))
-        .forEach(genomes::add);
+    Collection<Integer> genomes = new ArrayList<>();
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
+        ::add);
     return genomes;
   }
 
   @Override
   public String toString() {
-    return "id: " + identifier;
+    return "id: " + getId();
   }
 
   @Override

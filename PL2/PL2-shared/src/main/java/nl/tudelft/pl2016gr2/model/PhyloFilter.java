@@ -8,5 +8,5 @@ public interface PhyloFilter {
   
   public Collection<GraphNode> zoomIn(Bubble bubble);
   
-  public Collection<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes);
+  public Collection<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes);
 }

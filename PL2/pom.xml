@@ -63,13 +63,6 @@
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.6</version>
                 <configuration>
-                    <includeTests>true</includeTests>
-                    <minimumPriority>5</minimumPriority>
-                    <rulesets>
-                        <ruleset>rulesets/java/basic.xml</ruleset>
-                        <ruleset>rulesets/java/naming.xml</ruleset>
-                        <ruleset>rulesets/java/design.xml</ruleset>
-                    </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                     <aggregate>true</aggregate>
                 </configuration>

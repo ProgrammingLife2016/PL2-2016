@@ -29,6 +29,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
@@ -87,7 +88,7 @@ public class DrawComparedGraphs implements Initializable {
   private static final double UNIT_INCREMENT_RATE = 100.0;
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
-  private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
+  private static final Color NO_OVERLAP_COLOR = Color.rgb(255, 30, 30);
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
   private static final double MAX_ZOOM_FACTOR = 4.0;
   private static final double BUBBLE_POP_SIZE = 150.0;
@@ -96,8 +97,8 @@ public class DrawComparedGraphs implements Initializable {
   private OrderedGraph topGraph;
   @TestId(id = "bottomGraph")
   private OrderedGraph bottomGraph;
-  private ObservableSet<String> topGraphGenomes;
-  private ObservableSet<String> bottomGraphGenomes;
+  private ObservableSet<Integer> topGraphGenomes;
+  private ObservableSet<Integer> bottomGraphGenomes;
   @TestId(id = "amountOfLevels")
   private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
 
@@ -316,11 +317,12 @@ public class DrawComparedGraphs implements Initializable {
     topPane.setOnDragDropped((DragEvent event) -> {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
-        Collection<String> genomes = new ArrayList<>();
+        Collection<Integer> genomes = new ArrayList<>();
         for (String genome : dragboard.getString().split("\n")) {
           String gen = genome.replace("\r", "");
-          if (mainGraph.getGenomes().contains(gen)) {
-            genomes.add(gen);
+          Integer genId = GenomeMap.getInstance().getId(gen);
+          if (genId != null) {
+            genomes.add(genId);
           }
         }
         try {
@@ -348,7 +350,8 @@ public class DrawComparedGraphs implements Initializable {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
         Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
-        handleGenomesDropped(genomes, event, bottomGraphGenomes, topGraphGenomes);
+        handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event, bottomGraphGenomes,
+            topGraphGenomes);
         event.setDropCompleted(true);
         event.consume();
       }
@@ -366,8 +369,8 @@ public class DrawComparedGraphs implements Initializable {
    *                       didn't occur).
    */
   @SuppressWarnings("fallthrough")
-  private void handleGenomesDropped(Collection<String> genomes, DragEvent dragEvent,
-      Set<String> genomeMap, Set<String> otherGenomeMap) {
+  private void handleGenomesDropped(Collection<Integer> genomes, DragEvent dragEvent,
+      Set<Integer> genomeMap, Set<Integer> otherGenomeMap) {
     contextMenu = new ContextMenu();
 
     switch (getDrawnGraphs()) {
@@ -415,8 +418,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param otherGenomeMap the genome map of the other graph.
    * @return the menu item.
    */
-  private MenuItem createCreateNewGraphMenuItem(Collection<String> genomes,
-      Set<String> otherGenomeMap) {
+  private MenuItem createCreateNewGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> otherGenomeMap) {
     MenuItem newGraphItem = new MenuItem("add to new graph");
     newGraphItem.setOnAction((ActionEvent event) -> {
       otherGenomeMap.addAll(genomes);
@@ -433,8 +436,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createClearAndAddToGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createClearAndAddToGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem clearAndAddItem = new MenuItem("clear graph and add");
     clearAndAddItem.setOnAction((ActionEvent event) -> {
       genomeMap.clear();
@@ -452,8 +455,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createAddToExistingGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createAddToExistingGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem addToExistingItem = new MenuItem("add to existing graph");
     addToExistingItem.setOnAction((ActionEvent event) -> {
       genomeMap.addAll(genomes);
@@ -470,8 +473,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createRemoveFromGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createRemoveFromGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem newGraphItem = new MenuItem("remove from graph");
     newGraphItem.setOnAction((ActionEvent event) -> {
       genomeMap.removeAll(genomes);
@@ -503,7 +506,7 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param genomes the collection of genomes.
    */
-  private void drawOneGraph(Collection<String> genomes) {
+  private void drawOneGraph(Collection<Integer> genomes) {
     topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder, treeRoot);
     ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
 
@@ -519,7 +522,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param topGenomes    the genomes of the top graph.
    * @param bottomGenomes the genomes of the bottom graph.
    */
-  public void compareTwoGraphs(Collection<String> topGenomes, Collection<String> bottomGenomes) {
+  public void compareTwoGraphs(Collection<Integer> topGenomes, Collection<Integer> bottomGenomes) {
     drawOneGraph(mainGraph.getGenomes());
 //    topGraphGenomes.clear();
 //    topGraphGenomes.addAll(topGenomes);
@@ -737,6 +740,12 @@ public class DrawComparedGraphs implements Initializable {
 
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
+<<<<<<< HEAD
+=======
+   * The mapping function from amount of bases to node radius is completely random (hence the magic
+   * numbers). It was created by drawing graphs of different functions, till a somewhat nice mapping
+   * function was found.
+>>>>>>> a2c14f093d722a6ba0accb3cd299eeac691bd83a
    *
    * @param node the node.
    * @return the radius.
@@ -778,8 +787,8 @@ public class DrawComparedGraphs implements Initializable {
   private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
       int startLevel, ViewRange range) {
     Line edge = new Line();
-    edge.setSmooth(true);
-    edge.setStrokeWidth(edgeWidth);
+//    edge.setSmooth(true);
+    edge.setStrokeWidth(edgeWidth * 2);
     pane.getChildren().add(edge);
     if (fromNode.hasChildren()) {
       edge.setStartX(zoomFactor.get()

@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
 import nl.tudelft.pl2016gr2.model.Annotation;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -105,12 +106,15 @@ public class AnnotationReader {
   }
 
   private void parseDateOfCollection(Annotation annotation, Cell cell) {
-//    logger.log(Level.INFO,
-//        String.format("Species %s with dateCell %s",annotation.specimenId, cell.toString()));
-    // toString seems to return the correct "Date" string, but the cell claims to be
-    // a numeric value that is certainly not an unix timestamp
-    // annotation.dateOfCollection = cell.getDateCellValue();
-    // annotation.dateOfCollection = new Date(cell.getNumericCellValue());
+    if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+      annotation.dateOfCollection = cell.getDateCellValue();
+    } else {
+      logger.log(Level.WARNING, String.format(
+              "Species %s with dateCell %s doesn't represent a date?",
+              annotation.specimenId,
+              cell.toString())
+      );
+    }
   }
 
   private void parseStudyGeographicDistrict(Annotation annotation, Cell cell) {

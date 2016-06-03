@@ -40,13 +40,13 @@ public class FilterHelpers {
    * @param leaves the labels of the leaves of the phylo node
    * @return true if the node is shared
    */
-  protected static boolean isShared(GraphNode node, List<String> leaves) {
+  protected static boolean isShared(GraphNode node, List<Integer> leaves) {
     if (node.getGenomes().containsAll(leaves)) {
       return true;
     }
     
-    for (String genome : node.getGenomes()) {
-      if (!genome.contains("MT_") && !leaves.contains(genome)) {
+    for (Integer genome : node.getGenomes()) {
+      if (genome != 0 && !leaves.contains(genome)) {
         return true;
       }
     }

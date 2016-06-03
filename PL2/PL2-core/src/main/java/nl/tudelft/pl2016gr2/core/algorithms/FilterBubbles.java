@@ -98,11 +98,11 @@ public class FilterBubbles implements PhyloFilter {
    * @parem genomes the genomes that are selected
    * @return a filtered graph.
    */
-  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
-    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
+  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
+//    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(graphNodes, newRoot, newBubbles);
+    debubble(graphNodes, treeRoot, newBubbles);
     ArrayList<GraphNode> poppedNodes = new ArrayList<>(graphNodes);
     pruneNodes(poppedNodes, newBubbles);
 
@@ -115,7 +115,7 @@ public class FilterBubbles implements PhyloFilter {
   private List<Bubble> debubble(Set<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
       ArrayList<Bubble> newBubbles) {
     mutationId--;
-    ArrayList<String> leaves = treeNode.getGenomes();
+    ArrayList<Integer> leaves = treeNode.getGenomes();
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
 
@@ -137,7 +137,7 @@ public class FilterBubbles implements PhyloFilter {
   }
 
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
-      Set<GraphNode> poppedNodes, ArrayList<String> leaves, Bubble bubble,
+      Set<GraphNode> poppedNodes, ArrayList<Integer> leaves, Bubble bubble,
       IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
     Set<GraphNode> endNodes = new HashSet<>();
     if (bubble != null) {
@@ -180,7 +180,7 @@ public class FilterBubbles implements PhyloFilter {
   }
 
   private void createBubble(IPhylogeneticTreeNode treeNode, GraphNode inlink,
-      List<GraphNode> bubbleLinks, List<String> leaves, Queue<GraphNode> toVisit,
+      List<GraphNode> bubbleLinks, List<Integer> leaves, Queue<GraphNode> toVisit,
       Set<GraphNode> visited, List<Bubble> newBubbles, Set<GraphNode> poppedNodes) {
     if (!bubbleLinks.isEmpty()) {
       Bubble newBubble = new PhyloBubble(mutationId, treeNode, this);
@@ -199,7 +199,7 @@ public class FilterBubbles implements PhyloFilter {
     }
   }
 
-  private Queue<GraphNode> makeBubble(Bubble bubble, List<GraphNode> start, List<String> leaves) {
+  private Queue<GraphNode> makeBubble(Bubble bubble, List<GraphNode> start, List<Integer> leaves) {
     Queue<GraphNode> endPoints = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
     Queue<GraphNode> toVisit = new LinkedList<>();
@@ -225,7 +225,7 @@ public class FilterBubbles implements PhyloFilter {
     return endPoints;
   }
 
-  private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges, ArrayList<String> leaves,
+  private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges, ArrayList<Integer> leaves,
       Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
 
@@ -233,9 +233,9 @@ public class FilterBubbles implements PhyloFilter {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
-      ArrayList<String> genomes = new ArrayList<>(outlink.getGenomes());
+      ArrayList<Integer> genomes = new ArrayList<>(outlink.getGenomes());
 
-      for (String leaf : leaves) {
+      for (Integer leaf : leaves) {
         if (genomes.contains(leaf)) {
           curNodeOutlinks.add(outlink);
           break;

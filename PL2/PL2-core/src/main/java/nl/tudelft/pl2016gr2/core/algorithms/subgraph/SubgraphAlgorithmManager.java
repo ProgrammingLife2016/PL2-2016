@@ -55,6 +55,7 @@ public class SubgraphAlgorithmManager {
 //        bottomGraphOrder);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
+    
   /**
    * Create and align the nodes of a single subgraph.
    *
@@ -64,7 +65,7 @@ public class SubgraphAlgorithmManager {
    * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
-  public static OrderedGraph alignOneGraph(Collection<String> genomes, SequenceGraph mainGraph,
+  public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
@@ -73,7 +74,6 @@ public class SubgraphAlgorithmManager {
     
     FilterBubbles filter = new FilterBubbles(subgraph);
     ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
-
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
@@ -86,7 +86,7 @@ public class SubgraphAlgorithmManager {
 
     private SequenceGraph subGraph;
     private final SplitGraphs splitGraphs;
-    private final Collection<String> genomes;
+    private final Collection<Integer> genomes;
 
     /**
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
@@ -95,7 +95,7 @@ public class SubgraphAlgorithmManager {
      * @param splitGraphs a {@link SplitGraphs} object.
      * @param genomes     the list of genomes which must be present in the subgraph.
      */
-    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<String> genomes) {
+    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<Integer> genomes) {
       this.splitGraphs = splitGraphs;
       this.genomes = genomes;
     }

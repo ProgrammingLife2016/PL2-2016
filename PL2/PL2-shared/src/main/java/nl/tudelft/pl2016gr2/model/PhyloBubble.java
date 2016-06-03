@@ -167,8 +167,8 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public Collection<String> getGenomes() {
-    HashSet<String> genomeSet = new HashSet<>();
+  public Collection<Integer> getGenomes() {
+    HashSet<Integer> genomeSet = new HashSet<>();
     for (GraphNode nestedNode : nestedNodes) {
       genomeSet.addAll(nestedNode.getGenomes());
     }
@@ -176,24 +176,24 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public void addGenome(String genome) {
+  public void addGenome(int genome) {
     throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
         + "bubbles before the bubbles are made.");
   }
 
   @Override
-  public void removeGenome(String genome) {
+  public void removeGenome(int genome) {
     throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
         + "bubbles before the bubbles are made.");
   }
 
   @Override
-  public Collection<String> getGenomesOverEdge(GraphNode node) {
+  public Collection<Integer> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
         node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
         + "not a direct successor. This = " + this.getId();
 
-    Collection<String> genomes = new ArrayList<>();
+    Collection<Integer> genomes = new ArrayList<>();
     getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes::add);
     return genomes;
   }

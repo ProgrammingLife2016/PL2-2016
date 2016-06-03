@@ -50,10 +50,27 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * <p>
    * A root node is a node without parents.
    * </p>
+   * <p>
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
+   * </p>
    *
    * @return the identifiers of all root nodes in this graph.
    */
   Collection<GraphNode> getRootNodes();
+
+  /**
+   * Returns the IDs of all genomes that exist in this graph.
+   * <p>
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
+   * </p>
+   *
+   * @return The IDs of all genomes in this graph
+   */
+  Collection<Integer> getGenomes();
+
+  // Sequence Graph specific modification operations
 
   /**
    * Add the node as a root node of this graph.
@@ -72,27 +89,18 @@ public interface SequenceGraph extends Iterable<GraphNode> {
   void addAsRootNode(GraphNode rootNode);
 
   /**
-   * Returns the names of all genomes that exist in this graph.
-   *
-   * @return The names of all genomes in this graph
-   */
-  Collection<String> getGenomes();
-
-  // Sequence Graph specific modification operations
-
-  /**
    * Add the <code>genome</code> to the genomes in this graph.
    *
-   * @param genome The string describing the name of the genome that is to be added.
+   * @param genome The ID of the genome that is to be added.
    */
-  void addGenome(String genome);
+  void addGenome(int genome);
 
   /**
    * Remove the <code>genome</code> from the genomes in this graph.
    *
-   * @param genome The string describing the name of the genome that is to be removed.
+   * @param genome The ID of the genome that is to be removed.
    */
-  void removeGenome(String genome);
+  void removeGenome(int genome);
 
 
   // Map-like inspection operations

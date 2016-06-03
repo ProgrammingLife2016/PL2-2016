@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -98,21 +99,46 @@ public class TreeManager implements Initializable {
   @TestId(id = "setSelectionManager")
   private void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
+    initializeTopGraphSelectionManger();
+    initializeBottomGraphSelectionManger();
+    initializeSearchBoxSelectionManager();
+  }
+
+  /**
+   * Initialize the listener to the top graph genome set.
+   */
+  private void initializeTopGraphSelectionManger() {
+    selectionManager.getTopGraphGenomes().addListener(
+        (SetChangeListener.Change<? extends Integer> change) -> {
+          if (change.wasAdded()) {
+            rootNode.setDrawnInTop(change.getElementAdded(), true);
+          } else {
+            rootNode.setDrawnInTop(change.getElementRemoved(), false);
+          }
+        });
+  }
+
+  /**
+   * Initialize the listener to the bottom graph genome set.
+   */
+  private void initializeBottomGraphSelectionManger() {
     selectionManager.getBottomGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
+        (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInBottom(change.getElementAdded(), true);
           } else {
             rootNode.setDrawnInBottom(change.getElementRemoved(), false);
           }
         });
-    selectionManager.getTopGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
-          if (change.wasAdded()) {
-            rootNode.setDrawnInTop(change.getElementAdded(), true);
-          } else {
-            rootNode.setDrawnInTop(change.getElementRemoved(), false);
-          }
+  }
+
+  /**
+   * Initialize the listener to the selected search box genome.
+   */
+  private void initializeSearchBoxSelectionManager() {
+    selectionManager.getSearchBoxSelectedGenome().addListener(
+        (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) -> {
+          rootNode.highlightPath(oldValue.intValue(), newValue.intValue());
         });
   }
 

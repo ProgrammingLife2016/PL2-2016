@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import static org.junit.Assert.assertEquals;
 
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
@@ -57,18 +58,19 @@ public class CompareSubgraphsTest {
 //    SequenceGraph graph = gfaReader.read();
 //    GraphOrdererThread thread = new GraphOrdererThread(graph);
 //    thread.start();
-//    SequenceGraph mainGraphOrder = thread.getGraph();
+//    HashMap<GraphNode, NodePosition> mainGraphOrder = thread.getOrderedGraph();
 //
 //    ArrayList<String> topGenomes = new ArrayList<>();
 //    topGenomes.add("TKK_02_0005");
 //    ArrayList<String> bottomGenomes = new ArrayList<>();
 //    bottomGenomes.add("TKK_02_0008");
-//    SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(topGenomes);
-//    SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(bottomGenomes);
+//    GenomeMap genomeMap = GenomeMap.getInstance();
+//    SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(topGenomes));
+//    SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(bottomGenomes));
 //
-//    Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> res
-//        = CompareSubgraphs.compareGraphs(mainGraphOrder, topGraph, bottomGraph);
+//    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> res = CompareSubgraphs.compareGraphs(
+//        mainGraphOrder, topGraph, bottomGraph);
 //    assertEquals(4, res.left.size());
 //    assertEquals(4, res.right.size());
-//  } <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+//  }
 }

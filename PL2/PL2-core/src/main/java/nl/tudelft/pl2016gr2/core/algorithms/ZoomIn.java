@@ -110,7 +110,7 @@ public class ZoomIn {
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     Collection<GraphNode> startNodes = bubble.getInEdges();
     
-    ArrayList<String> leaves = treeNode.getGenomes();
+    ArrayList<Integer> leaves = treeNode.getGenomes();
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
     toVisit.addAll(startNodes);

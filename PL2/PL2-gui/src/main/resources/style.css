@@ -5,7 +5,7 @@
  ******************************************************************************/
 
 .root {
-  -fx-base: derive(backgroundcolor, 80%); 
+  -fx-base: derive(backgroundcolor, 60%); 
 
   /* Base color for window backgrounds */
   backgroundcolor: rgba(0, 0, 0, 1);

@@ -13,10 +13,10 @@ import java.util.Set;
 public class BuildTree {
   
   private IPhylogeneticTreeRoot treeRoot;
-  private Set<String> genomes;
+  private Set<Integer> genomes;
   private PhylogeneticTreeNode newRoot;
   
-  public BuildTree(IPhylogeneticTreeRoot treeRoot, Collection<String> genomes) {
+  public BuildTree(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
     this.treeRoot = treeRoot;
     this.genomes = new HashSet<>(genomes);
   }
@@ -34,10 +34,10 @@ public class BuildTree {
   }
   
   private void buildTree(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
-    ArrayList<String> leaves = node.getGenomes();
+    ArrayList<Integer> leaves = node.getGenomes();
     // Keep everything from this node on
     if (genomes.containsAll(leaves)) {
-      PhylogeneticTreeNode newNode = new PhylogeneticTreeNode(node.getTreeNode(), parent);
+      PhylogeneticTreeNode newNode = new PhylogeneticTreeNode(node, parent, true);
       addChild(parent, newNode);
       return;
     }
@@ -70,8 +70,8 @@ public class BuildTree {
     }
   }
   
-  private boolean containsGenome(ArrayList<String> leaves) {
-    for (String leaf : leaves) {
+  private boolean containsGenome(ArrayList<Integer> leaves) {
+    for (Integer leaf : leaves) {
       if (genomes.contains(leaf)) {
         return true;
       }

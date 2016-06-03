@@ -6,6 +6,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -33,9 +35,15 @@ public class SelectionManager {
   private ISelectable selected;
   private Timeline timeline;
 
-  private final ObservableSet<String> topGraphGenomes = new ObservableSetWrapper<>(new HashSet<>());
-  private final ObservableSet<String> bottomGraphGenomes
+  private final ObservableSet<Integer> topGraphGenomes
       = new ObservableSetWrapper<>(new HashSet<>());
+  private final ObservableSet<Integer> bottomGraphGenomes
+      = new ObservableSetWrapper<>(new HashSet<>());
+
+  /**
+   * The selected genome in the search box. -1 means no genome is selected.
+   */
+  private final IntegerProperty searchBoxSelectedGenome = new SimpleIntegerProperty(-1);
 
   /**
    * Create a selection manager.
@@ -83,7 +91,7 @@ public class SelectionManager {
     }
   }
 
-  protected void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+  protected void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     rootLayoutController.drawGraph(topGenomes, bottomGenomes);
   }
 
@@ -129,11 +137,15 @@ public class SelectionManager {
     timeline.play();
   }
 
-  public ObservableSet<String> getTopGraphGenomes() {
+  public ObservableSet<Integer> getTopGraphGenomes() {
     return topGraphGenomes;
   }
 
-  public ObservableSet<String> getBottomGraphGenomes() {
+  public ObservableSet<Integer> getBottomGraphGenomes() {
     return bottomGraphGenomes;
+  }
+
+  public IntegerProperty getSearchBoxSelectedGenome() {
+    return searchBoxSelectedGenome;
   }
 }

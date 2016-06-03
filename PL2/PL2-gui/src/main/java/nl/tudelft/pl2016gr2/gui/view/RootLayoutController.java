@@ -129,7 +129,7 @@ public class RootLayoutController implements
    * @param topGenomes    the genomes of the top graph.
    * @param bottomGenomes the genomes of the bottom graph.
    */
-  public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+  public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     drawGraphs.compareTwoGraphs(topGenomes, bottomGenomes);
   }
 
