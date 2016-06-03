@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.Circle?>
 
 
-<AnchorPane xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.LegendController">
+<AnchorPane xmlns="http://javafx.com/javafx/null" pickOnBounds="false" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.LegendController">
     <children>
         <AnchorPane fx:id="legendItemContainerWrapper" visible="false" minHeight="50.0" minWidth="200.0" style="-fx-background-color: rgba(255, 255, 255, 0.8)">
             <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
