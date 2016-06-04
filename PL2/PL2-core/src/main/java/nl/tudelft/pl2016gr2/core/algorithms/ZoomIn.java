@@ -82,7 +82,7 @@ public class ZoomIn {
       endNode.setOutEdges(outEdges.get(endNode.getId()));
       for (GraphNode curOutlink : inEdges.get(endNode.getId())) {
         if (curOutlink.getId() != bubbleId && !endNode.getInEdges().contains(curOutlink)) {
-          endNode.addOutEdge(curOutlink);
+          endNode.addInEdge(curOutlink);
         }
       }
     }

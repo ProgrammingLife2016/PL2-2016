@@ -276,4 +276,16 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return the nodes which are present
    */
   Collection<GraphNode> pop();
+  
+  /**
+   * Unpops a bubble.
+   */
+  void unpop();
+  
+  /**
+   * Checks if a bubble is popped.
+   * 
+   * @return true is the bubble is popped
+   */
+  boolean isPopped();
 }

@@ -4,7 +4,9 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 public class PhyloBubble implements Bubble {
 
@@ -12,11 +14,12 @@ public class PhyloBubble implements Bubble {
   private final IPhylogeneticTreeNode treeNode;
   private final HashSet<GraphNode> nestedNodes;
 
-  private ArrayList<GraphNode> inEdges;
-  private ArrayList<GraphNode> outEdges;
+  private HashSet<GraphNode> inEdges;
+  private HashSet<GraphNode> outEdges;
 
   private final PhyloFilter filter;
   private Collection<GraphNode> poppedNodes;
+  private boolean isPopped;
 
   private int size = -1;
   private int level = -1;
@@ -28,8 +31,8 @@ public class PhyloBubble implements Bubble {
     this.id = id;
     this.treeNode = treeNode;
     this.filter = filter;
-    this.inEdges = new ArrayList<>();
-    this.outEdges = new ArrayList<>();
+    this.inEdges = new HashSet<>();
+    this.outEdges = new HashSet<>();
     this.nestedNodes = new HashSet<>();
   }
 
@@ -38,10 +41,10 @@ public class PhyloBubble implements Bubble {
     this.id = id;
     this.treeNode = treeNode;
     this.filter = filter;
-    this.inEdges = new ArrayList<>(inEdges);
-    this.outEdges = new ArrayList<>(outEdges);
-    this.inEdges.trimToSize();
-    this.outEdges.trimToSize();
+    this.inEdges = new HashSet<>(inEdges);
+    this.outEdges = new HashSet<>(outEdges);
+    //this.inEdges.trimToSize();
+    //this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>();
   }
 
@@ -51,10 +54,10 @@ public class PhyloBubble implements Bubble {
     this.id = id;
     this.treeNode = treeNode;
     this.filter = filter;
-    this.inEdges = new ArrayList<>(inEdges);
-    this.outEdges = new ArrayList<>(outEdges);
-    this.inEdges.trimToSize();
-    this.outEdges.trimToSize();
+    this.inEdges = new HashSet<>(inEdges);
+    this.outEdges = new HashSet<>(outEdges);
+    //this.inEdges.trimToSize();
+    //this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>(nestedNodes);
   }
 
@@ -123,8 +126,8 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void setInEdges(Collection<GraphNode> edges) {
-    inEdges = new ArrayList<>(edges);
-    inEdges.trimToSize();
+    inEdges = new HashSet<>(edges);
+    //inEdges.trimToSize();
   }
 
   @Override
@@ -148,8 +151,8 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new ArrayList<>(edges);
-    outEdges.trimToSize();
+    outEdges = new HashSet<>(edges);
+    //outEdges.trimToSize();
   }
 
   @Override
@@ -212,18 +215,42 @@ public class PhyloBubble implements Bubble {
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
   }
+  
+  private HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
+  private HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
 
   @Override
   public Collection<GraphNode> pop() {
+    isPopped = true;
     if (poppedNodes == null) {
-//      System.out.println("bubble to pop: "  + this);
+      for (GraphNode node : inEdges) {
+        originalOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
+      }
+      for (GraphNode node : outEdges) {
+        originalInEdges.put(node.getId(), new HashSet<>(node.getInEdges()));
+      }
       poppedNodes = filter.zoomIn(this);
-//      for (GraphNode node : poppedNodes) {
-//        System.out.println(node);
-//      }
-      //System.out.println("---------------------");
     }
     return poppedNodes;
+  }
+  
+  @Override
+  public void unpop() {
+    if (isPopped) {
+      isPopped = false;
+      for (GraphNode node : inEdges) {
+        node.setOutEdges(originalOutEdges.get(node.getId()));
+      }
+      
+      for (GraphNode node : outEdges) {
+        node.setInEdges(originalInEdges.get(node.getId()));
+      }
+    }
+  }
+  
+  @Override
+  public boolean isPopped() {
+    return isPopped;
   }
 
   @Override

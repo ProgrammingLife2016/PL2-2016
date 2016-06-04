@@ -736,14 +736,16 @@ public class DrawComparedGraphs implements Initializable {
     Collection<GraphNode> poppedNodes = bubble.pop();
     assert new HashSet<>(poppedNodes).size() == poppedNodes.size(); // check uniqueness of nodes in popped nodes
     for (GraphNode node : poppedNodes) {
-      for (GraphNode inEdge : node.getInEdges()) {
-        assert inEdge.getOutEdges().contains(node); // check if each in edge of this node has an out edge to this node
+      if (!node.isPopped()) {
+        for (GraphNode inEdge : node.getInEdges()) {
+          assert inEdge.getOutEdges().contains(node); // check if each in edge of this node has an out edge to this node
+        }
+        for (GraphNode outEdge : node.getOutEdges()) {
+          assert outEdge.getInEdges().contains(node); // check if each out edge of this node has and in edge to this node
+        }
+        assert new HashSet(node.getInEdges()).size() == node.getInEdges().size(); // check uniqueness of in edges
+        assert new HashSet(node.getOutEdges()).size() == node.getOutEdges().size(); // check uniqueness of out edges
       }
-      for (GraphNode outEdge : node.getOutEdges()) {
-        assert outEdge.getInEdges().contains(node); // check if each out edge of this node has and in edge to this node
-      }
-      assert new HashSet(node.getInEdges()).size() == node.getInEdges().size(); // check uniqueness of in edges
-      assert new HashSet(node.getOutEdges()).size() == node.getOutEdges().size(); // check uniqueness of out edges
     }
     for (GraphNode poppedNode : poppedNodes) {
       drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1, viewRange);

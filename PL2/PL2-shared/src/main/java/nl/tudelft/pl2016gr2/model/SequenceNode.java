@@ -4,6 +4,7 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * A simple implementation of <code>Node</code> that offers the DNA sequence as a String, but
@@ -15,8 +16,8 @@ public class SequenceNode extends AbstractNode {
 
   private BaseSequence sequence;
   private ArrayList<Integer> genomes;
-  private ArrayList<GraphNode> inEdges;
-  private ArrayList<GraphNode> outEdges;
+  private HashSet<GraphNode> inEdges;
+  private HashSet<GraphNode> outEdges;
 
   /**
    * If this node is overlapping with a node from the other graph.
@@ -42,8 +43,8 @@ public class SequenceNode extends AbstractNode {
   public SequenceNode(int identifier) {
     super(identifier);
     genomes = new ArrayList<>();
-    inEdges = new ArrayList<>();
-    outEdges = new ArrayList<>();
+    inEdges = new HashSet<>();
+    outEdges = new HashSet<>();
   }
 
   /**
@@ -56,8 +57,8 @@ public class SequenceNode extends AbstractNode {
     super(identifier);
     this.sequence = sequence;
     genomes = new ArrayList<>();
-    inEdges = new ArrayList<>();
-    outEdges = new ArrayList<>();
+    inEdges = new HashSet<>();
+    outEdges = new HashSet<>();
   }
 
   /**
@@ -71,8 +72,8 @@ public class SequenceNode extends AbstractNode {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
-    inEdges = new ArrayList<>();
-    outEdges = new ArrayList<>();
+    inEdges = new HashSet<>();
+    outEdges = new HashSet<>();
   }
 
   /**
@@ -92,10 +93,10 @@ public class SequenceNode extends AbstractNode {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
-    this.inEdges = new ArrayList<>(inEdges);
-    this.outEdges = new ArrayList<>(outEdges);
-    this.inEdges.trimToSize();
-    this.outEdges.trimToSize();
+    this.inEdges = new HashSet<>(inEdges);
+    this.outEdges = new HashSet<>(outEdges);
+    //this.inEdges.trimToSize();
+    //this.outEdges.trimToSize();
   }
 
   @Override
@@ -118,8 +119,8 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void setInEdges(Collection<GraphNode> edges) {
-    inEdges = new ArrayList<>(edges);
-    inEdges.trimToSize();
+    inEdges = new HashSet<>(edges);
+    //inEdges.trimToSize();
   }
 
   @Override
@@ -143,8 +144,8 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new ArrayList<>(edges);
-    outEdges.trimToSize();
+    outEdges = new HashSet<>(edges);
+    //outEdges.trimToSize();
   }
 
   @Override
@@ -279,5 +280,15 @@ public class SequenceNode extends AbstractNode {
     ArrayList<GraphNode> res = new ArrayList<>(1);
     res.add(this);
     return res;
+  }
+  
+  @Override
+  public void unpop() {
+    return;
+  }
+  
+  @Override
+  public boolean isPopped() {
+    return false;
   }
 }
