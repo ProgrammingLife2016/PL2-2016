@@ -30,23 +30,23 @@ Code Coverage
 In this chapter we will discuss the code coverage of each module separately.
 
 ### Core
-![core module coverage](./coverage images/sprint 5/core module.png)
-Only the SubgraphAlgorithmManager and OrderedGraph class are untested. The OrderedGraph class contains very little code (it is used to multithread the execution of code of other classes) and the SubgraphAlgorithmManager is used to call the algorithms of other classes, with a little bit of additional logic. We do intend to test them soon (next sprint, or the sprint after that).
+![core module coverage](./coverage images/sprint 6/core module.png)
+Only the SubgraphAlgorithmManager, OrderedGraph and 2 classes to open a file are untested. The OrderedGraph class contains very little code (it is used to multithread the execution of code of other classes) and the SubgraphAlgorithmManager is used to call the algorithms of other classes, with a little bit of additional logic. We do intend to test them soon (next sprint).
 
 ### Gui
-![gui module coverage](./coverage images/sprint 5/gui module.png)
+![gui module coverage](./coverage images/sprint 6/gui module.png)
 The most important components of the GUI module are covered. See the special cases section for missing coverage.
 
 ### Launcher
-![launcher module coverage](./coverage images/sprint 5/launcher module.png)
+![launcher module coverage](./coverage images/sprint 6/launcher module.png)
 Currently the launcher module decently tested (see special cases).
 
 ### Parser
-![parser module coverage](./coverage images/sprint 5/parser module.png)
+![parser module coverage](./coverage images/sprint 6/parser module.png)
 The parser is fully tested.
 
 ### Shared
-![shared module coverage](./coverage images/sprint 5/shared module.png)
+![shared module coverage](./coverage images/sprint 6/shared module.png)
 Most of the shared module classes are tested. Only the MetaData and Annotation classes require considerable more coverage. These classes almost exclusively contain data fields and a very small amount of logic (also see the small amount of lines in these classes). Their coverage is thus not of large importance. The TestAnnotationException and AccessPrivate classes are not part of our project (they are third party classes), so please don't consider these classes. They are not removed from the image to make sure the total coverage adds up. We will try to remove them from the coverage reports as soon as possible.
 
 Special Cases
@@ -84,6 +84,7 @@ Coverage per sprint
 ====================
 In this section we will include the code coverage reports of each sprint, from sprint 3 onwards. The shown percentage represents the line coverage and the total amount of lines and amount of missed lines are also shown.
 
+
 ### Sprint 3
 These are the coverage reports of the dev branch at the end of sprint 3.
 
@@ -101,6 +102,7 @@ These are the coverage reports of the dev branch at the end of sprint 3.
 
 ###### Shared module
 ![shared module coverage](./coverage images/sprint 3/shared module.png)
+
 
 ### Sprint 4
 These are the coverage reports of the dev branch at the end of sprint 4.
@@ -120,7 +122,8 @@ These are the coverage reports of the dev branch at the end of sprint 4.
 ###### Shared module
 ![shared module coverage](./coverage images/sprint 4/shared module.png)
 
-### Sprint 4
+
+### Sprint 5
 These are the coverage reports of the next branch at the end of sprint 5.
 
 ###### Core module
@@ -139,4 +142,22 @@ These are the coverage reports of the next branch at the end of sprint 5.
 ![shared module coverage](./coverage images/sprint 5/shared module.png)
 
 
-> last updated at 28/5/2016 (end of sprint 5)
+### Sprint 6
+These are the coverage reports of the next branch at the end of sprint 6.
+
+###### Core module
+![core module coverage](./coverage images/sprint 6/core module.png)
+
+###### GUI module
+![gui module coverage](./coverage images/sprint 6/gui module.png)
+
+###### Launcher module
+![launcher module coverage](./coverage images/sprint 6/launcher module.png)
+
+###### Parser module
+![parser module coverage](./coverage images/sprint 6/parser module.png)
+
+###### Shared module
+![shared module coverage](./coverage images/sprint 6/shared module.png)
+
+> last updated at 4/6/2016 (end of sprint 6)
