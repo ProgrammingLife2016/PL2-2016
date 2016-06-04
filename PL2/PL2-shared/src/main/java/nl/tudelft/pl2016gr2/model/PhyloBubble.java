@@ -221,8 +221,8 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public Collection<GraphNode> pop() {
-    isPopped = true;
-    if (poppedNodes == null) {
+    if (!isPopped) {
+      isPopped = true;
       for (GraphNode node : inEdges) {
         originalOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
       }
