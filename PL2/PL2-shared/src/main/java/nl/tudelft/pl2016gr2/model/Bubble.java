@@ -7,4 +7,10 @@ package nl.tudelft.pl2016gr2.model;
  */
 public interface Bubble extends GraphNode {
 
+  /**
+   * If the nodes in the bubble have to be vertically aligned.
+   *
+   * @return if the nodes in the bubble have to be vertically aligned.
+   */
+  boolean needsVerticalAligning();
 }

@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 public class PhyloBubble implements Bubble {
 
@@ -17,6 +16,9 @@ public class PhyloBubble implements Bubble {
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
 
+  private final HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
+  private final HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
+
   private final PhyloFilter filter;
   private Collection<GraphNode> poppedNodes;
   private boolean isPopped;
@@ -24,7 +26,7 @@ public class PhyloBubble implements Bubble {
   private int size = -1;
   private int level = -1;
 
-  private double relativeYPos;
+  private double relativeYPos = -1;
   private double maxHeight;
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
@@ -66,7 +68,12 @@ public class PhyloBubble implements Bubble {
     return "id: " + id + ", in: " + getIds(inEdges) + ", out: " + getIds(outEdges)
         + ", nested: " + getIds(nestedNodes) + ", tree leaves: " + treeNode.getGenomes();
   }
-  
+
+  @Override
+  public boolean needsVerticalAligning() {
+    return poppedNodes == null;
+  }
+
   private String getIds(Collection<GraphNode> nodes) {
     StringBuilder builder = new StringBuilder("[");
     for (GraphNode node : nodes) {
@@ -215,9 +222,6 @@ public class PhyloBubble implements Bubble {
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
   }
-  
-  private HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
-  private HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
 
   @Override
   public Collection<GraphNode> pop() {
@@ -233,7 +237,7 @@ public class PhyloBubble implements Bubble {
     }
     return poppedNodes;
   }
-  
+
   @Override
   public void unpop() {
     if (isPopped) {
@@ -241,13 +245,13 @@ public class PhyloBubble implements Bubble {
       for (GraphNode node : inEdges) {
         node.setOutEdges(originalOutEdges.get(node.getId()));
       }
-      
+
       for (GraphNode node : outEdges) {
         node.setInEdges(originalInEdges.get(node.getId()));
       }
     }
   }
-  
+
   @Override
   public boolean isPopped() {
     return isPopped;

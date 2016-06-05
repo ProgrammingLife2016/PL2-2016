@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -24,7 +25,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
@@ -42,7 +42,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -90,7 +89,7 @@ public class DrawComparedGraphs implements Initializable {
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
   private static final Color NO_OVERLAP_COLOR = Color.rgb(255, 30, 30);
-  private static final double SCROLL_ZOOM_FACTOR = 0.0025;
+  private static final double SCROLL_ZOOM_FACTOR = 0.025;
   private static final double MAX_ZOOM_FACTOR = 4.0;
   private static final double BUBBLE_POP_SIZE = 150.0;
 
@@ -603,8 +602,10 @@ public class DrawComparedGraphs implements Initializable {
     }
 
     if (topGraph != null) {
+      long start = System.nanoTime();
       drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
+      System.out.println("System.nanoTime() - start = " + (System.nanoTime() - start));
     }
     if (bottomGraph != null) {
       drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().
@@ -693,9 +694,7 @@ public class DrawComparedGraphs implements Initializable {
     circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
     circle.centerYProperty().set(
         viewRange.rangeHeight * node.getRelativeYPos() + viewRange.rangeStartY);
-//    else {
-//      addLabel(pane, circle, node.getId());
-//    }
+      addLabel(pane, circle, node.getId());
   }
 
   private void constructBubble(Pane pane, GraphNode bubble,
@@ -719,14 +718,14 @@ public class DrawComparedGraphs implements Initializable {
     square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
     square.centerYProperty().set(
         viewRange.rangeHeight * bubble.getRelativeYPos() + viewRange.rangeStartY);
-//    else {
-//      addLabel(pane, square, node.getId());
-//    }
+      addLabel(pane, square, bubble.getId());
     if (width > BUBBLE_POP_SIZE) {
       ViewRange bubbleViewRange = new ViewRange(
           square.getLayoutY(),
           height);
       drawNestedNodes(pane, bubble, drawnGraphNodes, startLevel, nestedDepth, bubbleViewRange);
+    } else {
+      bubble.unpop();
     }
   }
 
@@ -734,19 +733,6 @@ public class DrawComparedGraphs implements Initializable {
       HashMap<GraphNode, ViewRange> drawnGraphNodes,
       int startLevel, int nestedDepth, ViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
-    assert new HashSet<>(poppedNodes).size() == poppedNodes.size(); // check uniqueness of nodes in popped nodes
-    for (GraphNode node : poppedNodes) {
-      if (!node.isPopped()) {
-        for (GraphNode inEdge : node.getInEdges()) {
-          assert inEdge.getOutEdges().contains(node); // check if each in edge of this node has an out edge to this node
-        }
-        for (GraphNode outEdge : node.getOutEdges()) {
-          assert outEdge.getInEdges().contains(node); // check if each out edge of this node has and in edge to this node
-        }
-        assert new HashSet(node.getInEdges()).size() == node.getInEdges().size(); // check uniqueness of in edges
-        assert new HashSet(node.getOutEdges()).size() == node.getOutEdges().size(); // check uniqueness of out edges
-      }
-    }
     for (GraphNode poppedNode : poppedNodes) {
       drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1, viewRange);
     }
@@ -779,14 +765,16 @@ public class DrawComparedGraphs implements Initializable {
   private void drawEdges(Pane pane, HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel,
       int genomeCount) {
     drawnGraphNodes.forEach((GraphNode node, ViewRange range) -> {
-      for (GraphNode outEdge : node.getOutEdges()) {
-        double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-        drawEdge(pane, node, outEdge, edgeWidth, startLevel, range);
-      }
-      for (GraphNode inEdge : node.getInEdges()) {
-        if (!drawnGraphNodes.containsKey(inEdge)) {
-          double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
-          drawEdge(pane, inEdge, node, edgeWidth, startLevel, range);
+      if (!node.isPopped()) {
+        for (GraphNode outEdge : node.getOutEdges()) {
+          double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
+          drawEdge(pane, node, outEdge, edgeWidth, startLevel, range);
+        }
+        for (GraphNode inEdge : node.getInEdges()) {
+          if (!drawnGraphNodes.containsKey(inEdge)) {
+            double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
+            drawEdge(pane, inEdge, node, edgeWidth, startLevel, range);
+          }
         }
       }
     });
@@ -839,21 +827,21 @@ public class DrawComparedGraphs implements Initializable {
     return edgeWith;
   }
 
-//  /**
-//   * Add a label with the ID of the node to the circle.
-//   *
-//   * @param pane      the pane to add the label to.
-//   * @param graphNode the graph node object to which to add the label.
-//   * @param id        the id to write in the label.
-//   */
-//  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
-//    Label label = new Label(Integer.toString(id));
-//    label.setMouseTransparent(true);
-//    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
-//    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
-//    label.setTextFill(Color.ALICEBLUE);
-//    pane.getChildren().add(label);
-//  }
+  /**
+   * Add a label with the ID of the node to the circle.
+   *
+   * @param pane      the pane to add the label to.
+   * @param graphNode the graph node object to which to add the label.
+   * @param id        the id to write in the label.
+   */
+  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
+    Label label = new Label(Integer.toString(id));
+    label.setMouseTransparent(true);
+    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
+    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
+    label.setTextFill(Color.ALICEBLUE);
+    pane.getChildren().add(label);
+  }
   /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
    * the fxml file (using reflection), so it appears to be unused to code quality tools. For this

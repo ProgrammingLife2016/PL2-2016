@@ -71,19 +71,10 @@ public class FilterBubbles implements PhyloFilter {
 
     orderedNodes.remove(orderedNodes.size() - 1);
     orderedNodes.remove(0);
-
-    // temporary fix for exception in alignVertically
-//    for (GraphNode orderedNode : orderedNodes) {
-//      if (orderedNode.getInEdges().isEmpty()) {
-//        System.out.println("error: node without in edges!");
-//      }
-//      if(orderedNode.getOutEdges().isEmpty()) {
-//        System.out.println("error: node without out edges!");
-//      }
-//      orderedNode.setRelativeYPos(0.5);
-//      orderedNode.setMaxHeight(0.1);
-//    }
-    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
+    
+    if (bubble.needsVerticalAligning()) {
+      CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
+    }
 
     return orderedNodes;
   }
@@ -98,6 +89,7 @@ public class FilterBubbles implements PhyloFilter {
    * @parem genomes the genomes that are selected
    * @return a filtered graph.
    */
+  @Override
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();

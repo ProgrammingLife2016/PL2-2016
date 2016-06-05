@@ -32,7 +32,7 @@ public class SequenceNode extends AbstractNode {
   /**
    * The relative y-position of the node
    */
-  private double relativeYPos;
+  private double relativeYPos = -1;
   private double maxHeight;
 
   /**
@@ -284,7 +284,6 @@ public class SequenceNode extends AbstractNode {
   
   @Override
   public void unpop() {
-    return;
   }
   
   @Override
