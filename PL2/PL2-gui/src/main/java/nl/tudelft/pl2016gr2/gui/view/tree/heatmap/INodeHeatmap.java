@@ -17,5 +17,4 @@ public interface INodeHeatmap {
    * @param newLeaves the new list of leave nodes.
    */
   void onChange(ArrayList<TreeNodeCircle> newLeaves);
-
 }

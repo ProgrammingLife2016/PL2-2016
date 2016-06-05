@@ -262,7 +262,7 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void accept(NodeVisitor visitor) {
-    throw new UnsupportedOperationException("Invalid opperation.");
+    visitor.visit(this);
   }
 
   @Override

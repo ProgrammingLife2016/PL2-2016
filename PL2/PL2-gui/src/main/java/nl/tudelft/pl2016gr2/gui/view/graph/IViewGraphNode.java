@@ -1,9 +1,11 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
+import javafx.scene.Node;
+import nl.tudelft.pl2016gr2.model.GraphNode;
 
 /**
- * Interface of all drawable graph nodes.
+ * Interface of all drawable graph nodes, see: {@link GraphNode}.
  *
  * @author Faris
  */
@@ -23,7 +25,31 @@ public interface IViewGraphNode {
    */
   DoubleProperty centerYProperty();
 
+  /**
+   * Get the width of this node.
+   *
+   * @return the width of this node.
+   */
   double getWidth();
-  
+
+  /**
+   * Get the height of this node.
+   *
+   * @return the height of this node.
+   */
   double getHeight();
+
+  /**
+   * Get the layout y coordinate of this node.
+   *
+   * @return the layout y coordinate of this node.
+   */
+  double getLayoutY();
+
+  /**
+   * Get the JavaFX node of this node.
+   *
+   * @return the JavaFX node of this node.
+   */
+  Node get();
 }

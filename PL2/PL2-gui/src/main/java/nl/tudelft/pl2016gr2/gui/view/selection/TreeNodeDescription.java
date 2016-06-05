@@ -27,6 +27,12 @@ public class TreeNodeDescription implements ISelectionInfo {
     }
   };
 
+  /**
+   * Construct a tree node description.
+   *
+   * @param selectionManager a reference to the selection manager.
+   * @param treeNode         the tree node to describe.
+   */
   public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
     this.selectionManager = selectionManager;
     this.treeNode = treeNode;

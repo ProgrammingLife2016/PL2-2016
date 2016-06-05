@@ -86,15 +86,14 @@ public class LegendController implements Initializable {
 
   protected static class LegendItem {
 
-    final String description;
-    final String shortDescription;
-    final Node node;
+    private final String description;
+    private final String shortDescription;
+    private final Node node;
 
-    public LegendItem(String description, String shortDescription, Node node) {
+    protected LegendItem(String description, String shortDescription, Node node) {
       this.description = description;
       this.shortDescription = shortDescription;
       this.node = node;
     }
-
   }
 }

@@ -74,6 +74,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final SelectionManager selectionManager;
   private boolean isLeaf;
   private final Line edge = new Line();
+  private Rectangle highlightArea;
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -202,7 +203,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       Pane graphPane, SelectionManager selectionManager) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {
-      return null; // box too small to draw node.
+      return null; // not enough space to draw the tree node.
     }
     TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
     graphPane.getChildren().add(node);
@@ -440,8 +441,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       return null;
     }
   }
-
-  private Rectangle highlightArea;
 
   /**
    * Highlight the area of this node.

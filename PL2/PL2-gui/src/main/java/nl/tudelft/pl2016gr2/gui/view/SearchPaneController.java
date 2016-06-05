@@ -55,9 +55,9 @@ public class SearchPaneController implements Initializable {
   @FXML private TableColumn<Annotation, String> phenotypicDSTPatternColumn;
   @FXML private TableColumn<Annotation, String> lineageColumn;
 
-  private ObservableSet<String> setGenotypicDSTpattern
+  private final ObservableSet<String> setGenotypicDSTpattern
       = FXCollections.observableSet(new HashSet<>());
-  private ObservableSet<String> setPhenotypicDSTPattern
+  private final ObservableSet<String> setPhenotypicDSTPattern
       = FXCollections.observableSet(new HashSet<>());
 
   @FXML
@@ -74,9 +74,6 @@ public class SearchPaneController implements Initializable {
   private final FilteredList<Annotation> filteredData = new FilteredList<>(masterData, p -> true);
 
   private SelectionManager selectionManager;
-
-  public SearchPaneController() {
-  }
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -104,7 +101,7 @@ public class SearchPaneController implements Initializable {
           );
         }
     );
-
+    
     specimenIdColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenId));
     specimentTypeColumn.setCellValueFactory(
@@ -120,14 +117,9 @@ public class SearchPaneController implements Initializable {
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
       updateTable();
     });
-
-    // Wrap the FilteredList in a SortedList.
+    
     SortedList<Annotation> sortedData = new SortedList<>(filteredData);
-
-    // Bind the SortedList comparator to the TableView comparator.
     sortedData.comparatorProperty().bind(annotationTable.comparatorProperty());
-
-    // Add sorted (and filtered) data to the table.
     annotationTable.setItems(sortedData);
 
     annotationTable.setRowFactory(tv -> {
@@ -144,13 +136,12 @@ public class SearchPaneController implements Initializable {
         dragboard.setDragView(row.snapshot(snapshotParams, null));
         event.consume();
       });
-
       return row;
     });
   }
 
   /**
-   * call this whenever data changes.
+   * Call this whenever data changes.
    */
   private void updateTable() {
     filteredData.setPredicate(annotation -> {

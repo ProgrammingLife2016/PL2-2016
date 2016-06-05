@@ -65,8 +65,7 @@ public class TreeManager implements Initializable {
   public static TreeManager loadView(SelectionManager selectionManager) {
     FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(TreeManager.class.getClassLoader()
-          .getResource("pages/TreePane.fxml"));
+      loader.setLocation(TreeManager.class.getClassLoader().getResource("pages/TreePane.fxml"));
       loader.load();
       TreeManager treeManager = loader.<TreeManager>getController();
       treeManager.setSelectionManager(selectionManager);
@@ -75,10 +74,6 @@ public class TreeManager implements Initializable {
       Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
-
-  public Region getTreePane() {
-    return mainPane;
   }
 
   @Override
@@ -338,7 +333,21 @@ public class TreeManager implements Initializable {
   private ArrayList<TreeNodeCircle> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
   }
-  
+
+  /**
+   * Get the pane in which the tree is drawn.
+   *
+   * @return the pane in which the tree is drawn.
+   */
+  public Region getTreePane() {
+    return mainPane;
+  }
+
+  /**
+   * Get the root of the tree.
+   *
+   * @return the root of the tree.
+   */
   public IPhylogeneticTreeRoot getTreeRoot() {
     return rootNode;
   }

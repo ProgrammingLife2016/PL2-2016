@@ -12,10 +12,15 @@ import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
  */
 public class TreeLeafDescription implements ISelectionInfo {
 
-  private final IPhylogeneticTreeNode treeNode;
+  private final IPhylogeneticTreeNode treeLeaf;
 
-  public TreeLeafDescription(IPhylogeneticTreeNode treeNode) {
-    this.treeNode = treeNode;
+  /**
+   * Construct a tree leaf description.
+   *
+   * @param treeLeaf the leaf node to describe.
+   */
+  public TreeLeafDescription(IPhylogeneticTreeNode treeLeaf) {
+    this.treeLeaf = treeLeaf;
   }
 
   @Override
@@ -37,9 +42,8 @@ public class TreeLeafDescription implements ISelectionInfo {
     text.setPrefHeight(500);
     text.setPrefWidth(300);
     text.setWrapText(true);
-    text.setText(treeNode.getMetaData());
+    text.setText(treeLeaf.getMetaData());
 
     pane.getChildren().add(text);
   }
-
 }

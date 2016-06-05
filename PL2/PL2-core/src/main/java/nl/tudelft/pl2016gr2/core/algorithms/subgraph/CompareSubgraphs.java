@@ -144,20 +144,20 @@ public class CompareSubgraphs {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-    System.out.println("start " + node.getId());
+//    System.out.println("start " + node.getId());
     ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
     for (GraphNode inEdge : node.getInEdges()) {
       ComplexVerticalArea area = areaMap.get(inEdge);
       if (area == null) {
-        System.out.println("added backwards edge caused by bubble");
-        System.out.println("in");
-        System.out.println(node.getId());
+//        System.out.println("added backwards edge caused by bubble");
+//        System.out.println("in");
+//        System.out.println(node.getId());
 
         area = calculateGraphArea(inEdge, areaMap, graphOrder);
-        System.out.println("out");
+//        System.out.println("out");
       }
       if (area.curPart == area.splitParts.size()) {
-        System.out.println("err");
+//        System.out.println("err");
       }
       inAreas.add(area);
     }

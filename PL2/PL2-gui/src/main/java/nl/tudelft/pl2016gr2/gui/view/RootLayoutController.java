@@ -30,7 +30,6 @@ import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
@@ -97,7 +96,7 @@ public class RootLayoutController implements
 
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
-      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, 
+      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
           Scene newValue) {
         if (newValue != null) {
           initializeSearchPaneController();
@@ -177,6 +176,9 @@ public class RootLayoutController implements
     });
   }
 
+  /**
+   * Initialize the legend.
+   */
   @SuppressWarnings("checkstyle:methodlength")
   private void initializeLegend() {
     graphLegendController.initializeData(
@@ -195,7 +197,6 @@ public class RootLayoutController implements
             "Equal sequence",
             new Circle(10, Color.rgb(146, 0, 0))));
 
-
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
     for (LineageColor color : LineageColor.values()) {
       treeLegendItems.add(new LegendController.LegendItem(
@@ -209,9 +210,11 @@ public class RootLayoutController implements
         "Legend",
         10.0, 5.0,
         treeLegendItems.toArray(new LegendController.LegendItem[treeLegendItems.size()]));
-
   }
 
+  /**
+   * Initialize the controller of the search pane.
+   */
   private void initializeSearchPaneController() {
     String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
     boolean isOSx = os.contains("mac") || os.contains("darwin");
@@ -244,7 +247,7 @@ public class RootLayoutController implements
       List<Annotation> annotations = new AnnotationReader(metadataFile).read();
 
       if (graph != null && tree != null) {
-        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(),annotations);
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), annotations);
         loadGraph(graph, treeRoot);
         loadTree(treeRoot);
         searchPaneController.setData(annotations);
@@ -272,6 +275,11 @@ public class RootLayoutController implements
     }
   }
 
+  /**
+   * Handle the event which occurs when the "open file" button is clicked in the menu. This method
+   * is linked by reflection (see the FXML file), thus it is needed to suppress the "unused"
+   * warning.
+   */
   @FXML
   @SuppressWarnings("unused")
   private void openFileMenuItemClicked() {

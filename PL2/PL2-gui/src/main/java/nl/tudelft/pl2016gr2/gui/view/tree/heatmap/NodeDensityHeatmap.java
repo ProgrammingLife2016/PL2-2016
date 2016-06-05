@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * child nodes, since there might just be too few space to display the child nodes. This heatmap is
  * intended to make it easier for the user to see how many children are not being displayed.
  *
- * @author faris
+ * @author Faris
  */
 public class NodeDensityHeatmap implements INodeHeatmap {
 
