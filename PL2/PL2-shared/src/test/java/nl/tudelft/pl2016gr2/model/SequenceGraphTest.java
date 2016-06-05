@@ -117,14 +117,25 @@ public class SequenceGraphTest {
   }
 
   @Test
-  public void removeGenome() {
-    int testGenome = 1;
-
+  public void removeGenomeRemovesElement() {
+    final int testGenome = 0;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
 
     instance.removeGenome(testGenome);
+
     assertFalse(instance.getGenomes().contains(testGenome));
+  }
+
+  @Test
+  public void removeGenomeDoesNotRemoveByIndex() {
+    int outOfBounds = instance.getGenomes().size() + 25;
+    instance.addGenome(outOfBounds);
+    assertTrue(instance.getGenomes().contains(outOfBounds));
+
+    instance.removeGenome(outOfBounds);
+
+    assertFalse(instance.getGenomes().contains(outOfBounds));
   }
 
   @Test

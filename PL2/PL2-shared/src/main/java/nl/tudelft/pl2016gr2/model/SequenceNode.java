@@ -55,6 +55,8 @@ public class SequenceNode extends AbstractNode {
     this.genomes = new ArrayList<>(genomes);
     inEdges = new ArrayList<>();
     outEdges = new ArrayList<>();
+
+    this.genomes.trimToSize();
   }
 
   /**
@@ -76,6 +78,8 @@ public class SequenceNode extends AbstractNode {
     this.genomes = new ArrayList<>(genomes);
     this.inEdges = new ArrayList<>(inEdges);
     this.outEdges = new ArrayList<>(outEdges);
+
+    this.genomes.trimToSize();
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
   }
@@ -99,16 +103,20 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public void setInEdges(Collection<GraphNode> edges) {
-    inEdges = new ArrayList<>(edges);
-    inEdges.trimToSize();
-  }
-
-  @Override
   public void addInEdge(GraphNode node) {
     assert !inEdges.contains(
         node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
     inEdges.add(node);
+  }
+
+  @Override
+  public void addAllInEdges(Collection<GraphNode> nodes) {
+    nodes.forEach(node -> {
+      assert !inEdges.contains(node);
+    });
+
+    inEdges.addAll(nodes);
+    inEdges.trimToSize();
   }
 
   @Override
@@ -124,16 +132,20 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new ArrayList<>(edges);
-    outEdges.trimToSize();
-  }
-
-  @Override
   public void addOutEdge(GraphNode node) {
     assert !outEdges.contains(
         node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
     outEdges.add(node);
+  }
+
+  @Override
+  public void addAllOutEdges(Collection<GraphNode> nodes) {
+    nodes.forEach(node -> {
+      assert !outEdges.contains(node);
+    });
+
+    outEdges.addAll(nodes);
+    outEdges.trimToSize();
   }
 
   @Override
@@ -156,10 +168,27 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
+  public void addAllGenomes(Collection<Integer> genomes) {
+    genomes.forEach(genome -> {
+      assert !this.genomes.contains(genome);
+    });
+
+    this.genomes.addAll(genomes);
+    this.genomes.trimToSize();
+  }
+
+  @Override
   public void removeGenome(int genome) {
     assert genomes.contains(
         genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
-    genomes.remove(genome);
+    genomes.remove((Integer) genome);
+  }
+
+  @Override
+  public void trimToSize() {
+    inEdges.trimToSize();
+    outEdges.trimToSize();
+    genomes.trimToSize();
   }
 
   @Override
