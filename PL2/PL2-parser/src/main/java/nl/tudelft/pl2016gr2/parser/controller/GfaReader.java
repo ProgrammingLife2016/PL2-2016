@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class reads a gfa file.
@@ -55,6 +56,7 @@ public class GfaReader {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
       originalGraph = new HashGraph(nodes, GenomeMap.getInstance().copyAllGenomes());
+      originalGraph.iterator().forEachRemaining(GraphNode::trimToSize);
     }
     return originalGraph;
   }
@@ -171,7 +173,9 @@ public class GfaReader {
       }
       startIndex = index + 1;
     }
-    nodeGens.forEach((String genome) -> node.addGenome(GenomeMap.getInstance().getId(genome)));
+    node.addAllGenomes(
+        nodeGens.stream().map(genome -> GenomeMap.getInstance().getId(genome)).collect(
+            Collectors.toCollection(ArrayList::new)));
   }
 
   /**
