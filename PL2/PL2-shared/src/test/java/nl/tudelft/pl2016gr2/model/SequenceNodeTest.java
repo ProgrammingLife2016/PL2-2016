@@ -343,13 +343,24 @@ public class SequenceNodeTest {
 
   @Test
   public void removeGenomeRemovesElement() {
-    final int testGenome = 0;
+    final int testGenome = 1;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
 
     instance.removeGenome(testGenome);
 
     assertFalse(instance.getGenomes().contains(testGenome));
+  }
+
+  @Test
+  public void removeGenomeDoesNotRemoveByIndex() {
+    final int outOfBounds = instance.getGenomes().size() + 50;
+    instance.addGenome(outOfBounds);
+    assertTrue(instance.getGenomes().contains(outOfBounds));
+
+    instance.removeGenome(outOfBounds);
+
+    assertFalse(instance.getGenomes().contains(outOfBounds));
   }
 
   @Test

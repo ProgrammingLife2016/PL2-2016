@@ -181,7 +181,7 @@ public class SequenceNode extends AbstractNode {
   public void removeGenome(int genome) {
     assert genomes.contains(
         genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
-    genomes.remove(genome);
+    genomes.remove((Integer) genome);
   }
 
   @Override
