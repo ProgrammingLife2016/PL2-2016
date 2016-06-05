@@ -55,6 +55,8 @@ public class SequenceNode extends AbstractNode {
     this.genomes = new ArrayList<>(genomes);
     inEdges = new ArrayList<>();
     outEdges = new ArrayList<>();
+
+    this.genomes.trimToSize();
   }
 
   /**
@@ -76,6 +78,8 @@ public class SequenceNode extends AbstractNode {
     this.genomes = new ArrayList<>(genomes);
     this.inEdges = new ArrayList<>(inEdges);
     this.outEdges = new ArrayList<>(outEdges);
+
+    this.genomes.trimToSize();
     this.inEdges.trimToSize();
     this.outEdges.trimToSize();
   }
