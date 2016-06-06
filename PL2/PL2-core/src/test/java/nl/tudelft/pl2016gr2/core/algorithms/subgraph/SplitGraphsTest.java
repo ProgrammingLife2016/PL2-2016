@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
@@ -27,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -267,6 +269,66 @@ public class SplitGraphsTest {
       expectedLinks.removeIf(link -> !nodes.containsValue(link));
       assertTrue(graphNode.getOutEdges().containsAll(expectedLinks));
     }
+  }
+
+  /**
+   * Tests that the edge marked with <code>xx</code> is not added to the subgraph.
+   * <pre>
+   *     (1)
+   *    /   \
+   * (0)-xx-(2)
+   * </pre>
+   * This is given two genomes.<br />
+   * <code>Genome 1: 0 -> 1 -> 2</code>
+   * <code>Genome 2: 0 -> 2</code>
+   * When a subgraph is created for genome 1, the marked edge should not be in the graph.
+   */
+  @Test
+  @SuppressWarnings("checkstyle:methodlength")
+  public void testGetSubGraphContainsOnlyEdgesWithCorrectGenomes() {
+    // Mock the graph
+    int genomeOne = 1;
+    int genomeTwo = 2;
+    GraphNode zero = mockGraphNode(
+        new Integer[] {genomeOne, genomeTwo}, new Integer[] {}, new Integer[] {}, 0);
+    GraphNode one = mockGraphNode(new Integer[] {genomeOne}, new Integer[] {}, new Integer[] {}, 1);
+    GraphNode two = mockGraphNode(
+        new Integer[] {genomeOne, genomeTwo}, new Integer[] {}, new Integer[] {}, 2);
+
+    zero.addAllInEdges(Collections.emptyList());
+    zero.addAllOutEdges(Arrays.asList(one, two));
+    one.addAllInEdges(Collections.singletonList(zero));
+    one.addAllOutEdges(Collections.singletonList(two));
+    two.addAllInEdges(Arrays.asList(zero, one));
+    two.addAllOutEdges(Collections.emptyList());
+
+    Map<Integer, GraphNode> nodes = new HashMap<>();
+    nodes.put(0, zero);
+    nodes.put(1, one);
+    nodes.put(2, two);
+    SequenceGraph graph = new HashGraph(
+        nodes, Collections.singletonList(zero), Arrays.asList(genomeOne, genomeTwo));
+
+    // Instrument the sub graph
+    SplitGraphs splitGraph = new SplitGraphs(graph);
+    SequenceGraph subGraph = splitGraph.getSubgraph(Collections.singletonList(1));
+
+    graph.forEach(node -> assertTrue(subGraph.contains(node)));
+
+    graph.forEach(node -> {
+      if (node.getId() == 0) {
+        assertFalse(node.getOutEdges().contains(two));
+        assertTrue(node.getOutEdges().contains(one));
+      }
+      if (node.getId() == 1) {
+        assertTrue(node.getOutEdges().contains(two));
+        assertTrue(node.getInEdges().contains(zero));
+      }
+      if (node.getId() == 2) {
+        assertFalse(node.getInEdges().contains(zero));
+        assertTrue(node.getInEdges().contains(one));
+      }
+    });
   }
 
   /**
