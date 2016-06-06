@@ -187,7 +187,7 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copy() {
     SequenceNode node = new SequenceNode(this.getId(), sequence, getGenomes());
     node.level = level;
-    node.guiData.setOverlapping(node.guiData.isOverlapping());
+    node.guiData.overlapping = guiData.overlapping;
     return node;
   }
 
@@ -195,7 +195,7 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copyAll() {
     SequenceNode node = new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
     node.level = level;
-    node.guiData.setOverlapping(node.guiData.isOverlapping());
+    node.guiData.overlapping = guiData.overlapping;
     return node;
   }
 

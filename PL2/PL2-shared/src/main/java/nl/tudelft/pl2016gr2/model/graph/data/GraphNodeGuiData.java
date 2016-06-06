@@ -10,35 +10,16 @@ public class GraphNodeGuiData {
   /**
    * If this node is overlapping with a node from the other graph.
    */
-  private boolean overlapping;
+  public boolean overlapping;
 
   /**
    * The relative y-position of the node.
    */
-  private double relativeYPos;
-  private double maxHeight;
-
-  public void setOverlapping(boolean overlapping) {
-    this.overlapping = overlapping;
-  }
-
-  public boolean isOverlapping() {
-    return overlapping;
-  }
-
-  public void setRelativeYPos(double relativeYPos) {
-    this.relativeYPos = relativeYPos;
-  }
-
-  public double getRelativeYPos() {
-    return relativeYPos;
-  }
-
-  public void setMaxHeight(double maxHeight) {
-    this.maxHeight = maxHeight;
-  }
-
-  public double getMaxHeightPercentage() {
-    return maxHeight;
-  }
+  public double relativeYPos;
+  public double maxHeight;
+  
+  public double startY;
+  public double height;
+  
+  public GraphViewRange range;
 }

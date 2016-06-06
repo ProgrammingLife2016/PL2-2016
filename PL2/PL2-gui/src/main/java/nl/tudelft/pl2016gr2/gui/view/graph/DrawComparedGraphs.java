@@ -30,6 +30,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -41,6 +42,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -589,7 +591,6 @@ public class DrawComparedGraphs implements Initializable {
   //    updateGraphSize();
   //    graphUpdater.update();
   //  }
-
   /**
    * Load a new main graph.
    *
@@ -670,15 +671,10 @@ public class DrawComparedGraphs implements Initializable {
   private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
-    HashMap<GraphNode, ViewRange> drawnGraphNodes = new HashMap<>();
+    HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
+    GraphViewRange fullRange = new GraphViewRange(0, pane.getHeight());
     for (GraphNode node : orderedGraph.getGraphOrder()) {
-      int nodeStart = node.getLevel() - node.size();
-      int nodeEnd = node.getLevel();
-      if (nodeStart > endLevel || nodeEnd < startLevel) {
-        continue;
-      }
-      drawNode(pane, node, drawnGraphNodes, startLevel, 0,
-          new ViewRange(0, pane.getHeight()));
+      drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, 0, fullRange);
     }
     drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
   }
@@ -695,15 +691,15 @@ public class DrawComparedGraphs implements Initializable {
    *                        node.
    * @param viewRange       the range of values which may be used as y coordinate to draw this node.
    */
-  private void drawNode(Pane pane, GraphNode node,
-      HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel, int nestedDepth,
-      ViewRange viewRange) {
-    drawnGraphNodes.put(node, viewRange);
+  private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
+      int startLevel, int endLevel, int nestedDepth, GraphViewRange viewRange) {
+    drawnGraphNodes.add(node);
+    node.getGuiData().range = viewRange;
     double width = calculateNodeWidth(node);
-    if (width < MIN_VISIBILITY_WIDTH) {
+    if (width < MIN_VISIBILITY_WIDTH || !isInView(node, startLevel, endLevel)) {
       return;
     }
-    double height = node.getGuiData().getMaxHeightPercentage() * viewRange.rangeHeight;
+    double height = node.getGuiData().maxHeight * viewRange.rangeHeight;
     if (height > width) {
       height = width;
     }
@@ -711,12 +707,13 @@ public class DrawComparedGraphs implements Initializable {
     pane.getChildren().add(viewNode.get());
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
-    viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().getRelativeYPos()
+    viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().relativeYPos
         + viewRange.rangeStartY);
     //addLabel(pane, circle, node.getId());
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
-      ViewRange bubbleViewRange = new ViewRange(viewNode.getLayoutY(), height);
-      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, nestedDepth, bubbleViewRange);
+      GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
+      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,
+          bubbleViewRange);
     }
   }
 
@@ -732,13 +729,18 @@ public class DrawComparedGraphs implements Initializable {
    * @param viewRange       the range of values which may be used as y coordinate to draw the
    *                        children of this bubble.
    */
-  private void drawNestedNodes(Pane pane, GraphNode bubble,
-      HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel, int nestedDepth,
-      ViewRange viewRange) {
+  private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
+      int startLevel, int endLevel, int nestedDepth, GraphViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
     for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1, viewRange);
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, nestedDepth + 1, viewRange);
     }
+  }
+
+  private boolean isInView(GraphNode node, int startLevel, int endLevel) {
+    int nodeStart = node.getLevel() - node.size();
+    int nodeEnd = node.getLevel();
+    return nodeStart < endLevel && nodeEnd > startLevel;
   }
 
   /**
@@ -763,18 +765,20 @@ public class DrawComparedGraphs implements Initializable {
    * @param startLevel      the start level: where to start drawing.
    * @param genomeCount     the amount of genomes which are present in the drawn graph.
    */
-  private void drawEdges(Pane pane, HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel,
+  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
       int genomeCount) {
-    drawnGraphNodes.forEach((GraphNode node, ViewRange range) -> {
+    drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
           double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(pane, node, outEdge, edgeWidth, startLevel, range);
+          drawEdge(pane, node, outEdge, edgeWidth, startLevel, node.getGuiData().range,
+              outEdge.getGuiData().range);
         }
         for (GraphNode inEdge : node.getInEdges()) {
-          if (!drawnGraphNodes.containsKey(inEdge)) {
+          if (!drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
-            drawEdge(pane, inEdge, node, edgeWidth, startLevel, range);
+            drawEdge(pane, inEdge, node, edgeWidth, startLevel, node.getGuiData().range,
+                inEdge.getGuiData().range);
           }
         }
       }
@@ -792,7 +796,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param viewRange  the range of values which may be used as y coordinate to draw this edge.
    */
   private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
-      int startLevel, ViewRange range) {
+      int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
     Line edge = new Line();
     //edge.setSmooth(true);
     edge.setStrokeWidth(edgeWidth * 2);
@@ -811,8 +815,9 @@ public class DrawComparedGraphs implements Initializable {
       edge.setEndX(zoomFactor.get()
           * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
     }
-    edge.setStartY(fromNode.getGuiData().getRelativeYPos() * range.rangeHeight + range.rangeStartY);
-    edge.setEndY(toNode.getGuiData().getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    edge.setStartY(fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
+        + fromRange.rangeStartY);
+    edge.setEndY(toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY);
     //edge.toBack();
   }
 
@@ -853,7 +858,6 @@ public class DrawComparedGraphs implements Initializable {
   //    label.setTextFill(Color.ALICEBLUE);
   //    pane.getChildren().add(label);
   //  }
-
   /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
    * the fxml file (using reflection), so it appears to be unused to code quality tools. For this
@@ -866,28 +870,27 @@ public class DrawComparedGraphs implements Initializable {
     redrawGraphs();
   }
 
-  /**
-   * A class which is used to store a range of values of the y coordinate of an object. This class
-   * contains a start value a heigh value, which denotes the maximum height, counted from the start
-   * value, at which an object may be drawn.
-   */
-  private static class ViewRange {
-
-    private final double rangeStartY;
-    private final double rangeHeight;
-
-    /**
-     * Construct a range.
-     *
-     * @param rangeStartY the start value.
-     * @param rangeHeight the height.
-     */
-    private ViewRange(double rangeStartY, double rangeHeight) {
-      this.rangeStartY = rangeStartY;
-      this.rangeHeight = rangeHeight;
-    }
-  }
-
+//  /**
+//   * A class which is used to store a range of values of the y coordinate of an object. This class
+//   * contains a start value a heigh value, which denotes the maximum height, counted from the start
+//   * value, at which an object may be drawn.
+//   */
+//  private static class ViewRange {
+//
+//    private final double rangeStartY;
+//    private final double rangeHeight;
+//
+//    /**
+//     * Construct a range.
+//     *
+//     * @param rangeStartY the start value.
+//     * @param rangeHeight the height.
+//     */
+//    private ViewRange(double rangeStartY, double rangeHeight) {
+//      this.rangeStartY = rangeStartY;
+//      this.rangeHeight = rangeHeight;
+//    }
+//  }
   /**
    * Used to updated the graph at most once every frame.
    */

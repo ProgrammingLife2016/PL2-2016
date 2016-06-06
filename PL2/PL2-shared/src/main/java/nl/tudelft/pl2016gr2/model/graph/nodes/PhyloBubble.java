@@ -98,12 +98,12 @@ public class PhyloBubble implements Bubble {
    */
   private void initOverlap() {
     for (GraphNode nestedNode : nestedNodes) {
-      if (nestedNode.getGuiData().isOverlapping()) {
-        guiData.setOverlapping(true);
+      if (nestedNode.getGuiData().overlapping) {
+        guiData.overlapping = true;
         return;
       }
     }
-    guiData.setOverlapping(false);
+    guiData.overlapping = false;
   }
 
   @Override
@@ -153,8 +153,8 @@ public class PhyloBubble implements Bubble {
    */
   public void addChild(GraphNode child) {
     nestedNodes.add(child);
-    if (child.getGuiData().isOverlapping()) {
-      guiData.setOverlapping(true);
+    if (child.getGuiData().overlapping) {
+      guiData.overlapping = true;
     }
   }
 
