@@ -331,6 +331,39 @@ public class SplitGraphsTest {
     });
   }
 
+  @Test
+  @SuppressWarnings("checkstyle:methodlength")
+  public void testGetSubGraphCreatesNewNodes() {
+    // Mock the graph
+    int genomeOne = 1;
+    int genomeTwo = 2;
+    GraphNode zero = mockGraphNode(
+        new Integer[] {genomeOne, genomeTwo}, new Integer[] {}, new Integer[] {}, 0);
+    GraphNode one = mockGraphNode(new Integer[] {genomeOne}, new Integer[] {}, new Integer[] {}, 1);
+    GraphNode two = mockGraphNode(
+        new Integer[] {genomeOne, genomeTwo}, new Integer[] {}, new Integer[] {}, 2);
+
+    zero.addAllInEdges(Collections.emptyList());
+    zero.addAllOutEdges(Arrays.asList(one, two));
+    one.addAllInEdges(Collections.singletonList(zero));
+    one.addAllOutEdges(Collections.singletonList(two));
+    two.addAllInEdges(Arrays.asList(zero, one));
+    two.addAllOutEdges(Collections.emptyList());
+
+    Map<Integer, GraphNode> nodes = new HashMap<>();
+    nodes.put(0, zero);
+    nodes.put(1, one);
+    nodes.put(2, two);
+    SequenceGraph graph = new HashGraph(
+        nodes, Collections.singletonList(zero), Arrays.asList(genomeOne, genomeTwo));
+
+    // Instrument the sub graph
+    SplitGraphs splitGraph = new SplitGraphs(graph);
+    SequenceGraph subGraph = splitGraph.getSubgraph(Collections.singletonList(1));
+
+    subGraph.forEach(node -> assertFalse(nodes.get(node.getId()) == node));
+  }
+
   /**
    * Stubs the forEachRemaining method by applying the lambda to every element in the iterator.
    * <p>
