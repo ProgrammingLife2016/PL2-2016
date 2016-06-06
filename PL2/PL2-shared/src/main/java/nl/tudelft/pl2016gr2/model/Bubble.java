@@ -12,11 +12,11 @@ import java.util.HashSet;
 public abstract class Bubble implements GraphNode {
 
   private final int id;
-  private ArrayList<GraphNode> inEdges;
+  protected ArrayList<GraphNode> inEdges;
   private int level = -1;
   private double maxHeight;
-  private final HashSet<GraphNode> nestedNodes;
-  private ArrayList<GraphNode> outEdges;
+  protected final HashSet<GraphNode> nestedNodes;
+  protected ArrayList<GraphNode> outEdges;
   private double relativeYPos;
   private int size = -1;
 
@@ -278,6 +278,7 @@ public abstract class Bubble implements GraphNode {
 
 //    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
 //        + ", nested: " + nested;
-    return "bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;
+    //return "bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;
+    return "someBubble ";
   }
 }

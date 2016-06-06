@@ -8,6 +8,8 @@ import nl.tudelft.pl2016gr2.model.SimpleBubble;
 import nl.tudelft.pl2016gr2.model.StraightSequenceBubble;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,19 +46,9 @@ public class MutationBubbleAlgorithms {
 
     // if you want to sort the list of nodes again (this shouldn't really be needed), 
     // uncomment the following line:
-    //orderedNodes.sort((node1, node2) -> node1.getLevel() - node2.getLevel());
-    return initStraightInDelPoint(orderedNodes);
-  }
-
-  private static ArrayList<GraphNode> initStraightInDelPoint(ArrayList<GraphNode> orderedGraph) {
-
-//    HashMap<Integer, Integer> location = new HashMap<Integer, Integer>();
-//    for (int i = 0; i < orderedGraph.size(); i++) {
-//      NodePosition nodeOrder = (NodePosition) orderedGraph.get(i);
-//      GraphNode node = nodeOrder.getNode();
-//      location.put(node.getId(), i);
-//    }
-    return findStraightInDelPoint(orderedGraph);
+    orderedNodes = findStraightInDelPoint(orderedNodes);
+    orderedNodes.sort((node1, node2) -> node1.getLevel() - node2.getLevel());
+    return orderedNodes;
   }
 
   @SuppressWarnings("checkstyle:methodlength")
@@ -64,9 +56,9 @@ public class MutationBubbleAlgorithms {
     ArrayList<GraphNode> newOrder = new ArrayList<>();
     Set<GraphNode> visited = new HashSet<GraphNode>();
     for (int i = 0; i < orderedGraph.size(); i++) {
-      //NodePosition order = (NodePosition) orderedGraph.get(i);
       GraphNode node = orderedGraph.get(i);
       GraphNode lastNode = node;
+      GraphNode firstNode = node;
       if (!visited.contains(node)) {
         int oldLevel = node.getLevel();
         int newLevel = node.getLevel();
@@ -78,27 +70,16 @@ public class MutationBubbleAlgorithms {
             //Die laatste statement herkent het begin van een bubble na samenkomen van een afsplitsing
             && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
-          // De visited hierboven kan wrs weg omdat het niet voor kan komen
           if (bubble == null) {
             //je wilt aan de semantic bubble waarschijnlijk een andere id meegeven
             bubble = new SimpleBubble(node.getId(), node.getInEdges(), node);
-
-//            if (nodeInEdges.size() > 0) {
-//              GraphNode graphNode = graph.getNode(nodeInEdges.get(0));
-//              graphNode.setInBubble(true);
-//              bubblePosition.getBubble().addNode(graphNode);
-//            }
-            //Hier nog eerste node aan toevoegen en in/out edges goed zetten
-            //bubble.setOverlapping(oldOverlap); 
           } else {
             bubble.addChild(node);
           }
           visited.add(node);
-          //node.setInBubble(true);
           if (node.getOutEdges() != null && node.getOutEdges().size() > 0) {
             lastNode = node;
             node = ((ArrayList<GraphNode>) node.getOutEdges()).get(0);
-            //order = (NodePosition) orderedGraph.get(location.get(node.getId()));
             oldLevel = newLevel;
             newLevel = node.getLevel();
             oldOverlap = newOverlap;
@@ -109,53 +90,77 @@ public class MutationBubbleAlgorithms {
           }         
         }
         boolean stop = false;
+        GraphNode newBubbleOrNode = null;
         if (bubble != null) {
           if (bubble.getChildren().size() == 1) {
-            // Een bubble van size 1 is een in/del of point mutation,
-            // die kunnen we hier dus gelijk filteren.
-            //bubble = checkInDel(bubble);
-            //bubble = checkPoint(bubble);
+            newBubbleOrNode = checkPoint(bubble, visited);
+            if (!(newBubbleOrNode instanceof PointMutationBubble)) {
+              newBubbleOrNode = checkInDel(bubble, visited);
+            }
           } else if (oldOverlap == newOverlap && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
               && !visited.contains(node)) {
             bubble.addChild(node);
             visited.add(node);
             bubble = new StraightSequenceBubble(bubble);
             stop = true;
-//            ArrayList<GraphNode> nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
-//            bubble.setOutEdges(nodeOutEdges);
-
-//            ArrayList<Integer> nodeOutEdges = (ArrayList<Integer>) node.getOutEdges();
-//            GraphNode graphNode = graph.getNode(nodeOutEdges.get(0));
-//            bubblePosition.getBubble().addNode(graphNode);
-//            bubblePosition.getBubble().setOutEdges(graphNode.getOutEdges());
-//            bubblePosition.getBubble().setTag("Straight");
+            setChildsInedgesToBubble(bubble, node);
+            addParentOutToBubble(bubble, firstNode);
           } else {
             bubble = new StraightSequenceBubble(bubble);
+            setChildsInedgesToBubble(bubble, lastNode);
+            addParentOutToBubble(bubble, firstNode);
           }
-          ArrayList<GraphNode> nodeOutEdges;
+          GraphNode nodeOut;
           if (stop) {
-            nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
+            nodeOut = node;
           } else {
-            nodeOutEdges = (ArrayList<GraphNode>) lastNode.getOutEdges();
+            nodeOut = lastNode;
           }
-          bubble.setOutEdges(nodeOutEdges);
+          bubble.setOutEdges(nodeOut.getOutEdges());
+          if (newBubbleOrNode == null) {
+            newOrder.add(bubble);
+          } else {
+            newOrder.add(newBubbleOrNode);
+          }
         } else {
-          //node.setInBubble(false);
-          bubble = new SimpleBubble(node.getId(), node.getInEdges(), node.getOutEdges(), node);
-          //bubble.setOverlapping(oldOverlap);
+          newOrder.add(node);
         }
-        newOrder.add(bubble);
       }
     }
     return newOrder;
   }
+  
+  private static void setChildsInedgesToBubble(Bubble bubble, GraphNode nodeOut) {
+    for (GraphNode node : nodeOut.getOutEdges()) {
+      if (node.getInEdges().size() <= 1) {
+        node.setInEdges(Collections.singleton(bubble));
+      } else {
+        node.getInEdges().remove(nodeOut);
+        node.getInEdges().add(bubble);
+      }
+    }
+  }
+  
+  /**
+   * maybe the iterator in this function is slow and in that case I should find another way 
+   * to get the first element of the arraylist.
+   * @param bubble
+   * @param firstNode
+   */
+  private static void addParentOutToBubble(Bubble bubble, GraphNode firstNode) {
+    if (bubble.getInEdges().size() > 0) {
+      ArrayList<GraphNode> parentOutEdges = (ArrayList<GraphNode>) bubble.getInEdges().iterator().next().getOutEdges();
+      parentOutEdges.remove(firstNode);
+      parentOutEdges.add(bubble);
+    }
+  }
 
-  private static Bubble checkInDel(Bubble bubble) {
+  private static GraphNode checkInDel(Bubble bubble, Set<GraphNode> visited) {
     HashSet<GraphNode> nestedNodes = (HashSet<GraphNode>) bubble.getChildren();
     GraphNode nodeInBubble = nestedNodes.iterator().next();
     if (nodeInBubble.getInEdges().size() == 0 || nodeInBubble.getOutEdges().size() == 0) {
       //Hier eerst nog een geschikte bubble van maken.
-      return new SimpleBubble(bubble);
+      return nodeInBubble;
     }
     GraphNode parent = ((ArrayList<GraphNode>) nodeInBubble.getInEdges()).get(0);
     GraphNode child = ((ArrayList<GraphNode>) nodeInBubble.getOutEdges()).get(0);
@@ -169,20 +174,28 @@ public class MutationBubbleAlgorithms {
       }
     }
     if (isInDel) {
+      parentOutlinks.remove(nodeInBubble);
+      parentOutlinks.add(bubble);
+      ArrayList<GraphNode> childInLinks = (ArrayList<GraphNode>) child.getInEdges();
+      childInLinks.remove(nodeInBubble);
+      childInLinks.add(bubble);
+      bubble.setInEdges(Collections.singleton(parent));
+      bubble.setOutEdges(Collections.singleton(child));
       return new IndelBubble(bubble);
     } else {
-      return bubble;
+      return nodeInBubble;
     }
   }
 
   @SuppressWarnings("checkstyle:methodlength")
-  private static Bubble checkPoint(Bubble bubble) {
+  private static GraphNode checkPoint(Bubble bubble, Set<GraphNode> visited) {
     HashSet<GraphNode> nestedNodes = (HashSet<GraphNode>) bubble.getChildren();
     GraphNode nodeInBubble = nestedNodes.iterator().next();
     if (nodeInBubble.getInEdges().size() == 0 || nodeInBubble.getOutEdges().size() == 0 || nodeInBubble.
         size() > 1) {
       //Hier nog een geschikte bubble van maken.
-      return new SimpleBubble(bubble);
+      //return new SimpleBubble(bubble);
+      return nodeInBubble;
     }
     GraphNode parent = ((ArrayList<GraphNode>) nodeInBubble.getInEdges()).get(0);
     GraphNode child = ((ArrayList<GraphNode>) nodeInBubble.getOutEdges()).get(0);
@@ -191,11 +204,17 @@ public class MutationBubbleAlgorithms {
     for (int i = 0; i < parentOutlinks.size(); i++) {
       GraphNode node = parentOutlinks.get(i);
       if (node != nodeInBubble) {
-        if (node.getOutEdges().size() == 1) {
+        if (node.getOutEdges().size() == 1 || node == child) {
           ArrayList<GraphNode> nodeOutEdges = (ArrayList<GraphNode>) node.getOutEdges();
+          if (nodeOutEdges.size() == 0) {
+            //It is an indel, at the end of the graph.
+            return nodeInBubble;
+          }
           if (nodeOutEdges.get(0) == child && node.size() == 1) {
             //Only for completeness, this assignment does actually do nothing.
             isPoint = true;
+            bubble.addChild(node);
+            visited.add(node);
           } else {
             isPoint = false;
             break;
@@ -204,17 +223,21 @@ public class MutationBubbleAlgorithms {
           isPoint = false;
           break;
         }
+      } else {
+        bubble.addChild(nodeInBubble);
       }
     }
-    //Waarom dit nodig is weet ik even niet.
     if (parentOutlinks.size() == 1) {
       isPoint = false;
     }
     if (isPoint) {
-      bubble.addChild(child);
+      parent.setOutEdges(Collections.singleton(bubble));
+      child.setInEdges(Collections.singleton(bubble));
+      bubble.setInEdges(Collections.singleton(parent));
+      bubble.setOutEdges(Collections.singleton(child));
       return new PointMutationBubble(bubble);
     } else {
-      return bubble;
+      return nodeInBubble;
     }
   }
 }

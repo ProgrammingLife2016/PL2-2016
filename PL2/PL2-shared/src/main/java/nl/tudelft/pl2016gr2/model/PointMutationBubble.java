@@ -38,4 +38,14 @@ public class PointMutationBubble extends Bubble {
   public void accept(NodeVisitor visitor) {
     throw new UnsupportedOperationException("Do we need this?");
   }
+  
+  @Override
+  public String toString() {
+    String nested = "[";
+    for (GraphNode node : nestedNodes) {
+      nested = nested + ", " + node.getId();
+    }
+    nested += "]";
+    return "Pointmutation-bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;    
+  }
 }
