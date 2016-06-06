@@ -42,7 +42,7 @@ public class SplitGraphsTest {
   private SequenceGraph mockedGraph;
   private ArrayList<Integer> genomeSet;
   private SplitGraphs defInstance;
-  private HashMap<Integer, SequenceNode> nodes;
+  private HashMap<Integer, GraphNode> nodes;
 
   /**
    * Sets up mocked dependencies.
