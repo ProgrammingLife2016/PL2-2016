@@ -7,6 +7,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.AbstractNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Rule;

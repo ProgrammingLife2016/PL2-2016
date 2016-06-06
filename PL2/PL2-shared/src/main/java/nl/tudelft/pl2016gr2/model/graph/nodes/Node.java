@@ -1,4 +1,6 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
+
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 
 /**
  * The most low level <code>GraphNode</code>, containing the individual bases of the DNA sequence.
@@ -20,7 +22,7 @@ public interface Node extends GraphNode {
    * @return The sequence of this node
    */
   String getSequence();
-  
+
 //  @Override
 //  public Node copyAll() {
 //    Node node = new Node(getId(), getSequenceLength(), this.genomes, this.snips);

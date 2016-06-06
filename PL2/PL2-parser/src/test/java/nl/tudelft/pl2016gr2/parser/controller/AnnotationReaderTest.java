@@ -2,8 +2,8 @@ package nl.tudelft.pl2016gr2.parser.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

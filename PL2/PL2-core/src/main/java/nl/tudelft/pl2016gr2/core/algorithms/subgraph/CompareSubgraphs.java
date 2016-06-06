@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;

@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.visitor;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.PhyloBubble;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 
 /**
  * Defines the visitor of a node.

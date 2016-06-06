@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.data;
 
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 

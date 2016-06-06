@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;

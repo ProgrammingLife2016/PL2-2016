@@ -4,9 +4,9 @@ import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.NO_OVERLAP_
 import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.OVERLAP_COLOR;
 
 import javafx.scene.paint.Color;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.PhyloBubble;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 /**

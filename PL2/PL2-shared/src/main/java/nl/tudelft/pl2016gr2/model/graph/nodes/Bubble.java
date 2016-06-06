@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 /**
  * An aggregate <code>GraphNode</code>, containing other <code>GraphNodes</code>.

@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.metadata;
 
 import javafx.scene.paint.Color;
 

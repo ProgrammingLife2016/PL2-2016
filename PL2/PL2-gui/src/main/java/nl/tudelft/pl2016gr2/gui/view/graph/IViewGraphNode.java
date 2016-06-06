@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
-import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
 /**
  * Interface of all drawable graph nodes, see: {@link GraphNode}.

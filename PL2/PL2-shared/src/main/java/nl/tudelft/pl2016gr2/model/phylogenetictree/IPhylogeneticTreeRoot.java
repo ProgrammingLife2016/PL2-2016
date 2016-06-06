@@ -1,8 +1,10 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import java.util.List;
 
 import java.util.Collection;
+
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 /**
  * This interface must be implemented by the root of the phylogenetic tree.

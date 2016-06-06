@@ -2,11 +2,10 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import static org.junit.Assert.assertEquals;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
 

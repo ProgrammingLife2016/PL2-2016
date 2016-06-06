@@ -26,7 +26,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;

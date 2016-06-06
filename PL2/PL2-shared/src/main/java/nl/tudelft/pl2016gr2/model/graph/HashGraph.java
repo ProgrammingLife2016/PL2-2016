@@ -1,14 +1,20 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph;
 
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
+/**
+ * 
+ * @author Wouter Smit
+ * @param <GUI_DATA> 
+ */
 public class HashGraph implements SequenceGraph {
 
   @TestId(id = "nodes")
@@ -64,7 +70,8 @@ public class HashGraph implements SequenceGraph {
   @Override
   public ArrayList<GraphNode> getOrderedGraph() {
     ArrayList<GraphNode> graphOrder = new ArrayList<>(nodes.values());
-    graphOrder.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+    graphOrder.sort((GraphNode firstNode, GraphNode secondNode)
+        -> firstNode.getLevel() - secondNode.getLevel());
     return graphOrder;
   }
 
@@ -153,7 +160,7 @@ public class HashGraph implements SequenceGraph {
         }
       });
     }
-    
+
     if (updateOutEdges) {
       node.getOutEdges().forEach(outEdge -> {
         if (nodes.containsKey(outEdge.getId())) {

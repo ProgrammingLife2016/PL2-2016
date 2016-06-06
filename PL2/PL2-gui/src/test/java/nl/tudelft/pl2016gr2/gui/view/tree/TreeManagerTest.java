@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
+
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

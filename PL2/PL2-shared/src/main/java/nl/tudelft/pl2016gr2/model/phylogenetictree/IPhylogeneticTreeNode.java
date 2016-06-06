@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;

@@ -6,6 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import junit.framework.Assert;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.util.TestingUtilities;
 import org.junit.Before;
 import org.junit.Test;

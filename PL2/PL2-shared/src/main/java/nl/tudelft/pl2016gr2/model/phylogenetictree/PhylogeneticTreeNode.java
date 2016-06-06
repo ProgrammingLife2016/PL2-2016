@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -8,6 +8,10 @@ import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 
 /**
  * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed

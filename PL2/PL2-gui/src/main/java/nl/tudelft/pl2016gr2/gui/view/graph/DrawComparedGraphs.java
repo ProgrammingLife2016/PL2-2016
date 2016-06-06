@@ -30,9 +30,9 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
 import java.util.HashSet;
 import java.util.logging.Level;

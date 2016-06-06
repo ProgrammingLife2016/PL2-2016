@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.visitor;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
 
 /**
  * Defines the implementing class to be visitable.

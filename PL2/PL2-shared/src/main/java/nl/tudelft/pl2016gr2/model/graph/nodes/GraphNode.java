@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;

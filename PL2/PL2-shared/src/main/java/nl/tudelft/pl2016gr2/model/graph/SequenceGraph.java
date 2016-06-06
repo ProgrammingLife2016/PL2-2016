@@ -1,8 +1,10 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
 /**
  * Describes the data structure of a DNA sequence (alignment) graph.

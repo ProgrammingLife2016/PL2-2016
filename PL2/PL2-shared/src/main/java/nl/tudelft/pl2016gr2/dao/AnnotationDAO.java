@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.dao;
 
-import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 import java.util.Collection;
 import java.util.HashMap;

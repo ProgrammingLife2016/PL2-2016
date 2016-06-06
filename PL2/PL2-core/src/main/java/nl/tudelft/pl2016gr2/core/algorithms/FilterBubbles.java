@@ -1,13 +1,13 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
-import nl.tudelft.pl2016gr2.model.Bubble;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.PhyloBubble;
-import nl.tudelft.pl2016gr2.model.PhyloFilter;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloFilter;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.visitor.BubbleChildrenVisitor;
 
 import java.util.ArrayList;

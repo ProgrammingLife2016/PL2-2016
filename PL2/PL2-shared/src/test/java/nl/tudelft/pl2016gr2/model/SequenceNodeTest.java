@@ -8,6 +8,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import org.junit.Before;
 import org.junit.Rule;

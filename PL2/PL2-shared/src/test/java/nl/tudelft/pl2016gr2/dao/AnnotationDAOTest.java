@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 import org.junit.Before;
 import org.junit.Test;
 

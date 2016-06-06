@@ -9,10 +9,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import nl.tudelft.pl2016gr2.model.BaseSequence;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Rule;

@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import static org.junit.Assert.assertEquals;
 
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Test;
 

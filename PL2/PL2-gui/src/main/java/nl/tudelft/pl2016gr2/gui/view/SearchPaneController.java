@@ -27,8 +27,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 import java.net.URL;
 import java.util.Collection;

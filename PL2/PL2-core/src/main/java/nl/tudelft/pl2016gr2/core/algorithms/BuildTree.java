@@ -1,9 +1,9 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.PhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.PhylogeneticTreeRoot;
 
 import java.util.ArrayList;
 import java.util.Collection;

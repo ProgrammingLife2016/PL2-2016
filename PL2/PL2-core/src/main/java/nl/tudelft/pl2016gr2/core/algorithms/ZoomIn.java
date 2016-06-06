@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
-import nl.tudelft.pl2016gr2.model.Bubble;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
 import java.util.ArrayList;

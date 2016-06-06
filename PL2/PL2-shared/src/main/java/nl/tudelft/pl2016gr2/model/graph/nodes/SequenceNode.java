@@ -1,5 +1,6 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
@@ -256,8 +257,8 @@ public class SequenceNode extends AbstractNode {
       sb2.append(outEdge.getId()).append(", ");
     }
     sb2.append(']');
-    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.
-        toString() + ", outEdges=" + sb2.toString() + '}';
+    return super.toString() + ", SequenceNode{" + ", inEdges="
+        + sb.toString() + ", outEdges=" + sb2.toString() + '}';
   }
 
   @Override
@@ -281,11 +282,11 @@ public class SequenceNode extends AbstractNode {
     res.add(this);
     return res;
   }
-  
+
   @Override
   public void unpop() {
   }
-  
+
   @Override
   public boolean isPopped() {
     return false;

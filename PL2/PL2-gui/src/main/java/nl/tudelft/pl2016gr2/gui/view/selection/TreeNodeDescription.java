@@ -7,7 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
 /**
  * This class is used by tree nodes to offer a tree node description view to the selection manager.

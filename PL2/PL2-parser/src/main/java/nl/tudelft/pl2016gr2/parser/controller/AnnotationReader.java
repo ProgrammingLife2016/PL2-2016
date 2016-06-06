@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
