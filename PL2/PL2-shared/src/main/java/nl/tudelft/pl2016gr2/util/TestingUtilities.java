@@ -14,6 +14,9 @@ import java.util.Arrays;
  * @author Wouter Smit
  */
 public class TestingUtilities {
+
+  private TestingUtilities() {
+  }
   
   /**
    * Mocks a GraphNode with the specified ID and properties of a root or non-root node.

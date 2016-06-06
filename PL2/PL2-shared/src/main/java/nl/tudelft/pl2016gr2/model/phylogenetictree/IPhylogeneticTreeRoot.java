@@ -1,10 +1,9 @@
 package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
-import java.util.List;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 import java.util.Collection;
-
-import nl.tudelft.pl2016gr2.model.metadata.Annotation;
+import java.util.List;
 
 /**
  * This interface must be implemented by the root of the phylogenetic tree.
@@ -32,12 +31,17 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
   void setDrawnInBottom(int genome, boolean isDrawn);
 
   /**
+   * Get the annotations of all tree nodes.
+   *
+   * @return the annotations of all tree nodes.
+   */
+  List<Annotation> getAnnotations();
+
+  /**
    * Highlight a path in the phylogenetic tree.
    *
    * @param oldPath the previously highlighted paths.
    * @param newPath the new highlighted paths.
    */
-  List<Annotation> getAnnotations();
-
   void highlightPaths(Collection<Integer> oldPath, Collection<Integer> newPath);
 }

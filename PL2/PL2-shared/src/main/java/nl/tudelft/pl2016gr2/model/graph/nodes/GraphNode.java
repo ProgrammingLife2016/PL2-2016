@@ -57,8 +57,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * of nodes.
    * </p>
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return The set of child nodes, or an <code>null</code> if the node does not have children
@@ -95,8 +95,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Returns the identifiers of the nodes of all in-edges of <code>GraphNode</code>.
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return All in-edges of this <code>GraphNode</code>
@@ -137,8 +137,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Returns the identifiers of the nodes of all out-edges of <code>GraphNode</code>.
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return All children of this <code>GraphNode</code>
@@ -183,8 +183,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * <code>GraphNode</code> is annotated with information about its genomes.
    * </p>
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return The genomes of this <code>GraphNode</code>
@@ -222,22 +222,6 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   }
 
   /**
-   * Provides a copy of the node with at least equal IDs.
-   * <p>
-   * Furthermore, the following fields should remain empty.
-   * </p>
-   * <ul>
-   * <li>Set of genomes</li>
-   * <li>Set of in edges</li>
-   * <li>Set of out edges</li>
-   * </ul>
-   *
-   * @return An exact copy of the class
-   */
-  //@Override
-  //GraphNode copy();
-
-  /**
    * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.
    *
    * @return A copy of the object.
@@ -251,10 +235,25 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    */
   void addPositionOffset(int offset);
 
+  /**
+   * Set the level of this node (the depth in the tree).
+   *
+   * @param level the level of this node.
+   */
   void setLevel(int level);
 
+  /**
+   * Get the level of this node (the depth in the tree).
+   *
+   * @return the level of this node.
+   */
   int getLevel();
-  
+
+  /**
+   * Get the GUI data of this node.
+   *
+   * @return the GUI data of this node.
+   */
   GraphNodeGuiData getGuiData();
 
   /**
@@ -263,19 +262,18 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * Popping is a synonym for zooming in on the bubble, thus revealing the nodes that it stores.
    * </p>
    *
-   * @param graph the graph of the bubble.
-   * @return the nodes which are present
+   * @return the sorted and aligned list of nodes which was nested in this bubble.
    */
   Collection<GraphNode> pop();
-  
+
   /**
    * Unpops a bubble.
    */
   void unpop();
-  
+
   /**
    * Checks if a bubble is popped.
-   * 
+   *
    * @return true is the bubble is popped
    */
   boolean isPopped();

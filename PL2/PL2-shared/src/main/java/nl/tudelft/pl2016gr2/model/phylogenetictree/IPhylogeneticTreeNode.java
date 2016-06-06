@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author Faris
  */
 public interface IPhylogeneticTreeNode {
-  
+
   /**
    * Check if this node has a parent.
    *
@@ -41,10 +41,10 @@ public interface IPhylogeneticTreeNode {
    * @return the total amount of child nodes.
    */
   int getChildCount();
-  
+
   /**
    * Adds a child node to this node.
-   * 
+   *
    * @param child the child node to add.
    */
   void addChild(PhylogeneticTreeNode child);
@@ -92,7 +92,7 @@ public interface IPhylogeneticTreeNode {
    * @return if this node is a leaf node.
    */
   boolean isLeaf();
-  
+
   /**
    * Get the label of this leaf node. Note: this must be a leaf node!
    *
@@ -138,6 +138,11 @@ public interface IPhylogeneticTreeNode {
    * @return a string containing metadata about the genome in the leaf node.
    */
   String getMetaData();
-  
-  int getId();
+
+  /**
+   * Get the genome id of this leaf node. This node must be a leaf node.
+   *
+   * @return the genome id of this leaf node.
+   */
+  int getGenomeId();
 }

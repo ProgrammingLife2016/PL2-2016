@@ -29,33 +29,41 @@ public class CompareSubgraphs {
   private CompareSubgraphs() {
   }
 
-//  /**
-//   * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
-//   *
-//   * @param mainGraphOrder the main graph node order.
-//   * @param topGraph       the top graph.
-//   * @param bottomGraph    the bottom graph.
-//   * @return a pair containing as left value the graph node order of the top graph and as left value
-//   *         the node graph order of the bottom graph.
-//   */
-//  public static Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> compareGraphs(
-//      SequenceGraph mainGraphOrder, SequenceGraph topGraph,
-//      SequenceGraph bottomGraph) {
-//    OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
-//    SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, overlapThread);
-//    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, bottomGraph,
-//        overlapThread);
-//    overlapThread.start();
-//    topGraphOrderer.start();
-//    bottomGraphOrderer.start();
-//
-//    ArrayList<GraphNode> orderedTopGraph = topGraphOrderer.getNodeOrder();
-//    ArrayList<GraphNode> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
-//
-//    //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
-////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
-//    return new Pair<>(orderedTopGraph, orderedBottomGraph);
-//  }
+  //  /**
+  //   * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
+  //   *
+  //   * @param mainGraphOrder the main graph node order.
+  //   * @param topGraph       the top graph.
+  //   * @param bottomGraph    the bottom graph.
+  //   * @return a pair containing as left value the graph node order of the top graph and as 
+  //left value
+  //   *         the node graph order of the bottom graph.
+  //   */
+  //  public static Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> compareGraphs(
+  //      SequenceGraph mainGraphOrder, SequenceGraph topGraph,
+  //      SequenceGraph bottomGraph) {
+  //    OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
+  //    SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, 
+  //overlapThread);
+  //    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, bottomGraph,
+  //        overlapThread);
+  //    overlapThread.start();
+  //    topGraphOrderer.start();
+  //    bottomGraphOrderer.start();
+  //
+  //    ArrayList<GraphNode> orderedTopGraph = topGraphOrderer.getNodeOrder();
+  //    ArrayList<GraphNode> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
+  //
+  //    //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
+  ////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
+  //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
+  //  }
+  /**
+   * Align the given graph nodes vertically.
+   *
+   * @param graphOrder    the list of ordered graph node (by x axis).
+   * @param bubbleInEdges the in edges of the bubble.
+   */
   public static void alignVertically(Collection<GraphNode> graphOrder,
       Collection<GraphNode> bubbleInEdges) {
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
@@ -64,8 +72,8 @@ public class CompareSubgraphs {
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
-      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble.
-          getOutEdges(), graphOrder)));
+      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble
+          .getOutEdges(), graphOrder)));
     }
     for (GraphNode node : graphOrder) {
       if (areaMap.containsKey(node)) {
@@ -83,31 +91,10 @@ public class CompareSubgraphs {
   }
 
   /**
-   * Get all of the VIP nodes which are contained in the exclusive list.
+   * Align the given graph nodes vertically.
    *
-   * @param nodes         the list of nodes to filter.
-   * @param exclusiveList the list of VIP nodes which can get access to the return value.
-   * @return the VIP nodes which were found in the list of nodes.
+   * @param graphOrder the list of ordered graph node (by x axis).
    */
-  private static Collection<GraphNode> getExclusiveNodes(Collection<GraphNode> nodes,
-      Collection<GraphNode> exclusiveList) {
-    Collection<GraphNode> exclusiveChildren = new HashSet<>();
-    for (GraphNode node : exclusiveList) {
-      if (node.hasChildren()) {
-        for (GraphNode child : node.getChildren()) {
-          exclusiveChildren.add(child);
-        }
-      }
-    }
-    ArrayList<GraphNode> res = new ArrayList<>();
-    for (GraphNode node : nodes) {
-      if (exclusiveList.contains(node) || exclusiveChildren.contains(node)) {
-        res.add(node);
-      }
-    }
-    return res;
-  }
-
   public static void alignVertically(Collection<GraphNode> graphOrder) {
     ArrayList<GraphNode> rootNodes = new ArrayList<>();
     for (GraphNode node : graphOrder) {
@@ -139,25 +126,59 @@ public class CompareSubgraphs {
     }
   }
 
+  /**
+   * Get all of the VIP nodes which are contained in the exclusive list.
+   *
+   * @param nodes         the list of nodes to filter.
+   * @param exclusiveList the list of VIP nodes which can get access to the return value.
+   * @return the VIP nodes which were found in the list of nodes.
+   */
+  private static Collection<GraphNode> getExclusiveNodes(Collection<GraphNode> nodes,
+      Collection<GraphNode> exclusiveList) {
+    Collection<GraphNode> exclusiveChildren = new HashSet<>();
+    for (GraphNode node : exclusiveList) {
+      if (node.hasChildren()) {
+        for (GraphNode child : node.getChildren()) {
+          exclusiveChildren.add(child);
+        }
+      }
+    }
+    ArrayList<GraphNode> res = new ArrayList<>();
+    for (GraphNode node : nodes) {
+      if (exclusiveList.contains(node) || exclusiveChildren.contains(node)) {
+        res.add(node);
+      }
+    }
+    return res;
+  }
+
+  /**
+   * Calculate the graph area of the given node.
+   *
+   * @param node       the node.
+   * @param areaMap    the area map to which to add the node -> area mapping.
+   * @param graphOrder the ordered graph nodes.
+   * @return the calculated graph area.
+   */
   private static ComplexVerticalArea calculateGraphArea(GraphNode node,
       HashMap<GraphNode, ComplexVerticalArea> areaMap, Collection<GraphNode> graphOrder) {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-//    System.out.println("start " + node.getId());
+    //    System.out.println("start " + node.getId());
     ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
     for (GraphNode inEdge : node.getInEdges()) {
       ComplexVerticalArea area = areaMap.get(inEdge);
       if (area == null) {
-//        System.out.println("added backwards edge caused by bubble");
-//        System.out.println("in");
-//        System.out.println(node.getId());
+        //        System.out.println("added backwards edge caused by bubble");
+        //        System.out.println("in");
+        //        System.out.println(node.getId());
 
         area = calculateGraphArea(inEdge, areaMap, graphOrder);
-//        System.out.println("out");
+        //        System.out.println("out");
       }
       if (area.curPart == area.splitParts.size()) {
-//        System.out.println("err");
+        //        System.out.println("err");
       }
       inAreas.add(area);
     }

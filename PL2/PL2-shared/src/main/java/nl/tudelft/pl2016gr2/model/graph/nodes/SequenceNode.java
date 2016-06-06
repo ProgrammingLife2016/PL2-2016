@@ -17,7 +17,7 @@ import java.util.HashSet;
 public class SequenceNode extends AbstractNode {
 
   private BaseSequence sequence;
-  private ArrayList<Integer> genomes;
+  private final ArrayList<Integer> genomes;
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
@@ -117,15 +117,15 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void addInEdge(GraphNode node) {
-//    assert !inEdges.contains(
-//        node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    //assert !inEdges.contains(
+    //    node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
     inEdges.add(node);
   }
 
   @Override
   public void removeInEdge(GraphNode node) {
-//    assert inEdges.contains(
-//        node) : "Removing non-existent in-edge: " + node.getId() + ". NodeID: " + this.getId();
+    //assert inEdges.contains(
+    //    node) : "Removing non-existent in-edge: " + node.getId() + ". NodeID: " + this.getId();
     inEdges.remove(node);
   }
 
@@ -142,15 +142,15 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void addOutEdge(GraphNode node) {
-//    assert !outEdges.contains(
-//        node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    //assert !outEdges.contains(
+    //    node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
     outEdges.add(node);
   }
 
   @Override
   public void removeOutEdge(GraphNode node) {
-//    assert outEdges.contains(
-//        node) : "Removing non-existent out-edge: " + node.getId() + ". NodeID: " + this.getId();
+    //assert outEdges.contains(
+    //    node) : "Removing non-existent out-edge: " + node.getId() + ". NodeID: " + this.getId();
     outEdges.remove(node);
   }
 
@@ -161,8 +161,8 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public void addGenome(int genome) {
-//    assert !genomes.contains(
-//        genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
+    //assert !genomes.contains(
+    //    genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
     genomes.add(genome);
   }
 
@@ -228,8 +228,8 @@ public class SequenceNode extends AbstractNode {
       sb2.append(outEdge.getId()).append(", ");
     }
     sb2.append(']');
-    return super.toString() + ", SequenceNode{" + ", inEdges="
-        + sb.toString() + ", outEdges=" + sb2.toString() + '}';
+    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.toString() + ", outEdges="
+        + sb2.toString() + '}';
   }
 
   @Override

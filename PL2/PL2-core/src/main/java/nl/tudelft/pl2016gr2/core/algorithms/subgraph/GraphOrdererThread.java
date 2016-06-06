@@ -17,7 +17,6 @@ import java.util.logging.Logger;
  */
 public class GraphOrdererThread extends Thread {
 
-//  private ArrayList<GraphNode> orderedGraph;
   private final SequenceGraph graph;
 
   /**
@@ -42,14 +41,12 @@ public class GraphOrdererThread extends Thread {
     HashMap<GraphNode, Integer> reachedCount = new HashMap<>();
     Set<GraphNode> currentLevel = new HashSet<>();
     currentLevel.addAll(graph.getRootNodes());
-
     while (!currentLevel.isEmpty()) {
       Set<GraphNode> nextLevel = new HashSet<>();
       ArrayList<ArrayList<GraphNode>> addedOutLinks = new ArrayList<>();
       for (GraphNode node : currentLevel) {
         int count = reachedCount.getOrDefault(node, 0);
         if (node.getInEdges().size() == count) {
-
           int maxInLevel = 0;
           for (GraphNode inEdge : node.getInEdges()) {
             if (inEdge.getLevel() > maxInLevel) {

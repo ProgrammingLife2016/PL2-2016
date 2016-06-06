@@ -1,13 +1,12 @@
 package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-
-import nl.tudelft.pl2016gr2.model.metadata.Annotation;
-import nl.tudelft.pl2016gr2.model.GenomeMap;
 
 /**
  * This phylogenetic tree root keeps track of all of the leaves in the phylogenetic tree. It
@@ -45,7 +44,7 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   public PhylogeneticTreeRoot(IPhylogeneticTreeNode node, List<Annotation> annotations) {
     super(node);
     for (PhylogeneticTreeNode leafNode : this) {
-      genomeToTreeMap.put(leafNode.getId(), leafNode);
+      genomeToTreeMap.put(leafNode.getGenomeId(), leafNode);
     }
     this.annotations = annotations;
     initLineages(annotations);

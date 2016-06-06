@@ -4,14 +4,13 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import nl.tudelft.pl2016gr2.model.metadata.Annotation;
-import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 
 /**
  * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed
@@ -82,7 +81,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   public PhylogeneticTreeNode(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
     this.weight = (float) node.getEdgeLength();
     this.parent = parent;
-    this.genomeId = node.getId();
+    this.genomeId = node.getGenomeId();
 
     if (node.getDirectChildCount() == 2) {
       children = new PhylogeneticTreeNode[2];
@@ -92,25 +91,17 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   /**
-   * Construct a phylogenetic tree node with an existing phylogenetic tree node, constructing it
-   * from top to bottom. This node is added as a child to its parent. The children of the original
-   * node are not added to this node.
+   * Construct a phylogenetic leaf node.
    *
-   * @param node   : the existing phylogenetic tree node.
-   * @param parent : the parent of this node.
+   * @param genomeId   the genome id of this node
+   * @param parent     the parent of this node.
+   * @param edgeLength the edge length from this node to its parent.
    */
-  public PhylogeneticTreeNode(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent, boolean bool) {
-    this.weight = (float) node.getEdgeLength();
+  public PhylogeneticTreeNode(int genomeId, PhylogeneticTreeNode parent, double edgeLength) {
+    this.weight = (float) edgeLength;
     this.parent = parent;
-
-    if (node.getChildCount() == 2) { // node with children
-      children = new PhylogeneticTreeNode[2];
-      children[0] = new PhylogeneticTreeNode(node.getChild(0), this);
-      children[1] = new PhylogeneticTreeNode(node.getChild(1), this);
-    } else { // leaf node
-      children = null;
-    }
-    genomeId = node.getId();
+    children = null;
+    this.genomeId = genomeId;
   }
 
   /**
@@ -122,7 +113,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   public PhylogeneticTreeNode(IPhylogeneticTreeNode node) {
     this.weight = (float) node.getEdgeLength();
     this.parent = null;
-    this.genomeId = node.getId();
+    this.genomeId = node.getGenomeId();
 
     if (node.getDirectChildCount() == 2) {
       children = new PhylogeneticTreeNode[2];
@@ -144,7 +135,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
 
   @Override
   public void addChild(PhylogeneticTreeNode child) {
-    assert (!isLeaf());
+    assert !isLeaf();
     if (children[0] == null) {
       children[0] = child;
     } else if (children[1] == null) {
@@ -314,16 +305,6 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   /**
-   * Get the genome id of this leaf node. Note: this must be a leaf node!
-   *
-   * @return the genome id of this leaf node.
-   */
-  protected int getGenomeId() {
-    assert isLeaf();
-    return genomeId;
-  }
-
-  /**
    * Check if all of the children of this node are drawn in the top graph.
    *
    * @return if all of the children of this node are drawn in the top graph.
@@ -388,7 +369,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   @Override
-  public int getId() {
+  public int getGenomeId() {
     return genomeId;
   }
 

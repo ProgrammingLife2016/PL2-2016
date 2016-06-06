@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model.graph;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -8,12 +9,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
-
 /**
- * 
+ * This implemetation of the {@link SequenceGraph} interface uses a hashmap to store the nodes.
+ *
  * @author Wouter Smit
- * @param <GUI_DATA> 
  */
 public class HashGraph implements SequenceGraph {
 
@@ -61,6 +60,9 @@ public class HashGraph implements SequenceGraph {
     this.genomes = new ArrayList<>(genomes);
   }
 
+  /**
+   * Print the graph.
+   */
   public void print() {
     nodes.forEach((id, node) -> {
       System.out.println(node);

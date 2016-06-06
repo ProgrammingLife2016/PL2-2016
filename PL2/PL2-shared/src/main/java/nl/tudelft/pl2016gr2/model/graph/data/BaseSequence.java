@@ -60,12 +60,12 @@ public class BaseSequence {
    */
   public String getBaseSequence() {
     StringBuilder sb = new StringBuilder();
-    int i = 0;
-    int encodedBase = getBase(i / BITS_PER_INT, i % BITS_PER_INT);
-    while(encodedBase != END_OF_BASES) {
+    int index = 0;
+    int encodedBase = getBase(index / BITS_PER_INT, index % BITS_PER_INT);
+    while (encodedBase != END_OF_BASES) {
       sb.append(decode(encodedBase));
-      i += BITS_PER_BASE;
-      encodedBase = getBase(i / BITS_PER_INT, i % BITS_PER_INT);
+      index += BITS_PER_BASE;
+      encodedBase = getBase(index / BITS_PER_INT, index % BITS_PER_INT);
     }
     return sb.toString();
   }

@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 public class AnnotationReader {
 
-  private static final Logger logger = Logger.getLogger(AnnotationReader.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(AnnotationReader.class.getName());
 
   private final InputStream stream;
 
@@ -110,7 +110,7 @@ public class AnnotationReader {
     if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
       annotation.dateOfCollection = cell.getDateCellValue();
     } else {
-      logger.log(Level.WARNING, String.format(
+      LOGGER.log(Level.WARNING, String.format(
               "Species %s with dateCell %s doesn't represent a date?",
               annotation.specimenId,
               cell.toString())
@@ -223,7 +223,7 @@ public class AnnotationReader {
       }
     }
     long stopTime = System.currentTimeMillis();
-    logger.log(Level.INFO, String.format("Took %d milliseconds to read %d annotations",
+    LOGGER.log(Level.INFO, String.format("Took %d milliseconds to read %d annotations",
         stopTime - startTime,
         out.size()));
     return out;

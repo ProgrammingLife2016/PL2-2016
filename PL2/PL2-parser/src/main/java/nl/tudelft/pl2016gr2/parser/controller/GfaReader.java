@@ -27,7 +27,6 @@ public class GfaReader {
 
   private static final int SHIFT_BY_BASE_10 = 10;
   @TestId(id = "genomes")
-  //  private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
   private final InputStream fileStream;
   @TestId(id = "originalGraph")

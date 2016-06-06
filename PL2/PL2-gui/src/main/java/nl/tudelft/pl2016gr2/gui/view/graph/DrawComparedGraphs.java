@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -206,10 +205,10 @@ public class DrawComparedGraphs implements Initializable {
     scrollbar.maxProperty().bind(new SimpleDoubleProperty(1.0).add(
         mainPane.widthProperty().negate().divide(zoomFactor).divide(amountOfLevels)));
     scrollbar.valueProperty().addListener(invalidate -> graphUpdater.update());
-    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
-        .divide(amountOfLevels)).divide(zoomFactor));
-    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
-        .divide(amountOfLevels)).divide(zoomFactor));
+    scrollbar.unitIncrementProperty().bind(new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
+        .divide(amountOfLevels).divide(zoomFactor));
+    scrollbar.blockIncrementProperty().bind(new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
+        .divide(amountOfLevels).divide(zoomFactor));
     scrollbar.visibleAmountProperty().bind(scrollbar.maxProperty().multiply(
         mainPane.widthProperty().divide(zoomFactor)
         .divide(amountOfLevels)));
@@ -576,20 +575,20 @@ public class DrawComparedGraphs implements Initializable {
   /**
    * Draw two graphs to compare.
    */
-  private void drawTwoGraphs() {
-    ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
-    ArrayList<GraphNode> bottomGraphOrder = bottomGraph.getGraphOrder();
-    int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
-    int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
-    if (highestTopLevel > highestBottomLevel) {
-      amountOfLevels.set(highestTopLevel);
-    } else {
-      amountOfLevels.set(highestBottomLevel);
-    }
-    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-    updateGraphSize();
-    graphUpdater.update();
-  }
+  //  private void drawTwoGraphs() {
+  //    ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
+  //    ArrayList<GraphNode> bottomGraphOrder = bottomGraph.getGraphOrder();
+  //    int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
+  //    int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
+  //    if (highestTopLevel > highestBottomLevel) {
+  //      amountOfLevels.set(highestTopLevel);
+  //    } else {
+  //      amountOfLevels.set(highestBottomLevel);
+  //    }
+  //    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
+  //    updateGraphSize();
+  //    graphUpdater.update();
+  //  }
 
   /**
    * Load a new main graph.
@@ -846,14 +845,14 @@ public class DrawComparedGraphs implements Initializable {
    * @param graphNode the graph node object to which to add the label.
    * @param id        the id to write in the label.
    */
-  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
-    Label label = new Label(Integer.toString(id));
-    label.setMouseTransparent(true);
-    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
-    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
-    label.setTextFill(Color.ALICEBLUE);
-    pane.getChildren().add(label);
-  }
+  //  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
+  //    Label label = new Label(Integer.toString(id));
+  //    label.setMouseTransparent(true);
+  //    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
+  //    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
+  //    label.setTextFill(Color.ALICEBLUE);
+  //    pane.getChildren().add(label);
+  //  }
 
   /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via

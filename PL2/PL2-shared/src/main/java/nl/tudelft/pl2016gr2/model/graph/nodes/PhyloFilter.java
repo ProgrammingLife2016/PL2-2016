@@ -1,14 +1,19 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
-import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
-
 import java.util.Collection;
 
+/**
+ * Interface of the phylo bubble filter class.
+ *
+ * @author Casper
+ */
 public interface PhyloFilter {
 
-  //public SequenceGraph zoomOut(Bubble bubble, SequenceGraph graph);
-  public Collection<GraphNode> zoomIn(Bubble bubble);
-
-  public Collection<GraphNode> filter(IPhylogeneticTreeRoot treeRoot,
-      Collection<Integer> genomes);
+  /**
+   * Zoom in on the bubble.
+   *
+   * @param bubble the bubble to zoom in on.
+   * @return the list of aligned and sorted nested nodes.
+   */
+  Collection<GraphNode> zoomIn(Bubble bubble);
 }

@@ -29,6 +29,13 @@ public class PhyloBubble implements Bubble {
   private int level = -1;
   private final GraphNodeGuiData guiData;
 
+  /**
+   * Construct a phylo bubble.
+   *
+   * @param id       the id of the bubble.
+   * @param treeNode the phylogenetic tree node where the mutation of this bubble occurs.
+   * @param filter   the filter object to call when zooming in.
+   */
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
     this.id = id;
     this.treeNode = treeNode;
@@ -39,6 +46,15 @@ public class PhyloBubble implements Bubble {
     guiData = new GraphNodeGuiData();
   }
 
+  /**
+   * Construct a phylo bubble.
+   *
+   * @param id       the id of the bubble.
+   * @param treeNode the phylogenetic tree node where the mutation of this bubble occurs.
+   * @param filter   the filter object to call when zooming in.
+   * @param inEdges  the in edges of the bubble.
+   * @param outEdges the out edges of the bubble.
+   */
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
       Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     this.id = id;
@@ -52,6 +68,16 @@ public class PhyloBubble implements Bubble {
     guiData = new GraphNodeGuiData();
   }
 
+  /**
+   * Construct a phylo bubble.
+   *
+   * @param id          the id of the bubble.
+   * @param treeNode    the phylogenetic tree node where the mutation of this bubble occurs.
+   * @param filter      the filter object to call when zooming in.
+   * @param inEdges     the in edges of the bubble.
+   * @param outEdges    the out edges of the bubble.
+   * @param nestedNodes the nested nodes of the bubble.
+   */
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
       Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
       Collection<GraphNode> nestedNodes) {
@@ -67,6 +93,9 @@ public class PhyloBubble implements Bubble {
     initOverlap();
   }
 
+  /**
+   * Initialize the overlap value, based on the nested nodes.
+   */
   private void initOverlap() {
     for (GraphNode nestedNode : nestedNodes) {
       if (nestedNode.getGuiData().isOverlapping()) {
@@ -88,10 +117,16 @@ public class PhyloBubble implements Bubble {
     return poppedNodes == null;
   }
 
-  private String getIds(Collection<GraphNode> nodes) {
+  /**
+   * Get a string representation of the IDs of the nodes.
+   *
+   * @param nodes the nodes.
+   * @return the string containing all of the IDs.
+   */
+  private static String getIds(Collection<GraphNode> nodes) {
     StringBuilder builder = new StringBuilder("[");
     for (GraphNode node : nodes) {
-      builder.append(node.getId() + ", ");
+      builder.append(node.getId()).append(", ");
     }
     builder.append("]");
     return builder.toString();
@@ -102,10 +137,20 @@ public class PhyloBubble implements Bubble {
     return id;
   }
 
+  /**
+   * Get the phylogenetic tree node.
+   *
+   * @return the phylogenetic tree node.
+   */
   public IPhylogeneticTreeNode getTreeNode() {
     return treeNode;
   }
 
+  /**
+   * Add another child node to the nested nodes.
+   *
+   * @param child the child node.
+   */
   public void addChild(GraphNode child) {
     nestedNodes.add(child);
     if (child.getGuiData().isOverlapping()) {
@@ -156,15 +201,11 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addInEdge(GraphNode node) {
-//    assert !inEdges.contains(
-//        identifier) : "Adding existing in-edge: " + identifier + ". NodeID: " + this.getId();
     inEdges.add(node);
   }
 
   @Override
   public void removeInEdge(GraphNode node) {
-//    assert inEdges.contains(
-//        identifier) : "Removing non-existent in-edge: " + identifier + ". NodeID: " + this.getId();
     inEdges.remove(node);
   }
 
@@ -181,15 +222,11 @@ public class PhyloBubble implements Bubble {
 
   @Override
   public void addOutEdge(GraphNode node) {
-//    assert !outEdges.contains(
-//        identifier) : "Adding existing out-edge: " + identifier + ". NodeID: " + this.getId();
     outEdges.add(node);
   }
 
   @Override
   public void removeOutEdge(GraphNode node) {
-//    assert outEdges.contains(
-//        identifier) : "Removing non-existent out-edge: " + identifier + ". NodeID: " + this.getId();
     outEdges.remove(node);
   }
 
@@ -221,7 +258,8 @@ public class PhyloBubble implements Bubble {
         + "not a direct successor. This = " + this.getId();
 
     Collection<Integer> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes::add);
+    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome))
+        .forEach(genomes::add);
     return genomes;
   }
 

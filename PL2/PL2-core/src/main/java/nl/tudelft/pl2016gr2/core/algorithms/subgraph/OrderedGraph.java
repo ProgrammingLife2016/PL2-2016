@@ -24,9 +24,6 @@ public class OrderedGraph {
   public OrderedGraph(SequenceGraph subgraph, ArrayList<GraphNode> graphOrder) {
     this.subgraph = subgraph;
     this.graphOrderEndX = graphOrder;
-//    graphOrderStartX = new ArrayList<>(graphOrder);
-//    graphOrderStartX.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node1.size()
-//        - (node2.getLevel() - node2.size()));
   }
 
   public SequenceGraph getSubgraph() {

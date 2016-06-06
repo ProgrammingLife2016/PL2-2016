@@ -36,7 +36,8 @@ public class BuildTree {
   // WARNING, O(n2) algorithm incomming
   private void buildTree(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
     if (node.isLeaf()) {
-      PhylogeneticTreeNode newNode = new PhylogeneticTreeNode(node, parent, true);
+      PhylogeneticTreeNode newNode = new PhylogeneticTreeNode(node.getGenomeId(), parent,
+          node.getEdgeLength());
       addChild(parent, newNode);
     } else {
       IPhylogeneticTreeNode child1 = node.getChild(0);

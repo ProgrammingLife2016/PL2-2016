@@ -89,7 +89,6 @@ public class FilterBubbles implements PhyloFilter {
    * @parem genomes the genomes that are selected
    * @return a filtered graph.
    */
-  @Override
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
     IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();

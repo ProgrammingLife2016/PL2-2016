@@ -22,12 +22,4 @@ public interface Node extends GraphNode {
    * @return The sequence of this node
    */
   String getSequence();
-
-//  @Override
-//  public Node copyAll() {
-//    Node node = new Node(getId(), getSequenceLength(), this.genomes, this.snips);
-//    node.setInlinks((ArrayList<Integer>)this.getInlinks().clone());
-//    node.setOutlinks((ArrayList<Integer>)this.getOutlinks().clone());
-//    return node;
-//  }
 }

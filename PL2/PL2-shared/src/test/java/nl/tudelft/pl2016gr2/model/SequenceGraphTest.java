@@ -29,7 +29,7 @@ import java.util.Iterator;
 @RunWith(Parameterized.class)
 public class SequenceGraphTest {
 
-  private SequenceGraphFactory factory;
+  private final SequenceGraphFactory factory;
   private SequenceGraph instance;
 
   /**
@@ -37,7 +37,7 @@ public class SequenceGraphTest {
    *
    * @param factory The factory that will produce new instances on demand
    */
-  public SequenceGraphTest(SequenceGraphFactory factory) {
+  private SequenceGraphTest(SequenceGraphFactory factory) {
     this.factory = factory;
   }
 
@@ -188,21 +188,21 @@ public class SequenceGraphTest {
     assertTrue(instance.getRootNodes().contains(mockedRoot));
   }
 
-//  @Test
-//  public void removeWhenNotPresentShouldReturnNull() {
-//    assertNull(instance.remove(TestingUtilities.mockNode(100, false)));
-//  }
-//
-//  @Test
-//  public void testRemove() {
-//    GraphNode mockedNode = TestingUtilities.mockNode(50, false);
-//    instance.add(mockedNode);
-//    assertTrue(instance.contains(mockedNode));
-//
-//    instance.remove(mockedNode);
-//
-//    assertFalse(instance.contains(mockedNode));
-//  }
+  //  @Test
+  //  public void removeWhenNotPresentShouldReturnNull() {
+  //    assertNull(instance.remove(TestingUtilities.mockNode(100, false)));
+  //  }
+  //
+  //  @Test
+  //  public void testRemove() {
+  //    GraphNode mockedNode = TestingUtilities.mockNode(50, false);
+  //    instance.add(mockedNode);
+  //    assertTrue(instance.contains(mockedNode));
+  //
+  //    instance.remove(mockedNode);
+  //
+  //    assertFalse(instance.contains(mockedNode));
+  //  }
 
   @Test
   public void iteratorShouldIterateOnlyOverExistingElements() {
