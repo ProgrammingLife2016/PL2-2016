@@ -7,6 +7,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -62,7 +63,9 @@ public class SplitGraphs {
         genomeSet) : "Tried splitting graph on absent genomes";
 
     HashSet<GraphNode> nodeSet = findSubgraphNodes(genomeSet);
-    return createNewGraph(nodeSet, genomeSet);
+    HashMap<Integer, GraphNode> nodeMap = new HashMap<>();
+    nodeSet.forEach(node -> nodeMap.put(node.getId(), node));
+    return createNewGraph(nodeMap, genomeSet);
   }
 
   /**
@@ -101,14 +104,18 @@ public class SplitGraphs {
    * @param genomeSet The set of all genomes that should be included in the subgraph.
    * @return the new graph which contains all of the newly created nodes.
    */
-  private SequenceGraph createNewGraph(HashSet<GraphNode> nodeSet, HashSet<Integer> genomeSet) {
-    SequenceGraph newGraph = new HashGraph();
-    nodeSet.forEach(originalNode -> {
-      GraphNode newNode = pruneNode(originalNode, genomeSet, nodeSet);
-      newGraph.add(newNode);
+  private SequenceGraph createNewGraph(HashMap<Integer, GraphNode> nodeSet, HashSet<Integer> genomeSet) {
+    HashMap<Integer, GraphNode> newNodes = new HashMap<>();
+
+    nodeSet.forEach((id, originalNode) -> {
+      GraphNode newNode = pruneNode(originalNode, genomeSet);
+      newNodes.put(id, newNode);
     });
-    genomeSet.forEach(newGraph::addGenome);
-    return newGraph;
+    newNodes.forEach((id, node) -> {
+      node.addAllInEdges(pruneInLinks(node, newNodes, nodeSet));
+      node.addAllOutEdges(pruneOutLinks(node, newNodes, nodeSet));
+    });
+    return new HashGraph(newNodes, genomeSet);
   }
 
   /**
@@ -124,16 +131,12 @@ public class SplitGraphs {
    *
    * @param original  The original <code>node</code> to prune and copy
    * @param genomeSet The set of genomes that should be retained in the pruning process
-   * @param nodeSet   The set of nodes that should be retained in the pruning process
    * @return A new <code>GraphNode</code> identical to the <code>original</code> after pruning
    */
-  private GraphNode pruneNode(GraphNode original, HashSet<Integer> genomeSet,
-      HashSet<GraphNode> nodeSet) {
+  private GraphNode pruneNode(GraphNode original, HashSet<Integer> genomeSet) {
     GraphNode newNode = original.copy();
 
     newNode.addAllGenomes(pruneGenomes(original, genomeSet));
-    newNode.addAllInEdges(pruneInLinks(original, nodeSet));
-    newNode.addAllOutEdges(pruneOutLinks(original, nodeSet));
 
     return newNode;
   }
@@ -146,14 +149,15 @@ public class SplitGraphs {
    * </p>
    *
    * @param original   The node to build the subset for
-   * @param graphNodes The set of nodes in the graph
    * @return The intersection of the node inLinks and the graph nodes
    */
-  private Collection<GraphNode> pruneInLinks(GraphNode original, HashSet<GraphNode> graphNodes) {
+  private Collection<GraphNode> pruneInLinks(GraphNode original, HashMap<Integer, GraphNode> graph,
+      HashMap<Integer, GraphNode> nodeSet) {
     Collection<GraphNode> prunedInLinks = new ArrayList<>();
-    original.getInEdges().forEach(edge -> {
-      if (graphNodes.contains(edge)) {
-        prunedInLinks.add(edge);
+    nodeSet.get(original.getId()).getInEdges().forEach(edge -> {
+      GraphNode fromNode = graph.get(edge.getId());
+      if (fromNode != null) {
+        prunedInLinks.add(fromNode);
       }
     });
     return prunedInLinks;
@@ -168,14 +172,15 @@ public class SplitGraphs {
    * </p>
    *
    * @param original   The node to build the subset for
-   * @param graphNodes The set of nodes in the graph
    * @return The intersection of the node outLinks and the graph nodes
    */
-  private Collection<GraphNode> pruneOutLinks(GraphNode original, HashSet<GraphNode> graphNodes) {
+  private Collection<GraphNode> pruneOutLinks(GraphNode original, HashMap<Integer, GraphNode> graph,
+      HashMap<Integer, GraphNode> nodeSet) {
     Collection<GraphNode> prunedOutLinks = new ArrayList<>();
-    original.getOutEdges().forEach(edge -> {
-      if (graphNodes.contains(edge)) {
-        prunedOutLinks.add(edge);
+    nodeSet.get(original.getId()).getOutEdges().forEach(edge -> {
+      GraphNode toNode = graph.get(edge.getId());
+      if (toNode != null) {
+        prunedOutLinks.add(toNode);
       }
     });
     return prunedOutLinks;
