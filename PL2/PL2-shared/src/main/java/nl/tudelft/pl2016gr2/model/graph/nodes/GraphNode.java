@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
@@ -243,10 +244,6 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    */
   GraphNode copyAll();
 
-  boolean isOverlapping();
-
-  void setOverlapping(boolean overlapping);
-
   /**
    * Add an offset to the current level of the node.
    *
@@ -257,14 +254,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void setLevel(int level);
 
   int getLevel();
-
-  double getRelativeYPos();
-
-  void setRelativeYPos(double relativeYPos);
-
-  void setMaxHeight(double maxHeight);
-
-  double getMaxHeightPercentage();
+  
+  GraphNodeGuiData getGuiData();
 
   /**
    * Pops this bubble.

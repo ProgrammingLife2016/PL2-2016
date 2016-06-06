@@ -72,7 +72,7 @@ public class ViewNodeBuilder implements NodeVisitor {
   @Override
   public void visit(SequenceNode node) {
     ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height);
-    if (node.isOverlapping()) {
+    if (node.getGuiData().isOverlapping()) {
       circle.setFill(OVERLAP_COLOR);
     } else {
       circle.setFill(NO_OVERLAP_COLOR);

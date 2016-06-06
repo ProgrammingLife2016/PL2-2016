@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
@@ -19,22 +20,12 @@ public class SequenceNode extends AbstractNode {
   private ArrayList<Integer> genomes;
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
-
-  /**
-   * If this node is overlapping with a node from the other graph.
-   */
-  private boolean overlapping;
+  private final GraphNodeGuiData guiData = new GraphNodeGuiData();
 
   /**
    * The level of this node (the depth in the graph.
    */
   private int level;
-
-  /**
-   * The relative y-position of the node
-   */
-  private double relativeYPos = -1;
-  private double maxHeight;
 
   /**
    * Constructs a bare node with only an identifier.
@@ -196,7 +187,7 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copy() {
     SequenceNode node = new SequenceNode(this.getId(), sequence, getGenomes());
     node.level = level;
-    node.overlapping = overlapping;
+    node.guiData.setOverlapping(node.guiData.isOverlapping());
     return node;
   }
 
@@ -204,7 +195,7 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copyAll() {
     SequenceNode node = new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
     node.level = level;
-    node.overlapping = overlapping;
+    node.guiData.setOverlapping(node.guiData.isOverlapping());
     return node;
   }
 
@@ -219,28 +210,8 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public void setOverlapping(boolean overlapping) {
-    this.overlapping = overlapping;
-  }
-
-  @Override
-  public boolean isOverlapping() {
-    return overlapping;
-  }
-
-  @Override
   public void setLevel(int level) {
     this.level = level;
-  }
-
-  @Override
-  public double getRelativeYPos() {
-    return relativeYPos;
-  }
-
-  @Override
-  public void setRelativeYPos(double relativeYPos) {
-    this.relativeYPos = relativeYPos;
   }
 
   @Override
@@ -267,16 +238,6 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public double getMaxHeightPercentage() {
-    return maxHeight;
-  }
-
-  @Override
-  public void setMaxHeight(double maxHeight) {
-    this.maxHeight = maxHeight;
-  }
-
-  @Override
   public Collection<GraphNode> pop() {
     ArrayList<GraphNode> res = new ArrayList<>(1);
     res.add(this);
@@ -290,5 +251,10 @@ public class SequenceNode extends AbstractNode {
   @Override
   public boolean isPopped() {
     return false;
+  }
+
+  @Override
+  public GraphNodeGuiData getGuiData() {
+    return guiData;
   }
 }

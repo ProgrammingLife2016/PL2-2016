@@ -704,7 +704,7 @@ public class DrawComparedGraphs implements Initializable {
     if (width < MIN_VISIBILITY_WIDTH) {
       return;
     }
-    double height = node.getMaxHeightPercentage() * viewRange.rangeHeight;
+    double height = node.getGuiData().getMaxHeightPercentage() * viewRange.rangeHeight;
     if (height > width) {
       height = width;
     }
@@ -712,7 +712,7 @@ public class DrawComparedGraphs implements Initializable {
     pane.getChildren().add(viewNode.get());
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
-    viewNode.centerYProperty().set(viewRange.rangeHeight * node.getRelativeYPos()
+    viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().getRelativeYPos()
         + viewRange.rangeStartY);
     //addLabel(pane, circle, node.getId());
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
@@ -812,8 +812,8 @@ public class DrawComparedGraphs implements Initializable {
       edge.setEndX(zoomFactor.get()
           * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
     }
-    edge.setStartY(fromNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
-    edge.setEndY(toNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    edge.setStartY(fromNode.getGuiData().getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    edge.setEndY(toNode.getGuiData().getRelativeYPos() * range.rangeHeight + range.rangeStartY);
     //edge.toBack();
   }
 

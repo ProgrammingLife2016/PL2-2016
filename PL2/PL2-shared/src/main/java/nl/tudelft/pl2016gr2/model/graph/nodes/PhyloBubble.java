@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
@@ -26,9 +27,7 @@ public class PhyloBubble implements Bubble {
 
   private int size = -1;
   private int level = -1;
-
-  private double relativeYPos = -1;
-  private double maxHeight;
+  private final GraphNodeGuiData guiData;
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter) {
     this.id = id;
@@ -37,6 +36,7 @@ public class PhyloBubble implements Bubble {
     this.inEdges = new HashSet<>();
     this.outEdges = new HashSet<>();
     this.nestedNodes = new HashSet<>();
+    guiData = new GraphNodeGuiData();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
@@ -49,6 +49,7 @@ public class PhyloBubble implements Bubble {
     //this.inEdges.trimToSize();
     //this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>();
+    guiData = new GraphNodeGuiData();
   }
 
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
@@ -62,6 +63,18 @@ public class PhyloBubble implements Bubble {
     //this.inEdges.trimToSize();
     //this.outEdges.trimToSize();
     this.nestedNodes = new HashSet<>(nestedNodes);
+    guiData = new GraphNodeGuiData();
+    initOverlap();
+  }
+
+  private void initOverlap() {
+    for (GraphNode nestedNode : nestedNodes) {
+      if (nestedNode.getGuiData().isOverlapping()) {
+        guiData.setOverlapping(true);
+        return;
+      }
+    }
+    guiData.setOverlapping(false);
   }
 
   @Override
@@ -95,6 +108,9 @@ public class PhyloBubble implements Bubble {
 
   public void addChild(GraphNode child) {
     nestedNodes.add(child);
+    if (child.getGuiData().isOverlapping()) {
+      guiData.setOverlapping(true);
+    }
   }
 
   @Override
@@ -272,22 +288,6 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public boolean isOverlapping() {
-    for (GraphNode nestedNode : nestedNodes) {
-      if (nestedNode.isOverlapping()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  @Override
-  public void setOverlapping(boolean overlapping) {
-    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
-        + "bubbles before the bubbles are made.");
-  }
-
-  @Override
   public void addPositionOffset(int offset) {
     for (GraphNode nestedNode : nestedNodes) {
       nestedNode.addPositionOffset(offset);
@@ -298,16 +298,6 @@ public class PhyloBubble implements Bubble {
   public void setLevel(int level) {
     throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
         + "bubbles before the bubbles are made.");
-  }
-
-  @Override
-  public double getRelativeYPos() {
-    return relativeYPos;
-  }
-
-  @Override
-  public void setRelativeYPos(double relativeYPos) {
-    this.relativeYPos = relativeYPos;
   }
 
   @Override
@@ -323,12 +313,7 @@ public class PhyloBubble implements Bubble {
   }
 
   @Override
-  public double getMaxHeightPercentage() {
-    return maxHeight;
-  }
-
-  @Override
-  public void setMaxHeight(double maxHeight) {
-    this.maxHeight = maxHeight;
+  public GraphNodeGuiData getGuiData() {
+    return guiData;
   }
 }

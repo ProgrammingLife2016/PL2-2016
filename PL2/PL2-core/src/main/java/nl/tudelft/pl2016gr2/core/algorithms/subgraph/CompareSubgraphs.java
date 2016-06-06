@@ -121,7 +121,7 @@ public class CompareSubgraphs {
     for (GraphNode rootNode : rootNodes) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
-      rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
+      rootNode.getGuiData().setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
       areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
       index++;
     }
@@ -166,8 +166,8 @@ public class CompareSubgraphs {
 
     SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
 
-    node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
-    node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+    node.getGuiData().setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
+    node.getGuiData().setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
     return complexNodeArea;
   }
 
