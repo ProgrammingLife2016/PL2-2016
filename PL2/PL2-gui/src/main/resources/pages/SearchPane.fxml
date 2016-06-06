@@ -16,7 +16,7 @@
     <AnchorPane GridPane.columnIndex="0" GridPane.hgrow="NEVER">
         <TableView fx:id="annotationTable" maxWidth="600.0" minWidth="600.0" prefHeight="300.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
             <columns>
-                <TableColumn fx:id="specimenIdColumn" prefWidth="120.0" text="Speciment ID" />
+                <TableColumn fx:id="specimenIdColumn" prefWidth="120.0" text="Specimen ID" />
                 <TableColumn fx:id="specimentTypeColumn" prefWidth="100.0" text="Type" />
                 <TableColumn fx:id="genotypicDSTPatternColumn" prefWidth="100.0" text="genotypicDST" />
                 <TableColumn fx:id="phenotypicDSTPatternColumn" prefWidth="100.0" text="phenotypicDST" />
