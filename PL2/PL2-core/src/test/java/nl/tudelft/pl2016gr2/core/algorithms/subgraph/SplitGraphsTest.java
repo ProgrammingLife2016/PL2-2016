@@ -72,7 +72,8 @@ public class SplitGraphsTest {
 
     when(mockedIterator.hasNext()).thenReturn(true, true, true, false);
     when(mockedIterator.next()).thenReturn(firstNode, secondNode, thirdNode);
-    doAnswer(new ForEachAnswer()).when(mockedIterator).forEachRemaining(any());
+    doAnswer(new ForEachRemainingAnswer()).when(mockedIterator).forEachRemaining(any());
+    doAnswer(new ForEachAnswer()).when(mockedGraph).forEach(any());
     when(mockedGraph.iterator()).thenReturn(mockedIterator);
     when(mockedGraph.getNode(0)).thenReturn(firstNode);
     when(mockedGraph.getNode(1)).thenReturn(secondNode);
@@ -315,7 +316,7 @@ public class SplitGraphsTest {
 
     graph.forEach(node -> assertTrue(subGraph.contains(node)));
 
-    graph.forEach(node -> {
+    subGraph.forEach(node -> {
       if (node.getId() == 0) {
         assertFalse(node.getOutEdges().contains(two));
         assertTrue(node.getOutEdges().contains(one));
@@ -370,7 +371,7 @@ public class SplitGraphsTest {
    * Requires correct stubbing of the <code>next()</code> and <code>hasNext()</code> methods.
    * </p>
    */
-  private static class ForEachAnswer implements Answer<Void> {
+  private static class ForEachRemainingAnswer implements Answer<Void> {
 
     @Override
     @SuppressWarnings("unchecked") // Necessary to cast the InvocationOnMock types.
@@ -379,6 +380,28 @@ public class SplitGraphsTest {
       Consumer<GraphNode> arg = (Consumer<GraphNode>) invocationOnMock.getArguments()[0];
       while (invocation.hasNext()) {
         arg.accept(invocation.next());
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Stubs the forEach method in a Graph by applying the lambda to every element in its iterator.
+   * <p>
+   * Requires correct stubbing of the <code>next()</code> and <code>hasNext()</code> methods,
+   * as well as the <code>iterator()</code> method.
+   * </p>
+   */
+  private static class ForEachAnswer implements Answer<Void> {
+
+    @Override
+    @SuppressWarnings("unchecked") // Necessary to cast the InvocationOnMock types.
+    public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
+      SequenceGraph invocation = (SequenceGraph) invocationOnMock.getMock();
+      Consumer<GraphNode> arg = (Consumer<GraphNode>) invocationOnMock.getArguments()[0];
+      Iterator<GraphNode> graphIterator = invocation.iterator();
+      while (graphIterator.hasNext()) {
+        arg.accept(graphIterator.next());
       }
       return null;
     }
