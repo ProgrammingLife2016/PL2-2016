@@ -297,5 +297,5 @@ public abstract class Bubble implements GraphNode {
    *
    * @return if the nodes in the bubble have to be vertically aligned.
    */
-  abstract boolean needsVerticalAligning();
+  public abstract boolean needsVerticalAligning();
 }

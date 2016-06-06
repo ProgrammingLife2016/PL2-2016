@@ -82,7 +82,7 @@ public class SimpleBubble extends Bubble {
   }
 
   @Override
-  boolean needsVerticalAligning() {
+  public boolean needsVerticalAligning() {
     // TODO Auto-generated method stub
     return false;
   }

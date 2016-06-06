@@ -35,7 +35,7 @@ public class IndelBubble extends Bubble {
 
   @Override
   public void accept(NodeVisitor visitor) {
-    throw new UnsupportedOperationException("Do we need this?");
+    visitor.visit(this);
   }
 
   @Override
@@ -69,7 +69,7 @@ public class IndelBubble extends Bubble {
   }
 
   @Override
-  boolean needsVerticalAligning() {
+  public boolean needsVerticalAligning() {
     // TODO Auto-generated method stub
     return false;
   }

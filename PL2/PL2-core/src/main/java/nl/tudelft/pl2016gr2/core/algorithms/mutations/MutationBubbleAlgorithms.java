@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  *
  * @author Cas
-
+ *
  */
 public class MutationBubbleAlgorithms {
 
@@ -34,15 +34,13 @@ public class MutationBubbleAlgorithms {
     // bubbles).
     // If you want, you may create a new array list and copy the nodes into it (just make sure a
     // correct array list of graphnodes which contains all of the nodes of the graph is returned).
-    
+
     // First you must fix the bubble classes to store the content of the bubbles (check the 
     // PhyloBubble class to get an idea of how it should work, you can copy most of that code).
     // Please don't add any more methods to the interfaces of the bubbles/nodes. They don't need
     // extra functionality for your code (except that each kind of bubble should get a different
     // kind of representation, but you can just use the white square for now.
-    
     // I have deactivated the phylogenetic bubbles for you to make it easier to test your code.
-
     // if you want to sort the list of nodes again (this shouldn't really be needed), 
     // uncomment the following line:
     orderedNodes = findStraightInDelPoint(orderedNodes);
@@ -65,7 +63,7 @@ public class MutationBubbleAlgorithms {
         boolean newOverlap = node.isOverlapping();
         Bubble bubble = null;
         while (oldOverlap == newOverlap && node.getOutEdges().size() <= 1
-            && (node.getInEdges().size() <= 1 || (node.getInEdges().size() > 1 && bubble == null)) 
+            && (node.getInEdges().size() <= 1 || (node.getInEdges().size() > 1 && bubble == null))
             //Die laatste statement herkent het begin van een bubble na samenkomen van een afsplitsing
             && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
@@ -82,11 +80,11 @@ public class MutationBubbleAlgorithms {
             oldLevel = newLevel;
             newLevel = node.getLevel();
             oldOverlap = newOverlap;
-            newOverlap = node.isOverlapping(); 
+            newOverlap = node.isOverlapping();
           } else {
             lastNode = node;
             break;
-          }         
+          }
         }
         boolean stop = false;
         GraphNode newBubbleOrNode = null;
@@ -94,7 +92,7 @@ public class MutationBubbleAlgorithms {
           if (bubble.getChildren().size() == 1) {
             newBubbleOrNode = checkPoint(bubble, visited);
 //            if (!(newBubbleOrNode instanceof PointMutationBubble)) {
-              //newBubbleOrNode = checkInDel(bubble, visited);
+            //newBubbleOrNode = checkInDel(bubble, visited);
 //            }
             //newBubbleOrNode = bubble.getChildren().iterator().next();
           } else if (oldOverlap == newOverlap && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
@@ -130,7 +128,7 @@ public class MutationBubbleAlgorithms {
     int count = 0;
     for (GraphNode node : newOrder) {
       for (GraphNode inEdge : node.getInEdges()) {
-        if(!inEdge.getOutEdges().contains(node)) {
+        if (!inEdge.getOutEdges().contains(node)) {
           System.out.println(inEdge.getId() + " heeft geen: " + node.getId());
           System.out.println("Het moet dus geen sequenceNode maar bubble worden");
           System.out.println(inEdge.getOutEdges());
@@ -138,7 +136,7 @@ public class MutationBubbleAlgorithms {
         }
       }
       for (GraphNode outEdge : node.getOutEdges()) {
-        if(!outEdge.getInEdges().contains(node)) {
+        if (!outEdge.getInEdges().contains(node)) {
           System.out.println("Er gaat iets fout2");
           count++;
         }
@@ -147,7 +145,7 @@ public class MutationBubbleAlgorithms {
     System.out.println(count);
     return newOrder;
   }
-  
+
   private static void setChildsInedgesToBubble(Bubble bubble, GraphNode nodeOut) {
     for (GraphNode node : nodeOut.getOutEdges()) {
       if (node.getInEdges().size() <= 1) {
@@ -158,10 +156,11 @@ public class MutationBubbleAlgorithms {
       }
     }
   }
-  
+
   /**
-   * maybe the iterator in this function is slow and in that case I should find another way 
-   * to get the first element of the arraylist.
+   * maybe the iterator in this function is slow and in that case I should find another way to get
+   * the first element of the arraylist.
+   *
    * @param bubble
    * @param firstNode
    */
@@ -264,10 +263,11 @@ public class MutationBubbleAlgorithms {
       return nodeInBubble;
     }
   }
-  
+
   /**
-   * For loop should probably be adjusted to accommodate indexes and better complexity 
-   * for removal (we already know the index if we want to remove)
+   * For loop should probably be adjusted to accommodate indexes and better complexity for removal
+   * (we already know the index if we want to remove)
+   *
    * @param bubble
    * @param child
    */
@@ -275,10 +275,10 @@ public class MutationBubbleAlgorithms {
     Set<GraphNode> nestedNodes = (Set<GraphNode>) bubble.getChildren();
     ArrayList<GraphNode> childInEdges = (ArrayList<GraphNode>) child.getInEdges();
     for (GraphNode node : nestedNodes) {
-      if(childInEdges.contains(node)) {
+      if (childInEdges.contains(node)) {
         childInEdges.remove(node);
       }
     }
-    childInEdges.add(bubble);    
+    childInEdges.add(bubble);
   }
 }
