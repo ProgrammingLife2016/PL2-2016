@@ -96,7 +96,7 @@ public class SplitGraphsTest {
       outLinkNodes.add(mockNode(outLink, false));
     }
     return new SequenceNode(identifier, new BaseSequence("ACTG"), Arrays.asList(genomes),
-        inLinkNodes, inLinkNodes);
+        inLinkNodes, outLinkNodes);
   }
 
   @Test
