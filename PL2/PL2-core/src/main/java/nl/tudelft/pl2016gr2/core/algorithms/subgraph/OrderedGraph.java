@@ -33,8 +33,4 @@ public class OrderedGraph {
   public ArrayList<GraphNode> getGraphOrder() {
     return graphOrderEndX;
   }
-
-//  public ArrayList<GraphNode> getGraphOrderByStartXPosition() {
-//    return graphOrderStartX;
-//  }
 }

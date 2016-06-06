@@ -34,6 +34,7 @@ import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
+import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -108,7 +108,6 @@ public class DrawComparedGraphs implements Initializable {
   private ObservableSet<Integer> topGraphGenomes;
   private ObservableSet<Integer> bottomGraphGenomes;
   @TestId(id = "amountOfLevels")
-
   private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
 
@@ -541,6 +540,7 @@ public class DrawComparedGraphs implements Initializable {
 
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
+    scrollbar.setValue(0);
     updateGraphSize();
     graphUpdater.update();
   }
@@ -552,45 +552,46 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void compareTwoGraphs(Collection<Integer> topGenomes, Collection<Integer> bottomGenomes) {
-    drawOneGraph(mainGraph.getGenomes());
-    //    topGraphGenomes.clear();
-    //    topGraphGenomes.addAll(topGenomes);
-    //    bottomGraphGenomes.clear();
-    //    bottomGraphGenomes.addAll(bottomGenomes);
-    //
-    //    compareTwoGraphs();
+//    drawOneGraph(mainGraph.getGenomes());
+    topGraphGenomes.clear();
+    topGraphGenomes.addAll(topGenomes);
+    bottomGraphGenomes.clear();
+    bottomGraphGenomes.addAll(bottomGenomes);
+
+    compareTwoGraphs();
   }
 
   /**
    * Draw and compare two subgraphs of genomes.
    */
   private void compareTwoGraphs() {
-    //    Pair<OrderedGraph, OrderedGraph> compareRes
-    //        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, 
-    //mainGraph,
-    //            mainGraphOrder);
-    //    this.topGraph = compareRes.left;
-    //    this.bottomGraph = compareRes.right;
-    //    drawTwoGraphs();
+    Pair<OrderedGraph, OrderedGraph> compareRes
+        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, mainGraph,
+            mainGraphOrder, treeRoot);
+    this.topGraph = compareRes.left;
+    this.bottomGraph = compareRes.right;
+    drawTwoGraphs();
   }
 
   /**
    * Draw two graphs to compare.
    */
-  //  private void drawTwoGraphs() {
-  //    ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
-  //    ArrayList<GraphNode> bottomGraphOrder = bottomGraph.getGraphOrder();
-  //    int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
-  //    int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
-  //    if (highestTopLevel > highestBottomLevel) {
-  //      amountOfLevels.set(highestTopLevel);
-  //    } else {
-  //      amountOfLevels.set(highestBottomLevel);
-  //    }
-  //    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-  //    updateGraphSize();
-  //    graphUpdater.update();
-  //  }
+  private void drawTwoGraphs() {
+    ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
+    ArrayList<GraphNode> bottomGraphOrder = bottomGraph.getGraphOrder();
+    int highestTopLevel = topGraphOrder.get(topGraphOrder.size() - 1).getLevel();
+    int highestBottomLevel = bottomGraphOrder.get(bottomGraphOrder.size() - 1).getLevel();
+    if (highestTopLevel > highestBottomLevel) {
+      amountOfLevels.set(highestTopLevel);
+    } else {
+      amountOfLevels.set(highestBottomLevel);
+    }
+    zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
+    scrollbar.setValue(0);
+    updateGraphSize();
+    graphUpdater.update();
+  }
+
   /**
    * Load a new main graph.
    *
@@ -623,6 +624,23 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
+   * Update the size of the graphs. Show both graphs if 2 graphs are drawn, otherwise only show the
+   * top graph and resize it to fit the whole screen.
+   */
+  private void updateGraphSize() {
+    if (getDrawnGraphs() < 2) {
+      topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT));
+      bottomPane.setVisible(false);
+      deleteBottomGraphImage.setVisible(false);
+    } else {
+      topPane.prefHeightProperty().bind(
+          mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
+      bottomPane.setVisible(true);
+      deleteBottomGraphImage.setVisible(true);
+    }
+  }
+
+  /**
    * Update the graph by redrawing it.
    */
   private void updateGraph() {
@@ -643,23 +661,6 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Update the size of the graphs. Show both graphs if 2 graphs are drawn, otherwise only show the
-   * top graph and resize it to fit the whole screen.
-   */
-  private void updateGraphSize() {
-    if (getDrawnGraphs() < 2) {
-      topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT));
-      bottomPane.setVisible(false);
-      deleteBottomGraphImage.setVisible(false);
-    } else {
-      topPane.prefHeightProperty().bind(
-          mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
-      bottomPane.setVisible(true);
-      deleteBottomGraphImage.setVisible(true);
-    }
-  }
-
-  /**
    * Draw the given graph in the given pane.
    *
    * @param pane       the pane to draw the graph in.
@@ -672,7 +673,7 @@ public class DrawComparedGraphs implements Initializable {
       int startLevel, int endLevel) {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
-    GraphViewRange fullRange = new GraphViewRange(0, pane.getHeight());
+    GraphViewRange fullRange = new GraphViewRange(0, pane.getPrefHeight());
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, 0, fullRange);
     }
@@ -687,6 +688,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param drawnGraphNodes the list of drawn nodes to which to add the node which is drawn and any
    *                        child nodes of the given node which are drawn.
    * @param startLevel      the start level: where to start drawing.
+   * @param endLevel        the start level: where to stop drawing.
    * @param nestedDepth     the nested depth of this node: how many bubbels are drawn around this
    *                        node.
    * @param viewRange       the range of values which may be used as y coordinate to draw this node.
@@ -724,6 +726,7 @@ public class DrawComparedGraphs implements Initializable {
    * @param bubble          the bubble which contains the nested nodes.
    * @param drawnGraphNodes the list of drawn nodes to which to add all child nodes which are drawn.
    * @param startLevel      the start level: where to start drawing.
+   * @param endLevel        the start level: where to stop drawing.
    * @param nestedDepth     the nested depth of the bubble: how many bubbels are drawn around this
    *                        bubble.
    * @param viewRange       the range of values which may be used as y coordinate to draw the
@@ -737,6 +740,14 @@ public class DrawComparedGraphs implements Initializable {
     }
   }
 
+  /**
+   * Check if the given node is in the view.
+   *
+   * @param node       the node.
+   * @param startLevel the start level of the current view.
+   * @param endLevel   the end level of the current view.
+   * @return if the node is inside of the view.
+   */
   private boolean isInView(GraphNode node, int startLevel, int endLevel) {
     int nodeStart = node.getLevel() - node.size();
     int nodeEnd = node.getLevel();
@@ -867,30 +878,10 @@ public class DrawComparedGraphs implements Initializable {
   @SuppressWarnings("unused")
   private void deleteBottomGraph() {
     bottomGraphGenomes.clear();
+    bottomGraph = null;
     redrawGraphs();
   }
 
-//  /**
-//   * A class which is used to store a range of values of the y coordinate of an object. This class
-//   * contains a start value a heigh value, which denotes the maximum height, counted from the start
-//   * value, at which an object may be drawn.
-//   */
-//  private static class ViewRange {
-//
-//    private final double rangeStartY;
-//    private final double rangeHeight;
-//
-//    /**
-//     * Construct a range.
-//     *
-//     * @param rangeStartY the start value.
-//     * @param rangeHeight the height.
-//     */
-//    private ViewRange(double rangeStartY, double rangeHeight) {
-//      this.rangeStartY = rangeStartY;
-//      this.rangeHeight = rangeHeight;
-//    }
-//  }
   /**
    * Used to updated the graph at most once every frame.
    */

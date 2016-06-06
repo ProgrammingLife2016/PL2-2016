@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is used to compare and align two subgraphs with each other, so all of the overlapping
@@ -29,35 +31,32 @@ public class CompareSubgraphs {
   private CompareSubgraphs() {
   }
 
-  //  /**
-  //   * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
-  //   *
-  //   * @param mainGraphOrder the main graph node order.
-  //   * @param topGraph       the top graph.
-  //   * @param bottomGraph    the bottom graph.
-  //   * @return a pair containing as left value the graph node order of the top graph and as 
-  //left value
-  //   *         the node graph order of the bottom graph.
-  //   */
-  //  public static Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> compareGraphs(
-  //      SequenceGraph mainGraphOrder, SequenceGraph topGraph,
-  //      SequenceGraph bottomGraph) {
-  //    OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
-  //    SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, 
-  //overlapThread);
-  //    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, bottomGraph,
-  //        overlapThread);
-  //    overlapThread.start();
-  //    topGraphOrderer.start();
-  //    bottomGraphOrderer.start();
-  //
-  //    ArrayList<GraphNode> orderedTopGraph = topGraphOrderer.getNodeOrder();
-  //    ArrayList<GraphNode> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
-  //
-  //    //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
-  ////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
-  //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
-  //  }
+  /**
+   * Align two subgraphs: mark the overlapping nodes and calculate the vertical position of all
+   * nodes.
+   *
+   * @param orderedTopGraph    the ordered top graph.
+   * @param orderedBottomGraph the ordered bottom graph.
+   */
+  public static void compareGraphs(ArrayList<GraphNode> orderedTopGraph,
+      ArrayList<GraphNode> orderedBottomGraph) {
+    OverlapThread overlapThread = new OverlapThread(orderedTopGraph, orderedBottomGraph);
+    GraphAlignThread topAligner = new GraphAlignThread(orderedTopGraph);
+    GraphAlignThread bottomAligner = new GraphAlignThread(orderedBottomGraph);
+
+    overlapThread.start();
+    topAligner.start();
+    bottomAligner.start();
+    
+    try {
+      overlapThread.join();
+      topAligner.join();
+      bottomAligner.join();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
   /**
    * Align the given graph nodes vertically.
    *
@@ -79,13 +78,6 @@ public class CompareSubgraphs {
       if (areaMap.containsKey(node)) {
         continue;
       }
-      for (GraphNode inEdge : node.getInEdges()) {
-        assert inEdge.getOutEdges().contains(node);
-      }
-      for (GraphNode outEdge : node.getOutEdges()) {
-        assert outEdge.getInEdges().contains(node);
-      }
-
       calculateGraphArea(node, areaMap, graphOrder);
     }
   }
@@ -115,12 +107,6 @@ public class CompareSubgraphs {
     for (GraphNode node : graphOrder) {
       if (rootNodes.contains(node)) {
         continue;
-      }
-      for (GraphNode inEdge : node.getInEdges()) {
-        assert inEdge.getOutEdges().contains(node);
-      }
-      for (GraphNode outEdge : node.getOutEdges()) {
-        assert outEdge.getInEdges().contains(node);
       }
       calculateGraphArea(node, areaMap, null);
     }
@@ -165,20 +151,11 @@ public class CompareSubgraphs {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-    //    System.out.println("start " + node.getId());
     ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
     for (GraphNode inEdge : node.getInEdges()) {
       ComplexVerticalArea area = areaMap.get(inEdge);
       if (area == null) {
-        //        System.out.println("added backwards edge caused by bubble");
-        //        System.out.println("in");
-        //        System.out.println(node.getId());
-
         area = calculateGraphArea(inEdge, areaMap, graphOrder);
-        //        System.out.println("out");
-      }
-      if (area.curPart == area.splitParts.size()) {
-        //        System.out.println("err");
       }
       inAreas.add(area);
     }
@@ -375,6 +352,23 @@ public class CompareSubgraphs {
     @Override
     public int compareTo(SimpleVerticalArea other) {
       return startBlock - other.startBlock;
+    }
+  }
+
+  /**
+   * Thread which can be used to vertically align a subgraph and mark the overlapping nodes.
+   */
+  private static class GraphAlignThread extends Thread {
+
+    private final ArrayList<GraphNode> orderedGraph;
+
+    private GraphAlignThread(ArrayList<GraphNode> orderedGraph) {
+      this.orderedGraph = orderedGraph;
+    }
+
+    @Override
+    public void run() {
+      alignVertically(orderedGraph);
     }
   }
 }
