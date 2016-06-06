@@ -1,28 +1,35 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.core.GraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
-import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.LineageColor;
 import nl.tudelft.pl2016gr2.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
-
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.IOException;
@@ -30,6 +37,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,6 +57,15 @@ public class RootLayoutController implements
   private Pane selectionDescriptionPane;
   @FXML
   private SplitPane mainPane;
+  @FXML
+  private LegendController graphLegendController;
+  @FXML
+  private LegendController treeLegendController;
+
+  @FXML
+  private Pane searchPane;
+  @FXML
+  private SearchPaneController searchPaneController;
 
   @TestId(id = "treeManager")
   private TreeManager treeManager;
@@ -67,6 +84,7 @@ public class RootLayoutController implements
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
+    initializeLegend();
     treeManager = TreeManager.loadView(selectionManager);
     drawGraphs = DrawComparedGraphs.loadView(selectionManager);
     mainPane.getItems().add(treeManager.getTreePane());
@@ -75,6 +93,18 @@ public class RootLayoutController implements
     mainPane.getItems().add(graphRegion);
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
+
+    rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
+      @Override
+      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
+          Scene newValue) {
+        if (newValue != null) {
+          initializeSearchPaneController();
+          // fire this only once when scene is set.
+          rootPane.sceneProperty().removeListener(this);
+        }
+      }
+    });
   }
 
   /**
@@ -129,21 +159,8 @@ public class RootLayoutController implements
    * @param topGenomes    the genomes of the top graph.
    * @param bottomGenomes the genomes of the bottom graph.
    */
-  public void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
-//<<<<<<< HEAD
-//    SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
-//        topGenomes);
-//    SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(graph),
-//        bottomGenomes);
-//    topSubGraphThread.start();
-//    bottomSubGraphThread.start();
-//    OriginalGraph topSubgraph = topSubGraphThread.getSubGraph();
-//    OriginalGraph bottomSubgraph = bottomSubGraphThread.getSubGraph();
-//    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
-//        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(), topSubgraph,
-//            bottomSubgraph);
-//    drawGraphs.drawGraphs(alignedGraphs.left, alignedGraphs.right);
-//=======
+
+  public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     drawGraphs.compareTwoGraphs(topGenomes, bottomGenomes);
   }
 
@@ -160,6 +177,64 @@ public class RootLayoutController implements
     });
   }
 
+  /**
+   * Initialize the legend.
+   */
+  @SuppressWarnings("checkstyle:methodlength")
+  private void initializeLegend() {
+    graphLegendController.initializeData(
+        "Legend",
+        -5.0, 5.0,
+        new LegendController.LegendItem(
+            "This element represent a bubble.",
+            "Bubble",
+            new Rectangle(20, 20, Color.ALICEBLUE)),
+        new LegendController.LegendItem(
+            "This element represents a sequence.",
+            "Different sequence",
+            new Circle(10, Color.rgb(0, 73, 73))),
+        new LegendController.LegendItem(
+            "This element represents a sequence.",
+            "Equal sequence",
+            new Circle(10, Color.rgb(146, 0, 0))));
+
+    List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
+    for (LineageColor color : LineageColor.values()) {
+      treeLegendItems.add(new LegendController.LegendItem(
+          String.format("Lineage color %s", color.name()),
+          color.name(),
+          new Rectangle(20, 5, color.getColor())
+      ));
+    }
+
+    treeLegendController.initializeData(
+        "Legend",
+        10.0, 5.0,
+        treeLegendItems.toArray(new LegendController.LegendItem[treeLegendItems.size()]));
+  }
+
+  /**
+   * Initialize the controller of the search pane.
+   */
+  private void initializeSearchPaneController() {
+    String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+    boolean isOSx = os.contains("mac") || os.contains("darwin");
+
+    rootPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
+      System.out.println("KEYEVENT");
+      switch (keyEvent.getCode()) {
+        case F:
+          if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
+            searchPane.setVisible(!searchPane.isVisible());
+            keyEvent.consume();
+          }
+          break;
+        default:
+      }
+    });
+    searchPaneController.setSelectionManager(selectionManager);
+  }
+
   @Override
   public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
     try {
@@ -170,12 +245,13 @@ public class RootLayoutController implements
 
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
+      List<Annotation> annotations = new AnnotationReader(metadataFile).read();
 
       if (graph != null && tree != null) {
-        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(),
-            new AnnotationReader(metadataFile).read());
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), annotations);
         loadGraph(graph, treeRoot);
         loadTree(treeRoot);
+        searchPaneController.setData(annotations);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE,
@@ -200,6 +276,11 @@ public class RootLayoutController implements
     }
   }
 
+  /**
+   * Handle the event which occurs when the "open file" button is clicked in the menu. This method
+   * is linked by reflection (see the FXML file), thus it is needed to suppress the "unused"
+   * warning.
+   */
   @FXML
   @SuppressWarnings("unused")
   private void openFileMenuItemClicked() {

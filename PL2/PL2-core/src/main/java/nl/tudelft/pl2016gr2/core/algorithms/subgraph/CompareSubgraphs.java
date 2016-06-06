@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,7 +56,59 @@ public class CompareSubgraphs {
 ////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
 //    return new Pair<>(orderedTopGraph, orderedBottomGraph);
 //  }
-  public static void alignVertically(ArrayList<GraphNode> graphOrder) {
+  public static void alignVertically(Collection<GraphNode> graphOrder,
+      Collection<GraphNode> bubbleInEdges) {
+    HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
+    int index = 0;
+    int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
+    for (GraphNode bubble : bubbleInEdges) {
+      int startY = index * heightPerRoot;
+      int endY = (index + 1) * heightPerRoot;
+      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble.
+          getOutEdges(), graphOrder)));
+    }
+    for (GraphNode node : graphOrder) {
+      if (areaMap.containsKey(node)) {
+        continue;
+      }
+      for (GraphNode inEdge : node.getInEdges()) {
+        assert inEdge.getOutEdges().contains(node);
+      }
+      for (GraphNode outEdge : node.getOutEdges()) {
+        assert outEdge.getInEdges().contains(node);
+      }
+
+      calculateGraphArea(node, areaMap, graphOrder);
+    }
+  }
+
+  /**
+   * Get all of the VIP nodes which are contained in the exclusive list.
+   *
+   * @param nodes         the list of nodes to filter.
+   * @param exclusiveList the list of VIP nodes which can get access to the return value.
+   * @return the VIP nodes which were found in the list of nodes.
+   */
+  private static Collection<GraphNode> getExclusiveNodes(Collection<GraphNode> nodes,
+      Collection<GraphNode> exclusiveList) {
+    Collection<GraphNode> exclusiveChildren = new HashSet<>();
+    for (GraphNode node : exclusiveList) {
+      if (node.hasChildren()) {
+        for (GraphNode child : node.getChildren()) {
+          exclusiveChildren.add(child);
+        }
+      }
+    }
+    ArrayList<GraphNode> res = new ArrayList<>();
+    for (GraphNode node : nodes) {
+      if (exclusiveList.contains(node) || exclusiveChildren.contains(node)) {
+        res.add(node);
+      }
+    }
+    return res;
+  }
+
+  public static void alignVertically(Collection<GraphNode> graphOrder) {
     ArrayList<GraphNode> rootNodes = new ArrayList<>();
     for (GraphNode node : graphOrder) {
       if (node.getInEdges().isEmpty()) {
@@ -76,18 +129,46 @@ public class CompareSubgraphs {
       if (rootNodes.contains(node)) {
         continue;
       }
-      ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
       for (GraphNode inEdge : node.getInEdges()) {
-        inAreas.add(areaMap.get(inEdge));
+        assert inEdge.getOutEdges().contains(node);
       }
-      ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
-      areaMap.put(node, complexNodeArea);
-
-      SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
-
-      node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
-      node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+      for (GraphNode outEdge : node.getOutEdges()) {
+        assert outEdge.getInEdges().contains(node);
+      }
+      calculateGraphArea(node, areaMap, null);
     }
+  }
+
+  private static ComplexVerticalArea calculateGraphArea(GraphNode node,
+      HashMap<GraphNode, ComplexVerticalArea> areaMap, Collection<GraphNode> graphOrder) {
+    if (areaMap.containsKey(node)) {
+      return areaMap.get(node);
+    }
+//    System.out.println("start " + node.getId());
+    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
+    for (GraphNode inEdge : node.getInEdges()) {
+      ComplexVerticalArea area = areaMap.get(inEdge);
+      if (area == null) {
+//        System.out.println("added backwards edge caused by bubble");
+//        System.out.println("in");
+//        System.out.println(node.getId());
+
+        area = calculateGraphArea(inEdge, areaMap, graphOrder);
+//        System.out.println("out");
+      }
+      if (area.curPart == area.splitParts.size()) {
+//        System.out.println("err");
+      }
+      inAreas.add(area);
+    }
+    ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
+    areaMap.put(node, complexNodeArea);
+
+    SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
+
+    node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
+    node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+    return complexNodeArea;
   }
 
   private static class ComplexVerticalArea {
@@ -96,7 +177,8 @@ public class CompareSubgraphs {
     private final ArrayList<ComplexVerticalArea> splitParts = new ArrayList<>(1);
     private int curPart = 0;
 
-    private ComplexVerticalArea(List<ComplexVerticalArea> complexAreas, Collection<GraphNode> nodes) {
+    private ComplexVerticalArea(List<ComplexVerticalArea> complexAreas,
+        Collection<GraphNode> nodes) {
       areas = new LinkedList<>();
       for (ComplexVerticalArea complexArea : complexAreas) {
         areas.addAll(complexArea.getPart().areas);
@@ -213,6 +295,9 @@ public class CompareSubgraphs {
     }
 
     private ComplexVerticalArea getPart() {
+//      if(splitParts.size() == curPart) {
+//        return splitParts.get(curPart - 1);
+//      }
       return splitParts.get(curPart++);
     }
 

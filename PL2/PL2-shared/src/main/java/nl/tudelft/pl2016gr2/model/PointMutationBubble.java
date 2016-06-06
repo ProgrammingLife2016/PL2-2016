@@ -29,7 +29,6 @@ public class PointMutationBubble extends Bubble {
     return new PointMutationBubble(this);
   }
 
-  @Override
   public Collection<GraphNode> pop(SequenceGraph graph) {
     throw new UnsupportedOperationException("To be implemented.");
   }
@@ -47,5 +46,41 @@ public class PointMutationBubble extends Bubble {
     }
     nested += "]";
     return "Pointmutation-bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;    
+  }
+
+  @Override
+  public void addGenome(int genome) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeGenome(int genome) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Collection<GraphNode> pop() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void unpop() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean isPopped() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  boolean needsVerticalAligning() {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

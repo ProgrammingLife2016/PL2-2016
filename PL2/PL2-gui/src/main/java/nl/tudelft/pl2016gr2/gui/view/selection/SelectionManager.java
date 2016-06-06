@@ -6,6 +6,8 @@ import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
@@ -33,9 +35,16 @@ public class SelectionManager {
   private ISelectable selected;
   private Timeline timeline;
 
-  private final ObservableSet<String> topGraphGenomes = new ObservableSetWrapper<>(new HashSet<>());
-  private final ObservableSet<String> bottomGraphGenomes
+  private final ObservableSet<Integer> topGraphGenomes
       = new ObservableSetWrapper<>(new HashSet<>());
+  private final ObservableSet<Integer> bottomGraphGenomes
+      = new ObservableSetWrapper<>(new HashSet<>());
+
+  /**
+   * The selected genome in the search box. -1 means no genome is selected.
+   */
+  private final ObservableList<Integer> searchBoxSelectedGenomes
+      = FXCollections.observableArrayList();
 
   /**
    * Create a selection manager.
@@ -83,7 +92,13 @@ public class SelectionManager {
     }
   }
 
-  protected void drawGraph(ArrayList<String> topGenomes, ArrayList<String> bottomGenomes) {
+  /**
+   * Draw the two given graphs.
+   *
+   * @param topGenomes    the genomes to draw in the top graph.
+   * @param bottomGenomes the genomes to draw in the bottom graph.
+   */
+  protected void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     rootLayoutController.drawGraph(topGenomes, bottomGenomes);
   }
 
@@ -129,11 +144,30 @@ public class SelectionManager {
     timeline.play();
   }
 
-  public ObservableSet<String> getTopGraphGenomes() {
+  /**
+   * Get the observable list of genomes which must be drawn in the top graph.
+   *
+   * @return the observable list of genomes which must be drawn in the top graph.
+   */
+  public ObservableSet<Integer> getTopGraphGenomes() {
     return topGraphGenomes;
   }
 
-  public ObservableSet<String> getBottomGraphGenomes() {
+  /**
+   * Get the observable list of genomes which must be drawn in the bottom graph.
+   *
+   * @return the observable list of genomes which must be drawn in the bottom graph.
+   */
+  public ObservableSet<Integer> getBottomGraphGenomes() {
     return bottomGraphGenomes;
+  }
+
+  /**
+   * Get the observable list of genomes which is selected in the search box.
+   *
+   * @return the observable list of genomes which is selected in the search box.
+   */
+  public ObservableList<Integer> getSearchBoxSelectedGenomes() {
+    return searchBoxSelectedGenomes;
   }
 }

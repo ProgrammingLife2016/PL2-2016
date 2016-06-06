@@ -55,6 +55,10 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * This methods returns <code>null</code> if it is called on an instance that is not an aggregate
    * of nodes.
    * </p>
+   * <p>
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
+   * </p>
    *
    * @return The set of child nodes, or an <code>null</code> if the node does not have children
    */
@@ -89,6 +93,10 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
 
   /**
    * Returns the identifiers of the nodes of all in-edges of <code>GraphNode</code>.
+   * <p>
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
+   * </p>
    *
    * @return All in-edges of this <code>GraphNode</code>
    */
@@ -128,7 +136,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Returns the identifiers of the nodes of all out-edges of <code>GraphNode</code>.
    * <p>
-   * A <code>GraphNode</code> is a child when it has an edge leading out of this element.
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
    * </p>
    *
    * @return All children of this <code>GraphNode</code>
@@ -172,24 +181,28 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * Paths through the <code>SequenceGraph</code> describe certain genomes. Every
    * <code>GraphNode</code> is annotated with information about its genomes.
    * </p>
+   * <p>
+   * The collection that is returned is not meant for editing.
+   * Depending on the implementing class, it might be unmodifiable.
+   * </p>
    *
    * @return The genomes of this <code>GraphNode</code>
    */
-  Collection<String> getGenomes();
+  Collection<Integer> getGenomes();
 
   /**
    * Adds the genome name to the set of genomes of this <code>GraphNode</code>.
    *
    * @param genome The name of the genome to add to this <code>GraphNode</code>.
    */
-  void addGenome(String genome);
+  void addGenome(int genome);
 
   /**
    * Removes the genome name from the set of genomes of this <code>GraphNode</code>.
    *
    * @param genome The name of the genome to remove from this <code>GraphNode</code>.
    */
-  void removeGenome(String genome);
+  void removeGenome(int genome);
 
   /**
    * Calculates the genomes that pass over the edge between this node and the specified node.
@@ -200,7 +213,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @param node The node that the edge leads to.
    * @return The set of genomes that pass over the common edge.
    */
-  Collection<String> getGenomesOverEdge(GraphNode node);
+  Collection<Integer> getGenomesOverEdge(GraphNode node);
 
   @Override
   default void accept(NodeVisitor visitor) {
@@ -220,8 +233,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return An exact copy of the class
    */
-  @Override
-  GraphNode copy();
+  //@Override
+  //GraphNode copy();
 
   /**
    * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.
@@ -262,5 +275,17 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @param graph the graph of the bubble.
    * @return the nodes which are present
    */
-  Collection<GraphNode> pop(SequenceGraph graph);
+  Collection<GraphNode> pop();
+  
+  /**
+   * Unpops a bubble.
+   */
+  void unpop();
+  
+  /**
+   * Checks if a bubble is popped.
+   * 
+   * @return true is the bubble is popped
+   */
+  boolean isPopped();
 }

@@ -15,7 +15,7 @@ import java.util.HashSet;
 public class SequenceNode extends AbstractNode {
 
   private BaseSequence sequence;
-  private HashSet<String> genomes;
+  private ArrayList<Integer> genomes;
   private ArrayList<GraphNode> inEdges;
   private ArrayList<GraphNode> outEdges;
 
@@ -32,7 +32,7 @@ public class SequenceNode extends AbstractNode {
   /**
    * The relative y-position of the node
    */
-  private double relativeYPos;
+  private double relativeYPos = -1;
   private double maxHeight;
 
   /**
@@ -42,7 +42,7 @@ public class SequenceNode extends AbstractNode {
    */
   public SequenceNode(int identifier) {
     super(identifier);
-    genomes = new HashSet<>();
+    genomes = new ArrayList<>();
     inEdges = new ArrayList<>();
     outEdges = new ArrayList<>();
   }
@@ -56,7 +56,7 @@ public class SequenceNode extends AbstractNode {
   public SequenceNode(int identifier, BaseSequence sequence) {
     super(identifier);
     this.sequence = sequence;
-    genomes = new HashSet<>();
+    genomes = new ArrayList<>();
     inEdges = new ArrayList<>();
     outEdges = new ArrayList<>();
   }
@@ -68,10 +68,10 @@ public class SequenceNode extends AbstractNode {
    * @param sequence   The DNA sequence that this node holds
    * @param genomes    The genomes that go through this node
    */
-  public SequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes) {
+  public SequenceNode(int identifier, BaseSequence sequence, Collection<Integer> genomes) {
     super(identifier);
     this.sequence = sequence;
-    this.genomes = new HashSet<>(genomes);
+    this.genomes = new ArrayList<>(genomes);
     inEdges = new ArrayList<>();
     outEdges = new ArrayList<>();
   }
@@ -88,15 +88,15 @@ public class SequenceNode extends AbstractNode {
    * @param inEdges    The IDs of the nodes that are direct predecessors of this node
    * @param outEdges   The IDs of the nodes that are direct successors of this node
    */
-  public SequenceNode(int identifier, BaseSequence sequence, Collection<String> genomes,
+  public SequenceNode(int identifier, BaseSequence sequence, Collection<Integer> genomes,
       Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     super(identifier);
     this.sequence = sequence;
-    this.genomes = new HashSet<>(genomes);
+    this.genomes = new ArrayList<>(genomes);
     this.inEdges = new ArrayList<>(inEdges);
     this.outEdges = new ArrayList<>(outEdges);
-    this.inEdges.trimToSize();
-    this.outEdges.trimToSize();
+    //this.inEdges.trimToSize();
+    //this.outEdges.trimToSize();
   }
 
   @Override
@@ -106,15 +106,12 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public String getSequence() {
+    if (sequence == null) {
+      return null;
+    }
     return sequence.getBaseSequence();
   }
 
-  /**
-   * {@inheritDoc}
-   * <p>
-   * The collection is backed by the node. Any changes will be reflected in the node.
-   * </p>
-   */
   @Override
   public Collection<GraphNode> getInEdges() {
     return inEdges;
@@ -123,7 +120,7 @@ public class SequenceNode extends AbstractNode {
   @Override
   public void setInEdges(Collection<GraphNode> edges) {
     inEdges = new ArrayList<>(edges);
-    inEdges.trimToSize();
+    //inEdges.trimToSize();
   }
 
   @Override
@@ -140,12 +137,6 @@ public class SequenceNode extends AbstractNode {
     inEdges.remove(node);
   }
 
-  /**
-   * {@inheritDoc}
-   * <p>
-   * The collection is backed by the node. Any changes will be reflected in the node.
-   * </p>
-   */
   @Override
   public Collection<GraphNode> getOutEdges() {
     return outEdges;
@@ -154,7 +145,7 @@ public class SequenceNode extends AbstractNode {
   @Override
   public void setOutEdges(Collection<GraphNode> edges) {
     outEdges = new ArrayList<>(edges);
-    outEdges.trimToSize();
+    //outEdges.trimToSize();
   }
 
   @Override
@@ -172,19 +163,19 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public Collection<String> getGenomes() {
+  public Collection<Integer> getGenomes() {
     return genomes;
   }
 
   @Override
-  public void addGenome(String genome) {
+  public void addGenome(int genome) {
 //    assert !genomes.contains(
 //        genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
     genomes.add(genome);
   }
 
   @Override
-  public void removeGenome(String genome) {
+  public void removeGenome(int genome) {
     assert genomes.contains(
         genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
     genomes.remove(genome);
@@ -265,13 +256,13 @@ public class SequenceNode extends AbstractNode {
       sb2.append(outEdge.getId()).append(", ");
     }
     sb2.append(']');
-    return super.toString() /*+ ", SequenceNode{" + "genomes=" + genomes + ", inEdges=" + sb.
-        toString() + ", outEdges=" + sb2.toString() + '}'*/;
+    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.
+        toString() + ", outEdges=" + sb2.toString() + '}';
   }
 
   @Override
   public void accept(NodeVisitor visitor) {
-    throw new UnsupportedOperationException("Invalid opperation.");
+    visitor.visit(this);
   }
 
   @Override
@@ -285,9 +276,18 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public Collection<GraphNode> pop(SequenceGraph graph) {
+  public Collection<GraphNode> pop() {
     ArrayList<GraphNode> res = new ArrayList<>(1);
     res.add(this);
     return res;
+  }
+  
+  @Override
+  public void unpop() {
+  }
+  
+  @Override
+  public boolean isPopped() {
+    return false;
   }
 }

@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -28,6 +29,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
@@ -40,6 +42,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,37 +82,36 @@ public class DrawComparedGraphs implements Initializable {
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
 
   public static final double NODE_MARGIN = 0.9;
+  public static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
+  public static final Color NO_OVERLAP_COLOR = Color.rgb(255, 30, 30);
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final int MINUMUM_BASE_SIZE = 10;
+  private static final int MINUMUM_BASE_SIZE = 1;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
   private static final double UNIT_INCREMENT_RATE = 100.0;
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
-  private static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
-  private static final Color NO_OVERLAP_COLOR = Color.rgb(146, 0, 0);
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
   private static final double MAX_ZOOM_FACTOR = 4.0;
   private static final double BUBBLE_POP_SIZE = 150.0;
+
+  private ContextMenu contextMenu;
+  private IPhylogeneticTreeRoot treeRoot;
+  private final GraphUpdater graphUpdater = new GraphUpdater(this);
+
+  private GraphOrdererThread mainGraphOrder;
+  private SequenceGraph mainGraph;
 
   @TestId(id = "topGraph")
   private OrderedGraph topGraph;
   @TestId(id = "bottomGraph")
   private OrderedGraph bottomGraph;
-  private ObservableSet<String> topGraphGenomes;
-  private ObservableSet<String> bottomGraphGenomes;
+  private ObservableSet<Integer> topGraphGenomes;
+  private ObservableSet<Integer> bottomGraphGenomes;
   @TestId(id = "amountOfLevels")
+
   private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
-
-  private GraphOrdererThread mainGraphOrder;
-  private SequenceGraph mainGraph;
-
-  private ContextMenu contextMenu;
-  private IPhylogeneticTreeRoot treeRoot;
-
-  private final GraphUpdater graphUpdater = new GraphUpdater(this);
-
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
 
   /**
@@ -166,10 +169,12 @@ public class DrawComparedGraphs implements Initializable {
         mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
 
     initializeIndicatorLayout();
-    initializeTopDragEvent();
+    initializeTopDragOverEvent();
+    initializeTopDragDroppedEvent();
     initializeBottomDragEvent();
 
-    initializeScroll();
+    initializeScrollbar();
+    initializeScrollEvent();
     mainPane.setOnMouseClicked(event -> {
       if (contextMenu != null) {
         contextMenu.hide();
@@ -179,20 +184,10 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Initialize the scrollbar and scroll event.
+   * Initialize the scrollbar and pane width listeners.
    */
-  private void initializeScroll() {
-    scrollbar.maxProperty().bind(new SimpleDoubleProperty(1.0).add(
-        mainPane.widthProperty().negate().divide(
-            zoomFactor).divide(amountOfLevels)));
-    scrollbar.valueProperty().addListener(invalidate -> graphUpdater.update());
-    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
-        .divide(amountOfLevels)).divide(zoomFactor));
-    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
-        .divide(amountOfLevels)).divide(zoomFactor));
-    scrollbar.visibleAmountProperty().bind(scrollbar.maxProperty().multiply(
-        mainPane.widthProperty().divide(zoomFactor)
-        .divide(amountOfLevels)));
+  private void initializeScrollbar() {
+    initializeScrollbarListeners();
 
     mainPane.widthProperty().addListener(invalid -> {
       updateScrollbarValue(scrollbar.getValue());
@@ -205,7 +200,28 @@ public class DrawComparedGraphs implements Initializable {
       graphUpdater.update();
     });
     amountOfLevels.addListener(invalid -> verifyZoomFactor());
+  }
 
+  /**
+   * Initialize the scrollbar listeners.
+   */
+  private void initializeScrollbarListeners() {
+    scrollbar.maxProperty().bind(new SimpleDoubleProperty(1.0).add(
+        mainPane.widthProperty().negate().divide(zoomFactor).divide(amountOfLevels)));
+    scrollbar.valueProperty().addListener(invalidate -> graphUpdater.update());
+    scrollbar.unitIncrementProperty().bind((new SimpleDoubleProperty(UNIT_INCREMENT_RATE)
+        .divide(amountOfLevels)).divide(zoomFactor));
+    scrollbar.blockIncrementProperty().bind((new SimpleDoubleProperty(BLOCK_INCREMENT_RATE)
+        .divide(amountOfLevels)).divide(zoomFactor));
+    scrollbar.visibleAmountProperty().bind(scrollbar.maxProperty().multiply(
+        mainPane.widthProperty().divide(zoomFactor)
+        .divide(amountOfLevels)));
+  }
+
+  /**
+   * Initialize the scroll event (zoom) handlers.
+   */
+  private void initializeScrollEvent() {
     mainPane.setOnScroll((ScrollEvent event) -> {
       double relativeXPos = event.getX() / mainPane.getWidth();
       if (event.getDeltaY() > 0) {
@@ -216,6 +232,11 @@ public class DrawComparedGraphs implements Initializable {
     });
   }
 
+  /**
+   * Verify and update the scroll bar value.
+   *
+   * @param newValue the new value of the scrollbar.
+   */
   private void updateScrollbarValue(double newValue) {
     if (newValue < 0.0) {
       scrollbar.setValue(0.0);
@@ -283,6 +304,11 @@ public class DrawComparedGraphs implements Initializable {
     graphUpdater.update();
   }
 
+  /**
+   * Calculate the minimum zoom factor, for which the whole graph is shown.
+   *
+   * @return the minimum zoom factor.
+   */
   private double calcMinZoomFactor() {
     return mainPane.getWidth() / amountOfLevels.get();
   }
@@ -304,23 +330,30 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Initialize a drag event receiver for the top pane.
+   * Initialize the drag over event for the top pane.
    */
-  private void initializeTopDragEvent() {
+  private void initializeTopDragOverEvent() {
     topPane.setOnDragOver((DragEvent event) -> {
       if (event.getDragboard().hasString()) {
         event.acceptTransferModes(TransferMode.ANY);
       }
       event.consume();
     });
+  }
+
+  /**
+   * Initialize the drag dropped event for the top pane.
+   */
+  private void initializeTopDragDroppedEvent() {
     topPane.setOnDragDropped((DragEvent event) -> {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
-        Collection<String> genomes = new ArrayList<>();
+        Collection<Integer> genomes = new ArrayList<>();
         for (String genome : dragboard.getString().split("\n")) {
           String gen = genome.replace("\r", "");
-          if (mainGraph.getGenomes().contains(gen)) {
-            genomes.add(gen);
+          Integer genId = GenomeMap.getInstance().getId(gen);
+          if (genId != null) {
+            genomes.add(genId);
           }
         }
         try {
@@ -348,7 +381,8 @@ public class DrawComparedGraphs implements Initializable {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
         Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
-        handleGenomesDropped(genomes, event, bottomGraphGenomes, topGraphGenomes);
+        handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event, bottomGraphGenomes,
+            topGraphGenomes);
         event.setDropCompleted(true);
         event.consume();
       }
@@ -366,8 +400,8 @@ public class DrawComparedGraphs implements Initializable {
    *                       didn't occur).
    */
   @SuppressWarnings("fallthrough")
-  private void handleGenomesDropped(Collection<String> genomes, DragEvent dragEvent,
-      Set<String> genomeMap, Set<String> otherGenomeMap) {
+  private void handleGenomesDropped(Collection<Integer> genomes, DragEvent dragEvent,
+      Set<Integer> genomeMap, Set<Integer> otherGenomeMap) {
     contextMenu = new ContextMenu();
 
     switch (getDrawnGraphs()) {
@@ -415,8 +449,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param otherGenomeMap the genome map of the other graph.
    * @return the menu item.
    */
-  private MenuItem createCreateNewGraphMenuItem(Collection<String> genomes,
-      Set<String> otherGenomeMap) {
+  private MenuItem createCreateNewGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> otherGenomeMap) {
     MenuItem newGraphItem = new MenuItem("add to new graph");
     newGraphItem.setOnAction((ActionEvent event) -> {
       otherGenomeMap.addAll(genomes);
@@ -433,8 +467,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createClearAndAddToGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createClearAndAddToGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem clearAndAddItem = new MenuItem("clear graph and add");
     clearAndAddItem.setOnAction((ActionEvent event) -> {
       genomeMap.clear();
@@ -452,8 +486,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createAddToExistingGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createAddToExistingGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem addToExistingItem = new MenuItem("add to existing graph");
     addToExistingItem.setOnAction((ActionEvent event) -> {
       genomeMap.addAll(genomes);
@@ -470,8 +504,8 @@ public class DrawComparedGraphs implements Initializable {
    * @param genomeMap the genome map of the graph.
    * @return the menu item.
    */
-  private MenuItem createRemoveFromGraphMenuItem(Collection<String> genomes,
-      Set<String> genomeMap) {
+  private MenuItem createRemoveFromGraphMenuItem(Collection<Integer> genomes,
+      Set<Integer> genomeMap) {
     MenuItem newGraphItem = new MenuItem("remove from graph");
     newGraphItem.setOnAction((ActionEvent event) -> {
       genomeMap.removeAll(genomes);
@@ -503,7 +537,7 @@ public class DrawComparedGraphs implements Initializable {
    *
    * @param genomes the collection of genomes.
    */
-  private void drawOneGraph(Collection<String> genomes) {
+  private void drawOneGraph(Collection<Integer> genomes) {
     topGraph = SubgraphAlgorithmManager.alignOneGraph(genomes, mainGraph, mainGraphOrder, treeRoot);
     ArrayList<GraphNode> topGraphOrder = topGraph.getGraphOrder();
 
@@ -519,26 +553,27 @@ public class DrawComparedGraphs implements Initializable {
    * @param topGenomes    the genomes of the top graph.
    * @param bottomGenomes the genomes of the bottom graph.
    */
-  public void compareTwoGraphs(Collection<String> topGenomes, Collection<String> bottomGenomes) {
+  public void compareTwoGraphs(Collection<Integer> topGenomes, Collection<Integer> bottomGenomes) {
     drawOneGraph(mainGraph.getGenomes());
-//    topGraphGenomes.clear();
-//    topGraphGenomes.addAll(topGenomes);
-//    bottomGraphGenomes.clear();
-//    bottomGraphGenomes.addAll(bottomGenomes);
-//
-//    compareTwoGraphs();
+    //    topGraphGenomes.clear();
+    //    topGraphGenomes.addAll(topGenomes);
+    //    bottomGraphGenomes.clear();
+    //    bottomGraphGenomes.addAll(bottomGenomes);
+    //
+    //    compareTwoGraphs();
   }
 
   /**
    * Draw and compare two subgraphs of genomes.
    */
   private void compareTwoGraphs() {
-//    Pair<OrderedGraph, OrderedGraph> compareRes
-//        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, mainGraph,
-//            mainGraphOrder);
-//    this.topGraph = compareRes.left;
-//    this.bottomGraph = compareRes.right;
-//    drawTwoGraphs();
+    //    Pair<OrderedGraph, OrderedGraph> compareRes
+    //        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, 
+    //mainGraph,
+    //            mainGraphOrder);
+    //    this.topGraph = compareRes.left;
+    //    this.bottomGraph = compareRes.right;
+    //    drawTwoGraphs();
   }
 
   /**
@@ -577,6 +612,9 @@ public class DrawComparedGraphs implements Initializable {
    * Clear the content of the class.
    */
   private void clear() {
+    if (getDrawnGraphs() == 0) {
+      return;
+    }
     topGraphGenomes.clear();
     bottomGraphGenomes.clear();
     topPane.getChildren().clear();
@@ -597,14 +635,13 @@ public class DrawComparedGraphs implements Initializable {
     if (startLevel < 0) {
       startLevel = 0;
     }
-
     if (topGraph != null) {
       drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
-          startLevel, startLevel + levelsToDraw, topGraph.getSubgraph());
+          startLevel, startLevel + levelsToDraw);
     }
     if (bottomGraph != null) {
-      drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().
-          size(), startLevel, startLevel + levelsToDraw, bottomGraph.getSubgraph());
+      drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().size(), startLevel,
+          startLevel + levelsToDraw);
     }
   }
 
@@ -634,87 +671,77 @@ public class DrawComparedGraphs implements Initializable {
    *          the graph to draw.
    */
   private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
-      int startLevel, int endLevel, SequenceGraph graph) {
+      int startLevel, int endLevel) {
     pane.getChildren().clear();
-    HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
+    HashMap<GraphNode, ViewRange> drawnGraphNodes = new HashMap<>();
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       int nodeStart = node.getLevel() - node.size();
       int nodeEnd = node.getLevel();
       if (nodeStart > endLevel || nodeEnd < startLevel) {
         continue;
       }
-      drawNode(pane, node, startLevel, graph);
-      drawnGraphNodes.add(node);
+      drawNode(pane, node, drawnGraphNodes, startLevel, 0,
+          new ViewRange(0, pane.getHeight()));
     }
     drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
   }
 
   /**
-   * Draw the given list of nodes as circles in the given pane.
+   * Draw the given node in the given pane.
    *
-   * @param pane       the pane in which to draw the nodes.
-   * @param nodes      the list of nodes to draw.
-   * @param level      the level in the tree at which to draw the nodes.
-   * @param startLevel the level at which to start drawing nodes.
+   * @param pane            the pane to draw the node in.
+   * @param node            the node to draw.
+   * @param drawnGraphNodes the list of drawn nodes to which to add the node which is drawn and any
+   *                        child nodes of the given node which are drawn.
+   * @param startLevel      the start level: where to start drawing.
+   * @param nestedDepth     the nested depth of this node: how many bubbels are drawn around this
+   *                        node.
+   * @param viewRange       the range of values which may be used as y coordinate to draw this node.
    */
-  private void drawNode(Pane pane, GraphNode node, int startLevel, SequenceGraph graph) {
-    if (node.hasChildren()) {
-      constructBubble(pane, node, node.getLevel(), startLevel, graph);
-    } else {
-      constructNode(pane, node, node.getLevel(), startLevel);
-    }
-  }
-
-  private void constructNode(Pane pane, GraphNode node, int level, int startLevel) {
+  private void drawNode(Pane pane, GraphNode node,
+      HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel, int nestedDepth,
+      ViewRange viewRange) {
+    drawnGraphNodes.put(node, viewRange);
     double width = calculateNodeWidth(node);
-    double height = node.getMaxHeightPercentage() * mainPane.getHeight();
+    if (width < MIN_VISIBILITY_WIDTH) {
+      return;
+    }
+    double height = node.getMaxHeightPercentage() * viewRange.rangeHeight;
     if (height > width) {
       height = width;
     }
-    ViewGraphNodeCircle circle = new ViewGraphNodeCircle(width, height);
-    pane.getChildren().add(circle);
-    if (node.isOverlapping()) {
-      circle.setFill(OVERLAP_COLOR);
-    } else {
-      circle.setFill(NO_OVERLAP_COLOR);
+    IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node, width, height, nestedDepth);
+    pane.getChildren().add(viewNode.get());
+    viewNode.centerXProperty().set(zoomFactor.get()
+        * (node.getLevel() - startLevel - node.size() / 2.0));
+    viewNode.centerYProperty().set(viewRange.rangeHeight * node.getRelativeYPos()
+        + viewRange.rangeStartY);
+    //addLabel(pane, circle, node.getId());
+    if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
+      ViewRange bubbleViewRange = new ViewRange(viewNode.getLayoutY(), height);
+      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, nestedDepth, bubbleViewRange);
     }
-    circle.setCenterX(zoomFactor.get() * (level - startLevel - node.size() / 2.0));
-    circle.centerYProperty().set(pane.getHeight() * node.getRelativeYPos());
-    if (circle.getWidth() < MIN_VISIBILITY_WIDTH) {
-      circle.setVisible(false);
-    }
-//    else {
-//      addLabel(pane, circle, node.getId());
-//    }
   }
 
-  private void constructBubble(Pane pane, GraphNode bubble, int level, int startLevel, 
-      SequenceGraph graph) {
-    double width = calculateNodeWidth(bubble);
-    double height = bubble.getMaxHeightPercentage() * mainPane.getHeight();
-    if (height > width) {
-      height = width;
+  /**
+   * Draw the nodes which are nested in the given bubble.
+   *
+   * @param pane            the pane in which to draw the nested nodes.
+   * @param bubble          the bubble which contains the nested nodes.
+   * @param drawnGraphNodes the list of drawn nodes to which to add all child nodes which are drawn.
+   * @param startLevel      the start level: where to start drawing.
+   * @param nestedDepth     the nested depth of the bubble: how many bubbels are drawn around this
+   *                        bubble.
+   * @param viewRange       the range of values which may be used as y coordinate to draw the
+   *                        children of this bubble.
+   */
+  private void drawNestedNodes(Pane pane, GraphNode bubble,
+      HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel, int nestedDepth,
+      ViewRange viewRange) {
+    Collection<GraphNode> poppedNodes = bubble.pop();
+    for (GraphNode poppedNode : poppedNodes) {
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, nestedDepth + 1, viewRange);
     }
-    ViewGraphNodeRectangle square = new ViewGraphNodeRectangle(width, height);
-    pane.getChildren().add(square);
-    square.centerXProperty().set(zoomFactor.get() * (level - startLevel - bubble.size() / 2.0));
-    square.centerYProperty().set(pane.getHeight() * bubble.getRelativeYPos());
-    if (square.getWidth() < MIN_VISIBILITY_WIDTH) {
-      square.setVisible(false);
-    }
-//    else {
-//      addLabel(pane, square, node.getId());
-//    }
-    if (width > BUBBLE_POP_SIZE) {
-      drawnNestedNodes(bubble, graph);
-    }
-  }
-  
-  private void drawnNestedNodes(GraphNode bubble, SequenceGraph graph) {
-//    System.out.println("graph = " + graph);
-//    System.out.println("popping bubble: " + bubble);
-//    Collection<GraphNode> poppedNodes = bubble.pop(graph);
-//    System.out.println("poppedNodes = " + poppedNodes);
   }
 
   /**
@@ -732,44 +759,64 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
-   * Draw the edges between all of the nodes.
+   * Draw the edges between all of the nodes which are drawn on the screen.
    *
-   * @param pane            the pane to draw the edges in.
-   * @param graphOrder      the graph node order containing the nodes to draw edges between.
-   * @param graph           the graph.
-   * @param startIndex      the index where to start in the graph.
-   * @param endIndex        the index where to end in the graph.
-   * @param drawnGraphNodes the drawn graph nodes.
+   * @param pane            the pane in which to draw the edges.
+   * @param drawnGraphNodes the set of nodes which are drawn on the screen.
+   * @param startLevel      the start level: where to start drawing.
+   * @param genomeCount     the amount of genomes which are present in the drawn graph.
    */
-  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
+  private void drawEdges(Pane pane, HashMap<GraphNode, ViewRange> drawnGraphNodes, int startLevel,
       int genomeCount) {
-    for (GraphNode graphNode : drawnGraphNodes) {
-      for (GraphNode outEdge : graphNode.getOutEdges()) {
-        double edgeWidth = calculateEdgeWidth(genomeCount, graphNode, outEdge);
-        drawEdge(pane, graphNode, outEdge, edgeWidth, startLevel);
-      }
-      for (GraphNode inEdge : graphNode.getInEdges()) {
-        if (!drawnGraphNodes.contains(inEdge)) {
-          double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, graphNode);
-          drawEdge(pane, inEdge, graphNode, edgeWidth, startLevel);
+    drawnGraphNodes.forEach((GraphNode node, ViewRange range) -> {
+      if (!node.isPopped()) {
+        for (GraphNode outEdge : node.getOutEdges()) {
+          double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
+          drawEdge(pane, node, outEdge, edgeWidth, startLevel, range);
+        }
+        for (GraphNode inEdge : node.getInEdges()) {
+          if (!drawnGraphNodes.containsKey(inEdge)) {
+            double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
+            drawEdge(pane, inEdge, node, edgeWidth, startLevel, range);
+          }
         }
       }
-    }
+    });
   }
 
+  /**
+   * Draw an edge from the fromNode to the toNode.
+   *
+   * @param pane       the pane in which to draw the edges.
+   * @param fromNode   the node from which to draw the edge.
+   * @param toNode     the node to draw the edge to.
+   * @param edgeWidth  the width of the edge.
+   * @param startLevel the start level: where to start drawing.
+   * @param viewRange  the range of values which may be used as y coordinate to draw this edge.
+   */
   private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
-      int startLevel) {
+      int startLevel, ViewRange range) {
     Line edge = new Line();
-    edge.setSmooth(true);
-    edge.setStrokeWidth(edgeWidth);
+    //edge.setSmooth(true);
+    edge.setStrokeWidth(edgeWidth * 2);
     pane.getChildren().add(edge);
-    edge.setStartX(zoomFactor.get()
-        * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
-    edge.setStartY(fromNode.getRelativeYPos() * pane.getHeight());
-    edge.setEndX(zoomFactor.get()
-        * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
-    edge.setEndY(toNode.getRelativeYPos() * pane.getHeight());
-    edge.toBack();
+    if (fromNode.hasChildren()) {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+    } else {
+      edge.setStartX(zoomFactor.get()
+          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+    }
+    if (toNode.hasChildren()) {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
+    } else {
+      edge.setEndX(zoomFactor.get()
+          * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+    }
+    edge.setStartY(fromNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    edge.setEndY(toNode.getRelativeYPos() * range.rangeHeight + range.rangeStartY);
+    //edge.toBack();
   }
 
   /**
@@ -784,8 +831,8 @@ public class DrawComparedGraphs implements Initializable {
    */
   private double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
     int genomesOverEdge = from.getGenomesOverEdge(to).size();
-    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8 * zoomFactor.get();
     // see javadoc
+    double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8 * zoomFactor.get();
     if (edgeWith > MAX_EDGE_WIDTH) {
       return MAX_EDGE_WIDTH;
     } else if (edgeWith < MIN_EDGE_WIDTH) {
@@ -795,21 +842,22 @@ public class DrawComparedGraphs implements Initializable {
   }
 
 
-//  /**
-//   * Add a label with the ID of the node to the circle.
-//   *
-//   * @param pane      the pane to add the label to.
-//   * @param graphNode the graph node object to which to add the label.
-//   * @param id        the id to write in the label.
-//   */
-//  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
-//    Label label = new Label(Integer.toString(id));
-//    label.setMouseTransparent(true);
-//    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
-//    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
-//    label.setTextFill(Color.ALICEBLUE);
-//    pane.getChildren().add(label);
-//  }
+  /**
+   * Add a label with the ID of the node to the circle.
+   *
+   * @param pane      the pane to add the label to.
+   * @param graphNode the graph node object to which to add the label.
+   * @param id        the id to write in the label.
+   */
+  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
+    Label label = new Label(Integer.toString(id));
+    label.setMouseTransparent(true);
+    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
+    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
+    label.setTextFill(Color.ALICEBLUE);
+    pane.getChildren().add(label);
+  }
+
   /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
    * the fxml file (using reflection), so it appears to be unused to code quality tools. For this
@@ -822,25 +870,67 @@ public class DrawComparedGraphs implements Initializable {
   }
 
   /**
+   * A class which is used to store a range of values of the y coordinate of an object. This class
+   * contains a start value a heigh value, which denotes the maximum height, counted from the start
+   * value, at which an object may be drawn.
+   */
+  private static class ViewRange {
+
+    private final double rangeStartY;
+    private final double rangeHeight;
+
+    /**
+     * Construct a range.
+     *
+     * @param rangeStartY the start value.
+     * @param rangeHeight the height.
+     */
+    private ViewRange(double rangeStartY, double rangeHeight) {
+      this.rangeStartY = rangeStartY;
+      this.rangeHeight = rangeHeight;
+    }
+  }
+
+  /**
    * Used to updated the graph at most once every frame.
    */
   private static class GraphUpdater extends AnimationTimer {
 
     private static final boolean PRINT_FRAME_RATE = false;
+    private static final boolean PRINT_MEMORY = false;
     private final DrawComparedGraphs graphComparer;
     private final AtomicBoolean updateGraph = new AtomicBoolean(false);
     private long time = System.nanoTime();
+    private int count = 0;
 
+    /**
+     * Construct a graph updater.
+     *
+     * @param graphComparer the graph to update.
+     */
     private GraphUpdater(DrawComparedGraphs graphComparer) {
       this.graphComparer = graphComparer;
       start();
     }
 
+    /**
+     * This method is automatically called by JavaFX each time when a new frame is being rendered.
+     * This method updates the graph if the update method was called somewhere between the previous
+     * and current rendered frame.
+     *
+     * @param now the current time in nanoseconds.
+     */
     @Override
     public void handle(long now) {
       if (PRINT_FRAME_RATE) {
         double fps = 1_000_000_000.0 / (now - time);
         System.out.println("FPS = " + fps);
+      }
+      if (PRINT_MEMORY && count++ % 60 == 0) {
+        Runtime runtime = Runtime.getRuntime();
+        long bytes = (runtime.totalMemory() - runtime.freeMemory());
+        double megabytes = bytes / 1024.0 / 1024.0;
+        System.out.println("memory = " + String.format(Locale.US, "%.3f", megabytes) + " MB");
       }
       time = now;
       if (updateGraph.get()) {
@@ -849,6 +939,9 @@ public class DrawComparedGraphs implements Initializable {
       }
     }
 
+    /**
+     * Update the graph the next time the frame is rendered.
+     */
     public void update() {
       updateGraph.set(true);
     }

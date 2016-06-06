@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.model;
 
 import java.util.List;
 
+import java.util.Collection;
 
 /**
  * This interface must be implemented by the root of the phylogenetic tree.
@@ -17,7 +18,7 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    * @param genome  the genome which has been added or removed.
    * @param isDrawn if the given genome is added or removed.
    */
-  void setDrawnInTop(String genome, boolean isDrawn);
+  void setDrawnInTop(int genome, boolean isDrawn);
 
   /**
    * Notify the tree root that a genome has been added to (isDrawn = true), or removed from (isDrawn
@@ -26,12 +27,15 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    * @param genome  the genome which has been added or removed.
    * @param isDrawn if the given genome is added or removed.
    */
-  void setDrawnInBottom(String genome, boolean isDrawn);
-  
+  void setDrawnInBottom(int genome, boolean isDrawn);
+
   /**
-   * Gets the list of annotations.
-   * 
-   * @return the list of annotations.
+   * Highlight a path in the phylogenetic tree.
+   *
+   * @param oldPath the previously highlighted paths.
+   * @param newPath the new highlighted paths.
    */
   List<Annotation> getAnnotations();
+
+  void highlightPaths(Collection<Integer> oldPath, Collection<Integer> newPath);
 }

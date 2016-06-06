@@ -1,13 +1,14 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.scene.Node;
 import javafx.scene.shape.Ellipse;
 
 /**
- * A circle representation of a node, which can be drawn in the user interface.
+ * An ellipse representation of a node, which can be drawn in the user interface.
  *
  * @author Faris
  */
-public class ViewGraphNodeCircle extends Ellipse implements IViewGraphNode {
+public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
   /**
    * Construct a node circle.
@@ -15,7 +16,7 @@ public class ViewGraphNodeCircle extends Ellipse implements IViewGraphNode {
    * @param width  the width of the ellipse.
    * @param height the height of the ellipse.
    */
-  public ViewGraphNodeCircle(double width, double height) {
+  public ViewGraphNodeEllipse(double width, double height) {
     super(width * DrawComparedGraphs.NODE_MARGIN / 2.0, height / 2.0);
   }
 
@@ -27,5 +28,10 @@ public class ViewGraphNodeCircle extends Ellipse implements IViewGraphNode {
   @Override
   public double getHeight() {
     return getRadiusY() * 2.0;
+  }
+
+  @Override
+  public Node get() {
+    return this;
   }
 }

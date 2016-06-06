@@ -8,6 +8,7 @@ import nl.tudelft.pl2016gr2.model.SequenceGraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -66,7 +67,7 @@ public class SubgraphAlgorithmManager {
    * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
-  public static OrderedGraph alignOneGraph(Collection<String> genomes, SequenceGraph mainGraph,
+  public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
@@ -77,8 +78,30 @@ public class SubgraphAlgorithmManager {
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();//filter.filter(treeRoot, genomes);
 
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
-    
-    CompareSubgraphs.alignVertically(orderedNodes);    
+    //orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+    int count = 0;
+    for (GraphNode node : orderedNodes) {
+      for (GraphNode inEdge : node.getInEdges()) {
+        if(!inEdge.getOutEdges().contains(node)) {
+          System.out.println("Er gaat iets fout");
+          count++;
+        }
+      }
+      for (GraphNode child : node.getOutEdges()) {
+        if(!child.getInEdges().contains(node)) {
+          System.out.println("Er gaat iets fout bij: " + node.getId());
+          System.out.println("Outedges: " + node.getOutEdges() + " size: " + node.getOutEdges().size());
+          System.out.println("Inedges: " + child.getInEdges());
+          count++;
+        }
+      }
+    }
+    System.out.println("Er ging: " + count + " keer iets fout");
+    CompareSubgraphs.alignVertically(orderedNodes);
+
+//    FilterBubbles filter = new FilterBubbles(subgraph);
+//    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+//    CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
   }
@@ -90,7 +113,7 @@ public class SubgraphAlgorithmManager {
 
     private SequenceGraph subGraph;
     private final SplitGraphs splitGraphs;
-    private final Collection<String> genomes;
+    private final Collection<Integer> genomes;
 
     /**
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
@@ -99,7 +122,7 @@ public class SubgraphAlgorithmManager {
      * @param splitGraphs a {@link SplitGraphs} object.
      * @param genomes     the list of genomes which must be present in the subgraph.
      */
-    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<String> genomes) {
+    private SplitGraphsThread(SplitGraphs splitGraphs, Collection<Integer> genomes) {
       this.splitGraphs = splitGraphs;
       this.genomes = genomes;
     }

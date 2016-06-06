@@ -11,7 +11,7 @@ import java.util.HashSet;
  */
 public abstract class Bubble implements GraphNode {
 
-  private final int id;
+  protected final int id;
   protected ArrayList<GraphNode> inEdges;
   private int level = -1;
   private double maxHeight;
@@ -81,7 +81,6 @@ public abstract class Bubble implements GraphNode {
     this.nestedNodes = bubble.nestedNodes;
   }
 
-  @Override
   public void addGenome(String genome) {
     throw new UnsupportedOperationException(
         "This must be performed on the nodes inside of the "
@@ -119,8 +118,8 @@ public abstract class Bubble implements GraphNode {
   }
 
   @Override
-  public Collection<String> getGenomes() {
-    HashSet<String> genomeSet = new HashSet<>();
+  public Collection<Integer> getGenomes() {
+    Collection<Integer> genomeSet = new HashSet<>();
     for (GraphNode nestedNode : nestedNodes) {
       genomeSet.addAll(nestedNode.getGenomes());
     }
@@ -128,12 +127,12 @@ public abstract class Bubble implements GraphNode {
   }
 
   @Override
-  public Collection<String> getGenomesOverEdge(GraphNode node) {
+  public Collection<Integer> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(node) : "Tried to get genomes over edge for node " + node.getId()
         + "but it is " + "not a direct successor. This = " + this.getId();
-    Collection<String> genomes = new ArrayList<>();
+    Collection<Integer> genomes = new ArrayList<>();
     getGenomes().stream().
-        filter((String genome) -> node.getGenomes().contains(genome)).
+        filter((Integer genome) -> node.getGenomes().contains(genome)).
         forEach(genomes::add);
     return genomes;
   }
@@ -200,7 +199,6 @@ public abstract class Bubble implements GraphNode {
     return false;
   }
 
-  @Override
   public void removeGenome(String genome) {
     throw new UnsupportedOperationException(
         "This must be performed on the nodes inside of the " + ""
@@ -275,10 +273,29 @@ public abstract class Bubble implements GraphNode {
       nested = nested + ", " + node.getId();
     }
     nested += "]";
+    
+    String in = "[";
+    for (GraphNode node : inEdges) {
+      in = in + ", " + node.getId();
+    }
+    in += "]";
+    
+    String out = "[";
+    for (GraphNode node : outEdges) {
+      out = out + ", " + node.getId();
+    }
+    out += "]";
+
 
 //    return "id: " + id + ", in: " + inEdges + ", out: " + outEdges
 //        + ", nested: " + nested;
-    //return "bubble: nested: " + nested + "Inedges: " + inEdges + "Outedges: " + outEdges;
-    return "someBubble ";
+    return "bubble: nested: " + nested + "Inedges: " + in + "Outedges: " + out;
+    //return "someBubble ";
   }
+  /**
+   * If the nodes in the bubble have to be vertically aligned.
+   *
+   * @return if the nodes in the bubble have to be vertically aligned.
+   */
+  abstract boolean needsVerticalAligning();
 }

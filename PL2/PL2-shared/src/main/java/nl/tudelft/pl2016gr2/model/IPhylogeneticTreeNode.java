@@ -2,7 +2,6 @@ package nl.tudelft.pl2016gr2.model;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;
-import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 
 import java.util.ArrayList;
 
@@ -13,20 +12,6 @@ import java.util.ArrayList;
  * @author Faris
  */
 public interface IPhylogeneticTreeNode {
-  
-  /**
-   * Returns true if this object contains the original juxtaposer treenode.
-   * 
-   * @return true if the object contains the original juxtaposer treenode.
-   */
-  boolean hasTreeNode();
-  
-  /**
-   * Get the original treenode. Returns null if this is not there.
-   * 
-   * @return the original treenode
-   */
-  TreeNode getTreeNode();
   
   /**
    * Check if this node has a parent.
@@ -83,9 +68,16 @@ public interface IPhylogeneticTreeNode {
   /**
    * Get all of the genomes which are present in this branch of the tree.
    *
-   * @return all of the genomes whic are present in this branch of the tree.
+   * @return all of the genomes which are present in this branch of the tree.
    */
-  ArrayList<String> getGenomes();
+  ArrayList<Integer> getGenomes();
+
+  /**
+   * Get all of the genome ids which are present in this branch of the tree.
+   *
+   * @return all of the genome ids which are present in this branch of the tree.
+   */
+  ArrayList<Integer> getGenomeIds();
 
   /**
    * Get the length of the edge to this node.
@@ -132,10 +124,20 @@ public interface IPhylogeneticTreeNode {
   Color getLineageColor();
 
   /**
+   * Get the property which contains the value which states if this node is in a highlighted path.
+   *
+   * @return the property which contains the value which states if this node is in a highlighted
+   *         path.
+   */
+  BooleanProperty getInHighlightedPathProperty();
+
+  /**
    * Get a string containing metadata about the genome in the leaf node. Returns an empty string if
    * it is called on a non-leaf node.
    *
    * @return a string containing metadata about the genome in the leaf node.
    */
   String getMetaData();
+  
+  int getId();
 }

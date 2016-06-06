@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
 import nl.tudelft.pl2016gr2.model.BaseSequence;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.HashGraph;
 import nl.tudelft.pl2016gr2.model.Node;
@@ -20,13 +21,13 @@ import java.util.logging.Logger;
 /**
  * This class reads a gfa file.
  *
- * @author Cas
+ * @author Faris
  */
 public class GfaReader {
 
   private static final int SHIFT_BY_BASE_10 = 10;
   @TestId(id = "genomes")
-  private final ArrayList<String> genomes = new ArrayList<>();
+  //  private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
   private final InputStream fileStream;
   @TestId(id = "originalGraph")
@@ -53,7 +54,7 @@ public class GfaReader {
       } catch (IOException ex) {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
-      originalGraph = new HashGraph(nodes, genomes);
+      originalGraph = new HashGraph(nodes, GenomeMap.getInstance().copyAllGenomes());
     }
     return originalGraph;
   }
@@ -151,9 +152,8 @@ public class GfaReader {
    * @param node     the node to add the genomes to.
    * @param chars    the character array of the node line in the GFA file.
    * @param curIndex the current index; where the bases end in the line.
-   * @return the new index, after reading the genomes.
    */
-  @TestId(id = "parseNodegenomes")
+  @TestId(id = "parseNodeGenomes")
   private static void parseNodeGenomes(GraphNode node, char[] chars, int curIndex) {
     int index = curIndex;
     index = skipTillCharacter(chars, index, ':', 2);
@@ -171,7 +171,7 @@ public class GfaReader {
       }
       startIndex = index + 1;
     }
-    nodeGens.forEach(node::addGenome);
+    nodeGens.forEach((String genome) -> node.addGenome(GenomeMap.getInstance().getId(genome)));
   }
 
   /**
@@ -181,6 +181,9 @@ public class GfaReader {
    */
   @TestId(id = "parseHeader")
   private void parseHeader(char[] chars) {
+    // Clears the genome map from potential old entries.
+    GenomeMap.getInstance().clear();
+
     int index = 0;
     index = skipTillCharacter(chars, index, ':', 2) + 1;
     int start = index;
@@ -188,7 +191,8 @@ public class GfaReader {
       while (chars[index] != '.' && chars[index] != ';') {
         ++index;
       }
-      genomes.add(new String(chars, start, index - start));
+      //  genomes.add(new String(chars, start, index - start));
+      GenomeMap.getInstance().addGenome(new String(chars, start, index - start));
       while (chars[index] != ';') {
         ++index;
       }

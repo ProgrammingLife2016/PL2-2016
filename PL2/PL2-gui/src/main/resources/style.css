@@ -5,7 +5,7 @@
  ******************************************************************************/
 
 .root {
-  -fx-base: derive(backgroundcolor, 80%); 
+  -fx-base: derive(backgroundcolor, 60%); 
 
   /* Base color for window backgrounds */
   backgroundcolor: rgba(0, 0, 0, 1);
@@ -54,7 +54,7 @@
  *                                                                             *
  ******************************************************************************/
 
-.button {
+.button.BigButton {
   -fx-background-radius: 8;
   -fx-font: 14pt 'Verdana';
   -fx-font-weight: bold;

@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
 
 /**
@@ -22,10 +23,16 @@ public class TreeNodeDescription implements ISelectionInfo {
     public void handle(ActionEvent event) {
       IPhylogeneticTreeNode topNode = treeNode.getChild(0);
       IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
-      selectionManager.drawGraph(topNode.getGenomes(), bottomNode.getGenomes());
+      selectionManager.drawGraph(topNode.getGenomeIds(), bottomNode.getGenomeIds());
     }
   };
 
+  /**
+   * Construct a tree node description.
+   *
+   * @param selectionManager a reference to the selection manager.
+   * @param treeNode         the tree node to describe.
+   */
   public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
     this.selectionManager = selectionManager;
     this.treeNode = treeNode;
@@ -46,6 +53,7 @@ public class TreeNodeDescription implements ISelectionInfo {
    */
   private void addButton(Pane pane) {
     Button button = new Button("Compare children");
+    button.getStyleClass().add("BigButton");
     button.setLayoutX(75);
     button.setLayoutY(50);
     button.setPrefHeight(50);
@@ -80,8 +88,10 @@ public class TreeNodeDescription implements ISelectionInfo {
   private String getGenomes() {
     StringBuilder sb = new StringBuilder("Genomes: ");
     sb.append('\n');
-    for (String genome : treeNode.getGenomes()) {
-      sb.append('\n').append(genome);
+    for (Integer genomeId : treeNode.getGenomes()) {
+      if (genomeId != null) {
+        sb.append('\n').append(GenomeMap.getInstance().getGenome(genomeId));
+      }
     }
     return sb.toString();
   }

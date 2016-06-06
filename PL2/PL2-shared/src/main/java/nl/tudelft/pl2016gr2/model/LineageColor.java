@@ -22,7 +22,7 @@ public enum LineageColor {
   LINB(Color.web("0x00ff9c")),
   LIN_ANIMAL(Color.web("0x00ff9c")),
   LIN_CANETTI(Color.web("0x00ffff")),
-  NONE(Color.ALICEBLUE);
+  NONE(Color.BLACK);
 
   private final Color color;
 

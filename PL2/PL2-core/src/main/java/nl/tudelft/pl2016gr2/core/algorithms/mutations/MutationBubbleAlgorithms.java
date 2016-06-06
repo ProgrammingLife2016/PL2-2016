@@ -8,7 +8,6 @@ import nl.tudelft.pl2016gr2.model.SimpleBubble;
 import nl.tudelft.pl2016gr2.model.StraightSequenceBubble;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -71,7 +70,7 @@ public class MutationBubbleAlgorithms {
             && newLevel <= oldLevel + 1
             && !visited.contains(node)) {
           if (bubble == null) {
-            //je wilt aan de semantic bubble waarschijnlijk een andere id meegeven
+            //je wilt aan de semantic bubble misschien een andere id meegeven?
             bubble = new SimpleBubble(node.getId(), node.getInEdges(), node);
           } else {
             bubble.addChild(node);
@@ -94,9 +93,10 @@ public class MutationBubbleAlgorithms {
         if (bubble != null) {
           if (bubble.getChildren().size() == 1) {
             newBubbleOrNode = checkPoint(bubble, visited);
-            if (!(newBubbleOrNode instanceof PointMutationBubble)) {
-              newBubbleOrNode = checkInDel(bubble, visited);
-            }
+//            if (!(newBubbleOrNode instanceof PointMutationBubble)) {
+              //newBubbleOrNode = checkInDel(bubble, visited);
+//            }
+            //newBubbleOrNode = bubble.getChildren().iterator().next();
           } else if (oldOverlap == newOverlap && node.getInEdges().size() <= 1 && newLevel <= oldLevel + 1
               && !visited.contains(node)) {
             bubble.addChild(node);
@@ -127,6 +127,24 @@ public class MutationBubbleAlgorithms {
         }
       }
     }
+    int count = 0;
+    for (GraphNode node : newOrder) {
+      for (GraphNode inEdge : node.getInEdges()) {
+        if(!inEdge.getOutEdges().contains(node)) {
+          System.out.println(inEdge.getId() + " heeft geen: " + node.getId());
+          System.out.println("Het moet dus geen sequenceNode maar bubble worden");
+          System.out.println(inEdge.getOutEdges());
+          count++;
+        }
+      }
+      for (GraphNode outEdge : node.getOutEdges()) {
+        if(!outEdge.getInEdges().contains(node)) {
+          System.out.println("Er gaat iets fout2");
+          count++;
+        }
+      }
+    }
+    System.out.println(count);
     return newOrder;
   }
   
@@ -149,9 +167,11 @@ public class MutationBubbleAlgorithms {
    */
   private static void addParentOutToBubble(Bubble bubble, GraphNode firstNode) {
     if (bubble.getInEdges().size() > 0) {
-      ArrayList<GraphNode> parentOutEdges = (ArrayList<GraphNode>) bubble.getInEdges().iterator().next().getOutEdges();
-      parentOutEdges.remove(firstNode);
-      parentOutEdges.add(bubble);
+      for (GraphNode parent : bubble.getInEdges()) {
+        ArrayList<GraphNode> parentOutEdges = (ArrayList<GraphNode>) parent.getOutEdges();
+        parentOutEdges.remove(firstNode);
+        parentOutEdges.add(bubble);
+      }
     }
   }
 
@@ -174,6 +194,7 @@ public class MutationBubbleAlgorithms {
       }
     }
     if (isInDel) {
+      bubble = new IndelBubble(bubble);
       parentOutlinks.remove(nodeInBubble);
       parentOutlinks.add(bubble);
       ArrayList<GraphNode> childInLinks = (ArrayList<GraphNode>) child.getInEdges();
@@ -181,7 +202,7 @@ public class MutationBubbleAlgorithms {
       childInLinks.add(bubble);
       bubble.setInEdges(Collections.singleton(parent));
       bubble.setOutEdges(Collections.singleton(child));
-      return new IndelBubble(bubble);
+      return bubble;
     } else {
       return nodeInBubble;
     }
@@ -231,13 +252,33 @@ public class MutationBubbleAlgorithms {
       isPoint = false;
     }
     if (isPoint) {
+      bubble = new PointMutationBubble(bubble);
+      //parentOutlinks.add(bubble);
       parent.setOutEdges(Collections.singleton(bubble));
-      child.setInEdges(Collections.singleton(bubble));
+      checkInEdges(bubble, child);
+      //child.setInEdges(Collections.singleton(bubble));
       bubble.setInEdges(Collections.singleton(parent));
       bubble.setOutEdges(Collections.singleton(child));
-      return new PointMutationBubble(bubble);
+      return bubble;
     } else {
       return nodeInBubble;
     }
+  }
+  
+  /**
+   * For loop should probably be adjusted to accommodate indexes and better complexity 
+   * for removal (we already know the index if we want to remove)
+   * @param bubble
+   * @param child
+   */
+  private static void checkInEdges(Bubble bubble, GraphNode child) {
+    Set<GraphNode> nestedNodes = (Set<GraphNode>) bubble.getChildren();
+    ArrayList<GraphNode> childInEdges = (ArrayList<GraphNode>) child.getInEdges();
+    for (GraphNode node : nestedNodes) {
+      if(childInEdges.contains(node)) {
+        childInEdges.remove(node);
+      }
+    }
+    childInEdges.add(bubble);    
   }
 }

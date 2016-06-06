@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.parser.controller;
 import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -32,6 +33,8 @@ public class AnnotationReaderTest {
     tempFile.delete();
   }
 
+
+
   @Test
   public void testRead() throws Exception {
 
@@ -39,10 +42,13 @@ public class AnnotationReaderTest {
         getClass().getClassLoader().getResourceAsStream("TESTMETADATA1.xlsx"),
         tempFile);
 
+    GenomeMap.getInstance().addGenome("TKK-01-0001");
+    GenomeMap.getInstance().addGenome("TKK-01-0006");
+
     AnnotationReader reader = new AnnotationReader(new FileInputStream(tempFile));
 
     List<Annotation> annotations = reader.read();
 
-    assertEquals(4, annotations.size());
+    assertEquals(2, annotations.size());
   }
 }

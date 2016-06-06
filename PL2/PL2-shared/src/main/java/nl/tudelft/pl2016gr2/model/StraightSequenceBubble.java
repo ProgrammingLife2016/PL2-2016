@@ -29,7 +29,6 @@ public class StraightSequenceBubble extends Bubble {
     return new StraightSequenceBubble(this);
   }
 
-  @Override
   public Collection<GraphNode> pop(SequenceGraph graph) {
     throw new UnsupportedOperationException("To be implemented.");
   }
@@ -37,5 +36,41 @@ public class StraightSequenceBubble extends Bubble {
   @Override
   public void accept(NodeVisitor visitor) {
     throw new UnsupportedOperationException("Do we need this?");
+  }
+
+  @Override
+  public void addGenome(int genome) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void removeGenome(int genome) {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public Collection<GraphNode> pop() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void unpop() {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public boolean isPopped() {
+    // TODO Auto-generated method stub
+    return false;
+  }
+
+  @Override
+  boolean needsVerticalAligning() {
+    // TODO Auto-generated method stub
+    return false;
   }
 }

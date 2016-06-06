@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
+import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +20,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
@@ -63,8 +65,7 @@ public class TreeManager implements Initializable {
   public static TreeManager loadView(SelectionManager selectionManager) {
     FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(TreeManager.class.getClassLoader()
-          .getResource("pages/TreePane.fxml"));
+      loader.setLocation(TreeManager.class.getClassLoader().getResource("pages/TreePane.fxml"));
       loader.load();
       TreeManager treeManager = loader.<TreeManager>getController();
       treeManager.setSelectionManager(selectionManager);
@@ -73,10 +74,6 @@ public class TreeManager implements Initializable {
       Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
-
-  public Region getTreePane() {
-    return mainPane;
   }
 
   @Override
@@ -98,22 +95,56 @@ public class TreeManager implements Initializable {
   @TestId(id = "setSelectionManager")
   private void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
-    selectionManager.getBottomGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
-          if (change.wasAdded()) {
-            rootNode.setDrawnInBottom(change.getElementAdded(), true);
-          } else {
-            rootNode.setDrawnInBottom(change.getElementRemoved(), false);
-          }
-        });
+    initializeTopGraphSelectionManger();
+    initializeBottomGraphSelectionManger();
+    initializeSearchBoxSelectionManager();
+  }
+
+  /**
+   * Initialize the listener to the top graph genome set.
+   */
+  private void initializeTopGraphSelectionManger() {
     selectionManager.getTopGraphGenomes().addListener(
-        (SetChangeListener.Change<? extends String> change) -> {
+        (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInTop(change.getElementAdded(), true);
           } else {
             rootNode.setDrawnInTop(change.getElementRemoved(), false);
           }
         });
+  }
+
+  /**
+   * Initialize the listener to the bottom graph genome set.
+   */
+  private void initializeBottomGraphSelectionManger() {
+    selectionManager.getBottomGraphGenomes().addListener(
+        (SetChangeListener.Change<? extends Integer> change) -> {
+          if (change.wasAdded()) {
+            rootNode.setDrawnInBottom(change.getElementAdded(), true);
+          } else {
+            rootNode.setDrawnInBottom(change.getElementRemoved(), false);
+          }
+        });
+  }
+
+  /**
+   * Initialize the listener to the selected search box genome.
+   */
+  private void initializeSearchBoxSelectionManager() {
+    selectionManager.getSearchBoxSelectedGenomes().addListener((ListChangeListener<Integer>) c -> {
+      List<Integer> added = new ArrayList<>();
+      List<Integer> removed = new ArrayList<>();
+      while (c.next()) {
+        if (c.wasAdded()) {
+          added.addAll(c.getAddedSubList());
+        }
+        if (c.wasRemoved()) {
+          removed.addAll(c.getRemoved());
+        }
+      }
+      rootNode.highlightPaths(removed, added);
+    });
   }
 
   /**
@@ -302,7 +333,21 @@ public class TreeManager implements Initializable {
   private ArrayList<TreeNodeCircle> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
   }
-  
+
+  /**
+   * Get the pane in which the tree is drawn.
+   *
+   * @return the pane in which the tree is drawn.
+   */
+  public Region getTreePane() {
+    return mainPane;
+  }
+
+  /**
+   * Get the root of the tree.
+   *
+   * @return the root of the tree.
+   */
   public IPhylogeneticTreeRoot getTreeRoot() {
     return rootNode;
   }

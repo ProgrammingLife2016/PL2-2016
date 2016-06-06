@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.visitor;
 
 import nl.tudelft.pl2016gr2.model.GraphNode;
 import nl.tudelft.pl2016gr2.model.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.SequenceNode;
 
 public class BubbleChildrenVisitor implements NodeVisitor {
   
@@ -25,5 +26,9 @@ public class BubbleChildrenVisitor implements NodeVisitor {
   @Override
   public void visit(GraphNode node) {
     // DO NOTHING
+  }
+
+  @Override
+  public void visit(SequenceNode node) {
   }
 }
