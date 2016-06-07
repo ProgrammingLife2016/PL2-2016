@@ -552,7 +552,6 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void compareTwoGraphs(Collection<Integer> topGenomes, Collection<Integer> bottomGenomes) {
-//    drawOneGraph(mainGraph.getGenomes());
     topGraphGenomes.clear();
     topGraphGenomes.addAll(topGenomes);
     bottomGraphGenomes.clear();
@@ -710,8 +709,7 @@ public class DrawComparedGraphs implements Initializable {
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
     viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().relativeYPos
-        + viewRange.rangeStartY);
-    //addLabel(pane, circle, node.getId());
+        + viewRange.rangeStartY);//addLabel(pane, circle, node.getId());
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
       drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,

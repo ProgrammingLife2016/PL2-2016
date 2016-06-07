@@ -237,6 +237,11 @@ public class CompareSubgraphs {
         return;
       }
       /////////////////////
+      splitParts(nodes, totalHeight);
+    }
+
+    @SuppressWarnings("checkstyle:MethodLength")
+    private void splitParts(Collection<GraphNode> nodes, int totalHeight) {
       int heightPerArea = totalHeight / nodes.size();
       Iterator<SimpleVerticalArea> it = areas.iterator();
       SimpleVerticalArea nextToAdd = it.next();

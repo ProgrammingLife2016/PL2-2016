@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 
-import nl.tudelft.pl2016gr2.model.graph.nodes.AbstractNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.AbstractGraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Tests the {@link AbstractNode} class.
+ * Tests the {@link AbstractGraphNode} class.
  *
  * @author Wouter Smit
  */
@@ -30,14 +30,14 @@ public class AbstractNodeTest {
   @Rule
   public final ExpectedException exception = ExpectedException.none();
 
-  private AbstractNode instance;
+  private AbstractGraphNode instance;
 
   /**
    * Sets up the abstract spied class.
    */
   @Before
   public void setUp() {
-    instance = mock(AbstractNode.class);
+    instance = mock(AbstractGraphNode.class);
     Mockito.when(instance.getId()).thenCallRealMethod();
     Mockito.when(instance.hasChildren()).thenCallRealMethod();
     Mockito.when(instance.getChildren()).thenCallRealMethod();
@@ -48,13 +48,13 @@ public class AbstractNodeTest {
 
   @Test
   public void testConstructor() {
-    AbstractNode extendedNode = new SequenceNode(5);
+    AbstractGraphNode extendedNode = new SequenceNode(5);
     assertEquals(5, extendedNode.getId());
   }
 
   @Test
   public void getId() {
-    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+    AccessPrivate.setFieldValue("id_field", AbstractGraphNode.class, instance, 5);
     assertEquals(5, instance.getId());
   }
 
@@ -69,17 +69,11 @@ public class AbstractNodeTest {
   }
 
   @Test
-  public void size() {
-    Mockito.when(instance.getSequence()).thenReturn("ACTG");
-    assertEquals(4, instance.size());
-  }
-
-  @Test
   public void getGenomesOverEdge() {
     GraphNode otherNode = mock(GraphNode.class);
 
     Mockito.when(otherNode.getId()).thenReturn(2);
-    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+    AccessPrivate.setFieldValue("id_field", AbstractGraphNode.class, instance, 5);
 
     Mockito.when(instance.getGenomes()).thenReturn(Arrays.asList(1, 5));
     Mockito.when(otherNode.getGenomes()).thenReturn(Arrays.asList(2, 1));
@@ -96,7 +90,7 @@ public class AbstractNodeTest {
     GraphNode otherNode = mock(GraphNode.class);
 
     Mockito.when(otherNode.getId()).thenReturn(2);
-    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+    AccessPrivate.setFieldValue("id_field", AbstractGraphNode.class, instance, 5);
 
     Mockito.when(otherNode.getInEdges()).thenReturn(Collections.emptyList());
     Mockito.when(instance.getOutEdges()).thenReturn(Collections.emptyList());
@@ -107,7 +101,7 @@ public class AbstractNodeTest {
 
   @Test
   public void testToString() {
-    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+    AccessPrivate.setFieldValue("id_field", AbstractGraphNode.class, instance, 5);
     assertEquals("id: 5", instance.toString());
   }
 

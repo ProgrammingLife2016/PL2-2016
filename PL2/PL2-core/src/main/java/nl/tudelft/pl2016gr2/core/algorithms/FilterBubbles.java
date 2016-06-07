@@ -83,7 +83,7 @@ public class FilterBubbles implements PhyloFilter {
    * these.
    *
    * @param treeRoot the root of the tree.
-   * @parem genomes the genomes that are selected
+   * @param genomes the genomes that are selected
    * @return a filtered graph.
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
@@ -136,6 +136,7 @@ public class FilterBubbles implements PhyloFilter {
    * @param treeNode : the treenode on which the bubbling is based.
    * @param newBubbles : list of newly made bubbles.
    */
+  @SuppressWarnings("checkstyle:MethodLength")
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
       Set<GraphNode> poppedNodes, ArrayList<Integer> leaves, Bubble bubble,
       IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
@@ -162,8 +163,7 @@ public class FilterBubbles implements PhyloFilter {
           bubbleLinks.add(outlink);
         }
       }
-      createBubble(treeNode, next, bubbleLinks, leaves, toVisit, visited,
-          newBubbles, poppedNodes);
+      createBubble(treeNode, next, bubbleLinks, leaves, toVisit, visited, newBubbles, poppedNodes);
     }
   }
 

@@ -250,36 +250,24 @@ public class MutationBubbleAlgorithms {
     boolean overlap = startNode.getGuiData().overlapping;
     ArrayList<GraphNode> nestedNodes = new ArrayList<>();
     nestedNodes.add(startNode);
-
     GraphNode current = startNode;
-    // Loop through all subsequent straight nodes
     while (current.getOutEdges().size() == 1) {
-      // 'Loop' through the only child
       Iterator<GraphNode> iterator = current.getOutEdges().iterator();
       GraphNode child = iterator.next();
-      assert !iterator.hasNext();
-      // Child is part of the straight sequence of the same overlap type (true or false)
       if (child.getGuiData().overlapping == overlap && child.getInEdges().size() == 1) {
-        assert !visited.contains(child);
-        // Add to visited to avoid redundant looping in main loop
         visited.add(child);
-        // Add node to bubble
         nestedNodes.add(child);
-        // Check next node
         current = child;
       } else {
         break;
       }
     }
-    // If only the startNode has been added, we don't actually have a straight sequence bubble
     if (nestedNodes.size() == 1) {
       return startNode;
     }
-    // Else, we can return the new bubble
     StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
         startNode.getInEdges(), current.getOutEdges(), nestedNodes,
         VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
-
     addEdges(bubble, startNode, current);
     return bubble;
   }
