@@ -716,6 +716,8 @@ public class DrawComparedGraphs implements Initializable {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
       drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,
           bubbleViewRange);
+    } else {
+      node.unpop();
     }
   }
 

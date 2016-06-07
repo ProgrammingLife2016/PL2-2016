@@ -5,12 +5,12 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
  *
  * @author Wouter Smit
  */
-public interface Bubble extends GraphNode {
+public abstract class Bubble implements GraphNode {
 
   /**
    * If the nodes in the bubble have to be vertically aligned.
    *
    * @return if the nodes in the bubble have to be vertically aligned.
    */
-  boolean needsVerticalAligning();
+  public abstract boolean needsVerticalAligning();
 }

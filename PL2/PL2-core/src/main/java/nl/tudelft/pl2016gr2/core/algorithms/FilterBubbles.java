@@ -59,19 +59,18 @@ public class FilterBubbles implements PhyloFilter {
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
    *
-   * @param node  the node to zoom in on
-   * @param graph the graph
-   * @return a zoomed in graph
+   * @param bubble the bubble to zoom in on.
+   * @return a zoomed in graph.
    */
   @Override
   public Collection<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
     List<GraphNode> orderedNodes = new ZoomIn(this).zoom(bubble);
-    orderedNodes.sort((GraphNode node1, GraphNode node2) -> node1.getLevel() - node2.getLevel());
+    orderedNodes.sort((GraphNode left, GraphNode right) -> left.getLevel() - right.getLevel());
 
-    orderedNodes.remove(orderedNodes.size() - 1);
-    orderedNodes.remove(0);
-    
+    orderedNodes.removeAll(bubble.getOutEdges());
+    orderedNodes.removeAll(bubble.getInEdges());
+
     if (bubble.needsVerticalAligning()) {
       CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
     }

@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class PhyloBubble implements Bubble {
+public class PhyloBubble extends Bubble {
 
   private final int id;
   private final IPhylogeneticTreeNode treeNode;
