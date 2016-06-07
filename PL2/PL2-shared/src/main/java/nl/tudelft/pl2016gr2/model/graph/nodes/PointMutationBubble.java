@@ -76,6 +76,11 @@ public class PointMutationBubble extends Bubble {
     outNode.removeInEdge(this);
     outNode.addInEdge(firstChild);
     outNode.addInEdge(secondChild);
+    
+    firstChild.setInEdges(getInEdges());
+    firstChild.setOutEdges(getOutEdges());
+    secondChild.setInEdges(getInEdges());
+    secondChild.setOutEdges(getOutEdges());
   }
 
   /**
@@ -95,6 +100,9 @@ public class PointMutationBubble extends Bubble {
     outNode.removeInEdge(firstChild);
     outNode.removeInEdge(secondChild);
     outNode.addInEdge(this);
+    
+    setInEdges(firstChild.getInEdges());
+    setOutEdges(firstChild.getOutEdges());
   }
 
   @Override

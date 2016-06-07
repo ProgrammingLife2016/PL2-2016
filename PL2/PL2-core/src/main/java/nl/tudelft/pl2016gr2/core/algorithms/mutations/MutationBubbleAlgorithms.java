@@ -39,7 +39,10 @@ public class MutationBubbleAlgorithms {
 
   private static ArrayList<GraphNode> initStraightInDelPoint(ArrayList<GraphNode> orderedGraph) {
     bubbleCount = Integer.MIN_VALUE;
-    ArrayList<GraphNode> orderedNodes = filterStraightSequence(orderedGraph);
+    ArrayList<GraphNode> orderedNodes = filterPointMutation(orderedGraph);
+    orderedNodes = filterIndel(orderedNodes);
+    orderedNodes.sort((GraphNode first, GraphNode second) -> first.getLevel() - second.getLevel());
+    orderedNodes = filterStraightSequence(orderedNodes);
 
     orderedNodes.sort((GraphNode first, GraphNode second) -> first.getLevel() - second.getLevel());
     return orderedNodes;

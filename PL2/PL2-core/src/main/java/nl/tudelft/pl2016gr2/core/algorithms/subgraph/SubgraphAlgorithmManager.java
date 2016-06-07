@@ -83,8 +83,10 @@ public class SubgraphAlgorithmManager {
 
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
-    FilterBubbles filter = new FilterBubbles(subgraph);
-//    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+    
+    //    FilterBubbles filter = new FilterBubbles(subgraph);
+    //    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);

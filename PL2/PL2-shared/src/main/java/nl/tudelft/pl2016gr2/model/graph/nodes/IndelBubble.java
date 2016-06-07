@@ -79,6 +79,9 @@ public class IndelBubble extends Bubble {
     outEdge.removeInEdge(this);
     outEdge.addInEdge(lastNode);
     outEdge.addInEdge(inEdge);
+    
+    firstNode.setInEdges(getInEdges());
+    lastNode.setOutEdges(getOutEdges());
   }
 
   /**

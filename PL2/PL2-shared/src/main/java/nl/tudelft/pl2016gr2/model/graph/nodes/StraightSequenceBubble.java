@@ -42,6 +42,7 @@ public class StraightSequenceBubble extends Bubble {
   public Collection<GraphNode> pop() {
     if (!isPopped) {
       setPoppedEdges();
+      verify();
       isPopped = true;
     }
     if (!verticallyAligned) {
@@ -49,6 +50,25 @@ public class StraightSequenceBubble extends Bubble {
       verticallyAligned = true;
     }
     return this.getChildren();
+  }
+
+  private void verify() {
+    for (GraphNode node : getChildren()) {
+      verifyEdges(node);
+    }
+  }
+
+  private void verifyEdges(GraphNode node) {
+    for (GraphNode outEdge : node.getOutEdges()) {
+      if (!outEdge.getInEdges().contains(node)) {
+        System.out.println("err1");
+      }
+    }
+    for (GraphNode inEdge : node.getInEdges()) {
+      if (!inEdge.getOutEdges().contains(node)) {
+        System.out.println("err2");
+      }
+    }
   }
 
   @Override
@@ -65,7 +85,9 @@ public class StraightSequenceBubble extends Bubble {
   private void setPoppedEdges() {
     Iterator<GraphNode> it = getChildren().iterator();
     GraphNode firstNode = it.next();
-    for (GraphNode inEdge : firstNode.getInEdges()) {
+    firstNode.setInEdges(getInEdges());
+
+    for (GraphNode inEdge : getInEdges()) {
       inEdge.removeOutEdge(this);
       inEdge.addOutEdge(firstNode);
     }
@@ -73,7 +95,8 @@ public class StraightSequenceBubble extends Bubble {
     while (it.hasNext()) {
       lastNode = it.next();
     }
-    for (GraphNode outEdge : lastNode.getOutEdges()) {
+    lastNode.setOutEdges(getOutEdges());
+    for (GraphNode outEdge : getOutEdges()) {
       outEdge.removeInEdge(this);
       outEdge.addInEdge(lastNode);
     }
@@ -97,6 +120,8 @@ public class StraightSequenceBubble extends Bubble {
       outEdge.removeInEdge(lastNode);
       outEdge.addInEdge(this);
     }
+    setInEdges(firstNode.getInEdges());
+    setOutEdges(lastNode.getOutEdges());
   }
 
   @Override
