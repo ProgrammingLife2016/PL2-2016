@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class PhyloBubble extends Bubble {
 
@@ -20,6 +22,8 @@ public class PhyloBubble extends Bubble {
 
   private final HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
   private final HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
+  private final HashMap<Integer, Collection<GraphNode>> unpoppedOutEdges = new HashMap<>();
+  private final HashMap<Integer, Collection<GraphNode>> unpoppedInEdges = new HashMap<>();
 
   private final PhyloFilter filter;
   private Collection<GraphNode> poppedNodes;
@@ -282,13 +286,24 @@ public class PhyloBubble extends Bubble {
   public Collection<GraphNode> pop() {
     if (!isPopped) {
       isPopped = true;
-      for (GraphNode node : inEdges) {
-        originalOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
+      
+      if (poppedNodes == null) {
+        for (GraphNode node : inEdges) {
+          originalOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
+        }
+        for (GraphNode node : outEdges) {
+          originalInEdges.put(node.getId(), new HashSet<>(node.getInEdges()));
+        }
+        poppedNodes = filter.zoomIn(this);
+      } else {
+        for (GraphNode node : inEdges) {
+          node.setOutEdges(unpoppedOutEdges.get(node.getId()));
+        }
+
+        for (GraphNode node : outEdges) {
+          node.setInEdges(unpoppedInEdges.get(node.getId()));
+        }
       }
-      for (GraphNode node : outEdges) {
-        originalInEdges.put(node.getId(), new HashSet<>(node.getInEdges()));
-      }
-      poppedNodes = filter.zoomIn(this);
     }
     return poppedNodes;
   }
@@ -297,6 +312,13 @@ public class PhyloBubble extends Bubble {
   public void unpop() {
     if (isPopped) {
       isPopped = false;
+      for (GraphNode node : inEdges) {
+        unpoppedOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
+      }
+      for (GraphNode node : outEdges) {
+        unpoppedInEdges.put(node.getId(), new HashSet<>(node.getInEdges()));
+      }
+      
       for (GraphNode node : inEdges) {
         node.setOutEdges(originalOutEdges.get(node.getId()));
       }
