@@ -130,13 +130,13 @@ public class FilterBubbles implements PhyloFilter {
    * Filters a set of nodes to make bubbles out of them based on the phylogenetic
    * tree. 
    * 
-   * @param toVisit
-   * @param visited
-   * @param poppedNodes
-   * @param leaves
-   * @param bubble
-   * @param treeNode
-   * @param newBubbles
+   * @param toVisit : nodes which need to be visited.
+   * @param visited : nodes which have already been visited.
+   * @param poppedNodes : nodes that are in the new graph.
+   * @param leaves : the leaves of the phylogenetic tree on which the bubbling is based.
+   * @param bubble : the bubble which is zoomed in on.
+   * @param treeNode : the treenode on which the bubbling is based.
+   * @param newBubbles : list of newly made bubbles.
    */
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
       Set<GraphNode> poppedNodes, ArrayList<Integer> leaves, Bubble bubble,
