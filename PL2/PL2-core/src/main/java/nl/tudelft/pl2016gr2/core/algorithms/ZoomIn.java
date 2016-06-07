@@ -98,24 +98,6 @@ public class ZoomIn {
     }
   }
   
-  private GraphNode getNode(int id, boolean startEnd, List<GraphNode> nodes) {
-    if (!startEnd) {
-      for (int i = 0; i < nodes.size(); i++) {
-        if (nodes.get(i).getId() == id) {
-          return nodes.get(i);
-        }
-      }
-    } else {
-      for (int i = nodes.size() - 1; i >= 0; i--) {
-        if (nodes.get(i).getId() == id) {
-          return nodes.get(i);
-        }
-      }
-    }
-    
-    return null;
-  }
-  
   private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     Collection<GraphNode> startNodes = bubble.getInEdges();
