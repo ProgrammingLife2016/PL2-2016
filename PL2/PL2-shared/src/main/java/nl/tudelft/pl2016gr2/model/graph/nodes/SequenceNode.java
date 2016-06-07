@@ -55,6 +55,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
+    this.genomes.trimToSize();
   }
 
   /**
@@ -116,7 +117,13 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   public void removeGenome(int genome) {
     assert genomes.contains(
         genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
-    genomes.remove(genome);
+    genomes.remove((Integer) genome);
+  }
+
+  @Override
+  public void addAllGenomes(Collection<Integer> genomes) {
+    this.genomes.addAll(genomes);
+    this.genomes.trimToSize();
   }
 
   /**
@@ -181,6 +188,12 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   @Override
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public void trimToSize() {
+    super.trimToSize();
+    genomes.trimToSize();
   }
 
   @Override

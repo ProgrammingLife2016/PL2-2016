@@ -91,6 +91,11 @@ public abstract class AbstractGraphNode implements GraphNode {
   }
 
   @Override
+  public void addAllInEdges(Collection<GraphNode> nodes) {
+    inEdges.addAll(nodes);
+  }
+
+  @Override
   public void addInEdge(GraphNode node) {
     inEdges.add(node);
   }
@@ -112,6 +117,11 @@ public abstract class AbstractGraphNode implements GraphNode {
   }
 
   @Override
+  public void addAllOutEdges(Collection<GraphNode> nodes) {
+    outEdges.addAll(nodes);
+  }
+
+  @Override
   public void addOutEdge(GraphNode node) {
     outEdges.add(node);
   }
@@ -119,6 +129,12 @@ public abstract class AbstractGraphNode implements GraphNode {
   @Override
   public void removeOutEdge(GraphNode node) {
     outEdges.remove(node);
+  }
+  
+  @Override
+  public void trimToSize() {
+    //inEdges.trimToSize();
+    //outEdges.trimToSize();
   }
 
   @Override

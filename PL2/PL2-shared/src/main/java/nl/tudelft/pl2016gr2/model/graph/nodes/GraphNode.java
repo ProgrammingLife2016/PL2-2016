@@ -93,6 +93,13 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   }
 
   /**
+   * Set the in edges.
+   *
+   * @param edges the in edges.
+   */
+  void setInEdges(Collection<GraphNode> edges);
+
+  /**
    * Returns the identifiers of the nodes of all in-edges of <code>GraphNode</code>.
    * <p>
    * The collection that is returned is not meant for editing. Depending on the implementing class,
@@ -104,35 +111,45 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   Collection<GraphNode> getInEdges();
 
   /**
-   * Sets the set of in-edges to be equal to the provided collection.
-   * <p>
-   * This method is a better performing abstraction of edge addition. This method should be used
-   * over {@link #addInEdge(int)} and {@link #removeInEdge(int)} wherever possible.
-   * </p>
-   * <p>
-   * The provided collection <b>may not</b> contain duplicates. These will not be removed by the
-   * method.
-   * </p>
-   *
-   * @param edges The collection of edges to make the in-edges of this node
-   */
-  void setInEdges(Collection<GraphNode> edges);
-
-  /**
    * Adds the specified ID to the set of in-edges of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
+   * <p>
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllInEdges(Collection)}.
+   * </p>
    *
    * @param node The node to add to the in-edges of this <code>GraphNode</code>.
-   * @deprecated This method delivers suboptimal performance. Use {@link #setInEdges(Collection)}
    */
   void addInEdge(GraphNode node);
 
   /**
+   * Adds all edges to the current in edges, leaving the old in edges untouched.
+   * <p>
+   * This method ensures that storage is minimized after the additions.
+   * </p>
+   *
+   * @param nodes The nodes to add as in edges
+   */
+  void addAllInEdges(Collection<GraphNode> nodes);
+
+  /**
    * Removes the specified ID to the set of in-edges of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
    *
    * @param node The node to remove from the in-edges of this <code>GraphNode</code>.
-   * @deprecated This method delivers suboptimal performance. Use {@link #setInEdges(Collection)}
    */
   void removeInEdge(GraphNode node);
+
+  /**
+   * Set the out edges.
+   *
+   * @param edges the out edges.
+   */
+  void setOutEdges(Collection<GraphNode> edges);
 
   /**
    * Returns the identifiers of the nodes of all out-edges of <code>GraphNode</code>.
@@ -146,33 +163,36 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   Collection<GraphNode> getOutEdges();
 
   /**
-   * Sets the set of out-edges to be equal to the provided collection.
-   * <p>
-   * This method is a better performing abstraction of edge addition. This method should be used
-   * over {@link #addOutEdge(int)} and {@link #removeOutEdge(int)} wherever possible.
-   * </p>
-   * <p>
-   * The provided collection <b>may not</b> contain duplicates. These will not be removed by the
-   * method.
-   * </p>
-   *
-   * @param edges The collection of edges to make the out-edges of this node
-   */
-  void setOutEdges(Collection<GraphNode> edges);
-
-  /**
    * Adds the specified ID to the set of out-edges of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
+   * <p>
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllOutEdges(Collection)}.
+   * </p>
    *
    * @param node The node to add to the out-edges of this <code>GraphNode</code>.
-   * @deprecated This method delivers suboptimal performance. Use {@link #setOutEdges(Collection)}
    */
   void addOutEdge(GraphNode node);
 
   /**
+   * Adds all edges to the current out edges, leaving the old out edges untouched.
+   * <p>
+   * This method ensures that storage is minimized after the additions.
+   * </p>
+   *
+   * @param nodes The nodes to add as out edges
+   */
+  void addAllOutEdges(Collection<GraphNode> nodes);
+
+  /**
    * Removes the specified ID to the set of out-edges of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
    *
    * @param node The node to remove from the out-edges of this <code>GraphNode</code>.
-   * @deprecated This method delivers suboptimal performance. Use {@link #setOutEdges(Collection)}
    */
   void removeOutEdge(GraphNode node);
 
@@ -193,13 +213,33 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
 
   /**
    * Adds the genome name to the set of genomes of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
+   * <p>
+   * This method will have to expand the underlying data structure. Repeatedly adding genomes should
+   * be done with {@link #addAllGenomes(Collection)}.
+   * </p>
    *
    * @param genome The name of the genome to add to this <code>GraphNode</code>.
    */
   void addGenome(int genome);
 
   /**
+   * Adds all genomes to the current genomes, leaving the old genomes untouched.
+   * <p>
+   * This method ensures that storage is minimized after the additions.
+   * </p>
+   *
+   * @param genomes The genomes to add to this node
+   */
+  void addAllGenomes(Collection<Integer> genomes);
+
+  /**
    * Removes the genome name from the set of genomes of this <code>GraphNode</code>.
+   * <p>
+   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
+   * </p>
    *
    * @param genome The name of the genome to remove from this <code>GraphNode</code>.
    */
@@ -215,6 +255,14 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return The set of genomes that pass over the common edge.
    */
   Collection<Integer> getGenomesOverEdge(GraphNode node);
+
+  /**
+   * Trims the capacity of this <code>GraphNode</code> instance to the currently used size.
+   * <p>
+   * This method can be used to minimize the storage of this <code>GraphNode</code>.
+   * </p>
+   */
+  void trimToSize();
 
   @Override
   default void accept(NodeVisitor visitor) {

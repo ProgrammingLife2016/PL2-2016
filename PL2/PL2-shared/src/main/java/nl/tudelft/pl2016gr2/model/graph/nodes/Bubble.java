@@ -151,6 +151,12 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
   }
 
   @Override
+  public void addAllGenomes(Collection<Integer> genomes) {
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
+  }
+
+  @Override
   public Collection<Integer> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
         node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
