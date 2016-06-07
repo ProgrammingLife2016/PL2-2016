@@ -24,16 +24,40 @@ public class ZoomIn {
     this.filter = filter;
   }
   
+  /**
+   * Zoom in on a given bubble. This method makes new bubbles within 
+   * the bubble by going a level deeper in the phylogenetic tree,
+   * and returns a list of graphnodes (including both nodes and bubbles).
+   * 
+   * @param bubble the bubble to zoom in on.
+   * @return a list of graphnodes that are in this bubble.
+   */
   public List<GraphNode> zoom(Bubble bubble) {
-    BubblePhyloVisitor visitor = new BubblePhyloVisitor();
-    bubble.accept(visitor);
-    IPhylogeneticTreeNode curTreeNode = visitor.getTreeNode();
-    
-    // THIS MIGHT NOT WORK WITH THE FIRST/LAST NODE
-    //zoomOut.addOldView(getNode(inlinks), getNode(outlinks));
-    
     Map<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
     Map<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
+    setOriginalEdges(originalInEdges, originalOutEdges, bubble);
+    IPhylogeneticTreeNode curTreeNode = getTreeNode(bubble);
+    IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
+    IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
+    Set<GraphNode> poppedNodes = new HashSet<>();
+    ArrayList<Bubble> newBubbles = new ArrayList<>();
+    debubble(poppedNodes, childOne, bubble, newBubbles);
+    debubble(poppedNodes, childTwo, bubble, newBubbles);
+    pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
+    pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
+    ArrayList<GraphNode> graphNodes = new ArrayList<>(poppedNodes);
+    filter.pruneNodes(graphNodes, newBubbles);
+    return graphNodes;
+  }
+  
+  private IPhylogeneticTreeNode getTreeNode(Bubble bubble) {
+    BubblePhyloVisitor visitor = new BubblePhyloVisitor();
+    bubble.accept(visitor);
+    return visitor.getTreeNode();
+  }
+  
+  private void setOriginalEdges(Map<Integer, Collection<GraphNode>> originalInEdges, 
+      Map<Integer, Collection<GraphNode>> originalOutEdges, Bubble bubble) {
     bubble.getInEdges().forEach(node -> {
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
@@ -42,20 +66,6 @@ public class ZoomIn {
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
     });
-    
-    IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
-    IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
- 
-    Set<GraphNode> poppedNodes = new HashSet<>();
-    ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(poppedNodes, childOne, bubble, newBubbles);
-    debubble(poppedNodes, childTwo, bubble, newBubbles);
-    
-    pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
-    pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
-    ArrayList<GraphNode> graphNodes = new ArrayList<>(poppedNodes);
-    filter.pruneNodes(graphNodes, newBubbles);
-    return graphNodes;
   }
   
   private void pruneStart(Collection<GraphNode> bubbleInEdges, 
@@ -109,14 +119,11 @@ public class ZoomIn {
   private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     Collection<GraphNode> startNodes = bubble.getInEdges();
-    
     ArrayList<Integer> leaves = treeNode.getGenomes();
     Queue<GraphNode> toVisit = new LinkedList<>();
     Set<GraphNode> visited = new HashSet<>();
     toVisit.addAll(startNodes);
-    
     filter.filterBubbles(toVisit, visited, poppedNodes, leaves, bubble, treeNode, newBubbles);
-    
     Iterator<GraphNode> iterator = bubble.getOutEdges().iterator();
     while (iterator.hasNext()) {
       GraphNode next = iterator.next();
@@ -124,7 +131,6 @@ public class ZoomIn {
       next.setOutEdges(new HashSet<>());
       poppedNodes.add(next);
     }
-    
     return newBubbles;
   }
 }

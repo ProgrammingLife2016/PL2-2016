@@ -126,6 +126,18 @@ public class FilterBubbles implements PhyloFilter {
     return newBubbles;
   }
 
+  /**
+   * Filters a set of nodes to make bubbles out of them based on the phylogenetic
+   * tree. 
+   * 
+   * @param toVisit
+   * @param visited
+   * @param poppedNodes
+   * @param leaves
+   * @param bubble
+   * @param treeNode
+   * @param newBubbles
+   */
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
       Set<GraphNode> poppedNodes, ArrayList<Integer> leaves, Bubble bubble,
       IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
@@ -142,13 +154,9 @@ public class FilterBubbles implements PhyloFilter {
       next.setOutEdges(new HashSet<>());
       visited.add(next);
       poppedNodes.add(next);
-
-      // DO SOMETHING HERE TO ALSO INCLUDE NODES WITH ONLY REF
-      List<GraphNode> outlinks = calcNodeOutlinks(originalOutEdges.get(next.getId()),
-          leaves, bubble);
       List<GraphNode> bubbleLinks = new ArrayList<>();
-
-      for (GraphNode outlink : outlinks) {
+      for (GraphNode outlink : calcNodeOutlinks(originalOutEdges.get(next.getId()),
+          leaves, bubble)) {
         GraphNode node = outlink;
         if (FilterHelpers.isShared(node, leaves)) {
           FilterHelpers.addToVisit(outlink, toVisit, visited);
@@ -156,7 +164,6 @@ public class FilterBubbles implements PhyloFilter {
           bubbleLinks.add(outlink);
         }
       }
-
       createBubble(treeNode, next, bubbleLinks, leaves, toVisit, visited,
           newBubbles, poppedNodes);
     }
@@ -215,8 +222,8 @@ public class FilterBubbles implements PhyloFilter {
     return endPoints;
   }
 
-  private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges, ArrayList<Integer> leaves,
-      Bubble bubble) {
+  private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges, 
+      ArrayList<Integer> leaves, Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
 
     for (GraphNode outlink : outEdges) {
@@ -236,6 +243,15 @@ public class FilterBubbles implements PhyloFilter {
     return curNodeOutlinks;
   }
 
+  /**
+   * Prunes a list of GraphNodes. First, using the in and out edges of the bubbles,
+   * which are assumed to be already correct, the nodes that are connected to these bubble
+   * get out/in edges to these bubbles. After that, each node gets in/out edges from 
+   * the original graph back if these edges go to a node that is in the list of graphnodes.
+   * 
+   * @param graphNodes a list of graphnodes for which the edges need to be set.
+   * @param newBubbles a list of bubbles which already have correct edges.
+   */
   protected void pruneNodes(List<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
     pruneBubbles(newBubbles);
 

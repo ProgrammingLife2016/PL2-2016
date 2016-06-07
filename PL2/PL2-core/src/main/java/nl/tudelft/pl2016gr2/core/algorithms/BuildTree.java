@@ -10,17 +10,36 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Class to build a new phylogenetictree given an existing phylogenetic
+ * tree and a set of genomes that should be in the new tree.
+ * 
+ * @author Casper
+ *
+ */
 public class BuildTree {
 
   private IPhylogeneticTreeRoot treeRoot;
   private Set<Integer> genomes;
   private PhylogeneticTreeNode newRoot;
 
+  /**
+   * Constructs an object to build a new tree.
+   * 
+   * @param treeRoot : the root of the existing tree, which is used for
+   *     the new tree.
+   * @param genomes : the list of genomes that should be in the new tree.
+   */
   public BuildTree(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
     this.treeRoot = treeRoot;
     this.genomes = new HashSet<>(genomes);
   }
 
+  /**
+   * Builds a new tree, based on the existing tree and the given genomes.
+   * 
+   * @return the root of the new tree.
+   */
   public IPhylogeneticTreeRoot getTree() {
     if (genomes.isEmpty()) {
       return treeRoot;
