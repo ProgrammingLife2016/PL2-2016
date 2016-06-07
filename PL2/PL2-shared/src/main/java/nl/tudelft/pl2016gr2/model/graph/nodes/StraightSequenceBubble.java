@@ -42,7 +42,6 @@ public class StraightSequenceBubble extends Bubble {
   public Collection<GraphNode> pop() {
     if (!isPopped) {
       setPoppedEdges();
-      verify();
       isPopped = true;
     }
     if (!verticallyAligned) {
@@ -50,25 +49,6 @@ public class StraightSequenceBubble extends Bubble {
       verticallyAligned = true;
     }
     return this.getChildren();
-  }
-
-  private void verify() {
-    for (GraphNode node : getChildren()) {
-      verifyEdges(node);
-    }
-  }
-
-  private void verifyEdges(GraphNode node) {
-    for (GraphNode outEdge : node.getOutEdges()) {
-      if (!outEdge.getInEdges().contains(node)) {
-        System.out.println("err1");
-      }
-    }
-    for (GraphNode inEdge : node.getInEdges()) {
-      if (!inEdge.getOutEdges().contains(node)) {
-        System.out.println("err2");
-      }
-    }
   }
 
   @Override

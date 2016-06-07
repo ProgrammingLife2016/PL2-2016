@@ -53,7 +53,7 @@ public class SubgraphAlgorithmManager {
         bottomGenomes, treeRoot);
     topFilter.start();
     bottomFilter.start();
-    
+
     ArrayList<GraphNode> topGraphOrder = topFilter.getOrderedNodes();
     ArrayList<GraphNode> bottomGraphOrder = bottomFilter.getOrderedNodes();
 
@@ -83,13 +83,30 @@ public class SubgraphAlgorithmManager {
 
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+
+    FilterBubbles filter = new FilterBubbles(orderedNodes);
+    orderedNodes = filter.filter(treeRoot, genomes);
     
-    //    FilterBubbles filter = new FilterBubbles(subgraph);
-    //    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+    for (GraphNode orderedNode : orderedNodes) {
+      verifyEdges(orderedNode);
+    }
 
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
+  }
+
+  private static void verifyEdges(GraphNode node) {
+    for (GraphNode outEdge : node.getOutEdges()) {
+      if (!outEdge.getInEdges().contains(node)) {
+        System.out.println("1 - incorrect out edge");
+      }
+    }
+    for (GraphNode inEdge : node.getInEdges()) {
+      if (!inEdge.getOutEdges().contains(node)) {
+        System.out.println("2 - incorrect in edge");
+      }
+    }
   }
 
   /**
@@ -161,7 +178,7 @@ public class SubgraphAlgorithmManager {
 
     @Override
     public void run() {
-      FilterBubbles filter = new FilterBubbles(subgraph);
+      FilterBubbles filter = new FilterBubbles(subgraph.getOrderedGraph());
       orderedNodes = filter.filter(treeRoot, genomes);
     }
   }
