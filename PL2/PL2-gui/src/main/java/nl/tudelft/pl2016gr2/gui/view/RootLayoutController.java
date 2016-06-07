@@ -25,9 +25,9 @@ import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
-import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
+import nl.tudelft.pl2016gr2.parser.controller.MetaDataReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
@@ -110,10 +110,10 @@ public class RootLayoutController implements
    * Load the data into the root layout.
    *
    * @param tree the loaded tree.
-   * @param annotations the loaded annotations.
+   * @param metaDatas the loaded annotations.
    */
-  public void loadTree(Tree tree, List<Annotation> annotations) {
-    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot(), annotations));
+  public void loadTree(Tree tree, List<MetaData> metaDatas) {
+    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot(), metaDatas));
   }
 
   /**
@@ -239,12 +239,12 @@ public class RootLayoutController implements
 
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
-      List<Annotation> annotations = new AnnotationReader(metadataFile).read();
+      List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
 
       if (graph != null && tree != null) {
         loadGraph(graph);
-        loadTree(tree, annotations);
-        searchPaneController.setData(annotations);
+        loadTree(tree, metaDatas);
+        searchPaneController.setData(metaDatas);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE,

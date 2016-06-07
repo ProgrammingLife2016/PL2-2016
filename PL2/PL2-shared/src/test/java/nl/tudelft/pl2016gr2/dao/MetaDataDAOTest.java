@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
-import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.MetaData;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -13,13 +13,13 @@ import java.util.Collection;
 import java.util.stream.Stream;
 
 @SuppressWarnings({"MemberName", "AbbreviationAsWordInName"})
-public class AnnotationDAOTest {
+public class MetaDataDAOTest {
 
-  AnnotationDAO dao;
-  Annotation a1 = new Annotation();
-  Annotation a2 = new Annotation();
-  Annotation a3 = new Annotation();
-  Annotation a4 = new Annotation();
+  MetaDataDAO dao;
+  MetaData a1 = new MetaData();
+  MetaData a2 = new MetaData();
+  MetaData a3 = new MetaData();
+  MetaData a4 = new MetaData();
 
   /**
    * Sets up the {@link #dao} with the above test annotations.
@@ -31,14 +31,14 @@ public class AnnotationDAOTest {
     a3.specimenId = "a3";
     a4.specimenId = "a4";
 
-    Collection<Annotation> testAnnotations = new ArrayList<>();
+    Collection<MetaData> testAnnotations = new ArrayList<>();
 
     testAnnotations.add(a1);
     testAnnotations.add(a2);
     testAnnotations.add(a3);
     testAnnotations.add(a4);
 
-    dao = new AnnotationDAO(testAnnotations);
+    dao = new MetaDataDAO(testAnnotations);
   }
 
   @Test
@@ -51,11 +51,11 @@ public class AnnotationDAOTest {
 
   @Test
   public void testgetAllAnnotations() throws Exception {
-    Collection<Annotation> annotations = dao.getAllAnnotations();
+    Collection<MetaData> metaDatas = dao.getAllAnnotations();
 
-    assertEquals(4, annotations.size());
+    assertEquals(4, metaDatas.size());
     Stream.of(a1, a2, a3, a4).forEach(annotation -> {
-      assertTrue(annotations.contains(annotation));
+      assertTrue(metaDatas.contains(annotation));
     });
   }
 
