@@ -1,8 +1,11 @@
 package nl.tudelft.pl2016gr2.visitor;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
 /**
@@ -26,11 +29,21 @@ public class BubblePhyloVisitor implements NodeVisitor {
 
   @Override
   public void visit(GraphNode node) {
-    treeNode = null;
   }
 
   @Override
   public void visit(SequenceNode node) {
-    treeNode = null;
+  }
+
+  @Override
+  public void visit(StraightSequenceBubble bubble) {
+  }
+
+  @Override
+  public void visit(IndelBubble bubble) {
+  }
+
+  @Override
+  public void visit(PointMutationBubble bubble) {
   }
 }

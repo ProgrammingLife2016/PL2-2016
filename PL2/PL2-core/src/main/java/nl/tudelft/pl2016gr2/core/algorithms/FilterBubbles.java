@@ -63,7 +63,7 @@ public class FilterBubbles implements PhyloFilter {
    * @return a zoomed in graph.
    */
   @Override
-  public Collection<GraphNode> zoomIn(Bubble bubble) {
+  public List<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
     List<GraphNode> orderedNodes = new ZoomIn(this).zoom(bubble);
     orderedNodes.sort((GraphNode left, GraphNode right) -> left.getLevel() - right.getLevel());
@@ -71,9 +71,7 @@ public class FilterBubbles implements PhyloFilter {
     orderedNodes.removeAll(bubble.getOutEdges());
     orderedNodes.removeAll(bubble.getInEdges());
 
-    if (bubble.needsVerticalAligning()) {
-      CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
-    }
+    CompareSubgraphs.alignVertically(orderedNodes, bubble.getInEdges());
 
     return orderedNodes;
   }
@@ -96,8 +94,8 @@ public class FilterBubbles implements PhyloFilter {
     ArrayList<GraphNode> poppedNodes = new ArrayList<>(graphNodes);
     pruneNodes(poppedNodes, newBubbles);
 
-    Collections.sort(poppedNodes, (GraphNode node1, GraphNode node2) -> {
-      return node1.getLevel() - node2.getLevel();
+    Collections.sort(poppedNodes, (GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
     });
     return poppedNodes;
   }

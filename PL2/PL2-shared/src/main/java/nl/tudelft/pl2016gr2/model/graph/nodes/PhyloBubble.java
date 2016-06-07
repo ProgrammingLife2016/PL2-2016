@@ -6,19 +6,19 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class PhyloBubble extends Bubble {
 
   private final IPhylogeneticTreeNode treeNode;
-
   private final PhyloFilter filter;
-  private Collection<GraphNode> poppedNodes;
+  private List<GraphNode> poppedNodes;
   private boolean isPopped;
 
-  private final HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
-  private final HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
-  private final HashMap<Integer, Collection<GraphNode>> unpoppedOutEdges = new HashMap<>();
-  private final HashMap<Integer, Collection<GraphNode>> unpoppedInEdges = new HashMap<>();
+  private final HashMap<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>(4);
+  private final HashMap<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>(4);
+  private final HashMap<Integer, Collection<GraphNode>> unpoppedOutEdges = new HashMap<>(4);
+  private final HashMap<Integer, Collection<GraphNode>> unpoppedInEdges = new HashMap<>(4);
 
   /**
    * Construct a phylo bubble.
@@ -60,8 +60,7 @@ public class PhyloBubble extends Bubble {
    * @param nestedNodes the nested nodes of the bubble.
    */
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, PhyloFilter filter,
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
-      Collection<GraphNode> nestedNodes) {
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, List<GraphNode> nestedNodes) {
     super(id, inEdges, outEdges, nestedNodes);
     this.treeNode = treeNode;
     this.filter = filter;

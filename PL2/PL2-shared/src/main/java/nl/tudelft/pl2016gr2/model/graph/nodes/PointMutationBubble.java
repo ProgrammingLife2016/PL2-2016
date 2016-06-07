@@ -7,35 +7,35 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * This kind of bubble contains a straight sequence of nodes.
+ * This kind of bubble contains a point mutation.
  *
  * @author Faris
  */
-public class StraightSequenceBubble extends Bubble {
+public class PointMutationBubble extends Bubble {
 
   private final IVerticalAligner aligner;
   private boolean isPopped;
   private boolean verticallyAligned;
 
-  public StraightSequenceBubble(int id, Collection<GraphNode> inEdges,
+  public PointMutationBubble(int id, Collection<GraphNode> inEdges,
       Collection<GraphNode> outEdges, List<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.aligner = aligner;
   }
 
-  private StraightSequenceBubble(Bubble bubble, IVerticalAligner aligner) {
+  private PointMutationBubble(Bubble bubble, IVerticalAligner aligner) {
     super(bubble);
     this.aligner = aligner;
   }
 
   @Override
   public GraphNode copy() {
-    return new StraightSequenceBubble(this, aligner);
+    return new PointMutationBubble(this, aligner);
   }
 
   @Override
   public GraphNode copyAll() {
-    return new StraightSequenceBubble(this, aligner);
+    return new PointMutationBubble(this, aligner);
   }
 
   @Override
@@ -64,19 +64,18 @@ public class StraightSequenceBubble extends Bubble {
    */
   private void setPoppedEdges() {
     Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
-    for (GraphNode inEdge : firstNode.getInEdges()) {
-      inEdge.removeOutEdge(this);
-      inEdge.addOutEdge(firstNode);
-    }
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
-    }
-    for (GraphNode outEdge : lastNode.getOutEdges()) {
-      outEdge.removeInEdge(this);
-      outEdge.addInEdge(lastNode);
-    }
+    GraphNode firstChild = it.next();
+    GraphNode secondChild = it.next();
+
+    GraphNode inNode = getInEdges().iterator().next();
+    inNode.removeOutEdge(this);
+    inNode.addOutEdge(firstChild);
+    inNode.addOutEdge(secondChild);
+
+    GraphNode outNode = getOutEdges().iterator().next();
+    outNode.removeInEdge(this);
+    outNode.addInEdge(firstChild);
+    outNode.addInEdge(secondChild);
   }
 
   /**
@@ -84,19 +83,18 @@ public class StraightSequenceBubble extends Bubble {
    */
   private void setUnpoppedEdges() {
     Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
-    for (GraphNode inEdge : firstNode.getInEdges()) {
-      inEdge.removeOutEdge(firstNode);
-      inEdge.addOutEdge(this);
-    }
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
-    }
-    for (GraphNode outEdge : lastNode.getOutEdges()) {
-      outEdge.removeInEdge(lastNode);
-      outEdge.addInEdge(this);
-    }
+    GraphNode firstChild = it.next();
+    GraphNode secondChild = it.next();
+
+    GraphNode inNode = getInEdges().iterator().next();
+    inNode.removeOutEdge(firstChild);
+    inNode.removeOutEdge(secondChild);
+    inNode.addOutEdge(this);
+
+    GraphNode outNode = getOutEdges().iterator().next();
+    outNode.removeInEdge(firstChild);
+    outNode.removeInEdge(secondChild);
+    outNode.addInEdge(this);
   }
 
   @Override

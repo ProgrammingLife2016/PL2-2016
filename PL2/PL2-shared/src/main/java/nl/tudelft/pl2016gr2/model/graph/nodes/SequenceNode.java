@@ -185,7 +185,7 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public GraphNode copy() {
-    SequenceNode node = new SequenceNode(this.getId(), sequence, getGenomes());
+    SequenceNode node = new SequenceNode(this.getId(), sequence);
     node.level = level;
     node.guiData.overlapping = guiData.overlapping;
     return node;

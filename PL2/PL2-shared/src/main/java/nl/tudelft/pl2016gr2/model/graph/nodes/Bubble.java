@@ -1,11 +1,11 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
-import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * An aggregate <code>GraphNode</code>, containing other <code>GraphNodes</code>.
@@ -15,14 +15,14 @@ import java.util.HashSet;
 public abstract class Bubble implements GraphNode {
 
   private final int id;
-  private final HashSet<GraphNode> nestedNodes;
+  private final List<GraphNode> nestedNodes;
 
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
 
   private int size = -1;
   private int level = -1;
-  private final GraphNodeGuiData guiData;
+  private final GraphNodeGuiData guiData = new GraphNodeGuiData();
 
   /**
    * If the nodes in the bubble have to be vertically aligned.
@@ -40,8 +40,7 @@ public abstract class Bubble implements GraphNode {
     this.id = id;
     this.inEdges = new HashSet<>();
     this.outEdges = new HashSet<>();
-    this.nestedNodes = new HashSet<>();
-    guiData = new GraphNodeGuiData();
+    this.nestedNodes = new ArrayList<>();
   }
 
   /**
@@ -57,8 +56,7 @@ public abstract class Bubble implements GraphNode {
     this.outEdges = new HashSet<>(outEdges);
     //this.inEdges.trimToSize();
     //this.outEdges.trimToSize();
-    this.nestedNodes = new HashSet<>();
-    guiData = new GraphNodeGuiData();
+    this.nestedNodes = new ArrayList<>();
   }
 
   /**
@@ -70,14 +68,13 @@ public abstract class Bubble implements GraphNode {
    * @param nestedNodes the nested nodes of the bubble.
    */
   public Bubble(int id, Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
-      Collection<GraphNode> nestedNodes) {
+      List<GraphNode> nestedNodes) {
     this.id = id;
     this.inEdges = new HashSet<>(inEdges);
     this.outEdges = new HashSet<>(outEdges);
     //this.inEdges.trimToSize();
     //this.outEdges.trimToSize();
-    this.nestedNodes = new HashSet<>(nestedNodes);
-    guiData = new GraphNodeGuiData();
+    this.nestedNodes = nestedNodes;
     initOverlap();
   }
 
@@ -91,7 +88,6 @@ public abstract class Bubble implements GraphNode {
     this.inEdges = bubble.inEdges;
     this.outEdges = bubble.outEdges;
     this.nestedNodes = bubble.nestedNodes;
-    this.guiData = bubble.guiData;
   }
 
   /**
@@ -118,6 +114,9 @@ public abstract class Bubble implements GraphNode {
    * @param child the child node.
    */
   public void addChild(GraphNode child) {
+    if (nestedNodes.contains(child)) {
+      return;
+    }
     nestedNodes.add(child);
     if (child.getGuiData().overlapping) {
       guiData.overlapping = true;

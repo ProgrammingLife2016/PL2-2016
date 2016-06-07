@@ -84,14 +84,14 @@ public class DrawComparedGraphs implements Initializable {
   public static final Color NO_OVERLAP_COLOR = Color.rgb(255, 30, 30);
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final int MINUMUM_BASE_SIZE = 1;
+  private static final int MINUMUM_BASE_SIZE = 50;
   private static final double MAX_EDGE_WIDTH = 4.0;
   private static final double MIN_EDGE_WIDTH = 0.04;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
   private static final double UNIT_INCREMENT_RATE = 100.0;
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
-  private static final double MAX_ZOOM_FACTOR = 4.0;
+  private static final double MAX_ZOOM_FACTOR = 6.0;
   private static final double BUBBLE_POP_SIZE = 150.0;
 
   private ContextMenu contextMenu;

@@ -47,7 +47,7 @@ public class CompareSubgraphs {
     overlapThread.start();
     topAligner.start();
     bottomAligner.start();
-    
+
     try {
       overlapThread.join();
       topAligner.join();
@@ -73,6 +73,7 @@ public class CompareSubgraphs {
       int endY = (index + 1) * heightPerRoot;
       areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble
           .getOutEdges(), graphOrder)));
+      index++;
     }
     for (GraphNode node : graphOrder) {
       if (areaMap.containsKey(node)) {
@@ -293,9 +294,6 @@ public class CompareSubgraphs {
     }
 
     private ComplexVerticalArea getPart() {
-//      if(splitParts.size() == curPart) {
-//        return splitParts.get(curPart - 1);
-//      }
       return splitParts.get(curPart++);
     }
 

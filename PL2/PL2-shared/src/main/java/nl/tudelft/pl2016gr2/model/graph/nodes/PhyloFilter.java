@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
-import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface of the phylo bubble filter class.
@@ -15,5 +15,5 @@ public interface PhyloFilter {
    * @param bubble the bubble to zoom in on.
    * @return the list of aligned and sorted nested nodes.
    */
-  Collection<GraphNode> zoomIn(Bubble bubble);
+  List<GraphNode> zoomIn(Bubble bubble);
 }
