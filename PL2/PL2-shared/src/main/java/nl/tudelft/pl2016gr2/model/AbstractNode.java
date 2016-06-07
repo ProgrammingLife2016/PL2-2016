@@ -61,8 +61,17 @@ public abstract class AbstractNode implements Node {
         + "a" + " direct successor. This = " + this.getId();
 
     Collection<Integer> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome)).forEach(genomes
-        ::add);
+    Collection<Integer> otherGenomes = new ArrayList<>();
+    // Mark genomes that are seen in other out edges which appear before the node.
+    this.getOutEdges().forEach(outEdge -> {
+      if (!outEdge.equals(node) && outEdge.getId() < node.getId()) {
+        otherGenomes.addAll(outEdge.getGenomes());
+      }
+    });
+    getGenomes().stream().filter(
+        genome -> node.getGenomes().contains(genome) && !otherGenomes.contains(genome)).forEach(
+        genomes::add);
+
     return genomes;
   }
 

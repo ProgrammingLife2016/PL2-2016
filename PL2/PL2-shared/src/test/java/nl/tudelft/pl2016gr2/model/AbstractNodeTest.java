@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -84,8 +85,61 @@ public class AbstractNodeTest {
     Mockito.when(otherNode.getInEdges()).thenReturn(Collections.singletonList(instance));
     Mockito.when(instance.getOutEdges()).thenReturn(Collections.singletonList(otherNode));
 
-    assertTrue(instance.getGenomesOverEdge(otherNode).contains(1));
+    Collection<Integer> genomesOverEdge = instance.getGenomesOverEdge(otherNode);
+    assertTrue(genomesOverEdge.contains(1));
+    assertFalse(genomesOverEdge.contains(2));
+    assertFalse(genomesOverEdge.contains(5));
     assertEquals(1, instance.getGenomesOverEdge(otherNode).size());
+  }
+
+  @Test
+  public void getGenomesOverEdgeDoesNotReturnLongerPaths() {
+    GraphNode otherNode = mock(GraphNode.class);
+    GraphNode inBetweenNode = mock(GraphNode.class);
+
+    Mockito.when(otherNode.getId()).thenReturn(2);
+    Mockito.when(inBetweenNode.getId()).thenReturn(1);
+    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+
+    Mockito.when(instance.getGenomes()).thenReturn(Arrays.asList(1, 2, 3));
+    Mockito.when(inBetweenNode.getGenomes()).thenReturn(Arrays.asList(1, 3));
+    Mockito.when(otherNode.getGenomes()).thenReturn(Arrays.asList(1, 2, 3));
+
+    Mockito.when(otherNode.getInEdges()).thenReturn(Arrays.asList(instance, inBetweenNode));
+    Mockito.when(inBetweenNode.getInEdges()).thenReturn(Collections.singletonList(instance));
+    Mockito.when(inBetweenNode.getOutEdges()).thenReturn(Collections.singletonList(otherNode));
+    Mockito.when(instance.getOutEdges()).thenReturn(Arrays.asList(inBetweenNode, otherNode));
+
+    Collection<Integer> genomesOverEdge = instance.getGenomesOverEdge(otherNode);
+
+    assertTrue(!genomesOverEdge.contains(1));
+    assertTrue(genomesOverEdge.contains(2));
+    assertEquals(1, genomesOverEdge.size());
+  }
+
+  @Test
+  public void getGenomesOverEdgeDoesNotReturnLongerPathsBackwards() {
+    GraphNode otherNode = mock(GraphNode.class);
+    GraphNode startNode = mock(GraphNode.class);
+
+    Mockito.when(otherNode.getId()).thenReturn(2);
+    Mockito.when(startNode.getId()).thenReturn(1);
+    AccessPrivate.setFieldValue("id_field", AbstractNode.class, instance, 5);
+
+    Mockito.when(instance.getGenomes()).thenReturn(Arrays.asList(1, 3));
+    Mockito.when(startNode.getGenomes()).thenReturn(Arrays.asList(1, 2, 3));
+    Mockito.when(otherNode.getGenomes()).thenReturn(Arrays.asList(1, 2, 3));
+
+    Mockito.when(otherNode.getInEdges()).thenReturn(Arrays.asList(instance, startNode));
+    Mockito.when(instance.getInEdges()).thenReturn(Collections.singletonList(instance));
+    Mockito.when(instance.getOutEdges()).thenReturn(Collections.singletonList(otherNode));
+    Mockito.when(startNode.getOutEdges()).thenReturn(Arrays.asList(startNode, otherNode));
+
+    Collection<Integer> genomesOverEdge = instance.getGenomesOverEdge(otherNode);
+
+    assertTrue(!genomesOverEdge.contains(2));
+    assertTrue(genomesOverEdge.containsAll(Arrays.asList(1, 3)));
+    assertEquals(2, genomesOverEdge.size());
   }
 
   @Test
