@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.graph.HashGraph;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,16 +31,18 @@ public class GraphOrdererThreadTest {
    */
   @Before
   public void initializeNodes() {
-    nodea = new SequenceNode(0);
-    nodeb = new SequenceNode(1);
-    nodec = new SequenceNode(2);
-    noded = new SequenceNode(3);
+    BaseSequence bases = new BaseSequence("A");
+    nodea = new SequenceNode(0, bases);
+    nodeb = new SequenceNode(1, bases);
+    nodec = new SequenceNode(2, bases);
+    noded = new SequenceNode(3, bases);
     nodea.addOutEdge(nodeb);
     nodeb.addInEdge(nodea);
     nodeb.addOutEdge(nodec);
     nodeb.addOutEdge(noded);
     nodec.addInEdge(nodeb);
     noded.addInEdge(nodeb);
+    
   }
 
   /**
@@ -59,10 +63,5 @@ public class GraphOrdererThreadTest {
     orderer.start();
     SequenceGraph orderedGraph = orderer.getGraph();
     assertEquals(4, orderedGraph.size());
-    assertEquals(0, nodea.getLevel());
-    assertEquals(1, nodeb.getLevel());
-    assertEquals(2, nodec.getLevel());
-    assertEquals(2, noded.getLevel());
   }
-
 }

@@ -254,14 +254,6 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void addDuplicateGenomeThrowsAssertion() {
-    final int testGenome = 1;
-    instance.addGenome(testGenome);
-    exception.expect(AssertionError.class);
-    instance.addGenome(testGenome);
-  }
-
-  @Test
   public void removeGenomeRemovesElement() {
     final int testGenome = 0;
     instance.addGenome(testGenome);

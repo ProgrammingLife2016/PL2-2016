@@ -37,7 +37,7 @@ public class SequenceGraphTest {
    *
    * @param factory The factory that will produce new instances on demand
    */
-  private SequenceGraphTest(SequenceGraphFactory factory) {
+  public SequenceGraphTest(SequenceGraphFactory factory) {
     this.factory = factory;
   }
 

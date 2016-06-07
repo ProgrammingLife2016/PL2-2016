@@ -39,9 +39,6 @@ public class AbstractNodeTest {
   public void setUp() {
     instance = mock(AbstractGraphNode.class);
     Mockito.when(instance.getId()).thenCallRealMethod();
-    Mockito.when(instance.hasChildren()).thenCallRealMethod();
-    Mockito.when(instance.getChildren()).thenCallRealMethod();
-    Mockito.when(instance.size()).thenCallRealMethod();
     Mockito.when(instance.toString()).thenCallRealMethod();
     Mockito.when(instance.getGenomesOverEdge(any())).thenCallRealMethod();
   }
@@ -64,11 +61,6 @@ public class AbstractNodeTest {
   }
 
   @Test
-  public void getChildren() {
-    assertNull(instance.getChildren());
-  }
-
-  @Test
   public void getGenomesOverEdge() {
     GraphNode otherNode = mock(GraphNode.class);
 
@@ -83,20 +75,6 @@ public class AbstractNodeTest {
 
     assertTrue(instance.getGenomesOverEdge(otherNode).contains(1));
     assertEquals(1, instance.getGenomesOverEdge(otherNode).size());
-  }
-
-  @Test
-  public void getGenomesOverEdgeThrowsAssertionWhenNotSuccessor() {
-    GraphNode otherNode = mock(GraphNode.class);
-
-    Mockito.when(otherNode.getId()).thenReturn(2);
-    AccessPrivate.setFieldValue("id_field", AbstractGraphNode.class, instance, 5);
-
-    Mockito.when(otherNode.getInEdges()).thenReturn(Collections.emptyList());
-    Mockito.when(instance.getOutEdges()).thenReturn(Collections.emptyList());
-
-    exception.expect(AssertionError.class);
-    instance.getGenomesOverEdge(otherNode);
   }
 
   @Test
