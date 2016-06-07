@@ -5,7 +5,9 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
+import javafx.scene.text.Text;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 /**
  * A square representation of a node, which can be drawn in the user interface.
  *
@@ -27,6 +29,7 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));
     setFill(Color.ALICEBLUE);
+    setStrokeWidth(height / 20.0d);
   }
 
   @Override
@@ -42,5 +45,20 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
   @Override
   public Node get() {
     return this;
+  }
+
+  @Override
+  public void select() {
+    setStroke(Color.BLACK);
+  }
+
+  @Override
+  public void deselect() {
+    setStroke(null);
+  }
+
+  @Override
+  public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
+    return () -> new Text("TODO");
   }
 }

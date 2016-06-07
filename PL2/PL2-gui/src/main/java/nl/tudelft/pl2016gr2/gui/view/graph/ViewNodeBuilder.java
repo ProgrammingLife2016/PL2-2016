@@ -3,6 +3,8 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.NO_OVERLAP_COLOR;
 import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.OVERLAP_COLOR;
 
+import javafx.event.EventHandler;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
@@ -56,7 +58,28 @@ public class ViewNodeBuilder implements NodeVisitor {
       int nestedDepth, SelectionManager selectionManager) {
     ViewNodeBuilder builder = new ViewNodeBuilder(width, height, nestedDepth, selectionManager);
     node.accept(builder);
+
+    // select when previously selected node is equal to this new one
+    if (selectionManager.getSelectedGraphNodes().contains(node.getId())) {
+      selectionManager.select(builder.viewNode);
+    }
+
     return builder.viewNode;
+  }
+
+  /**
+   * Builds a mouse click event handler that selects the graphnode for the given id.
+   *
+   * @param id The id of the graph node to be selected.
+   * @return The event handler.
+   */
+  private EventHandler<? super MouseEvent> buildOnMouseClickedHandler(int id) {
+    return mouseEvent -> {
+      selectionManager.getSelectedGraphNodes().clear();
+      selectionManager.getSelectedGraphNodes().add(id);
+      selectionManager.select(viewNode);
+      mouseEvent.consume();
+    };
   }
 
   @Override
@@ -73,6 +96,7 @@ public class ViewNodeBuilder implements NodeVisitor {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
     }
     rect.setFill(fill);
+    rect.setOnMouseClicked(buildOnMouseClickedHandler(bubble.getId()));
     viewNode = rect;
   }
 
@@ -117,6 +141,7 @@ public class ViewNodeBuilder implements NodeVisitor {
     } else {
       circle.setFill(NO_OVERLAP_COLOR);
     }
+    circle.setOnMouseClicked(buildOnMouseClickedHandler(node.getId()));
     viewNode = circle;
   }
 }
