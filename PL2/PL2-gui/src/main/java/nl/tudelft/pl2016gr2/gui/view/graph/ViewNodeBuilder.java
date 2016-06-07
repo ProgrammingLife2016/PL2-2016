@@ -4,6 +4,7 @@ import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.NO_OVERLAP_
 import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.OVERLAP_COLOR;
 
 import javafx.scene.paint.Color;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -23,6 +24,7 @@ public class ViewNodeBuilder implements NodeVisitor {
   private final double width;
   private final double height;
   private final int nestedDepth;
+  private final SelectionManager selectionManager;
   private IViewGraphNode viewNode;
 
   /**
@@ -32,11 +34,13 @@ public class ViewNodeBuilder implements NodeVisitor {
    * @param width       the width of the node.
    * @param height      the height of the node.
    * @param nestedDepth the amount of times this node is nested in a bubble.
+   * @param selectionManager
    */
-  private ViewNodeBuilder(double width, double height, int nestedDepth) {
+  private ViewNodeBuilder(double width, double height, int nestedDepth, SelectionManager selectionManager) {
     this.width = width;
     this.height = height;
     this.nestedDepth = nestedDepth;
+    this.selectionManager = selectionManager;
   }
 
   /**
@@ -49,8 +53,8 @@ public class ViewNodeBuilder implements NodeVisitor {
    * @return the visual representation of the node.
    */
   public static IViewGraphNode buildNode(GraphNode node, double width, double height,
-      int nestedDepth) {
-    ViewNodeBuilder builder = new ViewNodeBuilder(width, height, nestedDepth);
+      int nestedDepth, SelectionManager selectionManager) {
+    ViewNodeBuilder builder = new ViewNodeBuilder(width, height, nestedDepth, selectionManager);
     node.accept(builder);
     return builder.viewNode;
   }
