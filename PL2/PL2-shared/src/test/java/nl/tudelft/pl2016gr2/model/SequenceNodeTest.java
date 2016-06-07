@@ -397,9 +397,29 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void copy() {
+  public void testCopyClass() {
     Class old = instance.getClass();
     assertEquals(old, instance.copy().getClass());
+  }
+
+  @Test
+  public void testCopyShouldCopyId() {
+    assertEquals(instance.getId(), instance.copy().getId());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyGenomes() {
+    assertTrue(instance.copy().getGenomes().isEmpty());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyInEdges() {
+    assertTrue(instance.copy().getInEdges().isEmpty());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyOutEdges() {
+    assertTrue(instance.copy().getOutEdges().isEmpty());
   }
 
   @Test
