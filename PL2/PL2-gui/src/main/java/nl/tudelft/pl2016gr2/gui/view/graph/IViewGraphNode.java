@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
 /**
@@ -9,7 +10,7 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
  *
  * @author Faris
  */
-public interface IViewGraphNode {
+public interface IViewGraphNode extends ISelectable {
 
   /**
    * Get the center x property.

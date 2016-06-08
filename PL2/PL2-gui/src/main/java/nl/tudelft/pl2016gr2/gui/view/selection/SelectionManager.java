@@ -41,6 +41,12 @@ public class SelectionManager {
       = new ObservableSetWrapper<>(new HashSet<>());
 
   /**
+   * The selected nodes in the graph. -1 means no genome is selected.
+   */
+  private final ObservableSet<Integer> graphSelectedNodes
+      = FXCollections.observableSet();
+
+  /**
    * The selected genome in the search box. -1 means no genome is selected.
    */
   private final ObservableList<Integer> searchBoxSelectedGenomes
@@ -170,4 +176,9 @@ public class SelectionManager {
   public ObservableList<Integer> getSearchBoxSelectedGenomes() {
     return searchBoxSelectedGenomes;
   }
+
+  public ObservableSet<Integer> getSelectedGraphNodes() {
+    return graphSelectedNodes;
+  }
+
 }

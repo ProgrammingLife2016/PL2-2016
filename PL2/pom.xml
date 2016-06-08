@@ -36,7 +36,7 @@
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>2.9</version>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
@@ -52,13 +52,13 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>-->
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>2.5</version>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.6</version>
@@ -74,26 +74,26 @@
                         </reports>
                     </reportSet>
                 </reportSets>
-            </plugin>-->
-<!--            <plugin>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>3.0.3</version>
                 <configuration>
                     <includeTests>true</includeTests>
-                    
+                    <!--
                         Enables analysis which takes more memory but finds more bugs.
                         If you run out of memory, changes the value of the effort element
                         to 'low'.
-                    
+                    -->
                     <effort>Max</effort>
-                     Reports all bugs (other values are medium and max) 
+                     <!--Reports all bugs (other values are medium and max) -->
                     <threshold>Low</threshold>
-                     Produces XML report 
+                     <!--Produces XML report -->
                     <xmlOutput>true</xmlOutput>
                 </configuration>
-            </plugin>-->
-<!--            <plugin>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.6.201602180812</version>
@@ -104,12 +104,12 @@
                     </reports>
                 </reportSet>
             </reportSets>
-            </plugin>-->
+            </plugin>
         </plugins>
     </reporting>
 
     <build>
-<!--        <pluginManagement>
+        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -124,9 +124,9 @@
                     </dependencies>
                 </plugin>
             </plugins>
-        </pluginManagement>-->
+        </pluginManagement>
         <plugins>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>2.17</version>
@@ -166,13 +166,13 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-surefire-plugin</artifactId>
               <version>2.12.4</version>
               <configuration>
-                <skipTests>true</skipTests>
+                <skipTests>false</skipTests>
               </configuration>
             </plugin>
             <plugin>
@@ -197,7 +197,7 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-<!--            <plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.6.201602180812</version>
@@ -215,7 +215,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>-->
+            </plugin>
         </plugins>
     </build>
 
