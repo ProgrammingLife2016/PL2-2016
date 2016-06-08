@@ -192,4 +192,19 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
     }
     return level;
   }
+
+  @Override
+  public String toString() {
+
+    StringBuilder out = new StringBuilder();
+
+    for (GraphNode child : getChildren()) {
+      out.append(child.toString());
+    }
+
+    return out.toString();
+  }
+
+
+
 }

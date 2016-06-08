@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class GraphNodeRectangleDescription implements ISelectionInfo {
+/**
+ * Class can be used for simple text.
+ */
+public abstract class GraphBubbleDescription implements ISelectionInfo {
 
-  final ViewGraphNodeRectangle viewGraphNodeRectangle;
-
-  public GraphNodeRectangleDescription(ViewGraphNodeRectangle viewGraphNodeRectangle) {
-    this.viewGraphNodeRectangle = viewGraphNodeRectangle;
+  public GraphBubbleDescription() {
   }
 
   @Override
@@ -28,7 +28,7 @@ public class GraphNodeRectangleDescription implements ISelectionInfo {
       Node out = loader.load();
       GraphNodeRectangleDescriptionController controller = loader.getController();
 
-      controller.setup(viewGraphNodeRectangle);
+      controller.setup(this);
 
       return out;
 
@@ -38,9 +38,9 @@ public class GraphNodeRectangleDescription implements ISelectionInfo {
     }
   }
 
-  public static class GraphNodeRectangleDescriptionController implements Initializable {
+  public abstract String getText();
 
-    ViewGraphNodeRectangle viewGraphNodeRectangle;
+  public static class GraphNodeRectangleDescriptionController implements Initializable {
 
     @FXML
     public TextArea textArea;
@@ -50,13 +50,9 @@ public class GraphNodeRectangleDescription implements ISelectionInfo {
 
     }
 
-    void setup(ViewGraphNodeRectangle viewGraphNodeRectangle) {
-      this.viewGraphNodeRectangle = viewGraphNodeRectangle;
+    void setup(GraphBubbleDescription graphBubbleDescription) {
 
-      textArea.setText(viewGraphNodeRectangle.);
-
+      textArea.setText(graphBubbleDescription.getText());
     }
-
   }
-
 }

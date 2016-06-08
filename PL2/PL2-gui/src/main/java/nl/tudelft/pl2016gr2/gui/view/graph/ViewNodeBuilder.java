@@ -6,6 +6,7 @@ import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.OVERLAP_COL
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
@@ -90,7 +91,12 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(PhyloBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
+      @Override
+      public String getText() {
+        return bubble.toString();
+      }
+    });
     Color fill = Color.ALICEBLUE;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
@@ -102,40 +108,63 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(StraightSequenceBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
+      @Override
+      public String getText() {
+        return bubble.toString();
+      }
+    });
     Color fill = Color.LIGHTCORAL;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
     }
     rect.setFill(fill);
+    rect.setOnMouseClicked(buildOnMouseClickedHandler(bubble.getId()));
     viewNode = rect;
   }
 
   @Override
   public void visit(IndelBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
+      @Override
+      public String getText() {
+        return bubble.toString();
+      }
+    });
     Color fill = Color.LIGHTSKYBLUE;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
     }
     rect.setFill(fill);
+    rect.setOnMouseClicked(buildOnMouseClickedHandler(bubble.getId()));
     viewNode = rect;
   }
 
   @Override
   public void visit(PointMutationBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
+      @Override
+      public String getText() {
+        return bubble.toString();
+      }
+    });
     Color fill = Color.PLUM;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
     }
     rect.setFill(fill);
+    rect.setOnMouseClicked(buildOnMouseClickedHandler(bubble.getId()));
     viewNode = rect;
   }
 
   @Override
   public void visit(SequenceNode node) {
-    ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height);
+    ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height, new GraphBubbleDescription() {
+      @Override
+      public String getText() {
+        return node.toString();
+      }
+    });
     if (node.getGuiData().overlapping) {
       circle.setFill(OVERLAP_COLOR);
     } else {

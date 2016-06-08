@@ -14,15 +14,18 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
  */
 public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
+  private final ISelectionInfo selectionInfo;
+
   /**
    * Construct a node circle.
    *
    * @param width  the width of the ellipse.
    * @param height the height of the ellipse.
    */
-  public ViewGraphNodeEllipse(double width, double height) {
+  public ViewGraphNodeEllipse(double width, double height, ISelectionInfo selectionInfo) {
     super(width * DrawComparedGraphs.NODE_MARGIN / 2.0, height / 2.0);
     setStrokeWidth(height / 20.0d);
+    this.selectionInfo = selectionInfo;
   }
 
   @Override
@@ -52,6 +55,6 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
   @Override
   public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
-    return () -> new Text("TODO");
+    return selectionInfo;
   }
 }
