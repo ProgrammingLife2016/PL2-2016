@@ -134,8 +134,15 @@ public class SearchPaneController implements Initializable {
       TableRow<Annotation> row = new TableRow<>();
 
       row.setOnDragDetected((MouseEvent event) -> {
+        // Format the genome selection for dragging
+        StringBuilder genomeStringBuilder = new StringBuilder();
+        for (int genome : selectionManager.getSearchBoxSelectedGenomes()) {
+          genomeStringBuilder.append(GenomeMap.getInstance().getGenome(genome)).append('\n');
+        }
+        genomeStringBuilder.deleteCharAt(genomeStringBuilder.length() - 1);
+
         ClipboardContent clipboard = new ClipboardContent();
-        clipboard.putString(row.getItem().specimenId);
+        clipboard.putString(genomeStringBuilder.toString());
         Dragboard dragboard = row.startDragAndDrop(TransferMode.ANY);
         dragboard.setContent(clipboard);
 
