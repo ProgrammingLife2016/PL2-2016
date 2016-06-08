@@ -161,8 +161,10 @@ public class SubgraphAlgorithmManager {
 
     @Override
     public void run() {
-      FilterBubbles filter = new FilterBubbles(subgraph);
-      orderedNodes = filter.filter(treeRoot, genomes);
+      orderedNodes = subgraph.getOrderedGraph();
+      orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+      //FilterBubbles filter = new FilterBubbles(subgraph);
+      //orderedNodes = filter.filter(treeRoot, genomes);
     }
   }
 }
