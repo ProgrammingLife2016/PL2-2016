@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
