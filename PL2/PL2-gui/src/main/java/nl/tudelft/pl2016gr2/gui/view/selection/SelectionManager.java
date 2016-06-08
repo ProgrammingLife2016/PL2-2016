@@ -1,18 +1,10 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
 import com.sun.javafx.collections.ObservableSetWrapper;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
-import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 

@@ -25,6 +25,16 @@ public class SelectionPaneController implements Initializable {
         new BackgroundFill(BACKGROUND_COLOR, null, Insets.EMPTY)));
   }
 
+  /**
+   * Sets the content of the selectionPane.
+   *
+   * <p>
+   *   This removes previous shown content,
+   *   call with null to clear.
+   * </p>
+   *
+   * @param content new content, may be null
+   */
   public void setContent(Node content) {
     rootPane.getChildren().clear();
     if (content != null) {

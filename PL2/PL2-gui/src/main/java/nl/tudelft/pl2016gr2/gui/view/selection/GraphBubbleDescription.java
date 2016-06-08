@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
-import nl.tudelft.pl2016gr2.gui.view.graph.ViewGraphNodeRectangle;
 
 import java.io.IOException;
 import java.net.URL;

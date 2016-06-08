@@ -2,7 +2,6 @@ package nl.tudelft.pl2016gr2.gui.view.selection;
 
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
 /**
