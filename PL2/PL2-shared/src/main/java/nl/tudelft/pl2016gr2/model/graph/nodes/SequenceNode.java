@@ -169,20 +169,11 @@ public class SequenceNode extends AbstractGraphNode implements Node {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append('[');
-    for (GraphNode inEdge : getInEdges()) {
-      sb.append(inEdge.getId()).append(", ");
+    String sequenceString = getSequence();
+    if (sequenceString.length() > 20) {
+      sequenceString = sequenceString.substring(0, 20);
     }
-    sb.append(']');
-    StringBuilder sb2 = new StringBuilder();
-    sb2.append('[');
-    for (GraphNode outEdge : getOutEdges()) {
-      sb2.append(outEdge.getId()).append(", ");
-    }
-    sb2.append(']');
-    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.toString() + ", outEdges="
-        + sb2.toString() + '}';
+    return String.format("Sequence %d:\n%s\n", getId(), sequenceString);
   }
 
   @Override
@@ -221,4 +212,5 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   public boolean hasChild(GraphNode child) {
     return false;
   }
+
 }

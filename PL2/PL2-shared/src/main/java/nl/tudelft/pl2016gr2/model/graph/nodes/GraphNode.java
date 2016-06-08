@@ -325,4 +325,5 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return true is the bubble is popped
    */
   boolean isPopped();
+
 }

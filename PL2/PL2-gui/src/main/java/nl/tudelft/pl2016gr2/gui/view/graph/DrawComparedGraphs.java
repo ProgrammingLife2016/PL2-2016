@@ -5,7 +5,6 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -105,8 +104,7 @@ public class DrawComparedGraphs implements Initializable {
   private OrderedGraph topGraph;
   @TestId(id = "bottomGraph")
   private OrderedGraph bottomGraph;
-  private ObservableSet<Integer> topGraphGenomes;
-  private ObservableSet<Integer> bottomGraphGenomes;
+  private SelectionManager selectionManager;
   @TestId(id = "amountOfLevels")
   private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
@@ -124,22 +122,12 @@ public class DrawComparedGraphs implements Initializable {
           DrawComparedGraphs.class.getClassLoader().getResource("pages/CompareGraphsPane.fxml"));
       loader.load();
       DrawComparedGraphs controller = loader.<DrawComparedGraphs>getController();
-      controller.setSelectionManager(selectionManager);
+      controller.selectionManager = selectionManager;
       return controller;
     } catch (IOException ex) {
       Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
-
-  /**
-   * Get the top genome and bottom genome observable sets from the selection manager.
-   *
-   * @param selectionManager the selection manager.
-   */
-  private void setSelectionManager(SelectionManager selectionManager) {
-    this.topGraphGenomes = selectionManager.getTopGraphGenomes();
-    this.bottomGraphGenomes = selectionManager.getBottomGraphGenomes();
   }
 
   /**
@@ -354,7 +342,9 @@ public class DrawComparedGraphs implements Initializable {
           }
         }
         try {
-          handleGenomesDropped(genomes, event, topGraphGenomes, bottomGraphGenomes);
+          handleGenomesDropped(genomes, event,
+              selectionManager.getTopGraphGenomes(),
+              selectionManager.getBottomGraphGenomes());
         } catch (Exception ex) {
           Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -378,8 +368,9 @@ public class DrawComparedGraphs implements Initializable {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
         Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
-        handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event, bottomGraphGenomes,
-            topGraphGenomes);
+        handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event,
+            selectionManager.getBottomGraphGenomes(),
+            selectionManager.getTopGraphGenomes());
         event.setDropCompleted(true);
         event.consume();
       }
@@ -403,7 +394,7 @@ public class DrawComparedGraphs implements Initializable {
 
     switch (getDrawnGraphs()) {
       case 0:
-        topGraphGenomes.addAll(genomes);
+        selectionManager.getTopGraphGenomes().addAll(genomes);
         redrawGraphs();
         break;
       case 1:
@@ -429,9 +420,9 @@ public class DrawComparedGraphs implements Initializable {
    */
   private int getDrawnGraphs() {
     int drawnGraphs = 0;
-    if (!topGraphGenomes.isEmpty()) {
+    if (!selectionManager.getTopGraphGenomes().isEmpty()) {
       drawnGraphs++;
-      if (!bottomGraphGenomes.isEmpty()) {
+      if (!selectionManager.getBottomGraphGenomes().isEmpty()) {
         drawnGraphs++;
       }
     }
@@ -520,7 +511,7 @@ public class DrawComparedGraphs implements Initializable {
         compareTwoGraphs();
         break;
       case 1:
-        drawOneGraph(topGraphGenomes);
+        drawOneGraph(selectionManager.getTopGraphGenomes());
         break;
       default:
         topPane.getChildren().clear();
@@ -552,10 +543,10 @@ public class DrawComparedGraphs implements Initializable {
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void compareTwoGraphs(Collection<Integer> topGenomes, Collection<Integer> bottomGenomes) {
-    topGraphGenomes.clear();
-    topGraphGenomes.addAll(topGenomes);
-    bottomGraphGenomes.clear();
-    bottomGraphGenomes.addAll(bottomGenomes);
+    selectionManager.getTopGraphGenomes().clear();
+    selectionManager.getTopGraphGenomes().addAll(topGenomes);
+    selectionManager.getBottomGraphGenomes().clear();
+    selectionManager.getBottomGraphGenomes().addAll(bottomGenomes);
 
     compareTwoGraphs();
   }
@@ -565,8 +556,12 @@ public class DrawComparedGraphs implements Initializable {
    */
   private void compareTwoGraphs() {
     Pair<OrderedGraph, OrderedGraph> compareRes
-        = SubgraphAlgorithmManager.compareTwoGraphs(topGraphGenomes, bottomGraphGenomes, mainGraph,
-            mainGraphOrder, treeRoot);
+        = SubgraphAlgorithmManager.compareTwoGraphs(
+        selectionManager.getTopGraphGenomes(),
+        selectionManager.getBottomGraphGenomes(),
+        mainGraph,
+        mainGraphOrder,
+        treeRoot);
     this.topGraph = compareRes.left;
     this.bottomGraph = compareRes.right;
     drawTwoGraphs();
@@ -612,8 +607,8 @@ public class DrawComparedGraphs implements Initializable {
     if (getDrawnGraphs() == 0) {
       return;
     }
-    topGraphGenomes.clear();
-    bottomGraphGenomes.clear();
+    selectionManager.getTopGraphGenomes().clear();
+    selectionManager.getBottomGraphGenomes().clear();
     topPane.getChildren().clear();
     bottomPane.getChildren().clear();
     bottomGraph = null;
@@ -692,6 +687,7 @@ public class DrawComparedGraphs implements Initializable {
    *                        node.
    * @param viewRange       the range of values which may be used as y coordinate to draw this node.
    */
+  @SuppressWarnings("checkstyle:MethodLength") // either this or long lines.
   private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
       int startLevel, int endLevel, int nestedDepth, GraphViewRange viewRange) {
     drawnGraphNodes.add(node);
@@ -704,7 +700,8 @@ public class DrawComparedGraphs implements Initializable {
     if (height > width) {
       height = width;
     }
-    IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node, width, height, nestedDepth);
+    IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
+        width, height, nestedDepth,selectionManager);
     pane.getChildren().add(viewNode.get());
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
@@ -877,7 +874,7 @@ public class DrawComparedGraphs implements Initializable {
   @FXML
   @SuppressWarnings("unused")
   private void deleteBottomGraph() {
-    bottomGraphGenomes.clear();
+    selectionManager.getBottomGraphGenomes().clear();
     bottomGraph = null;
     redrawGraphs();
   }

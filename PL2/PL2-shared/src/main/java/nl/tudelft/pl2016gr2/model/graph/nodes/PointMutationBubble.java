@@ -119,4 +119,9 @@ public class PointMutationBubble extends Bubble {
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s:\n%s", "PointMutation", super.toString());
+  }
 }
