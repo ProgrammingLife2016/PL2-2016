@@ -21,9 +21,8 @@ public abstract class GraphBubbleDescription implements ISelectionInfo {
 
   @Override
   public Node getNode() {
-    FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(ViewGraphNodeRectangle.class.getClassLoader().getResource(
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
           "pages/selection_descriptions/graphNodeRectangleDescription.fxml"));
       Node out = loader.load();
       GraphNodeRectangleDescriptionController controller = loader.getController();
