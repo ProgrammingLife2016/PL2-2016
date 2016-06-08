@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
-import nl.tudelft.pl2016gr2.gui.view.graph.ViewGraphNodeRectangle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -21,9 +20,8 @@ public abstract class GraphBubbleDescription implements ISelectionInfo {
 
   @Override
   public Node getNode() {
-    FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(ViewGraphNodeRectangle.class.getClassLoader().getResource(
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
           "pages/selection_descriptions/graphNodeRectangleDescription.fxml"));
       Node out = loader.load();
       GraphNodeRectangleDescriptionController controller = loader.getController();

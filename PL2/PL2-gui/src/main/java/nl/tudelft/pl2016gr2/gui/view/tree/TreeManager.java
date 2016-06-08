@@ -56,26 +56,6 @@ public class TreeManager implements Initializable {
 
   private IPhylogeneticTreeRoot rootNode;
 
-  /**
-   * Load and initialize the view.
-   *
-   * @param selectionManager the selection manager.
-   * @return the controller class of the loaded view.
-   */
-  public static TreeManager loadView(SelectionManager selectionManager) {
-    FXMLLoader loader = new FXMLLoader();
-    try {
-      loader.setLocation(TreeManager.class.getClassLoader().getResource("pages/TreePane.fxml"));
-      loader.load();
-      TreeManager treeManager = loader.<TreeManager>getController();
-      treeManager.setSelectionManager(selectionManager);
-      return treeManager;
-    } catch (IOException ex) {
-      Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
-
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     initializeZoomEventHandler();
@@ -93,7 +73,7 @@ public class TreeManager implements Initializable {
    * @param selectionManager the selection manager.
    */
   @TestId(id = "setSelectionManager")
-  private void setSelectionManager(SelectionManager selectionManager) {
+  public void setSelectionManager(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
     initializeTopGraphSelectionManger();
     initializeBottomGraphSelectionManger();
