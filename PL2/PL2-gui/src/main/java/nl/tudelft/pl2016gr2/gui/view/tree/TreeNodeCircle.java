@@ -40,11 +40,11 @@ import java.util.List;
  */
 public class TreeNodeCircle extends Circle implements ISelectable {
 
-  private static final Color LEAF_COLOR = Color.BLACK;
-  private static final Color NODE_COLOR = Color.ALICEBLUE;
-  private static final double NODE_RADIUS = 10.0;
+  public static final Color LEAF_COLOR = Color.BLACK;
+  public static final Color NODE_COLOR = Color.ALICEBLUE;
+  public static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  private static final double NODE_BORDER_WIDTH = 4.0;
+  public static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
   private static final double MAX_EDGE_LENGTH = 200.0;
@@ -64,7 +64,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, DrawComparedGraphs.BOTTOM_GRAPH_COLOR));
   }
 
-  private static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
+  public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
       true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
 
   private final IPhylogeneticTreeNode dataNode;

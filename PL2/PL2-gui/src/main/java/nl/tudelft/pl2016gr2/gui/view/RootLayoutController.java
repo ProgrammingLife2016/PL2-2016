@@ -23,6 +23,7 @@ import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
@@ -198,6 +199,41 @@ public class RootLayoutController implements
             new Circle(10, Color.rgb(146, 0, 0))));
 
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Leaf node of the graph. This node has no children",
+        "Leaf node",
+        new Circle(10, Color.BLACK)
+    ));
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node of the graph. This node has children",
+        "Node",
+        new Circle(10, Color.ALICEBLUE)
+    ));
+    Circle tempCircle;
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node in orange section of the graph (top)",
+        "Top node",
+        tempCircle
+    ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(TreeNodeCircle.MULTI_GRAPH_GRADIENT);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node both sections of the graph",
+        "Shared node",
+        tempCircle
+    ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node in blue section of the graph (bottom)",
+        "Bottom node",
+        tempCircle
+    ));
     for (LineageColor color : LineageColor.values()) {
       treeLegendItems.add(new LegendController.LegendItem(
           String.format("Lineage color %s", color.name()),
@@ -205,7 +241,6 @@ public class RootLayoutController implements
           new Rectangle(20, 5, color.getColor())
       ));
     }
-
     treeLegendController.initializeData(
         "Legend",
         10.0, 5.0,
