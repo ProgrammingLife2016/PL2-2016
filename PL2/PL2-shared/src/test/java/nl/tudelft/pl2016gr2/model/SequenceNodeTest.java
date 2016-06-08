@@ -378,25 +378,6 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void trimToSizeTrimsGenomeMemory() {
-    for (int i = 0; i < 1000; i++) {
-      instance.addGenome(i);
-    }
-    for (int i = 0; i < 1000; i++) {
-      instance.removeGenome(i);
-    }
-    System.gc();
-    Runtime runtime = Runtime.getRuntime();
-    long oldMemory = runtime.totalMemory() - runtime.freeMemory();
-
-    instance.trimToSize();
-    System.gc();
-
-    long newMemory = runtime.totalMemory() - runtime.freeMemory();
-    assertTrue(newMemory < oldMemory);
-  }
-
-  @Test
   public void testCopyClass() {
     Class old = instance.getClass();
     assertEquals(old, instance.copy().getClass());
