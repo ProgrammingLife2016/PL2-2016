@@ -3,8 +3,8 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.TextArea?>
-<Pane prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription$GraphNodeRectangleDescriptionController">
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription$GraphNodeRectangleDescriptionController">
 
-    <TextArea layoutX="50" layoutY="50" prefWidth="300" prefHeight="500" fx:id="textArea" editable="false" />
+    <TextArea AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" fx:id="textArea" editable="false" />
 
-</Pane>
+</AnchorPane>
