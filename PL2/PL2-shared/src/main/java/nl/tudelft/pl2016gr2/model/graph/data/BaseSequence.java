@@ -80,7 +80,10 @@ public class BaseSequence {
    */
   private int getBase(int arrayIndex, int bitIndex) {
     if (bitIndex <= BITS_PER_INT - BITS_PER_BASE) {
-      return (bases[arrayIndex] >> bitIndex) & 0b111;
+      if (arrayIndex < bases.length) {
+        return (bases[arrayIndex] >> bitIndex) & 0b111;
+      }
+      return END_OF_BASES;
     } else if (arrayIndex + 1 < bases.length) {
       int bits = (bases[arrayIndex] >>> bitIndex) & 0b111;
       int bitsLeftToCopy = BITS_PER_BASE - (BITS_PER_INT - bitIndex);
