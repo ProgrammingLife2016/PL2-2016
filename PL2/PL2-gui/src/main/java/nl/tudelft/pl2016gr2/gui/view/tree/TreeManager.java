@@ -11,10 +11,10 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.IOException;
@@ -65,8 +65,7 @@ public class TreeManager implements Initializable {
   public static TreeManager loadView(SelectionManager selectionManager) {
     FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(TreeManager.class.getClassLoader()
-          .getResource("pages/TreePane.fxml"));
+      loader.setLocation(TreeManager.class.getClassLoader().getResource("pages/TreePane.fxml"));
       loader.load();
       TreeManager treeManager = loader.<TreeManager>getController();
       treeManager.setSelectionManager(selectionManager);
@@ -75,10 +74,6 @@ public class TreeManager implements Initializable {
       Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
     }
     throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
-
-  public Region getTreePane() {
-    return mainPane;
   }
 
   @Override
@@ -337,5 +332,23 @@ public class TreeManager implements Initializable {
   @TestId(id = "getCurrentLeaves()")
   private ArrayList<TreeNodeCircle> getCurrentLeaves() {
     return currentRoot.getCurrentLeaves();
+  }
+
+  /**
+   * Get the pane in which the tree is drawn.
+   *
+   * @return the pane in which the tree is drawn.
+   */
+  public Region getTreePane() {
+    return mainPane;
+  }
+
+  /**
+   * Get the root of the tree.
+   *
+   * @return the root of the tree.
+   */
+  public IPhylogeneticTreeRoot getTreeRoot() {
+    return rootNode;
   }
 }

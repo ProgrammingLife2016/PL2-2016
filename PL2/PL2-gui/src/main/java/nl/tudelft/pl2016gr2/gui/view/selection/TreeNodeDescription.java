@@ -6,8 +6,8 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
 /**
  * This class is used by tree nodes to offer a tree node description view to the selection manager.
@@ -27,6 +27,12 @@ public class TreeNodeDescription implements ISelectionInfo {
     }
   };
 
+  /**
+   * Construct a tree node description.
+   *
+   * @param selectionManager a reference to the selection manager.
+   * @param treeNode         the tree node to describe.
+   */
   public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
     this.selectionManager = selectionManager;
     this.treeNode = treeNode;

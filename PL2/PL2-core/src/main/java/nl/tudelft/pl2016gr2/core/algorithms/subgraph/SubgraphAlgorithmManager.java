@@ -1,7 +1,11 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.NodePosition;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
@@ -30,12 +34,13 @@ public class SubgraphAlgorithmManager {
    * @param bottomGenomes  the genomes which must be present in the bottom subgraph.
    * @param mainGraph      the main graph.
    * @param mainGraphOrder the order of the main graph.
+   * @param treeRoot       the root of the phylogenetic tree.
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
-      Collection<Integer> bottomGenomes, SequenceGraph mainGraph,
-      GraphOrdererThread mainGraphOrder) {
+      Collection<Integer> bottomGenomes, SequenceGraph mainGraph, GraphOrdererThread mainGraphOrder,
+      IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
     SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
@@ -43,11 +48,17 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     bottomSubGraphThread.start();
 
-    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> alignedGraphs
-        = CompareSubgraphs.compareGraphs(mainGraphOrder.getOrderedGraph(),
-            topSubGraphThread.getSubGraph(), bottomSubGraphThread.getSubGraph());
-    ArrayList<NodePosition> topGraphOrder = alignedGraphs.left;
-    ArrayList<NodePosition> bottomGraphOrder = alignedGraphs.right;
+    FilterBubbleThread topFilter = new FilterBubbleThread(topSubGraphThread.getSubGraph(),
+        topGenomes, treeRoot);
+    FilterBubbleThread bottomFilter = new FilterBubbleThread(bottomSubGraphThread.getSubGraph(),
+        bottomGenomes, treeRoot);
+    topFilter.start();
+    bottomFilter.start();
+    
+    ArrayList<GraphNode> topGraphOrder = topFilter.getOrderedNodes();
+    ArrayList<GraphNode> bottomGraphOrder = bottomFilter.getOrderedNodes();
+
+    CompareSubgraphs.compareGraphs(topGraphOrder, bottomGraphOrder);
 
     OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
     OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
@@ -61,22 +72,40 @@ public class SubgraphAlgorithmManager {
    * @param genomes        the genomes which must be present in the subgraph.
    * @param mainGraph      the main graph.
    * @param mainGraphOrder the order of the main graph.
+   * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
+  @SuppressWarnings("checkstyle:methodlength")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
-      GraphOrdererThread mainGraphOrder) {
+      GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
     topSubGraphThread.start();
-    SubGraphOrderer graphOrder = new SubGraphOrderer(mainGraphOrder.getOrderedGraph(),
-        topSubGraphThread.getSubGraph());
-    graphOrder.start();
+    SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
-    CompareSubgraphs.removeEmptyLevels(graphOrder.getNodeOrder());
-    for (NodePosition nodePosition : graphOrder.getNodeOrder()) {
-      nodePosition.setOverlapping(true);
+    ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
+    orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+
+    ArrayList<GraphNode> newNodes = new ArrayList<>();
+    for (GraphNode node : orderedNodes) {
+      if (node.getInEdges().isEmpty()) {
+
+        SequenceNode newerRoot = new SequenceNode(0, new BaseSequence(""));
+        node.addInEdge(newerRoot);
+        newerRoot.addOutEdge(node);
+        newNodes.add(newerRoot);
+      }
     }
-    return new OrderedGraph(topSubGraphThread.getSubGraph(), graphOrder.getNodeOrder());
+    orderedNodes.addAll(newNodes);
+    orderedNodes.sort((GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
+    });
+
+    //    FilterBubbles filter = new FilterBubbles(subgraph);
+    //    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+    CompareSubgraphs.alignVertically(orderedNodes);
+
+    return new OrderedGraph(subgraph, orderedNodes);
   }
 
   /**
@@ -120,6 +149,51 @@ public class SubgraphAlgorithmManager {
     @Override
     public void run() {
       subGraph = splitGraphs.getSubgraph(genomes);
+    }
+  }
+
+  private static class FilterBubbleThread extends Thread {
+
+    private final SequenceGraph subgraph;
+    private final Collection<Integer> genomes;
+    private final IPhylogeneticTreeRoot treeRoot;
+    private ArrayList<GraphNode> orderedNodes;
+
+    private FilterBubbleThread(SequenceGraph subgraph, Collection<Integer> genomes,
+        IPhylogeneticTreeRoot treeRoot) {
+      this.subgraph = subgraph;
+      this.genomes = genomes;
+      this.treeRoot = treeRoot;
+    }
+
+    public ArrayList<GraphNode> getOrderedNodes() {
+      try {
+        this.join();
+      } catch (InterruptedException ex) {
+        Logger.getLogger(SubgraphAlgorithmManager.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      return orderedNodes;
+    }
+
+    @Override
+    public void run() {
+      orderedNodes = subgraph.getOrderedGraph();
+      orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+      //FilterBubbles filter = new FilterBubbles(subgraph);
+      //orderedNodes = filter.filter(treeRoot, genomes);
+      ArrayList<GraphNode> newNodes = new ArrayList<>();
+      for (GraphNode node : orderedNodes) {
+        if (node.getInEdges().isEmpty()) {
+          SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+          newNodes.add(newRoot);
+          newRoot.addOutEdge(node);
+          node.addInEdge(newRoot);
+        }
+      }
+      orderedNodes.addAll(newNodes);
+      orderedNodes.sort((GraphNode first, GraphNode second) -> {
+        return first.getLevel() - second.getLevel();
+      });
     }
   }
 }

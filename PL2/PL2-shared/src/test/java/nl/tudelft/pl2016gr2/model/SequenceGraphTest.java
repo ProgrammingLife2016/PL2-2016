@@ -6,6 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import junit.framework.Assert;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.util.TestingUtilities;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +29,7 @@ import java.util.Iterator;
 @RunWith(Parameterized.class)
 public class SequenceGraphTest {
 
-  private SequenceGraphFactory factory;
+  private final SequenceGraphFactory factory;
   private SequenceGraph instance;
 
   /**
@@ -196,21 +199,21 @@ public class SequenceGraphTest {
     assertTrue(instance.getRootNodes().contains(mockedRoot));
   }
 
-  @Test
-  public void removeWhenNotPresentShouldReturnNull() {
-    assertNull(instance.remove(TestingUtilities.mockNode(100, false)));
-  }
-
-  @Test
-  public void testRemove() {
-    GraphNode mockedNode = TestingUtilities.mockNode(50, false);
-    instance.add(mockedNode);
-    assertTrue(instance.contains(mockedNode));
-
-    instance.remove(mockedNode);
-
-    assertFalse(instance.contains(mockedNode));
-  }
+  //  @Test
+  //  public void removeWhenNotPresentShouldReturnNull() {
+  //    assertNull(instance.remove(TestingUtilities.mockNode(100, false)));
+  //  }
+  //
+  //  @Test
+  //  public void testRemove() {
+  //    GraphNode mockedNode = TestingUtilities.mockNode(50, false);
+  //    instance.add(mockedNode);
+  //    assertTrue(instance.contains(mockedNode));
+  //
+  //    instance.remove(mockedNode);
+  //
+  //    assertFalse(instance.contains(mockedNode));
+  //  }
 
   @Test
   public void iteratorShouldIterateOnlyOverExistingElements() {

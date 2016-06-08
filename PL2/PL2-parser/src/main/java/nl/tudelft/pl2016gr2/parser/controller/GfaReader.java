@@ -1,12 +1,12 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
-import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
@@ -28,7 +28,6 @@ public class GfaReader {
 
   private static final int SHIFT_BY_BASE_10 = 10;
   @TestId(id = "genomes")
-  //  private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
   private final InputStream fileStream;
   @TestId(id = "originalGraph")

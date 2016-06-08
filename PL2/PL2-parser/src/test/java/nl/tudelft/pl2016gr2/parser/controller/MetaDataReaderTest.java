@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

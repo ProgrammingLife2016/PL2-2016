@@ -17,9 +17,9 @@ import java.util.HashMap;
  *    AnnotationReader reader = new AnnotationReader(file);
  *    MetaDataDAO dao = new MetaDataDAO(reader.read());
  *    ...
- *    dao.getAllAnnotations();
+ *    dao.getAllMetaDatas();
  *    ...
- *    dao.getAnnotation("TKK-01-0075");
+ *    dao.getMetaData("TKK-01-0075");
  *  }
  *  </pre>
  * </p>
@@ -43,11 +43,11 @@ public class MetaDataDAO {
     );
   }
 
-  public MetaData getAnnotation(String speciesId) {
+  public MetaData getMetaData(String speciesId) {
     return metaDatas.get(speciesId);
   }
 
-  public Collection<MetaData> getAllAnnotations() {
+  public Collection<MetaData> getAllMetaDatas() {
     return metaDatas.values();
   }
 

@@ -1,5 +1,6 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -8,6 +9,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * This implemetation of the {@link SequenceGraph} interface uses a hashmap to store the nodes.
+ *
+ * @author Wouter Smit
+ */
 public class HashGraph implements SequenceGraph {
 
   @TestId(id = "nodes")
@@ -55,6 +61,23 @@ public class HashGraph implements SequenceGraph {
   }
 
   /**
+   * Print the graph.
+   */
+  public void print() {
+    nodes.forEach((id, node) -> {
+      System.out.println(node);
+    });
+  }
+
+  @Override
+  public ArrayList<GraphNode> getOrderedGraph() {
+    ArrayList<GraphNode> graphOrder = new ArrayList<>(nodes.values());
+    graphOrder.sort((GraphNode firstNode, GraphNode secondNode)
+        -> firstNode.getLevel() - secondNode.getLevel());
+    return graphOrder;
+  }
+
+  /**
    * Finds all root nodes in the graph.
    * <p>
    * This operation runs in <code>O(n)</code> for <code>n</code> nodes.
@@ -69,6 +92,7 @@ public class HashGraph implements SequenceGraph {
         rootNodes.add(node);
       }
     });
+    rootNodes.trimToSize();
     return rootNodes;
   }
 
@@ -122,8 +146,7 @@ public class HashGraph implements SequenceGraph {
 
   @Override
   public void add(GraphNode node) {
-    assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
-
+    //assert !nodes.containsKey(node.getId()) : "Adding already existing element to the graph.";
     if (node.isRoot()) {
       rootNodes.add(node);
     }
@@ -131,8 +154,23 @@ public class HashGraph implements SequenceGraph {
   }
 
   @Override
-  public GraphNode remove(GraphNode node) {
-    return nodes.remove(node.getId());
+  public void remove(GraphNode node, boolean updateInEdges, boolean updateOutEdges) {
+    if (updateInEdges) {
+      node.getInEdges().forEach(inEdge -> {
+        if (nodes.containsKey(inEdge.getId())) {
+          inEdge.removeOutEdge(node);
+        }
+      });
+    }
+
+    if (updateOutEdges) {
+      node.getOutEdges().forEach(outEdge -> {
+        if (nodes.containsKey(outEdge.getId())) {
+          outEdge.removeInEdge(node);
+        }
+      });
+    }
+    nodes.remove(node.getId());
   }
 
   /**

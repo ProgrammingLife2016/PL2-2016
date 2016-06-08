@@ -18,7 +18,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import nl.tudelft.pl2016gr2.gui.model.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
@@ -27,6 +26,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -40,11 +40,11 @@ import java.util.List;
  */
 public class TreeNodeCircle extends Circle implements ISelectable {
 
-  private static final Color LEAF_COLOR = Color.BLACK;
-  private static final Color NODE_COLOR = Color.ALICEBLUE;
-  private static final double NODE_RADIUS = 10.0;
+  public static final Color LEAF_COLOR = Color.BLACK;
+  public static final Color NODE_COLOR = Color.ALICEBLUE;
+  public static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  private static final double NODE_BORDER_WIDTH = 4.0;
+  public static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
   private static final double MAX_EDGE_LENGTH = 200.0;
@@ -64,7 +64,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, DrawComparedGraphs.BOTTOM_GRAPH_COLOR));
   }
 
-  private static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
+  public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
       true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
 
   private final IPhylogeneticTreeNode dataNode;
@@ -74,6 +74,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final SelectionManager selectionManager;
   private boolean isLeaf;
   private final Line edge = new Line();
+  private Rectangle highlightArea;
 
   /**
    * Create a nl.tudelft.pl2016gr2.gui.view node.
@@ -124,7 +125,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize the click event for this object.
    */
   private void initializeClickedEvent() {
-    setOnMouseClicked((MouseEvent event) -> {
+    this.setOnMouseClicked((MouseEvent event) -> {
       selectionManager.select(this);
       event.consume();
     });
@@ -134,7 +135,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Initialize a drag event initializer.
    */
   private void initializeDragEvent() {
-    setOnDragDetected((MouseEvent event) -> {
+    this.setOnDragDetected((MouseEvent event) -> {
       StringBuilder genomeStringBuilder = new StringBuilder();
       for (int genome : dataNode.getGenomes()) {
         genomeStringBuilder.append(GenomeMap.getInstance().getGenome(genome)).append('\n');
@@ -202,7 +203,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       Pane graphPane, SelectionManager selectionManager) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {
-      return null; // box too small to draw node.
+      return null; // not enough space to draw the tree node.
     }
     TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
     graphPane.getChildren().add(node);
@@ -440,8 +441,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       return null;
     }
   }
-
-  private Rectangle highlightArea;
 
   /**
    * Highlight the area of this node.

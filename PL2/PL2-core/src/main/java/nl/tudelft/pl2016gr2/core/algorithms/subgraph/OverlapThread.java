@@ -1,61 +1,50 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
-import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Thread which can be used to calculate the overlapping nodes of two graph.
  */
 public class OverlapThread extends Thread {
 
-  private HashSet<GraphNode> overlappedNodes;
-  private final SequenceGraph topGraph;
-  private final SequenceGraph bottomGraph;
+  private final ArrayList<GraphNode> smallestOrderedGraph;
+  private final ArrayList<GraphNode> largestOrderedGraph;
 
   /**
    * Construct a overlap thread, which finds the overlapping nodes of the given graphs.
    *
-   * @param firstGraph  the first graph.
-   * @param secondGraph the second graph.
+   * @param orderedTopGraph    the ordered top graph nodes.
+   * @param orderedBottomGraph the ordered bottom graph nodes.
    */
-  public OverlapThread(SequenceGraph firstGraph, SequenceGraph secondGraph) {
-    this.topGraph = firstGraph;
-    this.bottomGraph = secondGraph;
-  }
-
-  /**
-   * Wait till the thread completes its execution and get the overlapping nodes of the graphs.
-   *
-   * @return the overlapping nodes of the graphs.
-   */
-  public HashSet<GraphNode> getOverlappedNodes() {
-    try {
-      this.join();
-    } catch (InterruptedException ex) {
-      Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
+  public OverlapThread(ArrayList<GraphNode> orderedTopGraph,
+      ArrayList<GraphNode> orderedBottomGraph) {
+    if (orderedTopGraph.size() < orderedBottomGraph.size()) {
+      this.smallestOrderedGraph = orderedTopGraph;
+      this.largestOrderedGraph = orderedBottomGraph;
+    } else {
+      this.smallestOrderedGraph = orderedBottomGraph;
+      this.largestOrderedGraph = orderedTopGraph;
     }
-    return overlappedNodes;
   }
 
   /**
-   * Get all of the nodes which are in both the top graph and the bottom graph.
-   *
-   * @param topGraph    the top graph.
-   * @param bottomGraph the bottom graph.
-   * @return the overlapping nodes.
+   * Set the overlap property of all of the graph nodes.
    */
-  private HashSet<GraphNode> calculateOverlappedNodes() {
-    final HashSet<GraphNode> overlap = new HashSet<>();
-    for (GraphNode graphNode : topGraph) {
-      if (bottomGraph.contains(graphNode)) {
-        overlap.add(graphNode);
+  private void calculateOverlappedNodes() {
+    HashMap<GraphNode, GraphNode> nodeMap = new HashMap<>();
+    for (GraphNode node : smallestOrderedGraph) {
+      nodeMap.put(node, node);
+    }
+    for (GraphNode node : largestOrderedGraph) {
+      GraphNode mapNode = nodeMap.get(node);
+      if (mapNode != null) {
+        node.getGuiData().overlapping = true;
+        mapNode.getGuiData().overlapping = true;
       }
     }
-    return overlap;
   }
 
   /**
@@ -63,6 +52,6 @@ public class OverlapThread extends Thread {
    */
   @Override
   public void run() {
-    overlappedNodes = calculateOverlappedNodes();
+    calculateOverlappedNodes();
   }
 }

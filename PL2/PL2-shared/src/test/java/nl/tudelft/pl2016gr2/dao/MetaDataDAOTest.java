@@ -43,15 +43,15 @@ public class MetaDataDAOTest {
 
   @Test
   public void testGetAnnotation() throws Exception {
-    assertSame(dao.getAnnotation("a1"), a1);
-    assertSame(dao.getAnnotation("a2"), a2);
-    assertSame(dao.getAnnotation("a3"), a3);
-    assertSame(dao.getAnnotation("a4"), a4);
+    assertSame(dao.getMetaData("a1"), a1);
+    assertSame(dao.getMetaData("a2"), a2);
+    assertSame(dao.getMetaData("a3"), a3);
+    assertSame(dao.getMetaData("a4"), a4);
   }
 
   @Test
   public void testgetAllAnnotations() throws Exception {
-    Collection<MetaData> metaDatas = dao.getAllAnnotations();
+    Collection<MetaData> metaDatas = dao.getAllMetaDatas();
 
     assertEquals(4, metaDatas.size());
     Stream.of(a1, a2, a3, a4).forEach(annotation -> {

@@ -20,13 +20,17 @@ import nl.tudelft.pl2016gr2.core.GraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
-import nl.tudelft.pl2016gr2.gui.model.LineageColor;
-import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.PhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.parser.controller.MetaDataReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -95,7 +99,7 @@ public class RootLayoutController implements
 
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
-      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue, 
+      public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
           Scene newValue) {
         if (newValue != null) {
           initializeSearchPaneController();
@@ -109,20 +113,21 @@ public class RootLayoutController implements
   /**
    * Load the data into the root layout.
    *
-   * @param tree the loaded tree.
-   * @param metaDatas the loaded annotations.
+   * @param treeRoot the root of the loaded tree.
    */
-  public void loadTree(Tree tree, List<MetaData> metaDatas) {
-    treeManager.loadTree(new PhylogeneticTreeRoot(tree.getRoot(), metaDatas));
+  public void loadTree(IPhylogeneticTreeRoot treeRoot) {
+    treeManager.loadTree(treeRoot);
+
   }
 
   /**
    * Load the data into the root layout.
    *
-   * @param graph the graph you want to load
+   * @param graph    the graph you want to load
+   * @param treeRoot the root of the loaded tree.
    */
-  public void loadGraph(SequenceGraph graph) {
-    this.drawGraphs.loadMainGraph(graph);
+  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
+    this.drawGraphs.loadMainGraph(graph, treeRoot);
   }
 
   /**
@@ -175,26 +180,76 @@ public class RootLayoutController implements
     });
   }
 
+  /**
+   * Initialize the legend.
+   */
   @SuppressWarnings("checkstyle:methodlength")
   private void initializeLegend() {
     graphLegendController.initializeData(
         "Legend",
         -5.0, 5.0,
         new LegendController.LegendItem(
-            "This element represent a bubble.",
-            "Bubble",
+            "This node contains several other nodes based on phylogeny.",
+            "Phylogenetic bubble",
             new Rectangle(20, 20, Color.ALICEBLUE)),
         new LegendController.LegendItem(
-            "This element represents a sequence.",
-            "Different sequence",
-            new Circle(10, Color.rgb(0, 73, 73))),
+            "This node contains several sequences without mutations.",
+            "Straight sequence bubble",
+            new Rectangle(20, 20, Color.LIGHTCORAL)),
         new LegendController.LegendItem(
-            "This element represents a sequence.",
-            "Equal sequence",
-            new Circle(10, Color.rgb(146, 0, 0))));
-
+            "This node contains a sequence that is not present in other genomes (InDel).",
+            "InDel bubble",
+            new Rectangle(20, 20, Color.LIGHTSKYBLUE)),
+        new LegendController.LegendItem(
+            "This node contains a point mutation.",
+            "Point Mutation bubble",
+            new Rectangle(20, 20, Color.PLUM)),
+        new LegendController.LegendItem(
+            "This node represents a straight sequence of multiple nodes.",
+            "Straight sequence.",
+            new Circle(10, DrawComparedGraphs.NO_OVERLAP_COLOR)),
+        new LegendController.LegendItem(
+            "This node has overlap with other (different) nodes.",
+            "Overlapping sequence.",
+            new Circle(10, DrawComparedGraphs.OVERLAP_COLOR))
+    );
 
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Leaf node of the graph. This node has no children",
+        "Leaf node",
+        new Circle(10, Color.BLACK)
+    ));
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node of the graph. This node has children",
+        "Node",
+        new Circle(10, Color.ALICEBLUE)
+    ));
+    Circle tempCircle;
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node in orange section of the graph (top)",
+        "Top node",
+        tempCircle
+    ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(TreeNodeCircle.MULTI_GRAPH_GRADIENT);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node both sections of the graph",
+        "Shared node",
+        tempCircle
+    ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
+    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
+    tempCircle.setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node in blue section of the graph (bottom)",
+        "Bottom node",
+        tempCircle
+    ));
     for (LineageColor color : LineageColor.values()) {
       treeLegendItems.add(new LegendController.LegendItem(
           String.format("Lineage color %s", color.name()),
@@ -202,14 +257,15 @@ public class RootLayoutController implements
           new Rectangle(20, 5, color.getColor())
       ));
     }
-
     treeLegendController.initializeData(
         "Legend",
         10.0, 5.0,
         treeLegendItems.toArray(new LegendController.LegendItem[treeLegendItems.size()]));
-
   }
 
+  /**
+   * Initialize the controller of the search pane.
+   */
   private void initializeSearchPaneController() {
     String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
     boolean isOSx = os.contains("mac") || os.contains("darwin");
@@ -232,8 +288,6 @@ public class RootLayoutController implements
   @Override
   public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
     try {
-      // Note: not really enjoying pro's of factories with this structure.
-      // consider to decouple a bit more, as the factories can't be mocked right now.
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
 
@@ -242,8 +296,10 @@ public class RootLayoutController implements
       List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
 
       if (graph != null && tree != null) {
-        loadGraph(graph);
-        loadTree(tree, metaDatas);
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
+        treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
+        loadGraph(graph, treeRoot);
+        loadTree(treeRoot);
         searchPaneController.setData(metaDatas);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
@@ -260,8 +316,8 @@ public class RootLayoutController implements
    */
   public void promptFileChooser() {
     try {
-      FileChooserController fileChooserController =
-          FileChooserController.initialize(mainPane.getScene().getWindow());
+      FileChooserController fileChooserController
+          = FileChooserController.initialize(mainPane.getScene().getWindow());
       fileChooserController.setInputFileConsumer(this);
       fileChooserController.getStage().show();
     } catch (IOException e) {
@@ -269,6 +325,11 @@ public class RootLayoutController implements
     }
   }
 
+  /**
+   * Handle the event which occurs when the "open file" button is clicked in the menu. This method
+   * is linked by reflection (see the FXML file), thus it is needed to suppress the "unused"
+   * warning.
+   */
   @FXML
   @SuppressWarnings("unused")
   private void openFileMenuItemClicked() {
