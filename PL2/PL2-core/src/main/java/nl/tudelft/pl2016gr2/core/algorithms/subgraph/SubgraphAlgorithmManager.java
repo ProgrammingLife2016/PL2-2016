@@ -75,6 +75,7 @@ public class SubgraphAlgorithmManager {
    * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
+  @SuppressWarnings("checkstyle:methodlength")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
@@ -88,10 +89,11 @@ public class SubgraphAlgorithmManager {
     ArrayList<GraphNode> newNodes = new ArrayList<>();
     for (GraphNode node : orderedNodes) {
       if (node.getInEdges().isEmpty()) {
-        SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
-        newRoot.addOutEdge(node);
-        node.addInEdge(newRoot);
-        newNodes.add(newRoot);
+
+        SequenceNode newerRoot = new SequenceNode(0, new BaseSequence(""));
+        node.addInEdge(newerRoot);
+        newerRoot.addOutEdge(node);
+        newNodes.add(newerRoot);
       }
     }
     orderedNodes.addAll(newNodes);
@@ -183,9 +185,9 @@ public class SubgraphAlgorithmManager {
       for (GraphNode node : orderedNodes) {
         if (node.getInEdges().isEmpty()) {
           SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+          newNodes.add(newRoot);
           newRoot.addOutEdge(node);
           node.addInEdge(newRoot);
-          newNodes.add(newRoot);
         }
       }
       orderedNodes.addAll(newNodes);

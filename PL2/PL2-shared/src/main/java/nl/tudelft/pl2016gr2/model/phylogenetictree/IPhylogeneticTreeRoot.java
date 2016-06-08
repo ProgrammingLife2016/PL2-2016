@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
-import nl.tudelft.pl2016gr2.model.metadata.Annotation;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.util.Collection;
 import java.util.List;
@@ -35,7 +35,7 @@ public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
    *
    * @return the annotations of all tree nodes.
    */
-  List<Annotation> getAnnotations();
+  List<MetaData> getMetaDatas();
 
   /**
    * Highlight a path in the phylogenetic tree.

@@ -26,9 +26,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
+
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.metadata.Annotation;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.net.URL;
 import java.util.Collection;
@@ -47,13 +48,13 @@ public class SearchPaneController implements Initializable {
   @FXML
   private TextField filterField;
   @FXML
-  private TableView<Annotation> annotationTable;
+  private TableView<MetaData> annotationTable;
 
-  @FXML private TableColumn<Annotation, String> specimenIdColumn;
-  @FXML private TableColumn<Annotation, String> specimentTypeColumn;
-  @FXML private TableColumn<Annotation, String> genotypicDSTPatternColumn;
-  @FXML private TableColumn<Annotation, String> phenotypicDSTPatternColumn;
-  @FXML private TableColumn<Annotation, String> lineageColumn;
+  @FXML private TableColumn<MetaData, String> specimenIdColumn;
+  @FXML private TableColumn<MetaData, String> specimentTypeColumn;
+  @FXML private TableColumn<MetaData, String> genotypicDSTPatternColumn;
+  @FXML private TableColumn<MetaData, String> phenotypicDSTPatternColumn;
+  @FXML private TableColumn<MetaData, String> lineageColumn;
 
   private final ObservableSet<String> setGenotypicDSTpattern
       = FXCollections.observableSet(new HashSet<>());
@@ -69,9 +70,9 @@ public class SearchPaneController implements Initializable {
   @FXML
   private Button phenotypicDSTPatternButton;
 
-  private final ObservableList<Annotation> masterData = FXCollections.observableArrayList();
+  private final ObservableList<MetaData> masterData = FXCollections.observableArrayList();
 
-  private final FilteredList<Annotation> filteredData = new FilteredList<>(masterData, p -> true);
+  private final FilteredList<MetaData> filteredData = new FilteredList<>(masterData, p -> true);
 
   private SelectionManager selectionManager;
 
@@ -92,7 +93,7 @@ public class SearchPaneController implements Initializable {
     // from http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
     annotationTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     annotationTable.getSelectionModel().getSelectedItems().addListener(
-        (ListChangeListener<Annotation>) c -> {
+        (ListChangeListener<MetaData>) c -> {
           System.out.println("SELECTED: ");
           selectionManager.getSearchBoxSelectedGenomes().setAll(
               c.getList().stream().map(
@@ -117,13 +118,17 @@ public class SearchPaneController implements Initializable {
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
       updateTable();
     });
-    
-    SortedList<Annotation> sortedData = new SortedList<>(filteredData);
+
+
+    // Wrap the FilteredList in a SortedList.
+    SortedList<MetaData> sortedData = new SortedList<>(filteredData);
+
+    // Bind the SortedList comparator to the TableView comparator.
     sortedData.comparatorProperty().bind(annotationTable.comparatorProperty());
     annotationTable.setItems(sortedData);
 
     annotationTable.setRowFactory(tv -> {
-      TableRow<Annotation> row = new TableRow<>();
+      TableRow<MetaData> row = new TableRow<>();
 
       row.setOnDragDetected((MouseEvent event) -> {
         // Format the genome selection for dragging
@@ -182,7 +187,7 @@ public class SearchPaneController implements Initializable {
 
   @SuppressWarnings("checkstyle:MethodLength")
   private void initializeExtendedSearchPane() {
-    masterData.addListener((ListChangeListener<Annotation>) c -> {
+    masterData.addListener((ListChangeListener<MetaData>) c -> {
       Stream.of(setGenotypicDSTpattern, setPhenotypicDSTPattern).forEach(Set::clear);
       c.getList().forEach(annotation -> {
         setGenotypicDSTpattern.add(annotation.genotypicDSTPattern);
@@ -214,9 +219,9 @@ public class SearchPaneController implements Initializable {
     return event -> genotypicDSTPatternComboBox.getSelectionModel().clearSelection();
   }
 
-  public void setData(Collection<Annotation> annotations) {
+  public void setData(Collection<MetaData> metaDatas) {
     masterData.clear();
-    masterData.addAll(annotations);
+    masterData.addAll(metaDatas);
   }
 
   public void setSelectionManager(SelectionManager selectionManager) {
