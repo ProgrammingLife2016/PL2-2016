@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.gui.view.tree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -11,6 +12,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
@@ -55,11 +57,11 @@ public class TreeManagerTest {
    */
   @Before
   public void loadTree() {
-    root = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafR = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafL = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafLr = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafLl = Mockito.mock(IPhylogeneticTreeNode.class);
+    root = mock(IPhylogeneticTreeNode.class);
+    leafR = mock(IPhylogeneticTreeNode.class);
+    leafL = mock(IPhylogeneticTreeNode.class);
+    leafLr = mock(IPhylogeneticTreeNode.class);
+    leafLl = mock(IPhylogeneticTreeNode.class);
     mockRoot();
     mockLeafR();
     mockLeafL();
@@ -82,7 +84,8 @@ public class TreeManagerTest {
     AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
     AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
 
-    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane()));
+    SelectionPaneController mockedSelectionPaneController = mock(SelectionPaneController.class);
+    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, mockedSelectionPaneController));
     mockedSelectionManager.getBottomGraphGenomes().addAll(root.getGenomes());
     mockedSelectionManager.getTopGraphGenomes().addAll(root.getGenomes());
     AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager,

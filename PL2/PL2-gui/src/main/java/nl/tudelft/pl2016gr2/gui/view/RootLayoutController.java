@@ -22,6 +22,7 @@ import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.model.MetaData;
@@ -55,7 +56,7 @@ public class RootLayoutController implements
   @FXML
   private AnchorPane rootPane;
   @FXML
-  private Pane selectionDescriptionPane;
+  private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML
@@ -167,7 +168,7 @@ public class RootLayoutController implements
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(this, selectionDescriptionPane);
+    selectionManager = new SelectionManager(this, selectionPaneController);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
