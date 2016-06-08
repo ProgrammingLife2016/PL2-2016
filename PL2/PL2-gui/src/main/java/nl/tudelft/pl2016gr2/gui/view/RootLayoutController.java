@@ -186,17 +186,30 @@ public class RootLayoutController implements
         "Legend",
         -5.0, 5.0,
         new LegendController.LegendItem(
-            "This element represent a bubble.",
-            "Bubble",
+            "This node contains several other nodes based on phylogeny.",
+            "Phylogenetic bubble",
             new Rectangle(20, 20, Color.ALICEBLUE)),
         new LegendController.LegendItem(
-            "This element represents a sequence.",
-            "Different sequence",
-            new Circle(10, Color.rgb(0, 73, 73))),
+            "This node contains several sequences without mutations.",
+            "Straight sequence bubble",
+            new Rectangle(20, 20, Color.LIGHTCORAL)),
         new LegendController.LegendItem(
-            "This element represents a sequence.",
-            "Equal sequence",
-            new Circle(10, Color.rgb(146, 0, 0))));
+            "This node contains a sequence that is not present in other genomes (InDel).",
+            "InDel bubble",
+            new Rectangle(20, 20, Color.LIGHTSKYBLUE)),
+        new LegendController.LegendItem(
+            "This node contains a point mutation.",
+            "Point Mutation bubble",
+            new Rectangle(20, 20, Color.PLUM)),
+        new LegendController.LegendItem(
+            "This node represents a straight sequence of multiple nodes.",
+            "Straight sequence.",
+            new Circle(10, DrawComparedGraphs.NO_OVERLAP_COLOR)),
+        new LegendController.LegendItem(
+            "This node has overlap with other (different) nodes.",
+            "Overlapping sequence.",
+            new Circle(10, DrawComparedGraphs.OVERLAP_COLOR))
+    );
 
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
     treeLegendItems.add(new LegendController.LegendItem(
