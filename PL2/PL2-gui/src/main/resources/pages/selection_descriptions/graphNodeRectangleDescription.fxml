@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.TextArea?>
+<Pane prefWidth="300" prefHeight="300" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.GraphNodeRectangleDescription$GraphNodeRectangleDescriptionController">
+
+    <TextArea layoutX="50" layoutY="50" prefWidth="300" prefHeight="300" fx:id="textArea" editable="false" />
+
+</Pane>

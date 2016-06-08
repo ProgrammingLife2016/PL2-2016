@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import nl.tudelft.pl2016gr2.gui.view.selection.GraphNodeRectangleDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 /**
@@ -59,6 +59,6 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
 
   @Override
   public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
-    return () -> new Text("TODO");
+    return new GraphNodeRectangleDescription(this);
   }
 }
