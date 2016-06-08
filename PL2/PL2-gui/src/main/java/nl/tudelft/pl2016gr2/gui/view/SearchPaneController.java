@@ -76,6 +76,13 @@ public class SearchPaneController implements Initializable {
 
   private SelectionManager selectionManager;
 
+  /**
+   * When this method is called, focus is requested for the searchBox.
+   */
+  public void requestSearchFieldFocus() {
+    filterField.requestFocus();
+  }
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
 
