@@ -67,12 +67,15 @@ public class RootLayoutController implements
   private SearchPaneController searchPaneController;
 
   @TestId(id = "treeManager")
-  private TreeManager treeManager;
+  @FXML
+  private TreeManager treePaneController;
+
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
 
   @TestId(id = "drawGraphs")
-  private DrawComparedGraphs drawGraphs;
+  @FXML
+  private DrawComparedGraphs graphPaneController;
 
   /**
    * Initializes the controller class.
@@ -84,15 +87,9 @@ public class RootLayoutController implements
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
     initializeLegend();
-    treeManager = TreeManager.loadView(selectionManager);
-    drawGraphs = DrawComparedGraphs.loadView(selectionManager);
-    mainPane.getItems().add(treeManager.getTreePane());
-
-    Region graphRegion = drawGraphs.getGraphPane();
-    mainPane.getItems().add(graphRegion);
+    Region graphRegion = graphPaneController.getGraphPane();
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
-
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
       public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
@@ -112,8 +109,7 @@ public class RootLayoutController implements
    * @param treeRoot the root of the loaded tree.
    */
   public void loadTree(IPhylogeneticTreeRoot treeRoot) {
-    treeManager.loadTree(treeRoot);
-
+    treePaneController.loadTree(treeRoot);
   }
 
   /**
@@ -123,7 +119,7 @@ public class RootLayoutController implements
    * @param treeRoot the root of the loaded tree.
    */
   public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
-    this.drawGraphs.loadMainGraph(graph, treeRoot);
+    this.graphPaneController.loadMainGraph(graph, treeRoot);
   }
 
   /**
@@ -160,7 +156,7 @@ public class RootLayoutController implements
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
-    drawGraphs.compareTwoGraphs(topGenomes, bottomGenomes);
+    graphPaneController.compareTwoGraphs(topGenomes, bottomGenomes);
   }
 
   /**
@@ -174,6 +170,8 @@ public class RootLayoutController implements
         event.consume();
       }
     });
+    treePaneController.setSelectionManager(selectionManager);
+    graphPaneController.setSelectionManager(selectionManager);
   }
 
   /**

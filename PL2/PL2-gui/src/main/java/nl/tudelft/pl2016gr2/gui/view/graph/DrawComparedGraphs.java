@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -35,7 +34,6 @@ import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import nl.tudelft.pl2016gr2.util.Pair;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,27 +106,6 @@ public class DrawComparedGraphs implements Initializable {
   @TestId(id = "amountOfLevels")
   private final IntegerProperty amountOfLevels = new SimpleIntegerProperty(0);
   private final DoubleProperty zoomFactor = new SimpleDoubleProperty(1.0);
-
-  /**
-   * Load this view.
-   *
-   * @param selectionManager the selection manager.
-   * @return the controller of the loaded view.
-   */
-  public static DrawComparedGraphs loadView(SelectionManager selectionManager) {
-    FXMLLoader loader = new FXMLLoader();
-    try {
-      loader.setLocation(
-          DrawComparedGraphs.class.getClassLoader().getResource("pages/CompareGraphsPane.fxml"));
-      loader.load();
-      DrawComparedGraphs controller = loader.<DrawComparedGraphs>getController();
-      controller.selectionManager = selectionManager;
-      return controller;
-    } catch (IOException ex) {
-      Logger.getLogger(DrawComparedGraphs.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
 
   /**
    * Get the pane in which the graphs are drawn.
@@ -877,6 +854,10 @@ public class DrawComparedGraphs implements Initializable {
     selectionManager.getBottomGraphGenomes().clear();
     bottomGraph = null;
     redrawGraphs();
+  }
+
+  public void setSelectionManager(SelectionManager selectionManager) {
+    this.selectionManager = selectionManager;
   }
 
   /**
