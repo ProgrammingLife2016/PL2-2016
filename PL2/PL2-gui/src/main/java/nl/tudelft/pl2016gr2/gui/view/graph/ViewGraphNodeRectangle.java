@@ -24,8 +24,10 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
    *
    * @param width  the width of the rectangle.
    * @param height the height of the rectangle.
+   * @param selectionInfo the select info for this node.
    */
-  public ViewGraphNodeRectangle(double width, double height, ISelectionInfo selectionInfo) {
+  public ViewGraphNodeRectangle(double width, double height,
+                                ISelectionInfo selectionInfo) {
     super(width/* * DrawComparedGraphs.NODE_MARGIN*/, height);
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));

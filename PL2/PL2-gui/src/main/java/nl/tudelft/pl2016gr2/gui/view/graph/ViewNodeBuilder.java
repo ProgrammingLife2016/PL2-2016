@@ -37,9 +37,10 @@ public class ViewNodeBuilder implements NodeVisitor {
    * @param width       the width of the node.
    * @param height      the height of the node.
    * @param nestedDepth the amount of times this node is nested in a bubble.
-   * @param selectionManager
+   * @param selectionManager The selection manager, used to select things.
    */
-  private ViewNodeBuilder(double width, double height, int nestedDepth, SelectionManager selectionManager) {
+  private ViewNodeBuilder(double width, double height, int nestedDepth,
+                          SelectionManager selectionManager) {
     this.width = width;
     this.height = height;
     this.nestedDepth = nestedDepth;
@@ -53,6 +54,7 @@ public class ViewNodeBuilder implements NodeVisitor {
    * @param width       the width of the node.
    * @param height      the height of the node.
    * @param nestedDepth the amount of times this node is nested in a bubble.
+   * @param selectionManager The selection manager. Needed to select things.
    * @return the visual representation of the node.
    */
   public static IViewGraphNode buildNode(GraphNode node, double width, double height,
@@ -91,12 +93,14 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(PhyloBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
-      @Override
-      public String getText() {
-        return bubble.toString();
-      }
-    });
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height,
+        new GraphBubbleDescription() {
+          @Override
+          public String getText() {
+            return bubble.toString();
+          }
+        }
+    );
     Color fill = Color.ALICEBLUE;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
@@ -108,12 +112,14 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(StraightSequenceBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
-      @Override
-      public String getText() {
-        return bubble.toString();
-      }
-    });
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height,
+        new GraphBubbleDescription() {
+          @Override
+          public String getText() {
+            return bubble.toString();
+          }
+        }
+    );
     Color fill = Color.LIGHTCORAL;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
@@ -125,12 +131,14 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(IndelBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
-      @Override
-      public String getText() {
-        return bubble.toString();
-      }
-    });
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height,
+        new GraphBubbleDescription() {
+          @Override
+          public String getText() {
+            return bubble.toString();
+          }
+        }
+    );
     Color fill = Color.LIGHTSKYBLUE;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
@@ -142,12 +150,14 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(PointMutationBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, new GraphBubbleDescription() {
-      @Override
-      public String getText() {
-        return bubble.toString();
-      }
-    });
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height,
+        new GraphBubbleDescription() {
+          @Override
+          public String getText() {
+            return bubble.toString();
+          }
+        }
+    );
     Color fill = Color.PLUM;
     for (int i = 0; i < nestedDepth; i++) {
       fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
@@ -159,12 +169,14 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   @Override
   public void visit(SequenceNode node) {
-    ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height, new GraphBubbleDescription() {
-      @Override
-      public String getText() {
-        return node.toString();
-      }
-    });
+    ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height,
+        new GraphBubbleDescription() {
+          @Override
+          public String getText() {
+            return node.toString();
+          }
+        }
+    );
     if (node.getGuiData().overlapping) {
       circle.setFill(OVERLAP_COLOR);
     } else {

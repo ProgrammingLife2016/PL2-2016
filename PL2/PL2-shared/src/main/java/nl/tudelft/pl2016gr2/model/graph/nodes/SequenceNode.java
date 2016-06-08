@@ -167,24 +167,6 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     this.level = level;
   }
 
-//  @Override
-//  public String toString() {
-//    StringBuilder sb = new StringBuilder();
-//    sb.append('[');
-//    for (GraphNode inEdge : getInEdges()) {
-//      sb.append(inEdge.getId()).append(", ");
-//    }
-//    sb.append(']');
-//    StringBuilder sb2 = new StringBuilder();
-//    sb2.append('[');
-//    for (GraphNode outEdge : getOutEdges()) {
-//      sb2.append(outEdge.getId()).append(", ");
-//    }
-//    sb2.append(']');
-//    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.toString() + ", outEdges="
-//        + sb2.toString() + '}';
-//  }
-
   @Override
   public String toString() {
     String sequenceString = getSequence();
