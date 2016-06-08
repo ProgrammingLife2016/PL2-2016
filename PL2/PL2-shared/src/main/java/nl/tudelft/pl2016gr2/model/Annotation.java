@@ -1,9 +1,8 @@
 package nl.tudelft.pl2016gr2.model;
 
-import com.sun.istack.internal.logging.Logger;
-
 import java.util.HashMap;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Stores the annotations read from the annotation file.
@@ -50,11 +49,12 @@ public class Annotation {
    */
   private void addAttribute(String attribute) {
     if (!attribute.contains("=")) {
-      Logger.getLogger(getClass()).log(Level.WARNING, "This isn't a valid attribute: " + attribute);
+      Logger.getLogger(getClass().getName()).log(Level.WARNING,
+          "This isn''t a valid attribute: {0}", attribute);
       return;
     }
     String[] parts = attribute.split("=", 2);
-    attributes.put(parts[0], parts[1]);
+    attributes.put(parts[0].toLowerCase(), parts[1]);
   }
 
   /**
@@ -64,7 +64,7 @@ public class Annotation {
    * @return the value of the attribute.
    */
   public String getAttribute(String attribute) {
-    return attributes.get(attribute);
+    return attributes.get(attribute.toLowerCase());
   }
 
   /**
@@ -74,6 +74,6 @@ public class Annotation {
    * @return if the attribute has a value.
    */
   public boolean containsAttribute(String attribute) {
-    return attributes.containsKey(attribute);
+    return attributes.containsKey(attribute.toLowerCase());
   }
 }

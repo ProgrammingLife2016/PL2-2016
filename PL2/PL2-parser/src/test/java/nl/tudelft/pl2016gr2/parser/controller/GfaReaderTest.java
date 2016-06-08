@@ -39,11 +39,11 @@ public class GfaReaderTest {
   @Before
   public void initialize() throws IOException {
     GenomeMap genomeMap = GenomeMap.getInstance();
+    genomeMap.clear();
     genomeMap.addGenome("MT_H37RV_BRD_V5");
     genomeMap.addGenome("TKK_02_0001");
     genomeMap.addGenome("TKK_02_0005");
     genomeMap.addGenome("TKK_02_0008");
-
 
     file = File.createTempFile("GfaReaderTest", TEST_GRAPH_RESOURCE);
     FileUtils.copyInputStreamToFile(
@@ -52,6 +52,9 @@ public class GfaReaderTest {
     gfaReader = new GfaReader(new FileInputStream(file));
   }
 
+  /**
+   * Clear the used variables.
+   */
   @After
   public void tearDown() {
     file.delete();
