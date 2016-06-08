@@ -1,5 +1,8 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -40,8 +43,8 @@ import java.util.Iterator;
  */
 public interface SequenceGraph extends Iterable<GraphNode> {
 
-  // Sequence Graph specific inspection operations
-
+  void print();
+  
   /**
    * Returns the identifiers of all root nodes in this graph.
    * <p>
@@ -66,8 +69,6 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * @return The IDs of all genomes in this graph
    */
   Collection<Integer> getGenomes();
-
-  // Sequence Graph specific modification operations
 
   /**
    * Add the node as a root node of this graph.
@@ -99,9 +100,6 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    */
   void removeGenome(int genome);
 
-
-  // Map-like inspection operations
-
   /**
    * The size of the graph is defined as the amount of nodes in the graph.
    *
@@ -132,8 +130,6 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    */
   GraphNode getNode(int id);
 
-  // Map-like modification operations
-
   /**
    * Adds the <code>node</code> to the graph.
    * <p>
@@ -159,12 +155,10 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    * </p>
    *
    * @param node The element which is to be removed from the graph
-   * @return The element that was removed, or <code>null</code> if no such element was found
+   * @param updateInlinks if the inlinks must be updated.
+   * @param updatOutlinks if the outlinks must be updated.
    */
-  GraphNode remove(GraphNode node);
-
-
-  // Iterable<GraphNode> operations
+  void remove(GraphNode node, boolean updateInlinks, boolean updatOutlinks);
 
   /**
    * Returns an iterator over the elements in the graph.
@@ -173,4 +167,10 @@ public interface SequenceGraph extends Iterable<GraphNode> {
    */
   @Override
   Iterator<GraphNode> iterator();
+  
+  /**
+   * Get the nodes of the graph ordered by level.
+   * @return the nodes of the graph ordered by level.
+   */
+  ArrayList<GraphNode> getOrderedGraph();
 }

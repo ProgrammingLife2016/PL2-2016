@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 public class FileChooserController implements Initializable {
 
-  private static final Preferences prefs
+  private static final Preferences PREFERENCES
       = Preferences.userNodeForPackage(FileChooserController.class);
   private static final String PREF_KEY_WORKSPACE = "last_used_workspace";
 
@@ -94,7 +94,7 @@ public class FileChooserController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     // TODO get file from user prefs oid
-    String lastWorkspaceFileString = prefs.get(PREF_KEY_WORKSPACE, null);
+    String lastWorkspaceFileString = PREFERENCES.get(PREF_KEY_WORKSPACE, null);
     if (lastWorkspaceFileString != null) {
       File lastWorkspaceFile = new File(lastWorkspaceFileString);
       if (lastWorkspaceFile.exists()) {
@@ -106,6 +106,9 @@ public class FileChooserController implements Initializable {
     initializeComboBoxes();
   }
 
+  /**
+   * Initialize the open button action event handler.
+   */
   private void initializeOpenButton() {
     openButton.setOnAction(event -> {
       final File treeFile = treeComboBox.getSelectionModel().getSelectedItem();
@@ -119,7 +122,7 @@ public class FileChooserController implements Initializable {
           "File for the metadata does not exist or none selected");
       if (treeExists && graphExists && metadataExists) {
         if (workspaceFile != null && workspaceFile.exists()) {
-          prefs.put(PREF_KEY_WORKSPACE, workspaceFile.getAbsolutePath());
+          PREFERENCES.put(PREF_KEY_WORKSPACE, workspaceFile.getAbsolutePath());
         }
         if (inputFileConsumer != null) {
           loadFiles(treeFile, graphFile, metadataFile);
@@ -145,6 +148,13 @@ public class FileChooserController implements Initializable {
     }
   }
 
+  /**
+   * Check if the file exists and if it doesn't, show the alert.
+   *
+   * @param file    the file to check for existence.
+   * @param message the message to show if the file doesn't exist.
+   * @return if the file exists.
+   */
   private boolean checkFileExistsOrShowAlert(File file, String message) {
     if (file == null || !file.exists() || !file.isFile()) {
       showErrorDialog("Error", message);
@@ -153,6 +163,9 @@ public class FileChooserController implements Initializable {
     return true;
   }
 
+  /**
+   * Initialize the browse button action event handler.
+   */
   private void initializeBrowseButton() {
     workspaceBrowseButton.setOnAction(event -> {
       DirectoryChooser dirChooser = new DirectoryChooser();
@@ -166,6 +179,9 @@ public class FileChooserController implements Initializable {
     });
   }
 
+  /**
+   * Initialize the cell factories of the combo boxes.
+   */
   private void initializeComboBoxes() {
     Stream.of(treeComboBox, graphComboBox, metadataComboBox).forEach(comboBox -> {
       comboBox.setCellFactory(getCellFactory());
@@ -257,6 +273,9 @@ public class FileChooserController implements Initializable {
     };
   }
 
+  /**
+   * Update the shown files when a new workspace has been set.
+   */
   private void updateWorkspace() {
     updateWorkspaceForComboBox(".nwk", treeComboBox);
     updateWorkspaceForComboBox(".gfa", graphComboBox);
@@ -318,16 +337,36 @@ public class FileChooserController implements Initializable {
     return new File[0];
   }
 
-  public interface InputFileConsumer {
-
-    void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile);
-  }
-
+  /**
+   * Set the input file consumer.
+   *
+   * @param inputFileConsumer the input file consumer.
+   */
   public void setInputFileConsumer(InputFileConsumer inputFileConsumer) {
     this.inputFileConsumer = inputFileConsumer;
   }
 
+  /**
+   * Get the stage of the file chooser window.
+   *
+   * @return the stage of the file chooser window.
+   */
   public Stage getStage() {
     return this.stage;
+  }
+
+  /**
+   * The interface of the input file consumer.
+   */
+  public interface InputFileConsumer {
+
+    /**
+     * Load the given files.
+     *
+     * @param treeFile     the file of the phylogenetic tree.
+     * @param graphFile    the file of the graph.
+     * @param metadataFile the file of the metadata.
+     */
+    void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile);
   }
 }

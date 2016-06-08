@@ -27,7 +27,6 @@ public class DescriptionPane extends Pane {
     prefHeightProperty().bind(parent.heightProperty());
     prefWidthProperty().bind(parent.widthProperty());
     parent.getChildren().add(this);
-
     setBackground(new Background(
         new BackgroundFill(BACKGROUND_COLOR, CORNER_RADII, Insets.EMPTY)));
   }

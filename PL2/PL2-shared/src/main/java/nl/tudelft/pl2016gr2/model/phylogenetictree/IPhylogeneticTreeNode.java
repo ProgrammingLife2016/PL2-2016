@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;
@@ -41,6 +41,13 @@ public interface IPhylogeneticTreeNode {
    * @return the total amount of child nodes.
    */
   int getChildCount();
+
+  /**
+   * Adds a child node to this node.
+   *
+   * @param child the child node to add.
+   */
+  void addChild(PhylogeneticTreeNode child);
 
   /**
    * Get the child at the given index.
@@ -87,6 +94,13 @@ public interface IPhylogeneticTreeNode {
   boolean isLeaf();
 
   /**
+   * Get the label of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the label of this leaf node.
+   */
+  String getLabel();
+
+  /**
    * Get the drawn in top property. This property is true iff all of the genomes in this tree node
    * are drawn in the top graph.
    *
@@ -124,4 +138,11 @@ public interface IPhylogeneticTreeNode {
    * @return a string containing metadata about the genome in the leaf node.
    */
   String getMetaData();
+
+  /**
+   * Get the genome id of this leaf node. This node must be a leaf node.
+   *
+   * @return the genome id of this leaf node.
+   */
+  int getGenomeId();
 }

@@ -92,6 +92,12 @@ public class SelectionManager {
     }
   }
 
+  /**
+   * Draw the two given graphs.
+   *
+   * @param topGenomes    the genomes to draw in the top graph.
+   * @param bottomGenomes the genomes to draw in the bottom graph.
+   */
   protected void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
     rootLayoutController.drawGraph(topGenomes, bottomGenomes);
   }
@@ -138,14 +144,29 @@ public class SelectionManager {
     timeline.play();
   }
 
+  /**
+   * Get the observable list of genomes which must be drawn in the top graph.
+   *
+   * @return the observable list of genomes which must be drawn in the top graph.
+   */
   public ObservableSet<Integer> getTopGraphGenomes() {
     return topGraphGenomes;
   }
 
+  /**
+   * Get the observable list of genomes which must be drawn in the bottom graph.
+   *
+   * @return the observable list of genomes which must be drawn in the bottom graph.
+   */
   public ObservableSet<Integer> getBottomGraphGenomes() {
     return bottomGraphGenomes;
   }
 
+  /**
+   * Get the observable list of genomes which is selected in the search box.
+   *
+   * @return the observable list of genomes which is selected in the search box.
+   */
   public ObservableList<Integer> getSearchBoxSelectedGenomes() {
     return searchBoxSelectedGenomes;
   }

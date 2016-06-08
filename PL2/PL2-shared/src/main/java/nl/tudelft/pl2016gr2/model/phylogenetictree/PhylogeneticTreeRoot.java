@@ -1,8 +1,8 @@
-package nl.tudelft.pl2016gr2.gui.model;
+package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.metadata.Annotation;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import java.util.List;
 public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylogeneticTreeRoot {
 
   private final HashMap<Integer, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
+  private final List<Annotation> annotations;
 
   /**
    * Construct a phylogenetic tree root node.
@@ -30,6 +31,22 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
     for (PhylogeneticTreeNode leafNode : this) {
       genomeToTreeMap.put(leafNode.getGenomeId(), leafNode);
     }
+    this.annotations = annotations;
+    initLineages(annotations);
+  }
+
+  /**
+   * Construct a phylogenetic tree root node using a iphylogenetictreenode.
+   *
+   * @param node        the root node of the parsed tree.
+   * @param annotations the read annotations.
+   */
+  public PhylogeneticTreeRoot(IPhylogeneticTreeNode node, List<Annotation> annotations) {
+    super(node);
+    for (PhylogeneticTreeNode leafNode : this) {
+      genomeToTreeMap.put(leafNode.getGenomeId(), leafNode);
+    }
+    this.annotations = annotations;
     initLineages(annotations);
   }
 
@@ -45,7 +62,9 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
         continue;
       }
       PhylogeneticTreeNode node = genomeToTreeMap.get(genomeId);
-      node.setAnnotation(annotation);
+      if (node != null) {
+        node.setAnnotation(annotation);
+      }
     }
   }
 
@@ -57,6 +76,11 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   @Override
   public void setDrawnInBottom(int genome, boolean isDrawn) {
     genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
+  }
+
+  @Override
+  public List<Annotation> getAnnotations() {
+    return annotations;
   }
 
   @Override

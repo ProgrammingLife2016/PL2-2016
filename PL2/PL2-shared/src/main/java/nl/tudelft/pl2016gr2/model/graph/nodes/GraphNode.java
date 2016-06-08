@@ -1,5 +1,6 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
@@ -18,13 +19,13 @@ import java.util.Collection;
  * {@link Bubble}s and {@link Node}s
  * </p>
  * <p>
- * This interface uses the <i>visitor design pattern</i> to allow external actors to target
- * specific implementations of this interface.
- * This is useful when these are stored in a {@link SequenceGraph}.
+ * This interface uses the <i>visitor design pattern</i> to allow external actors to target specific
+ * implementations of this interface. This is useful when these are stored in a
+ * {@link SequenceGraph}.
  * </p>
  * <p>
- * This interface uses the <i>factory method design pattern</i> to allow external actors to copy
- * the concrete instance of a GraphNode.
+ * This interface uses the <i>factory method design pattern</i> to allow external actors to copy the
+ * concrete instance of a GraphNode.
  * </p>
  *
  * @author Wouter Smit
@@ -34,9 +35,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Provides a unique integer value to reference the element in the graph.
    * <p>
-   * Since the integer value should be unique,
-   * it might be advisable to incorporate it in a {@link Object#hashCode()} or
-   * {@link Object#equals(Object)}.
+   * Since the integer value should be unique, it might be advisable to incorporate it in a
+   * {@link Object#hashCode()} or {@link Object#equals(Object)}.
    * </p>
    *
    * @return An integer value that represents the <code>GraphNode</code>'s id.
@@ -53,17 +53,25 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Returns all child nodes of this node, that are contained in this node.
    * <p>
-   * This methods returns <code>null</code> if it is called on an instance that is not an
-   * aggregate of nodes.
+   * This methods returns <code>null</code> if it is called on an instance that is not an aggregate
+   * of nodes.
    * </p>
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return The set of child nodes, or an <code>null</code> if the node does not have children
    */
   Collection<GraphNode> getChildren();
+
+  /**
+   * Checks if this node has a child with the specified child.
+   *
+   * @param child the child to check for.
+   * @return true if this node has the child.
+   */
+  boolean hasChild(GraphNode child);
 
   /**
    * Returns the size of this node.
@@ -85,10 +93,17 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   }
 
   /**
+   * Set the in edges.
+   *
+   * @param edges the in edges.
+   */
+  void setInEdges(Collection<GraphNode> edges);
+
+  /**
    * Returns the identifiers of the nodes of all in-edges of <code>GraphNode</code>.
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return All in-edges of this <code>GraphNode</code>
@@ -101,8 +116,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding edges should be done with {@link #addAllInEdges(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllInEdges(Collection)}.
    * </p>
    *
    * @param node The node to add to the in-edges of this <code>GraphNode</code>.
@@ -130,10 +145,17 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void removeInEdge(GraphNode node);
 
   /**
+   * Set the out edges.
+   *
+   * @param edges the out edges.
+   */
+  void setOutEdges(Collection<GraphNode> edges);
+
+  /**
    * Returns the identifiers of the nodes of all out-edges of <code>GraphNode</code>.
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return All children of this <code>GraphNode</code>
@@ -146,8 +168,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding edges should be done with {@link #addAllOutEdges(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllOutEdges(Collection)}.
    * </p>
    *
    * @param node The node to add to the out-edges of this <code>GraphNode</code>.
@@ -177,12 +199,12 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   /**
    * Returns the names of all genomes that go through this <code>GraphNode</code>.
    * <p>
-   * Paths through the <code>SequenceGraph</code> describe certain genomes.
-   * Every <code>GraphNode</code> is annotated with information about its genomes.
+   * Paths through the <code>SequenceGraph</code> describe certain genomes. Every
+   * <code>GraphNode</code> is annotated with information about its genomes.
    * </p>
    * <p>
-   * The collection that is returned is not meant for editing.
-   * Depending on the implementing class, it might be unmodifiable.
+   * The collection that is returned is not meant for editing. Depending on the implementing class,
+   * it might be unmodifiable.
    * </p>
    *
    * @return The genomes of this <code>GraphNode</code>
@@ -195,8 +217,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding genomes should be done with {@link #addAllGenomes(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding genomes should
+   * be done with {@link #addAllGenomes(Collection)}.
    * </p>
    *
    * @param genome The name of the genome to add to this <code>GraphNode</code>.
@@ -248,20 +270,59 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   }
 
   /**
-   * Provides a copy of the node with at least equal IDs.
-   * <p>
-   * Furthermore, the following fields should remain empty.
-   * </p>
-   * <ul>
-   * <li>Set of genomes</li>
-   * <li>Set of in edges</li>
-   * <li>Set of out edges</li>
-   * </ul>
+   * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.
    *
-   * @return An exact copy of the class
+   * @return A copy of the object.
    */
-  @Override
-  GraphNode copy();
+  GraphNode copyAll();
+
+  /**
+   * Add an offset to the current level of the node.
+   *
+   * @param offset the offset.
+   */
+  void addPositionOffset(int offset);
+
+  /**
+   * Set the level of this node (the depth in the tree).
+   *
+   * @param level the level of this node.
+   */
+  void setLevel(int level);
+
+  /**
+   * Get the level of this node (the depth in the tree).
+   *
+   * @return the level of this node.
+   */
+  int getLevel();
+
+  /**
+   * Get the GUI data of this node.
+   *
+   * @return the GUI data of this node.
+   */
+  GraphNodeGuiData getGuiData();
+
+  /**
+   * Pops this bubble.
+   * <p>
+   * Popping is a synonym for zooming in on the bubble, thus revealing the nodes that it stores.
+   * </p>
+   *
+   * @return the sorted and aligned list of nodes which was nested in this bubble.
+   */
+  Collection<GraphNode> pop();
+
+  /**
+   * Unpops a bubble.
+   */
+  void unpop();
+
+  /**
+   * Checks if a bubble is popped.
+   *
+   * @return true is the bubble is popped
+   */
+  boolean isPopped();
 }
-
-

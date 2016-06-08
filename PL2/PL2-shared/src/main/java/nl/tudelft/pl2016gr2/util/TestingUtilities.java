@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.util;
 
 import static org.mockito.Mockito.mock;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
@@ -14,6 +14,9 @@ import java.util.Arrays;
  * @author Wouter Smit
  */
 public class TestingUtilities {
+
+  private TestingUtilities() {
+  }
   
   /**
    * Mocks a GraphNode with the specified ID and properties of a root or non-root node.
