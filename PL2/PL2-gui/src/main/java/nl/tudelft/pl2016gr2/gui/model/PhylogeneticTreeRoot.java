@@ -1,12 +1,13 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+
 
 /**
  * This phylogenetic tree root keeps track of all of the leaves in the phylogenetic tree. It
@@ -23,29 +24,29 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
    * Construct a phylogenetic tree root node.
    *
    * @param node        the root node of the parsed tree.
-   * @param annotations the read annotations.
+   * @param metaDatas the read annotations.
    */
-  public PhylogeneticTreeRoot(TreeNode node, List<Annotation> annotations) {
+  public PhylogeneticTreeRoot(TreeNode node, List<MetaData> metaDatas) {
     super(node, null);
     for (PhylogeneticTreeNode leafNode : this) {
       genomeToTreeMap.put(leafNode.getGenomeId(), leafNode);
     }
-    initLineages(annotations);
+    initLineages(metaDatas);
   }
 
   /**
    * Initialize the lineage colors of all of the nodes.
    *
-   * @param annotations the list of annotations.
+   * @param metaDatas the list of annotations.
    */
-  private void initLineages(List<Annotation> annotations) {
-    for (Annotation annotation : annotations) {
-      Integer genomeId = GenomeMap.getInstance().getId(annotation.specimenId);
+  private void initLineages(List<MetaData> metaDatas) {
+    for (MetaData metaData : metaDatas) {
+      Integer genomeId = GenomeMap.getInstance().getId(metaData.specimenId);
       if (genomeId == null) {
         continue;
       }
       PhylogeneticTreeNode node = genomeToTreeMap.get(genomeId);
-      node.setAnnotation(annotation);
+      node.setAnnotation(metaData);
     }
   }
 

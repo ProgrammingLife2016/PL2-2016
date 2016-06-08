@@ -3,13 +3,15 @@ package nl.tudelft.pl2016gr2.gui.model;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.paint.Color;
+
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
-import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
 
 /**
  * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed
@@ -23,7 +25,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   private final float weight;
   private final PhylogeneticTreeNode[] children;
   private final PhylogeneticTreeNode parent;
-  private Annotation annotation;
+  private MetaData metaData;
   private LineageColor lineageColor = LineageColor.NONE;
 
   /**
@@ -180,11 +182,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
 
   @Override
   public String getMetaData() {
-    System.out.println("annotation = " + annotation);
-    if (annotation == null) {
+    System.out.println("metaData = " + metaData);
+    if (metaData == null) {
       return "";
     } else {
-      return annotation.buildMetaDataString();
+      return metaData.buildMetaDataString();
     }
   }
 
@@ -257,13 +259,13 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   /**
-   * Set the annotation of this node.
+   * Set the metaData of this node.
    *
-   * @param annotation the annotation.
+   * @param metaData the metaData.
    */
-  protected void setAnnotation(Annotation annotation) {
-    this.annotation = annotation;
-    setLineageColor(LineageColor.toLineage(annotation.lineage));
+  protected void setAnnotation(MetaData metaData) {
+    this.metaData = metaData;
+    setLineageColor(LineageColor.toLineage(metaData.lineage));
   }
 
   /**
