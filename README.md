@@ -28,8 +28,10 @@ This jar can be than executed by double-clicking.
 DNAv is developed for the Contextproject course at the Delft University of Technology with course code TI2806, as part of the curriculum of the Bachelor Computer Science. The project is led by [Dr. Thomas Abeel](http://www.abeel.be/), who can be contacted by e-mail at [T.Abeel@tudelft.nl](mailto:T.Abeel@tudelft.nl).
 
 #### Members
-- Wouter Smit
-- Cas Bilstra
-- Faris Elghlan
-- Justin van der Krieken
-- Casper Athmer
+Name | Student number
+---|---
+Wouter Smit | 4401409
+Cas Bilstra | 4381084
+Faris Elghlan | 4341538
+Justin van der Krieken | 4357116
+Casper Athmer | 4329066
