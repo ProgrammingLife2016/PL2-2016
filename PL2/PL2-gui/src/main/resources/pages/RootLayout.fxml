@@ -5,11 +5,11 @@
 
 <AnchorPane fx:id="rootPane" pickOnBounds="false" prefHeight="700.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
     <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" >
-        <SplitPane fx:id="mainPane" orientation="HORIZONTAL" VBox.vgrow="ALWAYS" />
-        <HBox VBox.vgrow="NEVER" maxHeight="300" >
-            <fx:include fx:id="searchPane" HBox.hgrow="ALWAYS" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
-            <Pane fx:id="selectionDescriptionPane" minHeight="150" HBox.hgrow="NEVER" prefWidth="400.0" visible="false" />
-        </HBox>
+        <SplitPane fx:id="mainPane" orientation="HORIZONTAL" />
+        <SplitPane orientation="HORIZONTAL" VBox.vgrow="NEVER" maxHeight="300" >
+            <fx:include fx:id="searchPane" minWidth="800" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
+            <fx:include fx:id="selectionPane" maxWidth="300" minWidth="300" source="selectionPane.fxml"  />
+        </SplitPane>
     </SplitPane>
     <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Menu mnemonicParsing="false" text="File">
