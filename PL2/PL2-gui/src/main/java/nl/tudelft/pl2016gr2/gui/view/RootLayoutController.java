@@ -64,8 +64,6 @@ public class RootLayoutController implements
   private LegendController treeLegendController;
 
   @FXML
-  private Pane searchPane;
-  @FXML
   private SearchPaneController searchPaneController;
 
   @TestId(id = "treeManager")
@@ -273,9 +271,12 @@ public class RootLayoutController implements
       switch (keyEvent.getCode()) {
         case F:
           if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
-            searchPane.setVisible(!searchPane.isVisible());
+            searchPaneController.requestSearchFieldFocus();
             keyEvent.consume();
           }
+          break;
+        case ESCAPE:
+          rootPane.requestFocus();
           break;
         default:
       }
