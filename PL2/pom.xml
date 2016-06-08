@@ -87,9 +87,9 @@
                         to 'low'.
                     -->
                     <effort>Max</effort>
-                     <!--Reports all bugs (other values are medium and max) -->
+                    <!-- Reports all bugs (other values are medium and max) -->
                     <threshold>Low</threshold>
-                     <!--Produces XML report -->
+                    <!-- Produces XML report -->
                     <xmlOutput>true</xmlOutput>
                 </configuration>
             </plugin>
