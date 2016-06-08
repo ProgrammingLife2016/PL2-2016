@@ -2,7 +2,9 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -82,10 +84,23 @@ public class SubgraphAlgorithmManager {
 
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
-    
+
+    ArrayList<GraphNode> newNodes = new ArrayList<>();
+    for (GraphNode node : orderedNodes) {
+      if (node.getInEdges().isEmpty()) {
+        SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+        newRoot.addOutEdge(node);
+        node.addInEdge(newRoot);
+        newNodes.add(newRoot);
+      }
+    }
+    orderedNodes.addAll(newNodes);
+    orderedNodes.sort((GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
+    });
+
     //    FilterBubbles filter = new FilterBubbles(subgraph);
     //    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
-
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
@@ -164,6 +179,19 @@ public class SubgraphAlgorithmManager {
       orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
       //FilterBubbles filter = new FilterBubbles(subgraph);
       //orderedNodes = filter.filter(treeRoot, genomes);
+      ArrayList<GraphNode> newNodes = new ArrayList<>();
+      for (GraphNode node : orderedNodes) {
+        if (node.getInEdges().isEmpty()) {
+          SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+          newRoot.addOutEdge(node);
+          node.addInEdge(newRoot);
+          newNodes.add(newRoot);
+        }
+      }
+      orderedNodes.addAll(newNodes);
+      orderedNodes.sort((GraphNode first, GraphNode second) -> {
+        return first.getLevel() - second.getLevel();
+      });
     }
   }
 }
