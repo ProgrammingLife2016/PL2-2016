@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-
 /**
  * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed
  * values of the newick parser {@link TreeNode}.

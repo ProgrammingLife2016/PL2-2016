@@ -2,15 +2,11 @@ package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-
-
 import nl.tudelft.pl2016gr2.model.MetaData;
-
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-
 
 /**
  * This phylogenetic tree root keeps track of all of the leaves in the phylogenetic tree. It
@@ -27,7 +23,7 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   /**
    * Construct a phylogenetic tree root node.
    *
-   * @param node        the root node of the parsed tree.
+   * @param node      the root node of the parsed tree.
    * @param metaDatas the read metadata.
    */
   public PhylogeneticTreeRoot(TreeNode node, List<MetaData> metaDatas) {
@@ -42,7 +38,7 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylo
   /**
    * Construct a phylogenetic tree root node using a iphylogenetictreenode.
    *
-   * @param node        the root node of the parsed tree.
+   * @param node      the root node of the parsed tree.
    * @param metaDatas the read metaDatas.
    */
   public PhylogeneticTreeRoot(IPhylogeneticTreeNode node, List<MetaData> metaDatas) {

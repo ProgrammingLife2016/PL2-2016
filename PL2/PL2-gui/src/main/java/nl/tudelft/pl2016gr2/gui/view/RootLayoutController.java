@@ -20,10 +20,12 @@ import nl.tudelft.pl2016gr2.core.GraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
+import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
 import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
@@ -286,8 +288,6 @@ public class RootLayoutController implements
   @Override
   public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
     try {
-      // Note: not really enjoying pro's of factories with this structure.
-      // consider to decouple a bit more, as the factories can't be mocked right now.
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
 
@@ -297,6 +297,7 @@ public class RootLayoutController implements
 
       if (graph != null && tree != null) {
         IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
+        treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot);
         loadTree(treeRoot);
         searchPaneController.setData(metaDatas);
