@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import nl.tudelft.pl2016gr2.model.graph.HashGraph;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -22,6 +24,7 @@ import java.util.Map;
  * @author Wouter Smit
  */
 public class HashGraphTest {
+
   private Map<Integer, GraphNode> nodes = new HashMap<>();
   private Collection<Integer> genomes = new ArrayList<>();
 
@@ -66,6 +69,34 @@ public class HashGraphTest {
     assertEquals("", graph.toString());
     graph.add(mockNode(0, false));
     assertNotNull(graph.toString());
+  }
+
+  @Test
+  public void testRemove() throws Exception {
+    HashGraph graph = new HashGraph(nodes, genomes);
+    ArrayList<GraphNode> outEdges = new ArrayList<>();
+    outEdges.add(nodes.get(4));
+    nodes.get(3).setOutEdges(outEdges);
+    graph.remove(nodes.get(3), true, true);
+    assertEquals(null, graph.getNode(nodes.get(3).getId()));
+  }
+
+  @Test
+  public void testGetOrderedGraph() {
+    HashMap<Integer, GraphNode> nodes = new HashMap<>();
+    GraphNode node1 = new SequenceNode(1);
+    node1.setLevel(10);
+    GraphNode node2 = new SequenceNode(2);
+    node2.setLevel(9);
+    
+    nodes.put(1, node1);
+    nodes.put(2, node2);
+    
+    HashGraph graph = new HashGraph(nodes, new ArrayList<>());
+    ArrayList<GraphNode> orderedGraph = graph.getOrderedGraph();
+    assertEquals(2, orderedGraph.size());
+    assertEquals(2, orderedGraph.get(0).getId());
+    assertEquals(1, orderedGraph.get(1).getId());
   }
 
 }
