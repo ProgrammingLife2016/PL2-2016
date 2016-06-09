@@ -284,7 +284,8 @@ public class RootLayoutController implements
   }
 
   @Override
-  public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
+  public void filesLoaded(InputStream treeFile, InputStream graphFile,
+                          InputStream metadataFile, InputStream annotationFile) {
     try {
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);

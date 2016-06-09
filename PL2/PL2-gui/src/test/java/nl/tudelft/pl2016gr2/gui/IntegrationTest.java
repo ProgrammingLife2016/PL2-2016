@@ -116,7 +116,8 @@ public class IntegrationTest {
     getRootLayoutController().filesLoaded(
         GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"),
         GfaReader.class.getClassLoader().getResourceAsStream("TB10.gfa"),
-        GfaReader.class.getClassLoader().getResourceAsStream("metadata.xlsx"));
+        GfaReader.class.getClassLoader().getResourceAsStream("metadata.xlsx"),
+        null);
   }
 
   private static Stage getPrimaryStage() {
