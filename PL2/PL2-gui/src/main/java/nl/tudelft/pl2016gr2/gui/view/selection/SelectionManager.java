@@ -21,6 +21,14 @@ public class SelectionManager {
       = FXCollections.observableArrayList();
 
   private final SimpleObjectProperty<ISelectable> selection;
+  /**
+   * This Selectable represents no selection.
+   *
+   * <p>
+   * This makes sure that there will not be unexpected null-references
+   * when doing stuff with selections.
+   * </p>
+   */
   public static final ISelectable NO_SELECTION = new ISelectable() {
     @Override
     public void select() {

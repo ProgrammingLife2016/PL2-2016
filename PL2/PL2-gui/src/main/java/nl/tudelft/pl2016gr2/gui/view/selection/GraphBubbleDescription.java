@@ -39,6 +39,14 @@ public class GraphBubbleDescription implements ISelectionInfo {
     }
   }
 
+  /**
+   * This class is the controller for the fxml used by {@link GraphBubbleDescription}.
+   *
+   * <p>
+   * The controller can be setup with an {@link GraphBubbleDescription} instance to
+   * display the text in a simple TextArea.
+   * </p>
+   */
   public static class GraphNodeRectangleDescriptionController implements Initializable {
 
     @FXML
