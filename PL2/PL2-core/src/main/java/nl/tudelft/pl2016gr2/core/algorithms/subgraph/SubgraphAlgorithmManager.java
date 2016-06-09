@@ -109,19 +109,6 @@ public class SubgraphAlgorithmManager {
     return new OrderedGraph(subgraph, orderedNodes);
   }
 
-  private static void verifyEdges(GraphNode node) {
-    for (GraphNode outEdge : node.getOutEdges()) {
-      if (!outEdge.getInEdges().contains(node)) {
-        System.out.println("1 - incorrect out edge");
-      }
-    }
-    for (GraphNode inEdge : node.getInEdges()) {
-      if (!inEdge.getOutEdges().contains(node)) {
-        System.out.println("2 - incorrect in edge");
-      }
-    }
-  }
-
   /**
    * Thread which is used to get a graph of a subset of the genomes from a graph.
    */

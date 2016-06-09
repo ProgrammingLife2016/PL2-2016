@@ -1,7 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
-import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -39,7 +38,7 @@ public class FilterBubbles implements PhyloFilter {
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
    * tree based on which this graph will be filtered.
    *
-   * @param originalGraph : the graph to be filtered.
+   * @param orderedNodes : the nodes to be filtered.
    */
   public FilterBubbles(Collection<GraphNode> orderedNodes) {
     this.rootNodes = new ArrayList<>();
@@ -261,7 +260,7 @@ public class FilterBubbles implements PhyloFilter {
     while (iterator.hasNext()) {
       GraphNode node = iterator.next();
       if (!(originalInEdges.containsKey(node.getId()) 
-         && originalOutEdges.containsKey(node.getId()))) {
+          && originalOutEdges.containsKey(node.getId()))) {
         continue;
       }
       // Get the original inedges and see which ones are still in the graph

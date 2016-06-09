@@ -1,12 +1,12 @@
 package nl.tudelft.pl2016gr2.core.algorithms.mutations;
 
-import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -250,12 +250,11 @@ public class MutationBubbleAlgorithms {
   private static Collection<GraphNode> detectStraightSequence(GraphNode startNode, 
       Set<GraphNode> visited) {
     boolean overlap = startNode.getGuiData().overlapping;
-    ArrayList<GraphNode> nestedNodes = new ArrayList<>();
+    List<GraphNode> nestedNodes = new ArrayList<>();
     nestedNodes.add(startNode);
     GraphNode current = startNode;
     while (current.getOutEdges().size() == 1) {
-      Iterator<GraphNode> iterator = current.getOutEdges().iterator();
-      GraphNode child = iterator.next();
+      GraphNode child = current.getOutEdges().iterator().next();
       if (child.getGuiData().overlapping == overlap && child.getInEdges().size() == 1) {
         visited.add(child);
         nestedNodes.add(child);
@@ -264,14 +263,12 @@ public class MutationBubbleAlgorithms {
         break;
       }
     }
-    // If only the startNode has been added, we don't actually have a straight sequence bubble
     if (nestedNodes.size() < 3) {
       return nestedNodes;
     }
-    // Else, we can return the new bubble
     nestedNodes.remove(startNode);
     nestedNodes.remove(current);
-    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
+    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++, 
         Collections.singletonList(startNode), Collections.singletonList(current), nestedNodes,
         VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
     return getNewNodes(startNode, current, bubble);
