@@ -22,6 +22,7 @@ import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreePaneController;
 import nl.tudelft.pl2016gr2.model.Annotation;
@@ -79,6 +80,9 @@ public class RootLayoutController implements
   @TestId(id = "drawGraphs")
   @FXML
   private GraphPaneController graphPaneController;
+
+  @FXML
+  private SelectionPaneController selectionPaneController;
 
   /**
    * Initializes the controller class.
@@ -160,6 +164,7 @@ public class RootLayoutController implements
     selectionManager = new SelectionManager();
     treePaneController.setup(selectionManager, graphPaneController);
     graphPaneController.setup(selectionManager);
+    selectionPaneController.setup(selectionManager);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
