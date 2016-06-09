@@ -76,12 +76,12 @@ public class SelectionManager {
   }
 
   /**
-   * Returns all selectd items.
+   * Returns the selected item
    *
-   * @return a collection of said items.
+   * @return the currently selected item.
    */
-  public SimpleObjectProperty<ISelectable> getSelection() {
-    return selection;
+  public ISelectable getSelection() {
+    return selection.get();
   }
 
   /**
