@@ -328,7 +328,7 @@ public class GraphPaneController implements Initializable {
         } catch (Exception ex) {
           Logger.getLogger(GraphPaneController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        event.setDropCompleted(true);
+        event.setDropCompleted(false);
         event.consume();
       }
     });
@@ -353,7 +353,7 @@ public class GraphPaneController implements Initializable {
         handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event,
             getBottomGraphGenomes(),
             getTopGraphGenomes());
-        event.setDropCompleted(true);
+        event.setDropCompleted(false);
         event.consume();
       }
     });
