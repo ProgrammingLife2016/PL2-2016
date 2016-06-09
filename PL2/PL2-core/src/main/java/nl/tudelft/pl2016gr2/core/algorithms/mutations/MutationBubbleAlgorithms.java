@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.core.algorithms.mutations;
 
-import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
@@ -8,6 +7,7 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -228,7 +228,7 @@ public class MutationBubbleAlgorithms {
 
         // Iterate as far as possible and create a bubble if that length > 1.
         // Add the result (which is either a single node, or the created bubble
-        newNodes.add(detectStraightSequence(node, visited));
+        newNodes.addAll(detectStraightSequence(node, visited));
       }
     });
     return newNodes;
@@ -246,14 +246,14 @@ public class MutationBubbleAlgorithms {
    * @param visited   The visited list to avoid iterating over nodes multiple times
    * @return The <code>startNode</code> if no sequence was made, or the Bubble for the sequence
    */
-  private static GraphNode detectStraightSequence(GraphNode startNode, Set<GraphNode> visited) {
+  private static Collection<GraphNode> detectStraightSequence(GraphNode startNode, 
+      Set<GraphNode> visited) {
     boolean overlap = startNode.getGuiData().overlapping;
-    ArrayList<GraphNode> nestedNodes = new ArrayList<>();
+    List<GraphNode> nestedNodes = new ArrayList<>();
     nestedNodes.add(startNode);
     GraphNode current = startNode;
     while (current.getOutEdges().size() == 1) {
-      Iterator<GraphNode> iterator = current.getOutEdges().iterator();
-      GraphNode child = iterator.next();
+      GraphNode child = current.getOutEdges().iterator().next();
       if (child.getGuiData().overlapping == overlap && child.getInEdges().size() == 1) {
         visited.add(child);
         nestedNodes.add(child);
@@ -262,30 +262,26 @@ public class MutationBubbleAlgorithms {
         break;
       }
     }
-    if (nestedNodes.size() == 1) {
-      return startNode;
+    if (nestedNodes.size() < 3) {
+      return nestedNodes;
     }
-    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
-        startNode.getInEdges(), current.getOutEdges(), nestedNodes,
+    nestedNodes.remove(startNode);
+    nestedNodes.remove(current);
+    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++, 
+        Collections.singletonList(startNode), Collections.singletonList(current), nestedNodes,
         VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
-    addEdges(bubble, startNode, current);
-    return bubble;
+    return getNewNodes(startNode, current, bubble);
   }
-
-  /**
-   * Iterates over all nodes and removes any edges that lead to nodes that are no long in the
-   * collection.
-   *
-   * @param bubble The node collection
-   */
-  private static void addEdges(Bubble bubble, GraphNode startNode, GraphNode endNode) {
-    startNode.getInEdges().forEach(inEdge -> {
-      inEdge.addOutEdge(bubble);
-      inEdge.removeOutEdge(startNode);
-    });
-    endNode.getOutEdges().forEach(outEdge -> {
-      outEdge.addInEdge(bubble);
-      outEdge.removeInEdge(endNode);
-    });
+  
+  private static Collection<GraphNode> getNewNodes(GraphNode start, GraphNode end, 
+      GraphNode bubble) {
+    start.setOutEdges(Collections.singletonList(bubble));
+    end.setInEdges(Collections.singletonList(bubble));
+     
+    List<GraphNode> newNodes = new ArrayList<>();
+    newNodes.add(start);
+    newNodes.add(bubble);
+    newNodes.add(end);
+    return newNodes;
   }
 }

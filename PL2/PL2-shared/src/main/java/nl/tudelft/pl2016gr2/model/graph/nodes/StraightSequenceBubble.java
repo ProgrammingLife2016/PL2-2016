@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,12 +38,20 @@ public class StraightSequenceBubble extends Bubble {
   public GraphNode copyAll() {
     return new StraightSequenceBubble(this, aligner);
   }
+  
+  @Override
+  public Collection<Integer> getGenomes() {
+    HashSet<Integer> genomeSet = new HashSet<>();
+    for (GraphNode inEdge : getInEdges()) {
+      genomeSet.addAll(inEdge.getGenomes());
+    }
+    return genomeSet;
+  }
 
   @Override
   public Collection<GraphNode> pop() {
     if (!isPopped) {
       setPoppedEdges();
-      verify();
       isPopped = true;
     }
     if (!verticallyAligned) {
@@ -50,25 +59,6 @@ public class StraightSequenceBubble extends Bubble {
       verticallyAligned = true;
     }
     return this.getChildren();
-  }
-
-  private void verify() {
-    for (GraphNode node : getChildren()) {
-      verifyEdges(node);
-    }
-  }
-
-  private void verifyEdges(GraphNode node) {
-    for (GraphNode outEdge : node.getOutEdges()) {
-      if (!outEdge.getInEdges().contains(node)) {
-        System.out.println("err1");
-      }
-    }
-    for (GraphNode inEdge : node.getInEdges()) {
-      if (!inEdge.getOutEdges().contains(node)) {
-        System.out.println("err2");
-      }
-    }
   }
 
   @Override

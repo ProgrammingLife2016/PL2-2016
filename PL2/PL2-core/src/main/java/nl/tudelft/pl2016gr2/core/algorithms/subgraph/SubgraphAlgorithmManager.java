@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
@@ -54,7 +55,7 @@ public class SubgraphAlgorithmManager {
         bottomGenomes, treeRoot);
     topFilter.start();
     bottomFilter.start();
-    
+
     ArrayList<GraphNode> topGraphOrder = topFilter.getOrderedNodes();
     ArrayList<GraphNode> bottomGraphOrder = bottomFilter.getOrderedNodes();
 
@@ -101,8 +102,8 @@ public class SubgraphAlgorithmManager {
       return first.getLevel() - second.getLevel();
     });
 
-    //    FilterBubbles filter = new FilterBubbles(subgraph);
-    //    ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+    FilterBubbles filter = new FilterBubbles(orderedNodes);
+    orderedNodes = filter.filter(treeRoot, genomes);
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
@@ -179,8 +180,8 @@ public class SubgraphAlgorithmManager {
     public void run() {
       orderedNodes = subgraph.getOrderedGraph();
       orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
-      //FilterBubbles filter = new FilterBubbles(subgraph);
-      //orderedNodes = filter.filter(treeRoot, genomes);
+      FilterBubbles filter = new FilterBubbles(orderedNodes);
+      orderedNodes = filter.filter(treeRoot, genomes);
       ArrayList<GraphNode> newNodes = new ArrayList<>();
       for (GraphNode node : orderedNodes) {
         if (node.getInEdges().isEmpty()) {
