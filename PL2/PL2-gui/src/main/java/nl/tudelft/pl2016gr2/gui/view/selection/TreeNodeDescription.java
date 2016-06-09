@@ -59,7 +59,7 @@ public class TreeNodeDescription implements ISelectionInfo {
    * Build a compare children button.
    */
   private Button makeButton() {
-    Button button = new Button("Compare children TODO");
+    Button button = new Button("Compare children");
     button.getStyleClass().add("BigButton");
     button.setPrefHeight(50);
     button.setOnAction(buttonClicked);
