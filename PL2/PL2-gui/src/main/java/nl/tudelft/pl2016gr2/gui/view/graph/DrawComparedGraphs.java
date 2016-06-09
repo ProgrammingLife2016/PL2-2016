@@ -38,7 +38,6 @@ import nl.tudelft.pl2016gr2.util.Pair;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,6 +47,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Draws two compared graphs above each other in a pane.
@@ -333,16 +334,11 @@ public class DrawComparedGraphs implements Initializable {
     topPane.setOnDragDropped((DragEvent event) -> {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
-        Collection<Integer> genomes = new ArrayList<>();
-        for (String genome : dragboard.getString().split("\n")) {
-          String gen = genome.replace("\r", "");
-          Integer genId = GenomeMap.getInstance().getId(gen);
-          if (genId != null) {
-            genomes.add(genId);
-          }
-        }
+        Collection<String> genomes = Stream.of(dragboard.getString().split("\n"))
+            .map(genome -> genome.replace("\r", ""))
+            .collect(Collectors.toCollection(ArrayList::new));
         try {
-          handleGenomesDropped(genomes, event,
+          handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event,
               selectionManager.getTopGraphGenomes(),
               selectionManager.getBottomGraphGenomes());
         } catch (Exception ex) {
@@ -367,7 +363,9 @@ public class DrawComparedGraphs implements Initializable {
     bottomPane.setOnDragDropped((DragEvent event) -> {
       Dragboard dragboard = event.getDragboard();
       if (dragboard.hasString()) {
-        Collection<String> genomes = Arrays.asList(dragboard.getString().split("\n"));
+        Collection<String> genomes = Stream.of(dragboard.getString().split("\n"))
+            .map(genome -> genome.replace("\r", ""))
+            .collect(Collectors.toCollection(ArrayList::new));
         handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event,
             selectionManager.getBottomGraphGenomes(),
             selectionManager.getTopGraphGenomes());
