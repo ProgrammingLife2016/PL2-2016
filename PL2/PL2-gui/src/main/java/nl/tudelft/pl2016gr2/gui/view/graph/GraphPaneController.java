@@ -29,6 +29,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -591,8 +593,10 @@ public class GraphPaneController implements Initializable {
    *
    * @param graph the graph.
    * @param root  the root of the phylogenetic tree.
+   * @param annotations the list of annotations.
    */
-  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root) {
+  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root, 
+      List<Annotation> annotations) {
     clear();
     treeRoot = root;
     mainGraph = graph;
