@@ -6,7 +6,6 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
