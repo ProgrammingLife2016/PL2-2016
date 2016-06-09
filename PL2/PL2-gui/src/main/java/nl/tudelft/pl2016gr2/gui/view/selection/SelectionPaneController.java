@@ -36,7 +36,7 @@ public class SelectionPaneController implements Initializable {
    * @param content new content, may be null
    */
   public void setContent(Node content) {
-    rootPane.getChildren().clear();
+    clearContent();
     if (content != null) {
       AnchorPane.setTopAnchor(content, 0.0d);
       AnchorPane.setBottomAnchor(content, 0.0d);
@@ -44,6 +44,13 @@ public class SelectionPaneController implements Initializable {
       AnchorPane.setRightAnchor(content, 0.0d);
       rootPane.getChildren().add(content);
     }
+  }
+
+  /**
+   * Clears the pane of information.
+   */
+  public void clearContent() {
+    rootPane.getChildren().clear();
   }
 
 }

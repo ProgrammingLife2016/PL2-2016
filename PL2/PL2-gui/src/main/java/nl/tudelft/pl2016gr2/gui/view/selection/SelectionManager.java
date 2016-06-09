@@ -97,7 +97,7 @@ public class SelectionManager {
    * Clear the description pane.
    */
   private void clearDescription() {
-    selectionPaneController.setContent(null);
+    selectionPaneController.clearContent();
   }
 
   /**
