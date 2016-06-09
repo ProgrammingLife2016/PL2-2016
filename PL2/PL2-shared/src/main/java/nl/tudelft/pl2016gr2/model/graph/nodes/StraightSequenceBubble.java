@@ -42,9 +42,6 @@ public class StraightSequenceBubble extends Bubble {
   @Override
   public Collection<Integer> getGenomes() {
     HashSet<Integer> genomeSet = new HashSet<>();
-    for (GraphNode nestedNode : getChildren()) {
-      genomeSet.addAll(nestedNode.getGenomes());
-    }
     for (GraphNode inEdge : getInEdges()) {
       genomeSet.addAll(inEdge.getGenomes());
     }
