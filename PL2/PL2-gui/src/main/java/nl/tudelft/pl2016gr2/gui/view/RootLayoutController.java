@@ -280,7 +280,7 @@ public class RootLayoutController implements
         default:
       }
     });
-    searchPaneController.setSelectionManager(selectionManager);
+    searchPaneController.setup(selectionManager, graphPaneController);
   }
 
   @Override

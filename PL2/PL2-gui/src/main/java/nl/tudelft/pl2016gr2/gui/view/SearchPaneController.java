@@ -27,6 +27,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.paint.Color;
 
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
@@ -70,11 +71,17 @@ public class SearchPaneController implements Initializable {
   @FXML
   private Button phenotypicDSTPatternButton;
 
+  @FXML
+  private TextField goToField;
+  @FXML
+  private Button goToButton;
+
   private final ObservableList<MetaData> masterData = FXCollections.observableArrayList();
 
   private final FilteredList<MetaData> filteredData = new FilteredList<>(masterData, p -> true);
 
   private SelectionManager selectionManager;
+  private GraphPaneController graphPaneController;
 
   /**
    * When this method is called, focus is requested for the searchBox.
@@ -92,6 +99,7 @@ public class SearchPaneController implements Initializable {
       }
     });
     initializeTable();
+    initializeGoTo();
     initializeExtendedSearchPane();
   }
 
@@ -109,7 +117,7 @@ public class SearchPaneController implements Initializable {
           );
         }
     );
-    
+
     specimenIdColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenId));
     specimentTypeColumn.setCellValueFactory(
@@ -160,6 +168,16 @@ public class SearchPaneController implements Initializable {
   }
 
   /**
+   * Sets up this Controller.
+   * @param selectionManager the selection manager
+   * @param graphPaneController the graphPaneController
+   */
+  public void setup(SelectionManager selectionManager, GraphPaneController graphPaneController) {
+    this.selectionManager = selectionManager;
+    this.graphPaneController = graphPaneController;
+  }
+
+  /**
    * Call this whenever data changes.
    */
   private void updateTable() {
@@ -190,6 +208,17 @@ public class SearchPaneController implements Initializable {
   private boolean isNotSelected(ComboBox<String> comboBox, String checkAgainst) {
     String selectedItem = comboBox.getSelectionModel().getSelectedItem();
     return selectedItem != null && !checkAgainst.equals(selectedItem);
+  }
+
+  private void initializeGoTo() {
+    goToButton.setOnAction(actionEvent -> {
+      String fieldText = goToField.getText();
+      if (fieldText.matches("\\d+")) {
+        graphPaneController.centreOnLevel(Integer.valueOf(fieldText));
+      } else {
+        goToField.clear();
+      }
+    });
   }
 
   @SuppressWarnings("checkstyle:MethodLength")
@@ -231,7 +260,4 @@ public class SearchPaneController implements Initializable {
     masterData.addAll(metaDatas);
   }
 
-  public void setSelectionManager(SelectionManager selectionManager) {
-    this.selectionManager = selectionManager;
-  }
 }

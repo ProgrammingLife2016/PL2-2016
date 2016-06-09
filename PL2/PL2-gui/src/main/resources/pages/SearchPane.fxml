@@ -32,12 +32,16 @@
         </HBox>
     </AnchorPane>
     <GridPane  GridPane.columnIndex="1" >
-        <Label GridPane.columnIndex="1" GridPane.rowIndex="1" text="genotypicDSTPattern" />
-        <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="1" fx:id="genotypicDSTPatternComboBox" />
-        <Button GridPane.columnIndex="3" GridPane.rowIndex="1" fx:id="genotypicDSTPatternButton" text="Clear" />
-        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" text="phenotypicDSTPattern" />
-        <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" fx:id="phenotypicDSTPatternComboBox" />
-        <Button GridPane.columnIndex="3" GridPane.rowIndex="2" fx:id="phenotypicDSTPatternButton" text="Clear" />
+        <Label text="Go to:"  GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField fx:id="goToField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Button fx:id="goToButton" GridPane.columnIndex="3" GridPane.rowIndex="1" text="Go" />
+
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="2" text="genotypicDSTPattern" />
+        <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="2" fx:id="genotypicDSTPatternComboBox" />
+        <Button GridPane.columnIndex="3" GridPane.rowIndex="2" fx:id="genotypicDSTPatternButton" text="Clear" />
+        <Label GridPane.columnIndex="1" GridPane.rowIndex="3" text="phenotypicDSTPattern" />
+        <ComboBox GridPane.columnIndex="2" GridPane.rowIndex="3" fx:id="phenotypicDSTPatternComboBox" />
+        <Button GridPane.columnIndex="3" GridPane.rowIndex="3" fx:id="phenotypicDSTPatternButton" text="Clear" />
     </GridPane>
 
    <columnConstraints>
