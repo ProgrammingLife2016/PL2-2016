@@ -33,7 +33,8 @@ public class AnnotationReader {
   }
 
   /**
-   * This method should be called on an instance of AnnotationReader.
+   * Reads the gff file containing annotations.
+   * @return The list of annotations in the gff file.
    */
   public ArrayList<Annotation> read() {
     try {

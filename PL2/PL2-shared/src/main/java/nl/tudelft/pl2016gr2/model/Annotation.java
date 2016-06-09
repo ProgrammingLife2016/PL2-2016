@@ -47,9 +47,7 @@ public class Annotation {
   /**
    * Add an attribute to the attributes.
    *
-   * @param attribute the string containing the attributes. The attribute string must follow the
-   *                  following syntax: "attribute=value". If the syntax is incorrect, nothing will
-   *                  be added.
+   * @param attribute a Pair containing the attribute/value pair. 
    */
   public void addAttribute(Pair<String, String> attribute) {
     attributes.put(attribute.left.toLowerCase(), attribute.right);
@@ -75,6 +73,10 @@ public class Annotation {
     return attributes.containsKey(attribute.toLowerCase());
   }
   
+  /**
+   * Returns all attributes.
+   * @return a hashmap of attributes.
+   */
   public HashMap<String, String> getAttributes() {
     return attributes;
   }
