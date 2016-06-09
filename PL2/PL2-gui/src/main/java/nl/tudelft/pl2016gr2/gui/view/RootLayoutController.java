@@ -10,7 +10,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -21,10 +20,11 @@ import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
 import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
-import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.gui.view.tree.TreeManager;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreePaneController;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
@@ -57,7 +57,7 @@ public class RootLayoutController implements
   @FXML
   private AnchorPane rootPane;
   @FXML
-  private Pane selectionDescriptionPane;
+  private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML
@@ -66,17 +66,18 @@ public class RootLayoutController implements
   private LegendController treeLegendController;
 
   @FXML
-  private Pane searchPane;
-  @FXML
   private SearchPaneController searchPaneController;
 
   @TestId(id = "treeManager")
-  private TreeManager treeManager;
+  @FXML
+  private TreePaneController treePaneController;
+
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
 
   @TestId(id = "drawGraphs")
-  private DrawComparedGraphs drawGraphs;
+  @FXML
+  private GraphPaneController graphPaneController;
 
   /**
    * Initializes the controller class.
@@ -88,15 +89,9 @@ public class RootLayoutController implements
   public void initialize(URL location, ResourceBundle resources) {
     initializeSelectionManager();
     initializeLegend();
-    treeManager = TreeManager.loadView(selectionManager);
-    drawGraphs = DrawComparedGraphs.loadView(selectionManager);
-    mainPane.getItems().add(treeManager.getTreePane());
-
-    Region graphRegion = drawGraphs.getGraphPane();
-    mainPane.getItems().add(graphRegion);
+    Region graphRegion = graphPaneController.getGraphPane();
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
     mainPane.setDividerPosition(0, 0.35);
-
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
       public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
@@ -116,8 +111,7 @@ public class RootLayoutController implements
    * @param treeRoot the root of the loaded tree.
    */
   public void loadTree(IPhylogeneticTreeRoot treeRoot) {
-    treeManager.loadTree(treeRoot);
-
+    treePaneController.loadTree(treeRoot);
   }
 
   /**
@@ -127,7 +121,7 @@ public class RootLayoutController implements
    * @param treeRoot the root of the loaded tree.
    */
   public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
-    this.drawGraphs.loadMainGraph(graph, treeRoot);
+    this.graphPaneController.loadMainGraph(graph, treeRoot);
   }
 
   /**
@@ -136,16 +130,15 @@ public class RootLayoutController implements
    * @return the controller of the loaded view.
    */
   public static RootLayoutController loadView() {
-    FXMLLoader loader = new FXMLLoader();
     try {
-      loader.setLocation(RootLayoutController.class.getClassLoader()
-          .getResource("pages/RootLayout.fxml"));
+      FXMLLoader loader = new FXMLLoader(
+          RootLayoutController.class.getClassLoader().getResource("pages/RootLayout.fxml"));
       loader.load();
-      return loader.<RootLayoutController>getController();
+      return loader.getController();
     } catch (IOException ex) {
       Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);
     }
-    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
+    throw new RuntimeException("failed to load the RootLayout fxml file.");
   }
 
   /**
@@ -164,20 +157,22 @@ public class RootLayoutController implements
    * @param bottomGenomes the genomes of the bottom graph.
    */
   public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
-    drawGraphs.compareTwoGraphs(topGenomes, bottomGenomes);
+    graphPaneController.compareTwoGraphs(topGenomes, bottomGenomes);
   }
 
   /**
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(this, selectionDescriptionPane);
+    selectionManager = new SelectionManager(this, selectionPaneController);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
         event.consume();
       }
     });
+    treePaneController.setup(selectionManager, graphPaneController);
+    graphPaneController.setup(selectionManager);
   }
 
   /**
@@ -207,11 +202,11 @@ public class RootLayoutController implements
         new LegendController.LegendItem(
             "This node represents a straight sequence of multiple nodes.",
             "Straight sequence.",
-            new Circle(10, DrawComparedGraphs.NO_OVERLAP_COLOR)),
+            new Circle(10, graphPaneController.NO_OVERLAP_COLOR)),
         new LegendController.LegendItem(
             "This node has overlap with other (different) nodes.",
             "Overlapping sequence.",
-            new Circle(10, DrawComparedGraphs.OVERLAP_COLOR))
+            new Circle(10, graphPaneController.OVERLAP_COLOR))
     );
 
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
@@ -228,7 +223,7 @@ public class RootLayoutController implements
     Circle tempCircle;
     tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
     tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
-    tempCircle.setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+    tempCircle.setStroke(graphPaneController.TOP_GRAPH_COLOR);
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in orange section of the graph (top)",
         "Top node",
@@ -244,7 +239,7 @@ public class RootLayoutController implements
     ));
     tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
     tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
-    tempCircle.setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+    tempCircle.setStroke(graphPaneController.BOTTOM_GRAPH_COLOR);
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in blue section of the graph (bottom)",
         "Bottom node",
@@ -275,9 +270,12 @@ public class RootLayoutController implements
       switch (keyEvent.getCode()) {
         case F:
           if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
-            searchPane.setVisible(!searchPane.isVisible());
+            searchPaneController.requestSearchFieldFocus();
             keyEvent.consume();
           }
+          break;
+        case ESCAPE:
+          rootPane.requestFocus();
           break;
         default:
       }

@@ -19,7 +19,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
@@ -60,8 +60,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * MULTI_GRAPH_GRADIENT DECLARATION. THIS WILL BREAK IT.
    */
   static {
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(0.0, DrawComparedGraphs.TOP_GRAPH_COLOR));
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, DrawComparedGraphs.BOTTOM_GRAPH_COLOR));
+    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(0.0, GraphPaneController.TOP_GRAPH_COLOR));
+    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, GraphPaneController.BOTTOM_GRAPH_COLOR));
   }
 
   public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
@@ -161,9 +161,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     if (dataNode.getDrawnInTopProperty().get() && dataNode.getDrawnInBottomProperty().get()) {
       setStroke(MULTI_GRAPH_GRADIENT);
     } else if (dataNode.getDrawnInTopProperty().get()) {
-      setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+      setStroke(GraphPaneController.TOP_GRAPH_COLOR);
     } else if (dataNode.getDrawnInBottomProperty().get()) {
-      setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+      setStroke(GraphPaneController.BOTTOM_GRAPH_COLOR);
     } else {
       setStroke(null);
     }
@@ -341,7 +341,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     double newX = getCenterX() + originalArea.getEndX() - zoomArea.getEndX();
     double newY = getCenterY() - zoomArea.getStartY();
     newY = newY / zoomArea.getHeight() * originalArea.getHeight();
-    newY += TreeManager.GRAPH_BORDER_OFFSET;
+    newY += TreePaneController.GRAPH_BORDER_OFFSET;
 
     KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
     KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
