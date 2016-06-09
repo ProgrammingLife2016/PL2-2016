@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -36,6 +37,18 @@ public class StraightSequenceBubble extends Bubble {
   @Override
   public GraphNode copyAll() {
     return new StraightSequenceBubble(this, aligner);
+  }
+  
+  @Override
+  public Collection<Integer> getGenomes() {
+    HashSet<Integer> genomeSet = new HashSet<>();
+    for (GraphNode nestedNode : getChildren()) {
+      genomeSet.addAll(nestedNode.getGenomes());
+    }
+    for (GraphNode inEdge : getInEdges()) {
+      genomeSet.addAll(inEdge.getGenomes());
+    }
+    return genomeSet;
   }
 
   @Override

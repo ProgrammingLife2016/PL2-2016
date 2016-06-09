@@ -228,7 +228,7 @@ public class MutationBubbleAlgorithms {
 
         // Iterate as far as possible and create a bubble if that length > 1.
         // Add the result (which is either a single node, or the created bubble
-        newNodes.add(detectStraightSequence(node, visited));
+        newNodes.addAll(detectStraightSequence(node, visited));
       }
     });
     return newNodes;
@@ -246,7 +246,8 @@ public class MutationBubbleAlgorithms {
    * @param visited   The visited list to avoid iterating over nodes multiple times
    * @return The <code>startNode</code> if no sequence was made, or the Bubble for the sequence
    */
-  private static GraphNode detectStraightSequence(GraphNode startNode, Set<GraphNode> visited) {
+  private static Collection<GraphNode> detectStraightSequence(GraphNode startNode, 
+      Set<GraphNode> visited) {
     boolean overlap = startNode.getGuiData().overlapping;
     ArrayList<GraphNode> nestedNodes = new ArrayList<>();
     nestedNodes.add(startNode);
@@ -272,16 +273,30 @@ public class MutationBubbleAlgorithms {
       }
     }
     // If only the startNode has been added, we don't actually have a straight sequence bubble
-    if (nestedNodes.size() == 1) {
-      return startNode;
+    if (nestedNodes.size() < 3) {
+      return nestedNodes;
     }
     // Else, we can return the new bubble
+    nestedNodes.remove(startNode);
+    nestedNodes.remove(current);
+    List<GraphNode> inEdges = new ArrayList<>();
+    inEdges.add(startNode);
+    List<GraphNode> outEdges = new ArrayList<>();
+    outEdges.add(current);
     StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
-        startNode.getInEdges(), current.getOutEdges(), nestedNodes,
+        inEdges, outEdges, nestedNodes,
         VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
-
-    addEdges(bubble, startNode, current);
-    return bubble;
+    List<GraphNode> thisBubble = new ArrayList<>();
+    thisBubble.add(bubble);
+    startNode.setOutEdges(thisBubble);
+    current.setInEdges(thisBubble);
+    
+    List<GraphNode> newNodes = new ArrayList<>();
+    newNodes.add(startNode);
+    newNodes.add(bubble);
+    newNodes.add(current);
+    //addEdges(bubble, startNode, current);
+    return newNodes;
   }
 
   /**

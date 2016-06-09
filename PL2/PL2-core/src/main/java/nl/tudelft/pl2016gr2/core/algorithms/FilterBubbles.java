@@ -260,7 +260,8 @@ public class FilterBubbles implements PhyloFilter {
     Iterator<GraphNode> iterator = graphNodes.iterator();
     while (iterator.hasNext()) {
       GraphNode node = iterator.next();
-      if (node.hasChildren()) {
+      if (!(originalInEdges.containsKey(node.getId()) 
+         && originalOutEdges.containsKey(node.getId()))) {
         continue;
       }
       // Get the original inedges and see which ones are still in the graph
