@@ -21,6 +21,8 @@ import java.util.logging.Logger;
  */
 public class SubgraphAlgorithmManager {
 
+  private static int dummyRootNodeId = Integer.MAX_VALUE;
+
   /**
    * This is a utility class, so let no one create an instance of it.
    */
@@ -41,6 +43,7 @@ public class SubgraphAlgorithmManager {
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
       Collection<Integer> bottomGenomes, SequenceGraph mainGraph, GraphOrdererThread mainGraphOrder,
       IPhylogeneticTreeRoot treeRoot) {
+    dummyRootNodeId = Integer.MAX_VALUE;
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
     SplitGraphsThread bottomSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
@@ -54,10 +57,9 @@ public class SubgraphAlgorithmManager {
         bottomGenomes, treeRoot);
     topFilter.start();
     bottomFilter.start();
-    
+
     ArrayList<GraphNode> topGraphOrder = topFilter.getOrderedNodes();
     ArrayList<GraphNode> bottomGraphOrder = bottomFilter.getOrderedNodes();
-
     CompareSubgraphs.compareGraphs(topGraphOrder, bottomGraphOrder);
 
     OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
@@ -78,6 +80,7 @@ public class SubgraphAlgorithmManager {
   @SuppressWarnings("checkstyle:methodlength")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
+    dummyRootNodeId = Integer.MAX_VALUE;
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
     topSubGraphThread.start();
@@ -90,7 +93,7 @@ public class SubgraphAlgorithmManager {
     for (GraphNode node : orderedNodes) {
       if (node.getInEdges().isEmpty()) {
 
-        SequenceNode newerRoot = new SequenceNode(0, new BaseSequence(""));
+        SequenceNode newerRoot = new SequenceNode(getUniqueDummyNodeId(), new BaseSequence(""));
         node.addInEdge(newerRoot);
         newerRoot.addOutEdge(node);
         newNodes.add(newerRoot);
@@ -184,7 +187,7 @@ public class SubgraphAlgorithmManager {
       ArrayList<GraphNode> newNodes = new ArrayList<>();
       for (GraphNode node : orderedNodes) {
         if (node.getInEdges().isEmpty()) {
-          SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+          SequenceNode newRoot = new SequenceNode(getUniqueDummyNodeId(), new BaseSequence(""));
           newNodes.add(newRoot);
           newRoot.addOutEdge(node);
           node.addInEdge(newRoot);
@@ -195,5 +198,13 @@ public class SubgraphAlgorithmManager {
         return first.getLevel() - second.getLevel();
       });
     }
+  }
+
+  /**
+   * Get a unique dummy node id.
+   * @return a unique dummy node id.
+   */
+  private static synchronized int getUniqueDummyNodeId() {
+    return dummyRootNodeId--;
   }
 }

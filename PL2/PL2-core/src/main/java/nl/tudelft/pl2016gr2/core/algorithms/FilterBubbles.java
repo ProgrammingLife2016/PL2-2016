@@ -33,7 +33,7 @@ public class FilterBubbles implements PhyloFilter {
   private final Map<Integer, Collection<GraphNode>> originalInEdges;
   private final Map<Integer, Collection<GraphNode>> originalOutEdges;
   private final Collection<GraphNode> rootNodes;
-  private int mutationId;
+  private int mutationId = -1;
 
   /**
    * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
@@ -52,8 +52,6 @@ public class FilterBubbles implements PhyloFilter {
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
     }
-
-    mutationId = -1;
   }
 
   /**
