@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
 import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.io.BufferedReader;
@@ -8,74 +9,111 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class for reading a gff file.
+ * @author Cas
+ *
+ */
 public class AnnotationReader {
 
   private InputStream fileStream;
-  private HashSet<String> properties = new HashSet<>();
+  private GenomeMap genomeMap;
   private ArrayList<Annotation> annotations = new ArrayList<>();
 
+  /**
+   * Creates an AnnotationReader for the inputstream specified.
+   * @param inputStream the file we want to read.
+   */
   public AnnotationReader(InputStream inputStream) {
     this.fileStream = inputStream;
+    this.genomeMap = GenomeMap.getInstance();
   }
 
-  public void read() {
+  /**
+   * This method should be called on an instance of AnnotationReader.
+   */
+  public ArrayList<Annotation> read() {
     try {
-      parse();
+      return parse();
     } catch (IOException ex) {
-      Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(AnnotationReader.class.getName()).log(Level.SEVERE, null, ex);
+      return null;
     }
   }
 
-  private void parse() throws IOException {
+  /**
+   * Creates a BufferedReader and parses every line of the file.
+   * 
+   * @return The list of annotations in the file.
+   * @throws IOException from the BufferedReader.
+   */
+  private ArrayList<Annotation> parse() throws IOException {
     try (BufferedReader br = new BufferedReader(new InputStreamReader(fileStream))) {
       String line;
-      int count = 0;
-      while ((line = br.readLine()) != null && count < 30) {
-        count++;
-        String[] tabSplitted = line.split("\t");
-        if (tabSplitted.length < 9) {
-          Logger.getLogger(GfaReader.class.getName()).log(Level.WARNING,
-              "Line layout not recognised (shorter than expected): " + line);
+      while ((line = br.readLine()) != null) {
+        Annotation annotation = readLine(line);
+        if (annotation != null) {
+          annotations.add(annotation);
         }
-        String refGenome = tabSplitted[0];
-        String unknownNull = tabSplitted[1];
-        String tag = tabSplitted[2];
-        int firstInt = Integer.parseInt(tabSplitted[3]);
-        int secondInt = Integer.parseInt(tabSplitted[4]);
-        double firstDouble = Double.parseDouble(tabSplitted[5]);
-        String plusMinus = tabSplitted[6];
-        String point = tabSplitted[7];
-        Annotation annotation = new Annotation(refGenome, unknownNull, tag, firstInt, secondInt,
-            firstDouble, plusMinus, point);
-        extractProperties(tabSplitted[8], annotation);
-        if (tabSplitted.length >= 10) {
-          Logger.getLogger(AnnotationReader.class.getName()).log(Level.WARNING, null,
-              "Line layout not recognised (longer than expected): " + line);
-        }
-        annotations.add(annotation);
       }
-      System.out.println(annotations);
-      System.out.println(properties);
+      return annotations;
+    }
+  }
+  
+  /**
+   * Parser a line of the gff file
+   * @param line A full line of the gff file
+   * @return An annotation object with the information of the file.
+   */
+  private Annotation readLine(String line) {
+    String[] tabSplitted = line.split("\t");
+    if (tabSplitted.length != 9) {
+      Logger.getLogger(AnnotationReader.class.getName()).log(Level.WARNING,
+          "Line layout not recognised (other length than expected): " + line);
+      return null;
+    }
+    String refGenome = tabSplitted[0];
+    String unknownNull = tabSplitted[1];
+    String tag = tabSplitted[2];
+    int firstInt = Integer.parseInt(tabSplitted[3]);
+    int secondInt = Integer.parseInt(tabSplitted[4]);
+    double firstDouble = Double.parseDouble(tabSplitted[5]);
+    String plusMinus = tabSplitted[6];
+    String point = tabSplitted[7];
+    Annotation annotation = new Annotation(refGenome, unknownNull, tag, firstInt, secondInt,
+        firstDouble, plusMinus, point);
+    extractProperties(tabSplitted[8], annotation);
+    if (genomeMap.containsGenome(refGenome)) {
+      return annotation;
+    } else {
+      return null;
     }
   }
 
+  /**
+   * This method adds properties of some annotation contained 
+   * in the gff file to an annotation.
+   * @param information The String with all properties
+   * @param annotation The annotation to which these properties have to be added.
+   */
   private void extractProperties(String information, Annotation annotation) {
     String[] semicolonDelimited = information.split(";");
-    Pair<String, String> tuple = splitOnEqualSign(semicolonDelimited[0]);
-    Pair<String, String> tuple2 = splitOnEqualSign(semicolonDelimited[1]);
-    Pair<String, String> tuple3 = splitOnEqualSign(semicolonDelimited[2]);
-    Pair<String, String> tuple4 = splitOnEqualSign(semicolonDelimited[3]);
-    annotation.setProperties(tuple2.right, tuple4.right, tuple.right, tuple3.right);
+    for (String str : semicolonDelimited) {
+      annotation.addAttribute(parseProperty(str));
+    }
   }
 
-  private Pair<String, String> splitOnEqualSign(String property) {
+  /**
+   * Splits the property on a '=' and takes the value.
+   * @param property the full property
+   * @return the value of the property
+   */
+  private Pair<String, String> parseProperty(String property) {
     String[] propertySplit = property.split("=");
-    properties.add(propertySplit[0]);
-    return new Pair<>(propertySplit[0], propertySplit[1]);
+    return new Pair<String, String>(propertySplit[0], propertySplit[1]);
   }
 
 }
