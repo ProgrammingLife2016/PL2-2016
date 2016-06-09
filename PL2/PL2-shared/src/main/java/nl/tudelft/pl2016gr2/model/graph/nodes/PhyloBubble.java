@@ -80,6 +80,15 @@ public class PhyloBubble extends Bubble {
   }
 
   @Override
+  public int getGenomeSize() {
+    int count = 0;
+    for (GraphNode inEdge : getInEdges()) {
+      count += inEdge.getGenomeSize();
+    }
+    return count;
+  }
+
+  @Override
   public boolean needsVerticalAligning() {
     return poppedNodes == null;
   }

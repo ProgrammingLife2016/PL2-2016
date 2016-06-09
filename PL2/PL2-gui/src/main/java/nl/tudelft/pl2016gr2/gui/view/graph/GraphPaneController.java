@@ -10,6 +10,8 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
@@ -22,7 +24,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
@@ -75,6 +76,10 @@ public class GraphPaneController implements Initializable {
   private Pane topGraphIndicationArea;
   @FXML
   private Pane bottomGraphIndicationArea;
+  @FXML
+  private Canvas topEdgeCanvas;
+  @FXML
+  private Canvas bottomEdgeCanvas;
 
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
@@ -151,6 +156,7 @@ public class GraphPaneController implements Initializable {
         contextMenu = null;
       }
     });
+    initializeEdgeCanvas();
   }
 
   /**
@@ -200,6 +206,16 @@ public class GraphPaneController implements Initializable {
         zoomOut(-event.getDeltaY(), relativeXPos);
       }
     });
+  }
+
+  /**
+   * Initialize the edge canvas'.
+   */
+  private void initializeEdgeCanvas() {
+    topEdgeCanvas.widthProperty().bind(mainPane.widthProperty());
+    topEdgeCanvas.heightProperty().bind(topPane.prefHeightProperty());
+    bottomEdgeCanvas.widthProperty().bind(mainPane.widthProperty());
+    bottomEdgeCanvas.heightProperty().bind(bottomPane.prefHeightProperty());
   }
 
   /**
@@ -515,6 +531,7 @@ public class GraphPaneController implements Initializable {
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     scrollbar.setValue(0);
     updateGraphSize();
+    System.gc();
     graphUpdater.update();
   }
 
@@ -539,11 +556,11 @@ public class GraphPaneController implements Initializable {
   private void compareTwoGraphs() {
     Pair<OrderedGraph, OrderedGraph> compareRes
         = SubgraphAlgorithmManager.compareTwoGraphs(
-        getTopGraphGenomes(),
-        getBottomGraphGenomes(),
-        mainGraph,
-        mainGraphOrder,
-        treeRoot);
+            getTopGraphGenomes(),
+            getBottomGraphGenomes(),
+            mainGraph,
+            mainGraphOrder,
+            treeRoot);
     this.topGraph = compareRes.left;
     this.bottomGraph = compareRes.right;
     drawTwoGraphs();
@@ -565,6 +582,7 @@ public class GraphPaneController implements Initializable {
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
     scrollbar.setValue(0);
     updateGraphSize();
+    System.gc();
     graphUpdater.update();
   }
 
@@ -627,12 +645,12 @@ public class GraphPaneController implements Initializable {
       startLevel = 0;
     }
     if (topGraph != null) {
-      drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
+      drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
     }
     if (bottomGraph != null) {
-      drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().size(), startLevel,
-          startLevel + levelsToDraw);
+      drawGraph(bottomPane, bottomEdgeCanvas, bottomGraph,
+          bottomGraph.getSubgraph().getGenomes().size(), startLevel, startLevel + levelsToDraw);
     }
   }
 
@@ -640,12 +658,13 @@ public class GraphPaneController implements Initializable {
    * Draw the given graph in the given pane.
    *
    * @param pane       the pane to draw the graph in.
+   * @param canvas     the canvas in which to draw the edges.
    * @param graphOrder the graph node order.
    * @param graph      the graph.
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
+  private void drawGraph(Pane pane, Canvas canvas, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
@@ -653,7 +672,8 @@ public class GraphPaneController implements Initializable {
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, 0, fullRange);
     }
-    drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
+    canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
+    drawEdges(canvas, drawnGraphNodes, startLevel, genomeCount);
   }
 
   /**
@@ -683,7 +703,7 @@ public class GraphPaneController implements Initializable {
       height = width;
     }
     IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
-        width, height, nestedDepth,selectionManager);
+        width, height, nestedDepth, selectionManager);
     pane.getChildren().add(viewNode.get());
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
@@ -750,25 +770,25 @@ public class GraphPaneController implements Initializable {
   /**
    * Draw the edges between all of the nodes which are drawn on the screen.
    *
-   * @param pane            the pane in which to draw the edges.
+   * @param canvas          the canvas in which to draw the edges.
    * @param drawnGraphNodes the set of nodes which are drawn on the screen.
    * @param startLevel      the start level: where to start drawing.
    * @param genomeCount     the amount of genomes which are present in the drawn graph.
    */
-  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
+  private void drawEdges(Canvas canvas, HashSet<GraphNode> drawnGraphNodes, int startLevel,
       int genomeCount) {
     drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
           double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(pane, node, outEdge, edgeWidth, startLevel, node.getGuiData().range,
-              outEdge.getGuiData().range);
+          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel,
+              node.getGuiData().range, outEdge.getGuiData().range);
         }
         for (GraphNode inEdge : node.getInEdges()) {
           if (!drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
-            drawEdge(pane, inEdge, node, edgeWidth, startLevel, node.getGuiData().range,
-                inEdge.getGuiData().range);
+            drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel,
+                node.getGuiData().range, inEdge.getGuiData().range);
           }
         }
       }
@@ -778,37 +798,33 @@ public class GraphPaneController implements Initializable {
   /**
    * Draw an edge from the fromNode to the toNode.
    *
-   * @param pane       the pane in which to draw the edges.
-   * @param fromNode   the node from which to draw the edge.
-   * @param toNode     the node to draw the edge to.
-   * @param edgeWidth  the width of the edge.
-   * @param startLevel the start level: where to start drawing.
-   * @param viewRange  the range of values which may be used as y coordinate to draw this edge.
+   * @param graphicContext the graphicContext to which to add the edges.
+   * @param fromNode       the node from which to draw the edge.
+   * @param toNode         the node to draw the edge to.
+   * @param edgeWidth      the width of the edge.
+   * @param startLevel     the start level: where to start drawing.
+   * @param viewRange      the range of values which may be used as y coordinate to draw this edge.
    */
-  private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
-      int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
-    Line edge = new Line();
-    //edge.setSmooth(true);
-    edge.setStrokeWidth(edgeWidth * 2);
-    pane.getChildren().add(edge);
+  private void drawEdge(GraphicsContext graphicContext, GraphNode fromNode, GraphNode toNode,
+      double edgeWidth, int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
+    graphicContext.setLineWidth(edgeWidth * 2);
+    double startX;
     if (fromNode.hasChildren()) {
-      edge.setStartX(zoomFactor.get()
-          * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+      startX = zoomFactor.get() * (fromNode.getLevel() - startLevel);
     } else {
-      edge.setStartX(zoomFactor.get()
-          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+      startX = zoomFactor.get()
+          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN));
     }
+    double endX;
     if (toNode.hasChildren()) {
-      edge.setEndX(zoomFactor.get()
-          * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
+      endX = zoomFactor.get() * (toNode.getLevel() - startLevel - toNode.size());
     } else {
-      edge.setEndX(zoomFactor.get()
-          * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+      endX = zoomFactor.get() * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN);
     }
-    edge.setStartY(fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
-        + fromRange.rangeStartY);
-    edge.setEndY(toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY);
-    //edge.toBack();
+    double startY = fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
+        + fromRange.rangeStartY;
+    double endY = toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY;
+    graphicContext.strokeLine(startX, startY, endX, endY);
   }
 
   /**
@@ -822,7 +838,7 @@ public class GraphPaneController implements Initializable {
    * @return the edge width.
    */
   private double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
-    int genomesOverEdge = from.getGenomesOverEdge(to).size();
+    int genomesOverEdge = from.approximateGenomesOverEdge(to);
     // see javadoc
     double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8 * zoomFactor.get();
     if (edgeWith > MAX_EDGE_WIDTH) {

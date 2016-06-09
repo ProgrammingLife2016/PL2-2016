@@ -18,7 +18,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   @TestId(id = "id_field")
   private int identifier;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
-  
+
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
 
@@ -84,9 +84,14 @@ public abstract class AbstractGraphNode implements GraphNode {
     });
     getGenomes().stream().filter(
         genome -> node.getGenomes().contains(genome) && !otherGenomes.contains(genome)).forEach(
-        genomes::add);
+            genomes::add);
 
     return genomes;
+  }
+
+  @Override
+  public int approximateGenomesOverEdge(GraphNode node) {
+    return Math.min(getGenomeSize(), node.getGenomeSize());
   }
 
   @Override
@@ -140,7 +145,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   public void removeOutEdge(GraphNode node) {
     outEdges.remove(node);
   }
-  
+
   @Override
   public void trimToSize() {
     //inEdges.trimToSize();
