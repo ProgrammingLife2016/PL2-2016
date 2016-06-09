@@ -29,8 +29,8 @@ public class SelectionPaneController implements Initializable {
    * Sets the content of the selectionPane.
    *
    * <p>
-   *   This removes previous shown content,
-   *   call with null to clear.
+   * This removes previous shown content,
+   * call with null to clear.
    * </p>
    *
    * @param content new content, may be null
