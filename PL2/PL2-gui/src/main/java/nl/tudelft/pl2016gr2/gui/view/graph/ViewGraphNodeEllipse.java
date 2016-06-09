@@ -23,7 +23,7 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
    * @param selectionInfo the select info for this node.
    */
   public ViewGraphNodeEllipse(double width, double height, ISelectionInfo selectionInfo) {
-    super(width * DrawComparedGraphs.NODE_MARGIN / 2.0, height / 2.0);
+    super(width * GraphPaneController.NODE_MARGIN / 2.0, height / 2.0);
     setStrokeWidth(height / 20.0d);
     this.selectionInfo = selectionInfo;
   }

@@ -73,10 +73,9 @@ public class FileChooserController implements Initializable {
   public static FileChooserController initialize(Window ownerWindow)
       throws IOException {
     Stage stage = new Stage();
-    FXMLLoader loader = new FXMLLoader();
-
-    loader.setLocation(
+    FXMLLoader loader = new FXMLLoader(
         FileChooserController.class.getClassLoader().getResource("pages/FileChooser.fxml"));
+
     Parent root = loader.load();
 
     stage.setScene(new Scene(root));

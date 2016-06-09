@@ -3,6 +3,8 @@ package nl.tudelft.pl2016gr2.gui.view.tree;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import javafx.beans.property.SimpleBooleanProperty;
@@ -10,7 +12,9 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
@@ -22,12 +26,12 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 /**
- * This class tests the {@link TreeManager} class.
+ * This class tests the {@link TreePaneController} class.
  *
  * @author Faris
  */
 @RunWith(JavaFxIntegrationTestRunner.class)
-public class TreeManagerTest {
+public class TreePaneControllerTest {
 
   /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
   /* The tree is initialized in the @Before method as follows: */
@@ -47,7 +51,7 @@ public class TreeManagerTest {
   private IPhylogeneticTreeNode leafLr;
   private IPhylogeneticTreeNode leafLl;
 
-  private TreeManager treeManager;
+  private TreePaneController treePaneController;
   private boolean lambdaExecuted = false;
 
   /**
@@ -55,11 +59,11 @@ public class TreeManagerTest {
    */
   @Before
   public void loadTree() {
-    root = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafR = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafL = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafLr = Mockito.mock(IPhylogeneticTreeNode.class);
-    leafLl = Mockito.mock(IPhylogeneticTreeNode.class);
+    root = mock(IPhylogeneticTreeNode.class);
+    leafR = mock(IPhylogeneticTreeNode.class);
+    leafL = mock(IPhylogeneticTreeNode.class);
+    leafLr = mock(IPhylogeneticTreeNode.class);
+    leafLl = mock(IPhylogeneticTreeNode.class);
     mockRoot();
     mockLeafR();
     mockLeafL();
@@ -74,20 +78,26 @@ public class TreeManagerTest {
   private void initializeTreeManager() {
     Pane graphPane = new Pane();
     Scene scene = new Scene(graphPane, 500, 500);
-    treeManager = new TreeManager();
+    treePaneController = new TreePaneController();
     Pane largePane = new Pane();
     largePane.setMinHeight(100.0);
     largePane.setMinWidth(100.0);
-    AccessPrivate.setFieldValue("treePane", TreeManager.class, treeManager, largePane);
-    AccessPrivate.setFieldValue("heatmapPane", TreeManager.class, treeManager, largePane);
-    AccessPrivate.setFieldValue("mainPane", TreeManager.class, treeManager, new AnchorPane());
+    AccessPrivate.setFieldValue("treePane",
+        TreePaneController.class, treePaneController, largePane);
+    AccessPrivate.setFieldValue("heatmapPane",
+        TreePaneController.class, treePaneController, largePane);
+    AccessPrivate.setFieldValue("mainPane",
+        TreePaneController.class, treePaneController, new AnchorPane());
 
-    SelectionManager mockedSelectionManager = Mockito.spy(new SelectionManager(null, new Pane()));
-    mockedSelectionManager.getBottomGraphGenomes().addAll(root.getGenomes());
-    mockedSelectionManager.getTopGraphGenomes().addAll(root.getGenomes());
-    AccessPrivate.callMethod("setSelectionManager", TreeManager.class, treeManager,
-        mockedSelectionManager);
-    AccessPrivate.callMethod("setRoot", TreeManager.class, treeManager, root);
+    SelectionPaneController mockedSelectionPaneController = mock(SelectionPaneController.class);
+    GraphPaneController mockedGraphPaneController = spy(new GraphPaneController());
+    SelectionManager mockedSelectionManager =
+        spy(new SelectionManager(null, mockedSelectionPaneController));
+
+    treePaneController.setup(mockedSelectionManager, mockedGraphPaneController);
+    mockedGraphPaneController.getBottomGraphGenomes().addAll(root.getGenomes());
+    mockedGraphPaneController.getTopGraphGenomes().addAll(root.getGenomes());
+    AccessPrivate.callMethod("setRoot", TreePaneController.class, treePaneController, root);
   }
 
   /**
@@ -168,25 +178,25 @@ public class TreeManagerTest {
   }
 
   /**
-   * Test of setOnLeavesChanged method, of class TreeManager.
+   * Test of setOnLeavesChanged method, of class TreePaneController.
    */
   @Test
   public void testSetOnLeavesChanged() {
-    treeManager.setOnLeavesChanged((Observable obs, Object arg) -> {
+    treePaneController.setOnLeavesChanged((Observable obs, Object arg) -> {
       lambdaExecuted = true;
     });
     assertFalse(lambdaExecuted);
-    AccessPrivate.callMethod("setRoot", TreeManager.class, treeManager, leafL);
+    AccessPrivate.callMethod("setRoot", TreePaneController.class, treePaneController, leafL);
     assertTrue(lambdaExecuted);
   }
 
   /**
-   * Test of getCurrentLeaves method, of class TreeManager.
+   * Test of getCurrentLeaves method, of class TreePaneController.
    */
   @Test
   public void testGetCurrentLeaves() {
     ArrayList<TreeNodeCircle> leaves = AccessPrivate.callMethod("getCurrentLeaves()",
-        TreeManager.class, treeManager);
+        TreePaneController.class, treePaneController);
     assertEquals(3, leaves.size());
     ArrayList<IPhylogeneticTreeNode> actualLeaves = new ArrayList<>();
     actualLeaves.add(leafR);

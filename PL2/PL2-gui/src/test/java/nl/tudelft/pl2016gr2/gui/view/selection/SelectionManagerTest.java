@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,10 +30,10 @@ public class SelectionManagerTest {
   @Before
   public void initializeVariables() {
     Pane pane = new Pane();
-    Scene scene = new Scene(pane);
-    selectionManager = new SelectionManager(null, pane);
-    selectable = Mockito.mock(ISelectable.class);
-    ISelectionInfo selectionInfo = Mockito.mock(ISelectionInfo.class);
+    SelectionPaneController selectionPaneController = mock(SelectionPaneController.class);
+    selectionManager = new SelectionManager(null, selectionPaneController);
+    selectable = mock(ISelectable.class);
+    ISelectionInfo selectionInfo = mock(ISelectionInfo.class);
 
     when(selectable.getSelectionInfo(selectionManager)).thenReturn(selectionInfo);
     when(selectionInfo.getNode()).thenReturn(new Pane());
