@@ -213,4 +213,9 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     return false;
   }
 
+  @Override
+  public int getGenomeSize() {
+    return genomes.size();
+  }
+
 }

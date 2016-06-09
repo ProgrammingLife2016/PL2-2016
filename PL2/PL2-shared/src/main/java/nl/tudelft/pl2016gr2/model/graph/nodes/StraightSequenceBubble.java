@@ -30,6 +30,11 @@ public class StraightSequenceBubble extends Bubble {
   }
 
   @Override
+  public int getGenomeSize() {
+    return getChildren().iterator().next().getGenomeSize();
+  }
+
+  @Override
   public GraphNode copy() {
     return new StraightSequenceBubble(this, aligner);
   }

@@ -29,13 +29,12 @@ public class PointMutationBubble extends Bubble {
   }
 
   @Override
-  public GraphNode copy() {
-    return new PointMutationBubble(this, aligner);
-  }
-
-  @Override
-  public GraphNode copyAll() {
-    return new PointMutationBubble(this, aligner);
+  public int getGenomeSize() {
+    int count = 0;
+    for (GraphNode graphNode : getChildren()) {
+      count += graphNode.getGenomeSize();
+    }
+    return count;
   }
 
   @Override
@@ -49,6 +48,16 @@ public class PointMutationBubble extends Bubble {
       verticallyAligned = true;
     }
     return this.getChildren();
+  }
+
+  @Override
+  public GraphNode copy() {
+    return new PointMutationBubble(this, aligner);
+  }
+
+  @Override
+  public GraphNode copyAll() {
+    return new PointMutationBubble(this, aligner);
   }
 
   @Override
@@ -76,7 +85,7 @@ public class PointMutationBubble extends Bubble {
     outNode.removeInEdge(this);
     outNode.addInEdge(firstChild);
     outNode.addInEdge(secondChild);
-    
+
     firstChild.setInEdges(getInEdges());
     firstChild.setOutEdges(getOutEdges());
     secondChild.setInEdges(getInEdges());
@@ -100,7 +109,7 @@ public class PointMutationBubble extends Bubble {
     outNode.removeInEdge(firstChild);
     outNode.removeInEdge(secondChild);
     outNode.addInEdge(this);
-    
+
     setInEdges(firstChild.getInEdges());
     setOutEdges(firstChild.getOutEdges());
   }

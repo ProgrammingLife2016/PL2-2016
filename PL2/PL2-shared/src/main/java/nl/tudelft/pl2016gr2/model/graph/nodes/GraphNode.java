@@ -257,6 +257,21 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   Collection<Integer> getGenomesOverEdge(GraphNode node);
 
   /**
+   * Get the amount of genomes which are present in this node.
+   *
+   * @return the amount of genomes which are present in this node.
+   */
+  int getGenomeSize();
+
+  /**
+   * Approximate the amount of genomes which go over the edge to the given node.
+   *
+   * @param node the node to which the edge goes.
+   * @return an approximation of the amount of genomes which go over the given edge.
+   */
+  int approximateGenomesOverEdge(GraphNode node);
+
+  /**
    * Trims the capacity of this <code>GraphNode</code> instance to the currently used size.
    * <p>
    * This method can be used to minimize the storage of this <code>GraphNode</code>.
