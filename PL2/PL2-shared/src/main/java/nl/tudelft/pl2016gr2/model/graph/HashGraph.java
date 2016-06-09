@@ -60,15 +60,6 @@ public class HashGraph implements SequenceGraph {
     this.genomes = new ArrayList<>(genomes);
   }
 
-  /**
-   * Print the graph.
-   */
-  public void print() {
-    nodes.forEach((id, node) -> {
-      System.out.println(node);
-    });
-  }
-
   @Override
   public ArrayList<GraphNode> getOrderedGraph() {
     ArrayList<GraphNode> graphOrder = new ArrayList<>(nodes.values());

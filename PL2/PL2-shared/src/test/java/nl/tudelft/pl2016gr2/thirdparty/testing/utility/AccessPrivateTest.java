@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.thirdparty.testing.utility;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 
 import org.junit.Test;
 
@@ -97,5 +98,11 @@ public class AccessPrivateTest {
   @Test(expected = TestAnnotationException.class)
   public void annotationExceptionTest() {
     AccessPrivate.getFieldValue("NON_EXISTING_FIELD", PrivateMemberClass.class, null);
+  }
+  
+  @Test()
+  public void testNoOp() {
+    TestAnnotationException exception = new TestAnnotationException();
+    assertNotSame(null, exception);
   }
 }

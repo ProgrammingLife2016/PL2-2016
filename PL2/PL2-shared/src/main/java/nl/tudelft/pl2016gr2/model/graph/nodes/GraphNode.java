@@ -280,9 +280,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void trimToSize();
 
   @Override
-  default void accept(NodeVisitor visitor) {
-    visitor.visit(this);
-  }
+  void accept(NodeVisitor visitor);
 
   /**
    * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.

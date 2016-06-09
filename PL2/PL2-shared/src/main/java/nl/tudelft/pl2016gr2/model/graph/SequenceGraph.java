@@ -43,8 +43,6 @@ import java.util.Iterator;
  */
 public interface SequenceGraph extends Iterable<GraphNode> {
 
-  void print();
-  
   /**
    * Returns the identifiers of all root nodes in this graph.
    * <p>

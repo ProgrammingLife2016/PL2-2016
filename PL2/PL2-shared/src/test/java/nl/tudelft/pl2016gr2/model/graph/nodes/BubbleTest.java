@@ -1,3 +1,5 @@
+package nl.tudelft.pl2016gr2.model.graph.nodes;
+
 //package nl.tudelft.pl2016gr2.model;
 //
 //import static org.junit.Assert.assertEquals;
