@@ -13,11 +13,14 @@ import java.util.ResourceBundle;
 /**
  * Class can be used for simple text.
  */
-public abstract class GraphBubbleDescription implements ISelectionInfo {
+public class GraphBubbleDescription implements ISelectionInfo {
 
-  public GraphBubbleDescription() {
+  private final String text;
+
+  public GraphBubbleDescription(String text) {
+    this.text = text;
   }
-
+  
   @Override
   public Node getNode() {
     try {
@@ -36,8 +39,6 @@ public abstract class GraphBubbleDescription implements ISelectionInfo {
     }
   }
 
-  public abstract String getText();
-
   public static class GraphNodeRectangleDescriptionController implements Initializable {
 
     @FXML
@@ -50,7 +51,7 @@ public abstract class GraphBubbleDescription implements ISelectionInfo {
 
     void setup(GraphBubbleDescription graphBubbleDescription) {
 
-      textArea.setText(graphBubbleDescription.getText());
+      textArea.setText(graphBubbleDescription.text);
     }
   }
 }

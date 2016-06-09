@@ -20,8 +20,21 @@ public interface ISelectable {
   /**
    * Get the {@link ISelectionInfo}.
    *
-   * @param selectionManager the {@link SelectionManager} which is requesting the selection info.
    * @return the {@link ISelectionInfo}.
    */
-  ISelectionInfo getSelectionInfo(SelectionManager selectionManager);
+  ISelectionInfo getSelectionInfo();
+
+  /**
+   * Like Object.equals, but for selections
+   *
+   * <p>
+   * Should return true when the other selection would be corresponding
+   * to the same conceptual selection.
+   * </p>
+   *
+   * @param other object to check against.
+   * @return true when equal
+   */
+  boolean isEqualSelection(ISelectable other);
+
 }

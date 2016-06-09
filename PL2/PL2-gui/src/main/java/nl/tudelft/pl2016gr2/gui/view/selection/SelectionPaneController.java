@@ -26,17 +26,28 @@ public class SelectionPaneController implements Initializable {
   }
 
   /**
+   * Sets up this controller.
+   *
+   * @param selectionManager a selection manager is needed.
+   */
+  public void setup(SelectionManager selectionManager) {
+    selectionManager.addListener((observable, oldValue, newValue) -> {
+      setContent(newValue.getSelectionInfo().getNode());
+    });
+    setContent(SelectionManager.NO_SELECTION.getSelectionInfo().getNode());
+  }
+
+  /**
    * Sets the content of the selectionPane.
    *
    * <p>
-   * This removes previous shown content,
-   * call with null to clear.
+   * This removes previous shown content.
    * </p>
    *
-   * @param content new content, may be null
+   * @param content new content
    */
   public void setContent(Node content) {
-    clearContent();
+    rootPane.getChildren().clear();
     if (content != null) {
       AnchorPane.setTopAnchor(content, 0.0d);
       AnchorPane.setBottomAnchor(content, 0.0d);
@@ -44,13 +55,6 @@ public class SelectionPaneController implements Initializable {
       AnchorPane.setRightAnchor(content, 0.0d);
       rootPane.getChildren().add(content);
     }
-  }
-
-  /**
-   * Clears the pane of information.
-   */
-  public void clearContent() {
-    rootPane.getChildren().clear();
   }
 
 }

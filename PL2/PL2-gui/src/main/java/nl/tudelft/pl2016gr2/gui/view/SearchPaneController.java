@@ -259,5 +259,4 @@ public class SearchPaneController implements Initializable {
     masterData.clear();
     masterData.addAll(metaDatas);
   }
-
 }
