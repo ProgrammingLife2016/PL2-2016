@@ -28,7 +28,7 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
    */
   public ViewGraphNodeRectangle(double width, double height,
                                 ISelectionInfo selectionInfo) {
-    super(width/* * DrawComparedGraphs.NODE_MARGIN*/, height);
+    super(width/* * GraphPaneController.NODE_MARGIN*/, height);
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));
     setFill(Color.ALICEBLUE);

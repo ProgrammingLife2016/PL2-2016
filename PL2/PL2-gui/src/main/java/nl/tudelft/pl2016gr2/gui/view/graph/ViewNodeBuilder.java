@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.NO_OVERLAP_COLOR;
-import static nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs.OVERLAP_COLOR;
+import static nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController.NO_OVERLAP_COLOR;
+import static nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController.OVERLAP_COLOR;
 
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;

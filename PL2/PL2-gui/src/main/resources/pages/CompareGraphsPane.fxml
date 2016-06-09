@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" minWidth="200.0" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs">
+<AnchorPane id="AnchorPane" fx:id="mainPane" minWidth="200.0" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController">
     <Pane fx:id="topGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(204, 114, 24, 0.08);" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
     <Pane fx:id="bottomGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(24, 114, 204, 0.08);" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
     <Pane fx:id="topPane" layoutX="37.0" layoutY="-33.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

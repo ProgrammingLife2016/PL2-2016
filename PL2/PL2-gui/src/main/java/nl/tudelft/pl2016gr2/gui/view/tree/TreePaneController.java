@@ -4,35 +4,32 @@ import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class controlls the phylogenetic tree.
  *
  * @author Faris
  */
-public class TreeManager implements Initializable {
+public class TreePaneController implements Initializable {
 
   public static final double GRAPH_BORDER_OFFSET = 5.0;
 
@@ -55,26 +52,7 @@ public class TreeManager implements Initializable {
   private HeatmapManager heatmapManager;
 
   private IPhylogeneticTreeRoot rootNode;
-
-  /**
-   * Load and initialize the view.
-   *
-   * @param selectionManager the selection manager.
-   * @return the controller class of the loaded view.
-   */
-  public static TreeManager loadView(SelectionManager selectionManager) {
-    FXMLLoader loader = new FXMLLoader();
-    try {
-      loader.setLocation(TreeManager.class.getClassLoader().getResource("pages/TreePane.fxml"));
-      loader.load();
-      TreeManager treeManager = loader.<TreeManager>getController();
-      treeManager.setSelectionManager(selectionManager);
-      return treeManager;
-    } catch (IOException ex) {
-      Logger.getLogger(TreeManager.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    throw new RuntimeException("failed to load the fxml file: " + loader.getLocation());
-  }
+  private GraphPaneController graphPaneController;
 
   @Override
   public void initialize(URL location, ResourceBundle resources) {
@@ -91,10 +69,11 @@ public class TreeManager implements Initializable {
    * Set the selection manager and initialize listeners to the selection manager.
    *
    * @param selectionManager the selection manager.
+   * @param graphPaneController the graphPane controller.
    */
-  @TestId(id = "setSelectionManager")
-  private void setSelectionManager(SelectionManager selectionManager) {
+  public void setup(SelectionManager selectionManager, GraphPaneController graphPaneController) {
     this.selectionManager = selectionManager;
+    this.graphPaneController = graphPaneController;
     initializeTopGraphSelectionManger();
     initializeBottomGraphSelectionManger();
     initializeSearchBoxSelectionManager();
@@ -104,7 +83,7 @@ public class TreeManager implements Initializable {
    * Initialize the listener to the top graph genome set.
    */
   private void initializeTopGraphSelectionManger() {
-    selectionManager.getTopGraphGenomes().addListener(
+    graphPaneController.getTopGraphGenomes().addListener(
         (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInTop(change.getElementAdded(), true);
@@ -118,7 +97,7 @@ public class TreeManager implements Initializable {
    * Initialize the listener to the bottom graph genome set.
    */
   private void initializeBottomGraphSelectionManger() {
-    selectionManager.getBottomGraphGenomes().addListener(
+    graphPaneController.getBottomGraphGenomes().addListener(
         (SetChangeListener.Change<? extends Integer> change) -> {
           if (change.wasAdded()) {
             rootNode.setDrawnInBottom(change.getElementAdded(), true);
@@ -280,10 +259,10 @@ public class TreeManager implements Initializable {
    * @return the area of the graph pane.
    */
   private Area getGraphPaneArea() {
-    double startX = TreeManager.GRAPH_BORDER_OFFSET;
-    double endX = getTreeWidth() - TreeManager.GRAPH_BORDER_OFFSET;
-    double startY = TreeManager.GRAPH_BORDER_OFFSET;
-    double endY = getTreeHeight() - TreeManager.GRAPH_BORDER_OFFSET;
+    double startX = TreePaneController.GRAPH_BORDER_OFFSET;
+    double endX = getTreeWidth() - TreePaneController.GRAPH_BORDER_OFFSET;
+    double startY = TreePaneController.GRAPH_BORDER_OFFSET;
+    double endY = getTreeHeight() - TreePaneController.GRAPH_BORDER_OFFSET;
     return new Area(startX, endX, startY, endY);
   }
 
@@ -351,4 +330,5 @@ public class TreeManager implements Initializable {
   public IPhylogeneticTreeRoot getTreeRoot() {
     return rootNode;
   }
+
 }
