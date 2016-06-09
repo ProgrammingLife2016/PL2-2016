@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model.metadata;
+package nl.tudelft.pl2016gr2.model;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.Date;
  * the same property.
  * </p>
  */
-public class Annotation {
+public class MetaData {
 
   public String specimenId;
 

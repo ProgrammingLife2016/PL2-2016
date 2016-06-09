@@ -1,12 +1,10 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
-import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * A simple implementation of <code>Node</code> that offers the DNA sequence as a String, but
@@ -14,13 +12,10 @@ import java.util.HashSet;
  *
  * @author Wouter Smit
  */
-public class SequenceNode extends AbstractNode {
+public class SequenceNode extends AbstractGraphNode implements Node {
 
   private BaseSequence sequence;
   private final ArrayList<Integer> genomes;
-  private HashSet<GraphNode> inEdges;
-  private HashSet<GraphNode> outEdges;
-  private final GraphNodeGuiData guiData = new GraphNodeGuiData();
 
   /**
    * The level of this node (the depth in the graph.
@@ -35,8 +30,6 @@ public class SequenceNode extends AbstractNode {
   public SequenceNode(int identifier) {
     super(identifier);
     genomes = new ArrayList<>();
-    inEdges = new HashSet<>();
-    outEdges = new HashSet<>();
   }
 
   /**
@@ -49,8 +42,6 @@ public class SequenceNode extends AbstractNode {
     super(identifier);
     this.sequence = sequence;
     genomes = new ArrayList<>();
-    inEdges = new HashSet<>();
-    outEdges = new HashSet<>();
   }
 
   /**
@@ -64,8 +55,7 @@ public class SequenceNode extends AbstractNode {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
-    inEdges = new HashSet<>();
-    outEdges = new HashSet<>();
+    this.genomes.trimToSize();
   }
 
   /**
@@ -82,13 +72,20 @@ public class SequenceNode extends AbstractNode {
    */
   public SequenceNode(int identifier, BaseSequence sequence, Collection<Integer> genomes,
       Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
-    super(identifier);
+    super(identifier, inEdges, outEdges);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
-    this.inEdges = new HashSet<>(inEdges);
-    this.outEdges = new HashSet<>(outEdges);
-    //this.inEdges.trimToSize();
-    //this.outEdges.trimToSize();
+  }
+
+  /**
+   * Constructor which coppies a nodes.
+   *
+   * @param node the node to copy.
+   */
+  private SequenceNode(SequenceNode node) {
+    super(node);
+    this.sequence = node.sequence;
+    this.genomes = node.genomes;
   }
 
   @Override
@@ -102,56 +99,6 @@ public class SequenceNode extends AbstractNode {
       return null;
     }
     return sequence.getBaseSequence();
-  }
-
-  @Override
-  public Collection<GraphNode> getInEdges() {
-    return inEdges;
-  }
-
-  @Override
-  public void setInEdges(Collection<GraphNode> edges) {
-    inEdges = new HashSet<>(edges);
-    //inEdges.trimToSize();
-  }
-
-  @Override
-  public void addInEdge(GraphNode node) {
-    //assert !inEdges.contains(
-    //    node) : "Adding existing in-edge: " + node.getId() + ". NodeID: " + this.getId();
-    inEdges.add(node);
-  }
-
-  @Override
-  public void removeInEdge(GraphNode node) {
-    //assert inEdges.contains(
-    //    node) : "Removing non-existent in-edge: " + node.getId() + ". NodeID: " + this.getId();
-    inEdges.remove(node);
-  }
-
-  @Override
-  public Collection<GraphNode> getOutEdges() {
-    return outEdges;
-  }
-
-  @Override
-  public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new HashSet<>(edges);
-    //outEdges.trimToSize();
-  }
-
-  @Override
-  public void addOutEdge(GraphNode node) {
-    //assert !outEdges.contains(
-    //    node) : "Adding existing out-edge: " + node.getId() + ". NodeID: " + this.getId();
-    outEdges.add(node);
-  }
-
-  @Override
-  public void removeOutEdge(GraphNode node) {
-    //assert outEdges.contains(
-    //    node) : "Removing non-existent out-edge: " + node.getId() + ". NodeID: " + this.getId();
-    outEdges.remove(node);
   }
 
   @Override
@@ -170,7 +117,13 @@ public class SequenceNode extends AbstractNode {
   public void removeGenome(int genome) {
     assert genomes.contains(
         genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
-    genomes.remove(genome);
+    genomes.remove((Integer) genome);
+  }
+
+  @Override
+  public void addAllGenomes(Collection<Integer> genomes) {
+    this.genomes.addAll(genomes);
+    this.genomes.trimToSize();
   }
 
   /**
@@ -187,15 +140,15 @@ public class SequenceNode extends AbstractNode {
   public GraphNode copy() {
     SequenceNode node = new SequenceNode(this.getId(), sequence);
     node.level = level;
-    node.guiData.overlapping = guiData.overlapping;
+    node.getGuiData().overlapping = getGuiData().overlapping;
     return node;
   }
 
   @Override
   public GraphNode copyAll() {
-    SequenceNode node = new SequenceNode(getId(), sequence, getGenomes(), inEdges, outEdges);
+    SequenceNode node = new SequenceNode(this);
     node.level = level;
-    node.guiData.overlapping = guiData.overlapping;
+    node.getGuiData().overlapping = getGuiData().overlapping;
     return node;
   }
 
@@ -216,25 +169,22 @@ public class SequenceNode extends AbstractNode {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append('[');
-    for (GraphNode inEdge : inEdges) {
-      sb.append(inEdge.getId()).append(", ");
+    String sequenceString = getSequence();
+    if (sequenceString.length() > 20) {
+      sequenceString = sequenceString.substring(0, 20);
     }
-    sb.append(']');
-    StringBuilder sb2 = new StringBuilder();
-    sb2.append('[');
-    for (GraphNode outEdge : outEdges) {
-      sb2.append(outEdge.getId()).append(", ");
-    }
-    sb2.append(']');
-    return super.toString() + ", SequenceNode{" + ", inEdges=" + sb.toString() + ", outEdges="
-        + sb2.toString() + '}';
+    return String.format("Sequence %d:\n%s\n", getId(), sequenceString);
   }
 
   @Override
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public void trimToSize() {
+    super.trimToSize();
+    genomes.trimToSize();
   }
 
   @Override
@@ -254,7 +204,13 @@ public class SequenceNode extends AbstractNode {
   }
 
   @Override
-  public GraphNodeGuiData getGuiData() {
-    return guiData;
+  public boolean hasChildren() {
+    return false;
   }
+
+  @Override
+  public boolean hasChild(GraphNode child) {
+    return false;
+  }
+
 }

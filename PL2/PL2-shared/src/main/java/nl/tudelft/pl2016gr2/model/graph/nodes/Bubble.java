@@ -1,7 +1,5 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
-import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -12,17 +10,12 @@ import java.util.List;
  *
  * @author Wouter Smit
  */
-public abstract class Bubble implements GraphNode {
+public abstract class Bubble extends AbstractGraphNode implements GraphNode {
 
-  private final int id;
   private final List<GraphNode> nestedNodes;
-
-  private HashSet<GraphNode> inEdges;
-  private HashSet<GraphNode> outEdges;
 
   private int size = -1;
   private int level = -1;
-  private final GraphNodeGuiData guiData = new GraphNodeGuiData();
 
   /**
    * If the nodes in the bubble have to be vertically aligned.
@@ -37,9 +30,7 @@ public abstract class Bubble implements GraphNode {
    * @param id the id of the bubble.
    */
   public Bubble(int id) {
-    this.id = id;
-    this.inEdges = new HashSet<>();
-    this.outEdges = new HashSet<>();
+    super(id);
     this.nestedNodes = new ArrayList<>();
   }
 
@@ -51,11 +42,7 @@ public abstract class Bubble implements GraphNode {
    * @param outEdges the out edges of the bubble.
    */
   public Bubble(int id, Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
-    this.id = id;
-    this.inEdges = new HashSet<>(inEdges);
-    this.outEdges = new HashSet<>(outEdges);
-    //this.inEdges.trimToSize();
-    //this.outEdges.trimToSize();
+    super(id, inEdges, outEdges);
     this.nestedNodes = new ArrayList<>();
   }
 
@@ -69,11 +56,7 @@ public abstract class Bubble implements GraphNode {
    */
   public Bubble(int id, Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
       List<GraphNode> nestedNodes) {
-    this.id = id;
-    this.inEdges = new HashSet<>(inEdges);
-    this.outEdges = new HashSet<>(outEdges);
-    //this.inEdges.trimToSize();
-    //this.outEdges.trimToSize();
+    super(id, inEdges, outEdges);
     this.nestedNodes = nestedNodes;
     initOverlap();
   }
@@ -84,9 +67,7 @@ public abstract class Bubble implements GraphNode {
    * @param bubble the bubble to copy.
    */
   protected Bubble(Bubble bubble) {
-    this.id = bubble.id;
-    this.inEdges = bubble.inEdges;
-    this.outEdges = bubble.outEdges;
+    super(bubble);
     this.nestedNodes = bubble.nestedNodes;
   }
 
@@ -96,16 +77,11 @@ public abstract class Bubble implements GraphNode {
   private void initOverlap() {
     for (GraphNode nestedNode : nestedNodes) {
       if (nestedNode.getGuiData().overlapping) {
-        guiData.overlapping = true;
+        getGuiData().overlapping = true;
         return;
       }
     }
-    guiData.overlapping = false;
-  }
-
-  @Override
-  public int getId() {
-    return id;
+    getGuiData().overlapping = false;
   }
 
   /**
@@ -119,7 +95,7 @@ public abstract class Bubble implements GraphNode {
     }
     nestedNodes.add(child);
     if (child.getGuiData().overlapping) {
-      guiData.overlapping = true;
+      getGuiData().overlapping = true;
     }
   }
 
@@ -143,7 +119,7 @@ public abstract class Bubble implements GraphNode {
     if (size == -1) {
       size = 0;
       int highestInEdgeLevel = 0;
-      for (GraphNode inEdge : inEdges) {
+      for (GraphNode inEdge : getInEdges()) {
         if (inEdge.getLevel() > highestInEdgeLevel) {
           highestInEdgeLevel = inEdge.getLevel();
         }
@@ -151,48 +127,6 @@ public abstract class Bubble implements GraphNode {
       size = getLevel() - highestInEdgeLevel;
     }
     return size;
-  }
-
-  @Override
-  public Collection<GraphNode> getInEdges() {
-    return inEdges;
-  }
-
-  @Override
-  public void setInEdges(Collection<GraphNode> edges) {
-    inEdges = new HashSet<>(edges);
-    //inEdges.trimToSize();
-  }
-
-  @Override
-  public void addInEdge(GraphNode node) {
-    inEdges.add(node);
-  }
-
-  @Override
-  public void removeInEdge(GraphNode node) {
-    inEdges.remove(node);
-  }
-
-  @Override
-  public Collection<GraphNode> getOutEdges() {
-    return outEdges;
-  }
-
-  @Override
-  public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new HashSet<>(edges);
-    //outEdges.trimToSize();
-  }
-
-  @Override
-  public void addOutEdge(GraphNode node) {
-    outEdges.add(node);
-  }
-
-  @Override
-  public void removeOutEdge(GraphNode node) {
-    outEdges.remove(node);
   }
 
   @Override
@@ -217,6 +151,12 @@ public abstract class Bubble implements GraphNode {
   }
 
   @Override
+  public void addAllGenomes(Collection<Integer> genomes) {
+    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
+        + "bubbles before the bubbles are made.");
+  }
+
+  @Override
   public Collection<Integer> getGenomesOverEdge(GraphNode node) {
     assert getOutEdges().contains(
         node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
@@ -226,19 +166,6 @@ public abstract class Bubble implements GraphNode {
     getGenomes().stream().filter(genome -> node.getGenomes().contains(genome))
         .forEach(genomes::add);
     return genomes;
-  }
-
-  @Override
-  public int hashCode() {
-    return id * 37;
-  }
-
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null || !getClass().equals(obj.getClass())) {
-      return false;
-    }
-    return id == ((Bubble) obj).id;
   }
 
   @Override
@@ -267,7 +194,17 @@ public abstract class Bubble implements GraphNode {
   }
 
   @Override
-  public GraphNodeGuiData getGuiData() {
-    return guiData;
+  public String toString() {
+
+    StringBuilder out = new StringBuilder();
+
+    for (GraphNode child : getChildren()) {
+      out.append(child.toString());
+    }
+
+    return out.toString();
   }
+
+
+
 }

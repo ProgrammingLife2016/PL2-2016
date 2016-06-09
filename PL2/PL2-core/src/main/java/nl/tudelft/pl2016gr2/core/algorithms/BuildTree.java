@@ -49,7 +49,7 @@ public class BuildTree {
       buildTree(treeRoot, null);
     }
 
-    return new PhylogeneticTreeRoot(newRoot, treeRoot.getAnnotations());
+    return new PhylogeneticTreeRoot(newRoot, treeRoot.getMetaDatas());
   }
 
   // WARNING, O(n2) algorithm incomming

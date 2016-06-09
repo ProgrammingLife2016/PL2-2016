@@ -1,7 +1,10 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 
 /**
  * An ellipse representation of a node, which can be drawn in the user interface.
@@ -10,14 +13,19 @@ import javafx.scene.shape.Ellipse;
  */
 public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
+  private final ISelectionInfo selectionInfo;
+
   /**
    * Construct a node circle.
    *
    * @param width  the width of the ellipse.
    * @param height the height of the ellipse.
+   * @param selectionInfo the select info for this node.
    */
-  public ViewGraphNodeEllipse(double width, double height) {
+  public ViewGraphNodeEllipse(double width, double height, ISelectionInfo selectionInfo) {
     super(width * DrawComparedGraphs.NODE_MARGIN / 2.0, height / 2.0);
+    setStrokeWidth(height / 20.0d);
+    this.selectionInfo = selectionInfo;
   }
 
   @Override
@@ -33,5 +41,20 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
   @Override
   public Node get() {
     return this;
+  }
+
+  @Override
+  public void select() {
+    setStroke(Color.BLACK);
+  }
+
+  @Override
+  public void deselect() {
+    setStroke(null);
+  }
+
+  @Override
+  public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
+    return selectionInfo;
   }
 }

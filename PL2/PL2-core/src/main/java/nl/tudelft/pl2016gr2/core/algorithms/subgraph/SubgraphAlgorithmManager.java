@@ -3,7 +3,9 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 import nl.tudelft.pl2016gr2.core.algorithms.FilterBubbles;
 import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.util.Pair;
 
@@ -74,6 +76,7 @@ public class SubgraphAlgorithmManager {
    * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
+  @SuppressWarnings("checkstyle:methodlength")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
@@ -84,13 +87,23 @@ public class SubgraphAlgorithmManager {
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
 
+    ArrayList<GraphNode> newNodes = new ArrayList<>();
+    for (GraphNode node : orderedNodes) {
+      if (node.getInEdges().isEmpty()) {
+
+        SequenceNode newerRoot = new SequenceNode(0, new BaseSequence(""));
+        node.addInEdge(newerRoot);
+        newerRoot.addOutEdge(node);
+        newNodes.add(newerRoot);
+      }
+    }
+    orderedNodes.addAll(newNodes);
+    orderedNodes.sort((GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
+    });
+
     FilterBubbles filter = new FilterBubbles(orderedNodes);
     orderedNodes = filter.filter(treeRoot, genomes);
-    
-    for (GraphNode orderedNode : orderedNodes) {
-      verifyEdges(orderedNode);
-    }
-
     CompareSubgraphs.alignVertically(orderedNodes);
 
     return new OrderedGraph(subgraph, orderedNodes);
@@ -178,8 +191,23 @@ public class SubgraphAlgorithmManager {
 
     @Override
     public void run() {
-      FilterBubbles filter = new FilterBubbles(subgraph.getOrderedGraph());
+      orderedNodes = subgraph.getOrderedGraph();
+      orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+      FilterBubbles filter = new FilterBubbles(orderedNodes);
       orderedNodes = filter.filter(treeRoot, genomes);
+      ArrayList<GraphNode> newNodes = new ArrayList<>();
+      for (GraphNode node : orderedNodes) {
+        if (node.getInEdges().isEmpty()) {
+          SequenceNode newRoot = new SequenceNode(0, new BaseSequence(""));
+          newNodes.add(newRoot);
+          newRoot.addOutEdge(node);
+          node.addInEdge(newRoot);
+        }
+      }
+      orderedNodes.addAll(newNodes);
+      orderedNodes.sort((GraphNode first, GraphNode second) -> {
+        return first.getLevel() - second.getLevel();
+      });
     }
   }
 }

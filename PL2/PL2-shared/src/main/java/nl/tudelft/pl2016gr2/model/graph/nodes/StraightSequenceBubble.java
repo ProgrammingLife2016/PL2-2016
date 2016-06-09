@@ -131,4 +131,9 @@ public class StraightSequenceBubble extends Bubble {
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
   }
+
+  @Override
+  public String toString() {
+    return String.format("%s\n%s", "Straight sequence Bubble", super.toString());
+  }
 }

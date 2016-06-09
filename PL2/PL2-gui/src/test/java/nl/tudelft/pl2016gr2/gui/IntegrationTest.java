@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
@@ -74,9 +75,10 @@ public class IntegrationTest {
   @Test
   public void compareChildrenButtonTest() {
     drawGraph();
-    int drawnLevels = AccessPrivate.getFieldValue("amountOfLevels", DrawComparedGraphs.class,
+    SimpleIntegerProperty drawnLevels = 
+        AccessPrivate.getFieldValue("amountOfLevels", DrawComparedGraphs.class,
         getDrawComparedGraphs());
-    assertTrue(drawnLevels > 0);
+    assertTrue(drawnLevels.get() > 0);
     OrderedGraph topGraph = AccessPrivate.getFieldValue("topGraph", DrawComparedGraphs.class,
         getDrawComparedGraphs());
     OrderedGraph bottomGraph = AccessPrivate.getFieldValue("bottomGraph", DrawComparedGraphs.class,

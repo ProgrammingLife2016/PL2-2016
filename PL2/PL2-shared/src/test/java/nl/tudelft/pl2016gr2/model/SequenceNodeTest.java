@@ -96,24 +96,9 @@ public class SequenceNodeTest {
   @Test
   public void getInEdges() {
     GraphNode mockedNode = mockNode(5, false);
-    instance.setInEdges(Collections.singletonList(mockedNode));
+    instance.addInEdge(mockedNode);
 
     assertTrue(instance.getInEdges().contains(mockedNode));
-  }
-
-  @Test
-  public void setInEdgesOverridePreviousElements() {
-    GraphNode mockedNode = mockNode(5, false);
-    instance.setInEdges(Collections.singletonList(mockedNode));
-    instance.setInEdges(Collections.singletonList(mockNode(10, false)));
-    assertFalse(instance.getInEdges().contains(mockedNode));
-  }
-
-  @Test
-  public void setInEdgesAddsAllElements() {
-    Collection<GraphNode> edgeList = Arrays.asList(mockNode(15, false), mockNode(45, false));
-    instance.setInEdges(edgeList);
-    assertTrue(instance.getInEdges().containsAll(edgeList));
   }
 
   @Test
@@ -129,10 +114,49 @@ public class SequenceNodeTest {
   @Test
   public void addInEdgeDoesNotOverrideOldElements() {
     GraphNode mockedNode = mockNode(5, false);
-    instance.setInEdges(Collections.singletonList(mockedNode));
+    instance.addInEdge(mockedNode);
     instance.addInEdge(mockNode(10, false));
 
     assertTrue(instance.getInEdges().contains(mockedNode));
+  }
+
+  @Test
+  public void addAllInEdgesAddsAllEdges() {
+    GraphNode nodeOne = mockNode(1, false);
+    GraphNode nodeTwo = mockNode(2, false);
+    assertFalse(instance.getInEdges().contains(nodeOne));
+    assertFalse(instance.getInEdges().contains(nodeTwo));
+
+    instance.addAllInEdges(Arrays.asList(nodeOne, nodeTwo));
+
+    assertTrue(instance.getInEdges().contains(nodeOne));
+    assertTrue(instance.getInEdges().contains(nodeTwo));
+  }
+
+  @Test
+  public void addAllInEdgesLeavesOldEdges() {
+    GraphNode oldNode = mockNode(10, false);
+    GraphNode node = new SequenceNode(5, mock(BaseSequence.class), Collections.emptyList(),
+        Collections.singletonList(oldNode), Collections.emptyList());
+
+    assertTrue(node.getInEdges().contains(oldNode));
+    GraphNode newNode = mockNode(2, false);
+
+    node.addAllInEdges(Collections.singletonList(newNode));
+
+    assertTrue(node.getInEdges().contains(oldNode));
+  }
+
+  @Test
+  public void addAllInEdgesAddsOnlyEdges() {
+    final int edgeCount = instance.getInEdges().size();
+
+    GraphNode nodeOne = mockNode(1, false);
+    GraphNode nodeTwo = mockNode(2, false);
+
+    instance.addAllInEdges(Arrays.asList(nodeOne, nodeTwo));
+
+    assertEquals(edgeCount + 2, instance.getInEdges().size());
   }
 
   @Test
@@ -148,7 +172,7 @@ public class SequenceNodeTest {
   @Test
   public void removeInEdgeLeavesOtherElements() {
     GraphNode mockedNode = mockNode(5, false);
-    instance.setInEdges(Collections.singletonList(mockedNode));
+    instance.addInEdge(mockedNode);
 
     instance.addInEdge(mockNode(10, true));
 
@@ -163,24 +187,9 @@ public class SequenceNodeTest {
   @Test
   public void getOutEdges() {
     GraphNode mockedNode = mockNode(5, false);
-    instance.setOutEdges(Collections.singletonList(mockedNode));
+    instance.addOutEdge(mockedNode);
 
     assertTrue(instance.getOutEdges().contains(mockedNode));
-  }
-
-  @Test
-  public void setOutEdgesOverridePreviousElements() {
-    GraphNode mockedNode = mockNode(5, false);
-    instance.setOutEdges(Collections.singletonList(mockedNode));
-    instance.setOutEdges(Arrays.asList(mockNode(10, false), mockNode(12, false)));
-    assertFalse(instance.getOutEdges().contains(mockedNode));
-  }
-
-  @Test
-  public void setOutEdgesAddsAllElements() {
-    Collection<GraphNode> edgeList = Arrays.asList(mockNode(5, false), mockNode(10, true));
-    instance.setOutEdges(edgeList);
-    assertTrue(instance.getOutEdges().containsAll(edgeList));
   }
 
   @Test
@@ -197,10 +206,49 @@ public class SequenceNodeTest {
   @Test
   public void addOutEdgeDoesNotOverrideOldElements() {
     GraphNode mockedNode = mockNode(10, false);
-    instance.setOutEdges(Collections.singletonList(mockedNode));
+    instance.addOutEdge(mockedNode);
     instance.addOutEdge(mockNode(12, true));
 
     assertTrue(instance.getOutEdges().contains(mockedNode));
+  }
+
+  @Test
+  public void addAllOutEdgesAddsAllEdges() {
+    GraphNode nodeOne = mockNode(1, false);
+    GraphNode nodeTwo = mockNode(2, false);
+    assertFalse(instance.getOutEdges().contains(nodeOne));
+    assertFalse(instance.getOutEdges().contains(nodeTwo));
+
+    instance.addAllOutEdges(Arrays.asList(nodeOne, nodeTwo));
+
+    assertTrue(instance.getOutEdges().contains(nodeOne));
+    assertTrue(instance.getOutEdges().contains(nodeTwo));
+  }
+
+  @Test
+  public void addAllOutEdgesLeavesOldEdges() {
+    GraphNode oldNode = mockNode(10, false);
+    GraphNode node = new SequenceNode(5, mock(BaseSequence.class), Collections.emptyList(),
+        Collections.emptyList(), Collections.singletonList(oldNode));
+
+    assertTrue(node.getOutEdges().contains(oldNode));
+    GraphNode newNode = mockNode(2, false);
+
+    node.addAllOutEdges(Collections.singletonList(newNode));
+
+    assertTrue(node.getOutEdges().contains(oldNode));
+  }
+
+  @Test
+  public void addAllOutEdgesAddsOnlyEdges() {
+    final int edgeCount = instance.getOutEdges().size();
+
+    GraphNode nodeOne = mockNode(1, false);
+    GraphNode nodeTwo = mockNode(2, false);
+
+    instance.addAllOutEdges(Arrays.asList(nodeOne, nodeTwo));
+
+    assertEquals(edgeCount + 2, instance.getOutEdges().size());
   }
 
   @Test
@@ -217,7 +265,7 @@ public class SequenceNodeTest {
   public void removeOutEdgeLeavesOtherElements() {
     GraphNode mockedNode = mockNode(5, false);
     GraphNode removeNode = mockNode(10, true);
-    instance.setOutEdges(Arrays.asList(mockedNode, removeNode));
+    instance.addAllOutEdges(Arrays.asList(mockedNode, removeNode));
 
     instance.removeOutEdge(removeNode);
 
@@ -254,22 +302,60 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void addDuplicateGenomeThrowsAssertion() {
-    final int testGenome = 1;
-    instance.addGenome(testGenome);
-    exception.expect(AssertionError.class);
-    instance.addGenome(testGenome);
+  public void addAllGenomesAddsAllGenomes() {
+    final int genomeOne = 50;
+    final int genomeTwo = 60;
+    assertFalse(instance.getGenomes().contains(genomeOne));
+    assertFalse(instance.getGenomes().contains(genomeTwo));
+
+    instance.addAllGenomes(Arrays.asList(genomeOne, genomeTwo));
+
+    assertTrue(instance.getGenomes().contains(genomeOne));
+    assertTrue(instance.getGenomes().contains(genomeTwo));
+  }
+
+  @Test
+  public void addAllGenomesAddsLeavesOldGenomes() {
+    final int oldGenome = 50;
+    final int newGenome = 60;
+    GraphNode node = new SequenceNode(5, mock(BaseSequence.class),
+        Collections.singletonList(oldGenome), Collections.emptyList(), Collections.emptyList());
+    assertTrue(node.getGenomes().contains(oldGenome));
+
+    node.addAllGenomes(Collections.singletonList(newGenome));
+
+    assertTrue(node.getGenomes().contains(oldGenome));
+  }
+
+  @Test
+  public void addAllGenomesAddsOnlyGenomes() {
+    final int genomeCount = instance.getGenomes().size();
+
+    instance.addAllGenomes(Arrays.asList(50, 60));
+
+    assertEquals(genomeCount + 2, instance.getGenomes().size());
   }
 
   @Test
   public void removeGenomeRemovesElement() {
-    final int testGenome = 0;
+    final int testGenome = 1;
     instance.addGenome(testGenome);
     assertTrue(instance.getGenomes().contains(testGenome));
 
     instance.removeGenome(testGenome);
 
     assertFalse(instance.getGenomes().contains(testGenome));
+  }
+
+  @Test
+  public void removeGenomeDoesNotRemoveByIndex() {
+    final int outOfBounds = instance.getGenomes().size() + 50;
+    instance.addGenome(outOfBounds);
+    assertTrue(instance.getGenomes().contains(outOfBounds));
+
+    instance.removeGenome(outOfBounds);
+
+    assertFalse(instance.getGenomes().contains(outOfBounds));
   }
 
   @Test
@@ -292,9 +378,48 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void copy() {
+  public void trimToSizeTrimsGenomeMemory() {
+    for (int i = 0; i < 1000; i++) {
+      instance.addGenome(i);
+    }
+    for (int i = 0; i < 1000; i++) {
+      instance.removeGenome(i);
+    }
+    System.gc();
+    Runtime runtime = Runtime.getRuntime();
+    long oldMemory = runtime.totalMemory() - runtime.freeMemory();
+
+    instance.trimToSize();
+    System.gc();
+
+    long newMemory = runtime.totalMemory() - runtime.freeMemory();
+    assertTrue(newMemory < oldMemory);
+  }
+
+  @Test
+  public void testCopyClass() {
     Class old = instance.getClass();
     assertEquals(old, instance.copy().getClass());
+  }
+
+  @Test
+  public void testCopyShouldCopyId() {
+    assertEquals(instance.getId(), instance.copy().getId());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyGenomes() {
+    assertTrue(instance.copy().getGenomes().isEmpty());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyInEdges() {
+    assertTrue(instance.copy().getInEdges().isEmpty());
+  }
+
+  @Test
+  public void testCopyShouldNotCopyOutEdges() {
+    assertTrue(instance.copy().getOutEdges().isEmpty());
   }
 
   @Test
@@ -311,7 +436,7 @@ public class SequenceNodeTest {
 
   @Test
   public void isRootFalseWhenNotRoot() {
-    instance.setInEdges(Collections.singletonList(mockNode(10, false)));
+    instance.addInEdge(mockNode(20, false));
     assertFalse(instance.isRoot());
   }
 
