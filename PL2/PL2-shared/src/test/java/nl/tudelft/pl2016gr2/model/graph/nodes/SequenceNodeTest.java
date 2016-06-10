@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.model;
+package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import static nl.tudelft.pl2016gr2.util.TestingUtilities.mockNode;
 import static org.junit.Assert.assertEquals;
@@ -9,8 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
-import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
-import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import org.junit.Before;
 import org.junit.Rule;
@@ -421,4 +419,52 @@ public class SequenceNodeTest {
     assertFalse(instance.isRoot());
   }
 
+  @Test
+  public void testCopy() {
+    SequenceNode node = new SequenceNode(0);
+    assertEquals(node, node.copy());
+    assertEquals(node, node.copyAll());
+  }
+
+  @Test
+  public void testSize() {
+    SequenceNode node = new SequenceNode(0);
+    node.setSequence(new BaseSequence("ATC"));
+    assertEquals(3, node.size());
+  }
+
+  @Test
+  public void testAddOffset() {
+    SequenceNode node = new SequenceNode(0);
+    node.setLevel(5);
+    node.addPositionOffset(6);
+    assertEquals(11, node.getLevel());
+  }
+
+  @Test
+  public void testPop() {
+    SequenceNode node = new SequenceNode(0);
+    node.trimToSize();
+    assertEquals(1, node.pop().size());
+    assertTrue(node.pop().contains(node));
+  }
+
+  @Test
+  public void testGetGenomeSize() {
+    SequenceNode node = new SequenceNode(0);
+    node.addGenome(5);
+    node.addGenome(7);
+    node.addGenome(11);
+    assertEquals(3, node.getGenomeSize());
+  }
+
+  @Test
+  public void testNoOp() {
+    SequenceNode node = new SequenceNode(0, new BaseSequence("ATCATCATCATCATCATCATCATCATCATCATCA"));
+    node.unpop();
+    node.toString();
+    assertFalse(node.isPopped());
+    assertFalse(node.hasChildren());
+    assertFalse(node.hasChild(null));
+  }
 }
