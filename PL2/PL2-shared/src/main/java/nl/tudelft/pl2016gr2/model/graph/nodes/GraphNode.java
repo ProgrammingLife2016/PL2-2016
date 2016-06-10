@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
@@ -338,5 +340,11 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return true is the bubble is popped
    */
   boolean isPopped();
+
+  void setAnnotation(Annotation annotation);
+
+  boolean hasAnnotation();
+
+  Annotation getAnnotation();
 
 }

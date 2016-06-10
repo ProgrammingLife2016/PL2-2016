@@ -50,6 +50,9 @@ public class FileChooserController implements Initializable {
   @FXML
   private ComboBox<File> metadataComboBox;
   @FXML
+  private ComboBox<File> annotationComboBox;
+
+  @FXML
   private Button workspaceBrowseButton;
 
   private File workspaceFile;
@@ -113,18 +116,21 @@ public class FileChooserController implements Initializable {
       final File treeFile = treeComboBox.getSelectionModel().getSelectedItem();
       final File graphFile = graphComboBox.getSelectionModel().getSelectedItem();
       final File metadataFile = metadataComboBox.getSelectionModel().getSelectedItem();
+      final File annotationFile = annotationComboBox.getSelectionModel().getSelectedItem();
       boolean treeExists = checkFileExistsOrShowAlert(treeFile,
           "File for the tree does not exist or none selected");
       boolean graphExists = checkFileExistsOrShowAlert(graphFile,
           "File for the graph does not exist or none selected");
       boolean metadataExists = checkFileExistsOrShowAlert(metadataFile,
           "File for the metadata does not exist or none selected");
-      if (treeExists && graphExists && metadataExists) {
+      boolean annotationExists = checkFileExistsOrShowAlert(annotationFile,
+          "File for the annotation does not exist or none selected");
+      if (treeExists && graphExists && metadataExists && annotationExists) {
         if (workspaceFile != null && workspaceFile.exists()) {
           PREFERENCES.put(PREF_KEY_WORKSPACE, workspaceFile.getAbsolutePath());
         }
         if (inputFileConsumer != null) {
-          loadFiles(treeFile, graphFile, metadataFile);
+          loadFiles(treeFile, graphFile, metadataFile, annotationFile);
         }
         getStage().close();
       }
@@ -137,11 +143,15 @@ public class FileChooserController implements Initializable {
    * @param treeFile     the tree file.
    * @param graphFile    the graph file.
    * @param metadataFile the meta data file.
+   * @param annotationFile the annotation file.
    */
-  private void loadFiles(File treeFile, File graphFile, File metadataFile) {
+  private void loadFiles(File treeFile, File graphFile, File metadataFile, File annotationFile) {
     try {
-      inputFileConsumer.filesLoaded(new FileInputStream(treeFile),
-          new FileInputStream(graphFile), new FileInputStream(metadataFile));
+      inputFileConsumer.filesLoaded(
+          new FileInputStream(treeFile),
+          new FileInputStream(graphFile),
+          new FileInputStream(metadataFile),
+          new FileInputStream(annotationFile));
     } catch (FileNotFoundException ex) {
       Logger.getLogger(FileChooserController.class.getName()).log(Level.SEVERE, null, ex);
     }
@@ -182,11 +192,12 @@ public class FileChooserController implements Initializable {
    * Initialize the cell factories of the combo boxes.
    */
   private void initializeComboBoxes() {
-    Stream.of(treeComboBox, graphComboBox, metadataComboBox).forEach(comboBox -> {
-      comboBox.setCellFactory(getCellFactory());
-      comboBox.getSelectionModel()
-          .selectedItemProperty().addListener(getComboBoxChangeListener(comboBox));
-    });
+    Stream.of(treeComboBox, graphComboBox, metadataComboBox, annotationComboBox)
+        .forEach(comboBox -> {
+          comboBox.setCellFactory(getCellFactory());
+          comboBox.getSelectionModel()
+              .selectedItemProperty().addListener(getComboBoxChangeListener(comboBox));
+        });
     updateWorkspace();
   }
 
@@ -228,7 +239,7 @@ public class FileChooserController implements Initializable {
    * @return File that should be a directory
    */
   private File getSafeStartDir(File file) {
-    if (file.exists()) {
+    if (file != null && file.exists()) {
       if (file.isFile()) {
         file = file.getAbsoluteFile().getParentFile();
       }
@@ -279,6 +290,7 @@ public class FileChooserController implements Initializable {
     updateWorkspaceForComboBox(".nwk", treeComboBox);
     updateWorkspaceForComboBox(".gfa", graphComboBox);
     updateWorkspaceForComboBox(".xlsx", metadataComboBox);
+    updateWorkspaceForComboBox(".gff", annotationComboBox);
   }
 
   /**
@@ -365,7 +377,9 @@ public class FileChooserController implements Initializable {
      * @param treeFile     the file of the phylogenetic tree.
      * @param graphFile    the file of the graph.
      * @param metadataFile the file of the metadata.
+     * @param annotationFile the file of the annotations.
      */
-    void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile);
+    void filesLoaded(InputStream treeFile, InputStream graphFile,
+                     InputStream metadataFile, InputStream annotationFile);
   }
 }

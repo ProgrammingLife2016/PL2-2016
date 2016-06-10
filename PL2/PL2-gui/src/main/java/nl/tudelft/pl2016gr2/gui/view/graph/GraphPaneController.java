@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -29,6 +30,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -589,14 +592,16 @@ public class GraphPaneController implements Initializable {
   /**
    * Load a new main graph.
    *
-   * @param graph the graph.
-   * @param root  the root of the phylogenetic tree.
+   * @param graph       the graph.
+   * @param root        the root of the phylogenetic tree.
+   * @param annotations the list of annotations.
    */
-  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root) {
+  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root,
+      List<Annotation> annotations) {
     clear();
     treeRoot = root;
     mainGraph = graph;
-    mainGraphOrder = new GraphOrdererThread(mainGraph);
+    mainGraphOrder = new GraphOrdererThread(mainGraph, annotations);
     mainGraphOrder.start();
   }
 
@@ -715,6 +720,15 @@ public class GraphPaneController implements Initializable {
           bubbleViewRange);
     } else {
       node.unpop();
+    }
+    if (node.hasAnnotation()) {
+      Annotation annotation = node.getAnnotation();
+      Label label = new Label(annotation.getAttribute("name"));
+      label.setWrapText(true);
+      label.setMaxWidth(viewNode.getWidth());
+      label.setLayoutX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
+      label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
+      pane.getChildren().add(label);
     }
   }
 

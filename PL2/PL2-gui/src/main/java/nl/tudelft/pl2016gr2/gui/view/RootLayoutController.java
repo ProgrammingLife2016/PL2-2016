@@ -25,12 +25,14 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreePaneController;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.PhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.parser.controller.MetaDataReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -117,11 +119,13 @@ public class RootLayoutController implements
   /**
    * Load the data into the root layout.
    *
-   * @param graph    the graph you want to load
-   * @param treeRoot the root of the loaded tree.
+   * @param graph       the graph you want to load
+   * @param treeRoot    the root of the loaded tree.
+   * @param annotations the list of annotations.
    */
-  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
-    this.graphPaneController.loadMainGraph(graph, treeRoot);
+  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot,
+      List<Annotation> annotations) {
+    this.graphPaneController.loadMainGraph(graph, treeRoot, annotations);
   }
 
   /**
@@ -284,7 +288,8 @@ public class RootLayoutController implements
   }
 
   @Override
-  public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
+  public void filesLoaded(InputStream treeFile, InputStream graphFile,
+      InputStream metadataFile, InputStream annotationFile) {
     try {
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
@@ -292,11 +297,12 @@ public class RootLayoutController implements
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
       List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
+      List<Annotation> annotations = new AnnotationReader(annotationFile).read();
 
       if (graph != null && tree != null) {
         IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
         treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
-        loadGraph(graph, treeRoot);
+        loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
         searchPaneController.setData(metaDatas);
       } else {

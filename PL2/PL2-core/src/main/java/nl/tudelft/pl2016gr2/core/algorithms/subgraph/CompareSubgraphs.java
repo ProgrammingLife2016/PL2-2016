@@ -67,6 +67,9 @@ public class CompareSubgraphs {
       Collection<GraphNode> bubbleInEdges) {
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
     int index = 0;
+    if (bubbleInEdges.isEmpty()) {
+      return; // temporary check, actual problem should be fixed.
+    }
     int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;

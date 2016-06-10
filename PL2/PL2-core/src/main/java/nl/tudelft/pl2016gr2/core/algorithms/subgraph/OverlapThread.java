@@ -36,9 +36,41 @@ public class OverlapThread extends Thread {
   private void calculateOverlappedNodes() {
     HashMap<GraphNode, GraphNode> nodeMap = new HashMap<>();
     for (GraphNode node : smallestOrderedGraph) {
-      nodeMap.put(node, node);
+      putAllChildren(node, nodeMap);
     }
     for (GraphNode node : largestOrderedGraph) {
+      overlapAllChildren(node, nodeMap);
+    }
+  }
+
+  /**
+   * Put all children of the given node in the nodemap.
+   *
+   * @param node    the node.
+   * @param nodeMap the nodemap.
+   */
+  private void putAllChildren(GraphNode node, HashMap<GraphNode, GraphNode> nodeMap) {
+    if (node.hasChildren()) {
+      for (GraphNode child : node.getChildren()) {
+        putAllChildren(child, nodeMap);
+      }
+    } else {
+      nodeMap.put(node, node);
+    }
+  }
+
+  /**
+   * Set the overlap value of all children based on if the node is presentin the nodeMap.
+   *
+   * @param node    the node.
+   * @param nodeMap the nodemap.
+   */
+  private void overlapAllChildren(GraphNode node, HashMap<GraphNode, GraphNode> nodeMap) {
+    if (node.hasChildren()) {
+      for (GraphNode child : node.getChildren()) {
+        overlapAllChildren(child, nodeMap);
+      }
+    } else {
       GraphNode mapNode = nodeMap.get(node);
       if (mapNode != null) {
         node.getGuiData().overlapping = true;

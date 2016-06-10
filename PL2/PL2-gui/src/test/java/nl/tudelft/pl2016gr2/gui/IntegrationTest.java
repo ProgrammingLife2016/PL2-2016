@@ -30,8 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
- * This class performs integration tests on the user interface. It clicks through windows and
- * checks
+ * This class performs integration tests on the user interface. It clicks through windows and checks
  * for the correct behavior.
  *
  * @author Faris
@@ -76,9 +75,9 @@ public class IntegrationTest {
   @Test
   public void compareChildrenButtonTest() {
     drawGraph();
-    SimpleIntegerProperty drawnLevels = 
-        AccessPrivate.getFieldValue("amountOfLevels", GraphPaneController.class,
-        getDrawComparedGraphs());
+    SimpleIntegerProperty drawnLevels
+        = AccessPrivate.getFieldValue("amountOfLevels", GraphPaneController.class,
+            getDrawComparedGraphs());
     assertTrue(drawnLevels.get() > 0);
     OrderedGraph topGraph = AccessPrivate.getFieldValue("topGraph", GraphPaneController.class,
         getDrawComparedGraphs());
@@ -116,7 +115,8 @@ public class IntegrationTest {
     getRootLayoutController().filesLoaded(
         GfaReader.class.getClassLoader().getResourceAsStream("10tree_custom.rooted.TKK.nwk"),
         GfaReader.class.getClassLoader().getResourceAsStream("TB10.gfa"),
-        GfaReader.class.getClassLoader().getResourceAsStream("metadata.xlsx"));
+        GfaReader.class.getClassLoader().getResourceAsStream("metadata.xlsx"),
+        GfaReader.class.getClassLoader().getResourceAsStream("decorationV5_20130412.gff"));
   }
 
   private static Stage getPrimaryStage() {
@@ -136,7 +136,6 @@ public class IntegrationTest {
     return AccessPrivate.getFieldValue("selectionPaneController", SelectionManager.class,
         getSelectionManager());
   }
-
 
   private static TreePaneController getTreeManager() {
     return AccessPrivate.getFieldValue("treeManager", RootLayoutController.class,
