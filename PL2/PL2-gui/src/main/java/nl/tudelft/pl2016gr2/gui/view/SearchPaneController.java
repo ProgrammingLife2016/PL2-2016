@@ -1,22 +1,21 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -25,21 +24,33 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
+import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+/**
+ * This is the controller for the searchPane.fxml.
+ *
+ * <p>
+ * It allows searching through {@link MetaData}s.
+ * </p>
+ */
 @SuppressWarnings("AbbreviationAsWordInName")
 public class SearchPaneController implements Initializable {
 
@@ -53,23 +64,10 @@ public class SearchPaneController implements Initializable {
 
   @FXML private TableColumn<MetaData, String> specimenIdColumn;
   @FXML private TableColumn<MetaData, String> specimentTypeColumn;
-  @FXML private TableColumn<MetaData, String> genotypicDSTPatternColumn;
-  @FXML private TableColumn<MetaData, String> phenotypicDSTPatternColumn;
-  @FXML private TableColumn<MetaData, String> lineageColumn;
-
-  private final ObservableSet<String> setGenotypicDSTpattern
-      = FXCollections.observableSet(new HashSet<>());
-  private final ObservableSet<String> setPhenotypicDSTPattern
-      = FXCollections.observableSet(new HashSet<>());
+  @FXML private TableColumn<MetaData, LineageColor> lineageColumn;
 
   @FXML
-  private ComboBox<String> genotypicDSTPatternComboBox;
-  @FXML
-  private Button genotypicDSTPatternButton;
-  @FXML
-  private ComboBox<String> phenotypicDSTPatternComboBox;
-  @FXML
-  private Button phenotypicDSTPatternButton;
+  private GridPane categoricalGridPane;
 
   @FXML
   private TextField goToField;
@@ -79,6 +77,8 @@ public class SearchPaneController implements Initializable {
   private final ObservableList<MetaData> masterData = FXCollections.observableArrayList();
 
   private final FilteredList<MetaData> filteredData = new FilteredList<>(masterData, p -> true);
+
+  private Map<String, CategoricalProperty> map = new HashMap<>();
 
   private SelectionManager selectionManager;
   private GraphPaneController graphPaneController;
@@ -103,6 +103,32 @@ public class SearchPaneController implements Initializable {
     initializeExtendedSearchPane();
   }
 
+  /**
+   * This class is a helper class to represent a categorical property.
+   *
+   * <p>
+   * It holds the combobox together with a name.
+   * </p>
+   */
+  private static class CategoricalProperty {
+
+    final String name;
+    final CheckComboBox<String> checkComboBox;
+
+    CategoricalProperty(String name) {
+      this.name = name;
+      checkComboBox = new CheckComboBox<>();
+      checkComboBox.setMaxWidth(150);
+    }
+
+    void addValue(String value) {
+      if (!checkComboBox.getItems().contains(value)) {
+        checkComboBox.getItems().add(value);
+      }
+    }
+
+  }
+
   @SuppressWarnings("checkstyle:MethodLength")
   private void initializeTable() {
     // from http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
@@ -122,18 +148,29 @@ public class SearchPaneController implements Initializable {
         cellData -> new SimpleStringProperty(cellData.getValue().specimenId));
     specimentTypeColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenType));
-    genotypicDSTPatternColumn.setCellValueFactory(
-        cellData -> new SimpleStringProperty(cellData.getValue().genotypicDSTPattern));
-    phenotypicDSTPatternColumn.setCellValueFactory(
-        cellData -> new SimpleStringProperty(cellData.getValue().phenotypicDSTPattern));
-    lineageColumn.setCellValueFactory(
-        cellData -> new SimpleStringProperty(cellData.getValue().lineage));
+
+    lineageColumn.setCellValueFactory(cellData ->
+        new SimpleObjectProperty<>(LineageColor.toLineage(cellData.getValue().lineage)));
+    lineageColumn.setCellFactory(metaDataStringTableColumn ->
+        new TableCell<MetaData, LineageColor>() {
+          @Override
+          protected void updateItem(LineageColor item, boolean empty) {
+            super.updateItem(item, empty);
+            Color color = Color.TRANSPARENT;
+            if (!empty && item != null) {
+              color = item.getColor();
+            }
+            setBackground(new Background(new BackgroundFill(
+                color, null, Insets.EMPTY
+            )));
+          }
+        }
+    );
 
     // Set the filter Predicate whenever the filter changes.
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
       updateTable();
     });
-
 
     // Wrap the FilteredList in a SortedList.
     SortedList<MetaData> sortedData = new SortedList<>(filteredData);
@@ -180,34 +217,124 @@ public class SearchPaneController implements Initializable {
   /**
    * Call this whenever data changes.
    */
+  @SuppressWarnings("checkstyle:MethodLength")
   private void updateTable() {
+    annotationTable.getSelectionModel().clearSelection();
     filteredData.setPredicate(annotation -> {
-      // If filter text is empty
-      String searchString = filterField.getText();
 
-      if (isNotSelected(genotypicDSTPatternComboBox, annotation.genotypicDSTPattern)
-          || isNotSelected(phenotypicDSTPatternComboBox, annotation.phenotypicDSTPattern)) {
-        return false;
+      for (CategoricalProperty property : map.values()) {
+        String valueOfRow = getValueForColumnName(property.name, annotation);
+        ObservableList<String> items = property.checkComboBox.getCheckModel().getCheckedItems();
+        if (items.size() > 0 && !items.stream().anyMatch(s -> s.equals(valueOfRow))) {
+          return false;
+        }
       }
 
-      if (searchString == null || searchString.isEmpty()) {
+      String lowerCaseFilter = filterField.getText().toLowerCase();
+      if (lowerCaseFilter.isEmpty()) {
         return true;
       }
 
-      String lowerCaseFilter = searchString.toLowerCase();
+      for (CategoricalProperty property : map.values()) {
+        String valueOfRow = getValueForColumnName(property.name, annotation);
+        if (valueOfRow.toLowerCase().contains(lowerCaseFilter)) {
+          return true;
+        }
+      }
+
       return annotation.specimenId.toLowerCase().contains(lowerCaseFilter)
-          || annotation.specimenType.toLowerCase().contains(lowerCaseFilter)
-          || annotation.genotypicDSTPattern.toLowerCase().contains(lowerCaseFilter)
-          || annotation.phenotypicDSTPattern.toLowerCase().contains(lowerCaseFilter);
+          || annotation.specimenType.toLowerCase().contains(lowerCaseFilter);
     });
   }
 
   /**
-   * @return true when ComboBox has NOT selected checkAgainst.
+   * This is a list of column names that are known to be categorical.
+   *
+   * <p>
+   * In an ideal situation the Metadata class would also support this and
+   * the reader would be able to read any sheet.
+   * </p>
    */
-  private boolean isNotSelected(ComboBox<String> comboBox, String checkAgainst) {
-    String selectedItem = comboBox.getSelectionModel().getSelectedItem();
-    return selectedItem != null && !checkAgainst.equals(selectedItem);
+  private static final String[] knownCategoricalColumns = {
+      "genotypicDST",
+      "phenotypicDST",
+      "Lineage",
+      "hivStatus",
+      "cohort",
+      "studyGeographicDistrict",
+      "specimenType",
+      "microscopySmearStatus",
+      "dnaIsolation",
+      "capreomycin",
+      "ethambutol",
+      "ethionamide",
+      "isoniazid",
+      "kanamycin",
+      "pyrazinamide",
+      "ofloxacin",
+      "rifampin",
+      "streptomycin",
+      "digitalSpoligotype",
+      "sex",
+  };
+
+  /**
+   * This method take the correct field from the metaData class for a given name.
+   *
+   * <p>
+   * See {@link #knownCategoricalColumns}, when the metadata+its reader would understand
+   * dynamic columns, this method would be unnecessary.
+   * </p>
+   * @param columnName the name of the column.
+   * @param metaData the metaData instanec you'd like the value of.
+   * @return the value corresponding to the column.
+   */
+  @SuppressWarnings("checkstyle:MethodLength")
+  private static String getValueForColumnName(String columnName, MetaData metaData) {
+    switch (columnName) {
+      case "genotypicDST":
+        return metaData.genotypicDSTPattern;
+      case "phenotypicDST":
+        return metaData.phenotypicDSTPattern;
+      case "Lineage":
+        return metaData.lineage;
+      case  "hivStatus":
+        return metaData.hivStatus.name();
+      case  "cohort":
+        return metaData.cohort;
+      case  "studyGeographicDistrict":
+        return metaData.studyGeographicDistrict;
+      case  "specimenType":
+        return metaData.specimenType;
+      case   "microscopySmearStatus":
+        return metaData.microscopySmearStatus.name();
+      case  "dnaIsolation":
+        return metaData.dnaIsolation.name();
+      case  "capreomycin":
+        return metaData.capreomycin;
+      case  "ethambutol":
+        return metaData.ethambutol;
+      case  "ethionamide":
+        return metaData.ethionamide;
+      case  "isoniazid":
+        return metaData.isoniazid;
+      case  "kanamycin":
+        return metaData.kanamycin;
+      case  "pyrazinamide":
+        return metaData.pyrazinamide;
+      case  "ofloxacin":
+        return metaData.ofloxacin;
+      case  "rifampin":
+        return metaData.rifampin;
+      case  "streptomycin":
+        return metaData.streptomycin;
+      case  "digitalSpoligotype":
+        return metaData.digitalSpoligotype;
+      case  "sex":
+        return metaData.sex.name();
+      default:
+        throw new RuntimeException("Undefined column in temp method");
+    }
   }
 
   private void initializeGoTo() {
@@ -221,42 +348,64 @@ public class SearchPaneController implements Initializable {
     });
   }
 
+  /**
+   * initializes the categorical comboboxes.
+   */
   @SuppressWarnings("checkstyle:MethodLength")
   private void initializeExtendedSearchPane() {
     masterData.addListener((ListChangeListener<MetaData>) c -> {
-      Stream.of(setGenotypicDSTpattern, setPhenotypicDSTPattern).forEach(Set::clear);
-      c.getList().forEach(annotation -> {
-        setGenotypicDSTpattern.add(annotation.genotypicDSTPattern);
-        setPhenotypicDSTPattern.add(annotation.phenotypicDSTPattern);
+
+      categoricalGridPane.getChildren().clear();
+
+      map.clear();
+      masterData.forEach(metaData -> {
+        Arrays.stream(knownCategoricalColumns).forEach(columnName -> {
+          final CategoricalProperty property;
+          if (map.containsKey(columnName)) {
+            property = map.get(columnName);
+          } else {
+            property = new CategoricalProperty(columnName);
+            property.checkComboBox.getCheckModel().getCheckedItems()
+                .addListener((ListChangeListener<? super String>) change -> updateTable());
+            map.put(property.name, property);
+          }
+          property.addValue(getValueForColumnName(columnName, metaData));
+        });
       });
-    });
-    // add set listeners
-    setGenotypicDSTpattern.addListener(setChangeListener(genotypicDSTPatternComboBox));
-    setPhenotypicDSTPattern.addListener(setChangeListener(phenotypicDSTPatternComboBox));
 
-    // add comboBox listeners
-    genotypicDSTPatternComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-      updateTable();
-    });
-    phenotypicDSTPatternComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-      updateTable();
-    });
+      int rowIndex = 1;
+      for (CategoricalProperty property : map.values()) {
 
-    // set button actions
-    genotypicDSTPatternButton.setOnAction(getButtonAction(genotypicDSTPatternComboBox));
-    phenotypicDSTPatternButton.setOnAction(getButtonAction(phenotypicDSTPatternComboBox));
+        Label label = new Label(property.name);
+        Button button = new Button("clear");
+
+        button.setOnAction(actionEvent -> {
+          property.checkComboBox.getCheckModel().clearChecks();
+        });
+
+        GridPane.setColumnIndex(label, 1);
+        GridPane.setColumnIndex(property.checkComboBox, 2);
+        GridPane.setColumnIndex(button, 3);
+
+        GridPane.setRowIndex(label, rowIndex);
+        GridPane.setRowIndex(property.checkComboBox, rowIndex);
+        GridPane.setRowIndex(button, rowIndex);
+        rowIndex++;
+
+        categoricalGridPane.getChildren().add(label);
+        categoricalGridPane.getChildren().add(property.checkComboBox);
+        categoricalGridPane.getChildren().add(button);
+      }
+
+    });
   }
 
-  private SetChangeListener<String> setChangeListener(ComboBox<String> comboBox) {
-    return change -> comboBox.setItems(FXCollections.observableArrayList(change.getSet()));
-  }
-
-  private EventHandler<ActionEvent> getButtonAction(ComboBox<String> genotypicDSTPatternComboBox) {
-    return event -> genotypicDSTPatternComboBox.getSelectionModel().clearSelection();
-  }
-
-  public void setData(Collection<MetaData> metaDatas) {
+  /**
+   * Sets the data for this controller. When not called, no genomes are shown.
+   * @param metaData the metadata object.
+   */
+  public void setData(Collection<MetaData> metaData) {
     masterData.clear();
-    masterData.addAll(metaDatas);
+    masterData.addAll(metaData);
   }
 }
