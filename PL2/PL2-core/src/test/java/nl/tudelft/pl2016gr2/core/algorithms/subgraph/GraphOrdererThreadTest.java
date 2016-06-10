@@ -9,10 +9,10 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Test of class {@link GraphOrdererThread}.
@@ -42,7 +42,7 @@ public class GraphOrdererThreadTest {
     nodeb.addOutEdge(noded);
     nodec.addInEdge(nodeb);
     noded.addInEdge(nodeb);
-    
+
   }
 
   /**
@@ -59,7 +59,7 @@ public class GraphOrdererThreadTest {
     ArrayList<Node> rootNodes = new ArrayList<>();
     rootNodes.add(nodea);
     SequenceGraph graph = new HashGraph(nodes, rootNodes, new ArrayList<>());
-    GraphOrdererThread orderer = new GraphOrdererThread(graph);
+    GraphOrdererThread orderer = new GraphOrdererThread(graph, new LinkedList<>());
     orderer.start();
     SequenceGraph orderedGraph = orderer.getGraph();
     assertEquals(4, orderedGraph.size());

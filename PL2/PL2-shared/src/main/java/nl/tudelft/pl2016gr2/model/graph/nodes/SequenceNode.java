@@ -141,6 +141,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     SequenceNode node = new SequenceNode(this.getId(), sequence);
     node.level = level;
     node.getGuiData().overlapping = getGuiData().overlapping;
+    node.setAnnotation(this.getAnnotation());
     return node;
   }
 

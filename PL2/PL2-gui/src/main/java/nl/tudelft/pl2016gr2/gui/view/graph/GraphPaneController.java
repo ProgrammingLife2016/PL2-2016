@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -591,16 +592,16 @@ public class GraphPaneController implements Initializable {
   /**
    * Load a new main graph.
    *
-   * @param graph the graph.
-   * @param root  the root of the phylogenetic tree.
+   * @param graph       the graph.
+   * @param root        the root of the phylogenetic tree.
    * @param annotations the list of annotations.
    */
-  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root, 
+  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root,
       List<Annotation> annotations) {
     clear();
     treeRoot = root;
     mainGraph = graph;
-    mainGraphOrder = new GraphOrdererThread(mainGraph);
+    mainGraphOrder = new GraphOrdererThread(mainGraph, annotations);
     mainGraphOrder.start();
   }
 
@@ -719,6 +720,15 @@ public class GraphPaneController implements Initializable {
           bubbleViewRange);
     } else {
       node.unpop();
+    }
+    if (node.hasAnnotation()) {
+      Annotation annotation = node.getAnnotation();
+      Label label = new Label(annotation.getAttribute("name"));
+      label.setWrapText(true);
+      label.setMaxWidth(viewNode.getWidth());
+      label.setLayoutX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
+      label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
+      pane.getChildren().add(label);
     }
   }
 
