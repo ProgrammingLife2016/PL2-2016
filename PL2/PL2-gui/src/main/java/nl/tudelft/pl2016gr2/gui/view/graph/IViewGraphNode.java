@@ -53,4 +53,11 @@ public interface IViewGraphNode extends ISelectable {
    * @return the JavaFX node of this node.
    */
   Node get();
+
+  /**
+   * Set the opacity of a node.
+   *
+   * @param opacity the opacity.
+   */
+  void setOpacity(double opacity);
 }
