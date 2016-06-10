@@ -1,62 +1,50 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
+import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
-import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
-import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 
-public class ZoomIn {
-  
-  private final FilterBubbles filter;
-  
-  protected ZoomIn(FilterBubbles filter) {
-    this.filter = filter;
-  }
+public abstract class ZoomIn {
   
   /**
-   * Zoom in on a given bubble. This method makes new bubbles within 
-   * the bubble by going a level deeper in the phylogenetic tree,
-   * and returns a list of graphnodes (including both nodes and bubbles).
+  * Zoom in on a given bubble. This method makes new bubbles within 
+  * the bubble.
+  * 
+  * @param bubble the bubble to zoom in on.
+  * @return a list of graphnodes that are in this bubble.
+  */
+  public abstract List<GraphNode> zoom(Bubble bubble);
+  
+  /**
+   * This method removes the in and outedges of the bubble from a list, and then
+   * aligns the nodes in this list vertically.
    * 
-   * @param bubble the bubble to zoom in on.
-   * @return a list of graphnodes that are in this bubble.
+   * @param graphNodes the list of graphnodes to align.
+   * @param bubble the bubble in which these graphnodes were contained.
+   * @return the list of graphnodes without the in and outedges of the bubble aligned.
    */
-  public List<GraphNode> zoom(Bubble bubble) {
-    Map<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
-    Map<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
-    setOriginalEdges(originalInEdges, originalOutEdges, bubble);
-    IPhylogeneticTreeNode curTreeNode = getTreeNode(bubble);
-    IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
-    IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
-    Set<GraphNode> poppedNodes = new HashSet<>();
-    ArrayList<Bubble> newBubbles = new ArrayList<>();
-    debubble(poppedNodes, childOne, bubble, newBubbles);
-    debubble(poppedNodes, childTwo, bubble, newBubbles);
-    pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
-    pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
-    ArrayList<GraphNode> graphNodes = new ArrayList<>(poppedNodes);
-    filter.pruneNodes(graphNodes, newBubbles);
+  protected List<GraphNode> alignNodes(List<GraphNode> graphNodes, Bubble bubble) {
+    graphNodes.sort((GraphNode left, GraphNode right) -> left.getLevel() - right.getLevel());
+    graphNodes.removeAll(bubble.getInEdges());
+    graphNodes.removeAll(bubble.getOutEdges());
+    CompareSubgraphs.alignVertically(graphNodes, bubble.getInEdges());
     return graphNodes;
   }
   
-  private IPhylogeneticTreeNode getTreeNode(Bubble bubble) {
-    BubblePhyloVisitor visitor = new BubblePhyloVisitor();
-    bubble.accept(visitor);
-    return visitor.getTreeNode();
-  }
-  
-  private void setOriginalEdges(Map<Integer, Collection<GraphNode>> originalInEdges, 
+  /**
+   * Maps for each in and out edge of a bubble its original in and out edges.
+   * 
+   * @param originalInEdges Mapping of ids to inedges.
+   * @param originalOutEdges Mapping of ids to outedges.
+   * @param bubble the bubble for which the in and out edges need to be mapped.
+   */
+  protected void setOriginalEdges(Map<Integer, Collection<GraphNode>> originalInEdges, 
       Map<Integer, Collection<GraphNode>> originalOutEdges, Bubble bubble) {
     bubble.getInEdges().forEach(node -> {
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
@@ -68,7 +56,15 @@ public class ZoomIn {
     });
   }
   
-  private void pruneStart(Collection<GraphNode> bubbleInEdges, 
+  /**
+   * This method prunes the start nodes of a bubble (which are its inedges). 
+   * 
+   * @param bubbleInEdges the inedges of the bubble.
+   * @param inEdges a mapping of ids to the original inedges of nodes.
+   * @param outEdges a mapping of ids to the original outedges of nodes.
+   * @param bubbleId the id of the bubble.
+   */
+  protected void pruneStart(Collection<GraphNode> bubbleInEdges, 
       Map<Integer, Collection<GraphNode>> inEdges, Map<Integer, Collection<GraphNode>> outEdges,
       int bubbleId) {
     Iterator<GraphNode> inlinkIterator = bubbleInEdges.iterator();
@@ -83,7 +79,15 @@ public class ZoomIn {
     }
   }
   
-  private void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
+  /**
+   * This method prunes the end nodes of a bubble (which are its outedges). 
+   * 
+   * @param bubbleOutEdges the outedges of the bubble.
+   * @param inEdges a mapping of ids to the original inedges of nodes.
+   * @param outEdges a mapping of ids to the original outedges of nodes.
+   * @param bubbleId the id of the bubble.
+   */
+  protected void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
       Map<Integer, Collection<GraphNode>> outEdges, Map<Integer, Collection<GraphNode>> inEdges,
       int bubbleId) {
     Iterator<GraphNode> outlinkIterator = bubbleOutEdges.iterator();
@@ -96,23 +100,5 @@ public class ZoomIn {
         }
       }
     }
-  }
-  
-  private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
-      Bubble bubble, ArrayList<Bubble> newBubbles) {
-    Collection<GraphNode> startNodes = bubble.getInEdges();
-    ArrayList<Integer> leaves = treeNode.getGenomes();
-    Queue<GraphNode> toVisit = new LinkedList<>();
-    Set<GraphNode> visited = new HashSet<>();
-    toVisit.addAll(startNodes);
-    filter.filterBubbles(toVisit, visited, poppedNodes, leaves, bubble, treeNode, newBubbles);
-    Iterator<GraphNode> iterator = bubble.getOutEdges().iterator();
-    while (iterator.hasNext()) {
-      GraphNode next = iterator.next();
-      next.setInEdges(new HashSet<>());
-      next.setOutEdges(new HashSet<>());
-      poppedNodes.add(next);
-    }
-    return newBubbles;
   }
 }

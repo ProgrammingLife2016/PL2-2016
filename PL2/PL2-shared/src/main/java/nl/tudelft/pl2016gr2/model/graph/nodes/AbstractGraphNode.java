@@ -146,7 +146,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     //inEdges.trimToSize();
     //outEdges.trimToSize();
   }
-
+  
   @Override
   public String toString() {
     return "id: " + getId();

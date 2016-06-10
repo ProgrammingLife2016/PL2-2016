@@ -68,6 +68,7 @@ public class CompareSubgraphs {
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
     int index = 0;
     int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
+    
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
@@ -164,7 +165,7 @@ public class CompareSubgraphs {
     areaMap.put(node, complexNodeArea);
 
     SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
-
+    
     node.getGuiData().relativeYPos = nodeArea.getCenter() / VERTICAL_PRECISION;
     node.getGuiData().maxHeight = nodeArea.getHeight() / (double) VERTICAL_PRECISION;
     return complexNodeArea;
