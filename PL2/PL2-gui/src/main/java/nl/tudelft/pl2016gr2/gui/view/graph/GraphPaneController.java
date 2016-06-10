@@ -153,6 +153,13 @@ public class GraphPaneController implements Initializable {
 
     initializeScrollbar();
     initializeScrollEvent();
+    initializeOnMouseEventHandler();
+  }
+
+  /**
+   * Initialize the mouse handlers.
+   */
+  private void initializeOnMouseEventHandler() {
     mainPane.setOnMouseClicked(event -> {
       if (contextMenu != null) {
         contextMenu.hide();
@@ -708,7 +715,14 @@ public class GraphPaneController implements Initializable {
       height = width;
     }
     IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
-        width, height, nestedDepth, selectionManager);
+        width, height, nestedDepth);
+
+    viewNode.get().setOnMouseClicked(mouseEvent -> {
+      selectionManager.select(viewNode);
+      mouseEvent.consume();
+    });
+    // select when previously selected node is equal to this new one
+    selectionManager.checkSelected(viewNode);
     pane.getChildren().add(viewNode.get());
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
@@ -926,6 +940,9 @@ public class GraphPaneController implements Initializable {
    */
   public void setup(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
+    selectionManager.addListener((observable, oldValue, newValue) -> {
+      graphUpdater.update();
+    });
   }
 
   /**

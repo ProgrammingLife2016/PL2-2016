@@ -89,10 +89,9 @@ public class TreePaneControllerTest {
     AccessPrivate.setFieldValue("mainPane",
         TreePaneController.class, treePaneController, new AnchorPane());
 
-    SelectionPaneController mockedSelectionPaneController = mock(SelectionPaneController.class);
     GraphPaneController mockedGraphPaneController = spy(new GraphPaneController());
     SelectionManager mockedSelectionManager =
-        spy(new SelectionManager(null, mockedSelectionPaneController));
+        spy(new SelectionManager());
 
     treePaneController.setup(mockedSelectionManager, mockedGraphPaneController);
     mockedGraphPaneController.getBottomGraphGenomes().addAll(root.getGenomes());

@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
+
 import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
@@ -9,8 +10,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
@@ -74,6 +75,9 @@ public class TreePaneController implements Initializable {
   public void setup(SelectionManager selectionManager, GraphPaneController graphPaneController) {
     this.selectionManager = selectionManager;
     this.graphPaneController = graphPaneController;
+    selectionManager.addListener((observable, oldValue, newValue) -> {
+      checkSelectedForNodeAndLeaves(currentRoot);
+    });
     initializeTopGraphSelectionManger();
     initializeBottomGraphSelectionManger();
     initializeSearchBoxSelectionManager();
@@ -247,7 +251,7 @@ public class TreePaneController implements Initializable {
   @TestId(id = "setRoot")
   private void setCurrentRoot(IPhylogeneticTreeNode root) {
     treePane.getChildren().clear();
-    currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
+    currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, this);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
@@ -314,21 +318,35 @@ public class TreePaneController implements Initializable {
   }
 
   /**
-   * Get the pane in which the tree is drawn.
+   * Recursively iterate the given node and its children and check Selection.
    *
-   * @return the pane in which the tree is drawn.
+   * <p>
+   * This method will call {@link SelectionManager#checkSelected(ISelectable)} for
+   * each child.
+   * </p>
+   *
+   * @param node check for this node.
    */
-  public Region getTreePane() {
-    return mainPane;
+  private void checkSelectedForNodeAndLeaves(TreeNodeCircle node) {
+    if (node != null) {
+      selectionManager.checkSelected(node);
+      node.getChildren().forEach(this::checkSelectedForNodeAndLeaves);
+    }
   }
 
   /**
-   * Get the root of the tree.
-   *
-   * @return the root of the tree.
+   * Getter for the selectionManager
+   * @return the selectionManager.
    */
-  public IPhylogeneticTreeRoot getTreeRoot() {
-    return rootNode;
+  public SelectionManager getSelectionManager() {
+    return selectionManager;
   }
 
+  /**
+   * Getter for the graphPaneController.
+   * @return the graphPaneController.
+   */
+  public GraphPaneController getGraphPaneController() {
+    return graphPaneController;
+  }
 }

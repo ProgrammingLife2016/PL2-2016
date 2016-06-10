@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
@@ -18,24 +19,25 @@ import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 public class TreeNodeDescription implements ISelectionInfo {
 
   private final IPhylogeneticTreeNode treeNode;
-  private final SelectionManager selectionManager;
+  private final GraphPaneController graphPaneController;
   private final EventHandler<ActionEvent> buttonClicked = new EventHandler<ActionEvent>() {
     @Override
     public void handle(ActionEvent event) {
       IPhylogeneticTreeNode topNode = treeNode.getChild(0);
       IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
-      selectionManager.drawGraph(topNode.getGenomeIds(), bottomNode.getGenomeIds());
+      graphPaneController.compareTwoGraphs(topNode.getGenomeIds(), bottomNode.getGenomeIds());
     }
   };
 
   /**
    * Construct a tree node description.
    *
-   * @param selectionManager a reference to the selection manager.
+   * @param graphPaneController a reference to the graphpane controller.
    * @param treeNode         the tree node to describe.
    */
-  public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
-    this.selectionManager = selectionManager;
+  public TreeNodeDescription(GraphPaneController graphPaneController,
+                             IPhylogeneticTreeNode treeNode) {
+    this.graphPaneController = graphPaneController;
     this.treeNode = treeNode;
   }
 

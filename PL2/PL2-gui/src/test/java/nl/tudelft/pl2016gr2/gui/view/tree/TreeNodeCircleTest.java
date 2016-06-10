@@ -1,6 +1,8 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,6 +57,8 @@ public class TreeNodeCircleTest {
 
   @Mock
   private SelectionManager selectionManager;
+  @Mock
+  private TreePaneController treePaneController;
   private TreeNodeCircle viewNode;
   private final Area area = new Area(0, 50, 100, 200);
   private Pane graphPaneSpy;
@@ -70,7 +74,8 @@ public class TreeNodeCircleTest {
     mockLeafLr();
     mockLeafLl();
     graphPaneSpy = Mockito.spy(new Pane());
-    viewNode = TreeNodeCircle.drawNode(root, area, graphPaneSpy, selectionManager);
+    when(treePaneController.getSelectionManager()).thenReturn(selectionManager);
+    viewNode = TreeNodeCircle.drawNode(root, area, graphPaneSpy, treePaneController);
   }
 
   /**
@@ -238,7 +243,8 @@ public class TreeNodeCircleTest {
   @Test
   public void testZoomOut() {
     Timeline timeline = new Timeline();
-    TreeNodeCircle zoomLeafL = TreeNodeCircle.drawNode(leafL, area, graphPaneSpy, selectionManager);
+    TreeNodeCircle zoomLeafL =
+        TreeNodeCircle.drawNode(leafL, area,graphPaneSpy, treePaneController);
     zoomLeafL.zoomOut(timeline);
     assertEquals(3, timeline.getKeyFrames().size());
   }

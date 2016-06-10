@@ -2,8 +2,8 @@
 
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController">
-
-
-
-</AnchorPane>
+<HBox fx:id="rootPane" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController">
+    <AnchorPane prefWidth="250" fx:id="primarySelectionPane" />
+    <AnchorPane HBox.hgrow="ALWAYS" minWidth="100"  fx:id="compareSelectionPane" />
+    <AnchorPane prefWidth="250" fx:id="secondarySelectionPane" />
+</HBox>

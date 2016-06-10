@@ -58,8 +58,8 @@ public class RootLayoutController implements
 
   @FXML
   private AnchorPane rootPane;
-  @FXML
-  private SelectionPaneController selectionPaneController;
+  // @FXML
+  // private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML
@@ -81,6 +81,9 @@ public class RootLayoutController implements
   @FXML
   private GraphPaneController graphPaneController;
 
+  @FXML
+  private SelectionPaneController selectionPaneController;
+
   /**
    * Initializes the controller class.
    *
@@ -97,7 +100,7 @@ public class RootLayoutController implements
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
       public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
-          Scene newValue) {
+                          Scene newValue) {
         if (newValue != null) {
           initializeSearchPaneController();
           // fire this only once when scene is set.
@@ -155,28 +158,19 @@ public class RootLayoutController implements
   }
 
   /**
-   * Draw two subgraphs.
-   *
-   * @param topGenomes    the genomes of the top graph.
-   * @param bottomGenomes the genomes of the bottom graph.
-   */
-  public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
-    graphPaneController.compareTwoGraphs(topGenomes, bottomGenomes);
-  }
-
-  /**
    * Initialize the selection manager (which manages showing the description of selected objects).
    */
   private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(this, selectionPaneController);
+    selectionManager = new SelectionManager();
+    treePaneController.setup(selectionManager, graphPaneController);
+    graphPaneController.setup(selectionManager);
+    selectionPaneController.setup(selectionManager);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
         event.consume();
       }
     });
-    treePaneController.setup(selectionManager, graphPaneController);
-    graphPaneController.setup(selectionManager);
   }
 
   /**

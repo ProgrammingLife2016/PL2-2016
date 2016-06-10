@@ -11,7 +11,7 @@
         </SplitPane>
         <SplitPane orientation="HORIZONTAL" VBox.vgrow="NEVER" maxHeight="300" >
             <fx:include fx:id="searchPane" minWidth="800" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
-            <fx:include fx:id="selectionPane" maxWidth="300" minWidth="300" source="selectionPane.fxml"  />
+            <fx:include fx:id="selectionPane" maxWidth="750" prefWidth="750" minWidth="600" source="selectionPane.fxml"  />
         </SplitPane>
     </SplitPane>
     <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
