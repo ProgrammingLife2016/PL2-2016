@@ -28,6 +28,15 @@ public class GraphOrdererThread extends Thread {
   /**
    * Construct a graph orderer thread.
    *
+   * @param graph the graph to order.
+   */
+  public GraphOrdererThread(SequenceGraph graph) {
+    this.graph = graph;
+  }
+
+  /**
+   * Construct a graph orderer thread.
+   *
    * @param graph       the graph to order.
    * @param annotations the annotations to map onto the ordered graph.
    */
@@ -120,8 +129,10 @@ public class GraphOrdererThread extends Thread {
   @Override
   public void run() {
     calculateGraphOrder();
-    mapper = new GraphBaseMapper(graph);
-    mapper.mapAnnotations(new LinkedList<>(annotations));
-    annotations = null;
+    if (annotations != null) {
+      mapper = new GraphBaseMapper(graph);
+      mapper.mapAnnotations(new LinkedList<>(annotations));
+      annotations = null;
+    }
   }
 }
