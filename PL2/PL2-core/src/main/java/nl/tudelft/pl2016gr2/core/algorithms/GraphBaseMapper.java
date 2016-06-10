@@ -33,7 +33,6 @@ public class GraphBaseMapper {
    *
    * @param annotations the given annotations.
    */
-  @SuppressWarnings("checkstyle:MethodLength") // must be fixed before merge with dev
   public void mapAnnotations(LinkedList<Annotation> annotations) {
     annotations.sort((Annotation first, Annotation second) -> {
       return first.start - second.start;
@@ -46,6 +45,19 @@ public class GraphBaseMapper {
         nodeMapping.put(genomeId, findBase(genomeId, 0));
       }
     }
+    mapAnnotations(annotations, nodeMapping, genomeMap);
+  }
+
+  /**
+   * Map the given annotations on the given graph.
+   *
+   * @param annotations the given annotations.
+   * @param nodeMapping the node map, containing the start node of each genome which is present in
+   *                    the list of annotations.
+   * @param genomeMap   the genome map.
+   */
+  private void mapAnnotations(LinkedList<Annotation> annotations,
+      HashMap<Integer, GraphNode> nodeMapping, GenomeMap genomeMap) {
     while (!annotations.isEmpty()) {
       String genomeName = annotations.getFirst().sequenceId;
       Integer genomeId = genomeMap.getId(annotations.getFirst().sequenceId);
