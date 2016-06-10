@@ -719,6 +719,16 @@ public class GraphPaneController implements Initializable {
   }
 
   /**
+   * Go to the given level.
+   *
+   * @param level the level to center at.
+   */
+  public void centreOnLevel(int level) {
+    double levelsToDraw = mainPane.getWidth() / zoomFactor.get();
+    updateScrollbarValue((level - levelsToDraw / 2.0) / amountOfLevels.get());
+  }
+
+  /**
    * Draw the nodes which are nested in the given bubble.
    *
    * @param pane            the pane in which to draw the nested nodes.
