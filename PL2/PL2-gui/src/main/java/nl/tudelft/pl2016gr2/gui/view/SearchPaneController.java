@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -8,11 +9,13 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -21,6 +24,8 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
@@ -28,6 +33,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import org.controlsfx.control.CheckComboBox;
 
 import java.net.URL;
@@ -58,7 +64,7 @@ public class SearchPaneController implements Initializable {
 
   @FXML private TableColumn<MetaData, String> specimenIdColumn;
   @FXML private TableColumn<MetaData, String> specimentTypeColumn;
-  @FXML private TableColumn<MetaData, String> lineageColumn;
+  @FXML private TableColumn<MetaData, LineageColor> lineageColumn;
 
   @FXML
   private GridPane categoricalGridPane;
@@ -142,8 +148,24 @@ public class SearchPaneController implements Initializable {
         cellData -> new SimpleStringProperty(cellData.getValue().specimenId));
     specimentTypeColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().specimenType));
-    lineageColumn.setCellValueFactory(
-        cellData -> new SimpleStringProperty(cellData.getValue().lineage));
+
+    lineageColumn.setCellValueFactory(cellData ->
+        new SimpleObjectProperty<>(LineageColor.toLineage(cellData.getValue().lineage)));
+    lineageColumn.setCellFactory(metaDataStringTableColumn ->
+        new TableCell<MetaData, LineageColor>() {
+          @Override
+          protected void updateItem(LineageColor item, boolean empty) {
+            super.updateItem(item, empty);
+            Color color = Color.TRANSPARENT;
+            if (!empty && item != null) {
+              color = item.getColor();
+            }
+            setBackground(new Background(new BackgroundFill(
+                color, null, Insets.EMPTY
+            )));
+          }
+        }
+    );
 
     // Set the filter Predicate whenever the filter changes.
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
