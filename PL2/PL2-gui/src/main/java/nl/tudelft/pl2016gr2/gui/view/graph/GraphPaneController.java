@@ -2,6 +2,8 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import com.sun.javafx.collections.ObservableSetWrapper;
 import javafx.animation.AnimationTimer;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -83,6 +85,10 @@ public class GraphPaneController implements Initializable {
   private Canvas topEdgeCanvas;
   @FXML
   private Canvas bottomEdgeCanvas;
+  @FXML
+  private Label showingRange;
+  @FXML
+  private Label totalBases;
 
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
@@ -154,6 +160,24 @@ public class GraphPaneController implements Initializable {
     initializeScrollbar();
     initializeScrollEvent();
     initializeOnMouseEventHandler();
+    initializeBaseLabels();
+  }
+
+  /**
+   * Initialize the position and content of the labels which show the range of bases which is
+   * currently shown in the user interface.
+   */
+  private void initializeBaseLabels() {
+    totalBases.textProperty().bind(amountOfLevels.asString(Locale.US, "%,d"));
+    NumberBinding startLevel = amountOfLevels.multiply(scrollbar.valueProperty());
+
+    NumberBinding endLevel = mainPane.widthProperty().divide(zoomFactor).add(startLevel);
+    NumberBinding actualEndLevel
+        = new When(endLevel.lessThan(amountOfLevels)).then(endLevel).otherwise(amountOfLevels);
+    showingRange.textProperty().bind(startLevel.asString(Locale.US, "%,.0f")
+        .concat(" - ").concat(actualEndLevel.asString(Locale.US, "%,.0f")));
+    showingRange.translateXProperty().bind(
+        mainPane.widthProperty().add(showingRange.widthProperty().negate()).divide(2.0));
   }
 
   /**
@@ -234,9 +258,12 @@ public class GraphPaneController implements Initializable {
    * @param newValue the new value of the scrollbar.
    */
   private void updateScrollbarValue(double newValue) {
+    if (Double.isNaN(newValue) || Double.isInfinite(newValue)) {
+      return;
+    }
     if (newValue < 0.0) {
       scrollbar.setValue(0.0);
-    } else if (newValue > scrollbar.getMax()) {
+    } else if (scrollbar.getMax() > 0.0 && newValue > scrollbar.getMax()) {
       scrollbar.setValue(scrollbar.getMax());
     } else {
       scrollbar.setValue(newValue);
@@ -539,7 +566,7 @@ public class GraphPaneController implements Initializable {
 
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-    scrollbar.setValue(0);
+    scrollbar.setValue(0.0);
     updateGraphSize();
     System.gc();
     graphUpdater.update();
@@ -590,7 +617,7 @@ public class GraphPaneController implements Initializable {
       amountOfLevels.set(highestBottomLevel);
     }
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-    scrollbar.setValue(0);
+    scrollbar.setValue(0.0);
     updateGraphSize();
     System.gc();
     graphUpdater.update();
