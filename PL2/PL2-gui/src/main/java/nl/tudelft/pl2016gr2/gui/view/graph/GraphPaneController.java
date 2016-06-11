@@ -707,6 +707,7 @@ public class GraphPaneController implements Initializable {
     drawnGraphNodes.add(node);
     node.getGuiData().range = viewRange;
     double width = calculateNodeWidth(node);
+    double fade = calculateBubbleFadeFactor(node, width);
     if (width < MIN_VISIBILITY_WIDTH || !isInView(node, startLevel, endLevel)) {
       return;
     }
@@ -717,17 +718,20 @@ public class GraphPaneController implements Initializable {
     IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
         width, height, nestedDepth);
 
-    viewNode.get().setOnMouseClicked(mouseEvent -> {
-      selectionManager.select(viewNode);
-      mouseEvent.consume();
-    });
-    // select when previously selected node is equal to this new one
-    selectionManager.checkSelected(viewNode);
-    pane.getChildren().add(viewNode.get());
+    if (fade > 0.0) {
+      viewNode.get().setOnMouseClicked(mouseEvent -> {
+        selectionManager.select(viewNode);
+        mouseEvent.consume();
+      });
+      // select when previously selected node is equal to this new one
+      selectionManager.checkSelected(viewNode);
+      pane.getChildren().add(viewNode.get());
+      viewNode.setOpacity(fade);
+    }
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
     viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().relativeYPos
-        + viewRange.rangeStartY);//addLabel(pane, circle, node.getId());
+        + viewRange.rangeStartY);
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
       drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,
@@ -743,6 +747,18 @@ public class GraphPaneController implements Initializable {
       label.setLayoutX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
       label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
       pane.getChildren().add(label);
+    }
+  }
+
+  private double calculateBubbleFadeFactor(GraphNode bubble, double width) {
+    if (!bubble.hasChildren()) {
+      return 1.0;
+    }
+    double fade = (mainPane.getWidth() / width - 1.0) * 2.0 + 1.0;
+    if (fade >= 1.0) {
+      return 1.0;
+    } else {
+      return fade;
     }
   }
 
@@ -905,21 +921,6 @@ public class GraphPaneController implements Initializable {
     return bottomGraphGenomes;
   }
 
-  /**
-   * Add a label with the ID of the node to the circle.
-   *
-   * @param pane      the pane to add the label to.
-   * @param graphNode the graph node object to which to add the label.
-   * @param id        the id to write in the label.
-   */
-  //  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
-  //    Label label = new Label(Integer.toString(id));
-  //    label.setMouseTransparent(true);
-  //    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
-  //    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
-  //    label.setTextFill(Color.ALICEBLUE);
-  //    pane.getChildren().add(label);
-  //  }
   /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
    * the fxml file (using reflection), so it appears to be unused to code quality tools. For this
