@@ -14,6 +14,36 @@ import java.util.Date;
  */
 public class MetaData {
 
+  /**
+   * This is a list of column names that are known to be categorical.
+   *
+   * <p>
+   * In an ideal situation the Metadata class would also support this and the reader would be able
+   * to read any sheet.
+   * </p>
+   */
+  public static final String[] KNOWN_CATEGORICAL_COLUMNS = {
+    "genotypic DST",
+    "phenotypic DST",
+    "lineage",
+    "hiv status",
+    "cohort",
+    "study geographic district",
+    "specimen type",
+    "microscopy smear status",
+    "dna isolation",
+    "capreomycin",
+    "ethambutol",
+    "ethionamide",
+    "isoniazid",
+    "kanamycin",
+    "pyrazinamide",
+    "ofloxacin",
+    "rifampin",
+    "streptomycin",
+    "digital spoligotype",
+    "sex",};
+
   public String specimenId;
 
   public Integer age;
@@ -145,5 +175,64 @@ public class MetaData {
     sb.append("Streptomycin\t\t\t\t").append(streptomycin).append('\n');
     sb.append("Study Geographic District\t").append(studyGeographicDistrict).append('\n');
     return sb.toString();
+  }
+
+  /**
+   * This method take the correct field from the metaData class for a given name.
+   *
+   * <p>
+   * See {@link #knownCategoricalColumns}, when the metadata+its reader would understand dynamic
+   * columns, this method would be unnecessary.
+   * </p>
+   *
+   * @param columnName the name of the column.
+   * @return the value corresponding to the column.
+   */
+  @SuppressWarnings("checkstyle:MethodLength")
+  public String getValueForColumnName(String columnName) {
+    switch (columnName) {
+      case "genotypic DST":
+        return genotypicDSTPattern;
+      case "phenotypic DST":
+        return phenotypicDSTPattern;
+      case "lineage":
+        return lineage;
+      case "hiv status":
+        return hivStatus.name();
+      case "cohort":
+        return cohort;
+      case "study geographic district":
+        return studyGeographicDistrict;
+      case "specimen type":
+        return specimenType;
+      case "microscopy smear status":
+        return microscopySmearStatus.name();
+      case "dna isolation":
+        return dnaIsolation.name();
+      case "capreomycin":
+        return capreomycin;
+      case "ethambutol":
+        return ethambutol;
+      case "ethionamide":
+        return ethionamide;
+      case "isoniazid":
+        return isoniazid;
+      case "kanamycin":
+        return kanamycin;
+      case "pyrazinamide":
+        return pyrazinamide;
+      case "ofloxacin":
+        return ofloxacin;
+      case "rifampin":
+        return rifampin;
+      case "streptomycin":
+        return streptomycin;
+      case "digital spoligotype":
+        return digitalSpoligotype;
+      case "sex":
+        return sex.name();
+      default:
+        throw new RuntimeException("Undefined column in temp method");
+    }
   }
 }

@@ -9,18 +9,16 @@ import static org.mockito.Mockito.when;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.javafxrunner.JavaFxIntegrationTestRunner;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
-import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -79,24 +77,35 @@ public class TreePaneControllerTest {
     Pane graphPane = new Pane();
     Scene scene = new Scene(graphPane, 500, 500);
     treePaneController = new TreePaneController();
-    Pane largePane = new Pane();
-    largePane.setMinHeight(100.0);
-    largePane.setMinWidth(100.0);
-    AccessPrivate.setFieldValue("treePane",
-        TreePaneController.class, treePaneController, largePane);
-    AccessPrivate.setFieldValue("heatmapPane",
-        TreePaneController.class, treePaneController, largePane);
-    AccessPrivate.setFieldValue("mainPane",
-        TreePaneController.class, treePaneController, new AnchorPane());
-
+    initializeFxmlFields();
+    
     GraphPaneController mockedGraphPaneController = spy(new GraphPaneController());
-    SelectionManager mockedSelectionManager =
-        spy(new SelectionManager());
+    SelectionManager mockedSelectionManager
+        = spy(new SelectionManager());
 
     treePaneController.setup(mockedSelectionManager, mockedGraphPaneController);
     mockedGraphPaneController.getBottomGraphGenomes().addAll(root.getGenomes());
     mockedGraphPaneController.getTopGraphGenomes().addAll(root.getGenomes());
     AccessPrivate.callMethod("setRoot", TreePaneController.class, treePaneController, root);
+  }
+
+  /**
+   * Initialize the fields which usually are set by the fxml file.
+   */
+  private void initializeFxmlFields() {
+    Pane largePane = new Pane();
+    largePane.setMinHeight(100.0);
+    largePane.setMinWidth(100.0);
+    AccessPrivate.setFieldValue("treePane",
+        TreePaneController.class, treePaneController, largePane);
+    AccessPrivate.setFieldValue("firstHeatmap",
+        TreePaneController.class, treePaneController, largePane);
+    AccessPrivate.setFieldValue("secondHeatmap",
+        TreePaneController.class, treePaneController, largePane);
+    AccessPrivate.setFieldValue("firstMenuButton",
+        TreePaneController.class, treePaneController, new MenuButton());
+    AccessPrivate.setFieldValue("secondMenuButton",
+        TreePaneController.class, treePaneController, new MenuButton());
   }
 
   /**

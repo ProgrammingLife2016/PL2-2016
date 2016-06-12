@@ -66,7 +66,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
       true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
 
-  private final IPhylogeneticTreeNode dataNode;
+  private final IPhylogeneticTreeNode<?> dataNode;
   @TestId(id = "children")
   private final ArrayList<TreeNodeCircle> children = new ArrayList<>();
   private final Area area;
@@ -185,7 +185,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    *
    * @return the data of this node.
    */
-  public IPhylogeneticTreeNode getDataNode() {
+  public IPhylogeneticTreeNode<?> getDataNode() {
     return dataNode;
   }
 

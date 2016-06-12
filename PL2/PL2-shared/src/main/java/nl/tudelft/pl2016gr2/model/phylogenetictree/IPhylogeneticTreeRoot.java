@@ -9,8 +9,10 @@ import java.util.List;
  * This interface must be implemented by the root of the phylogenetic tree.
  *
  * @author Faris
+ * @param <T> the type of the iterator.
  */
-public interface IPhylogeneticTreeRoot extends IPhylogeneticTreeNode {
+public interface IPhylogeneticTreeRoot<T extends IPhylogeneticTreeNode> 
+    extends IPhylogeneticTreeNode<T> {
 
   /**
    * Notify the tree root that a genome has been added to (isDrawn = true), or removed from (isDrawn

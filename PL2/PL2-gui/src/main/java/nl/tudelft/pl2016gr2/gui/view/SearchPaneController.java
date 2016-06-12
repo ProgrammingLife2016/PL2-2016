@@ -103,32 +103,6 @@ public class SearchPaneController implements Initializable {
     initializeExtendedSearchPane();
   }
 
-  /**
-   * This class is a helper class to represent a categorical property.
-   *
-   * <p>
-   * It holds the combobox together with a name.
-   * </p>
-   */
-  private static class CategoricalProperty {
-
-    final String name;
-    final CheckComboBox<String> checkComboBox;
-
-    CategoricalProperty(String name) {
-      this.name = name;
-      checkComboBox = new CheckComboBox<>();
-      checkComboBox.setMaxWidth(150);
-    }
-
-    void addValue(String value) {
-      if (!checkComboBox.getItems().contains(value)) {
-        checkComboBox.getItems().add(value);
-      }
-    }
-
-  }
-
   @SuppressWarnings("checkstyle:MethodLength")
   private void initializeTable() {
     // from http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
@@ -220,10 +194,10 @@ public class SearchPaneController implements Initializable {
   @SuppressWarnings("checkstyle:MethodLength")
   private void updateTable() {
     annotationTable.getSelectionModel().clearSelection();
-    filteredData.setPredicate(annotation -> {
+    filteredData.setPredicate(metadata -> {
 
       for (CategoricalProperty property : map.values()) {
-        String valueOfRow = getValueForColumnName(property.name, annotation);
+        String valueOfRow = metadata.getValueForColumnName(property.name);
         ObservableList<String> items = property.checkComboBox.getCheckModel().getCheckedItems();
         if (items.size() > 0 && !items.stream().anyMatch(s -> s.equals(valueOfRow))) {
           return false;
@@ -236,105 +210,15 @@ public class SearchPaneController implements Initializable {
       }
 
       for (CategoricalProperty property : map.values()) {
-        String valueOfRow = getValueForColumnName(property.name, annotation);
+        String valueOfRow = metadata.getValueForColumnName(property.name);
         if (valueOfRow.toLowerCase().contains(lowerCaseFilter)) {
           return true;
         }
       }
 
-      return annotation.specimenId.toLowerCase().contains(lowerCaseFilter)
-          || annotation.specimenType.toLowerCase().contains(lowerCaseFilter);
+      return metadata.specimenId.toLowerCase().contains(lowerCaseFilter)
+          || metadata.specimenType.toLowerCase().contains(lowerCaseFilter);
     });
-  }
-
-  /**
-   * This is a list of column names that are known to be categorical.
-   *
-   * <p>
-   * In an ideal situation the Metadata class would also support this and
-   * the reader would be able to read any sheet.
-   * </p>
-   */
-  private static final String[] knownCategoricalColumns = {
-      "genotypicDST",
-      "phenotypicDST",
-      "Lineage",
-      "hivStatus",
-      "cohort",
-      "studyGeographicDistrict",
-      "specimenType",
-      "microscopySmearStatus",
-      "dnaIsolation",
-      "capreomycin",
-      "ethambutol",
-      "ethionamide",
-      "isoniazid",
-      "kanamycin",
-      "pyrazinamide",
-      "ofloxacin",
-      "rifampin",
-      "streptomycin",
-      "digitalSpoligotype",
-      "sex",
-  };
-
-  /**
-   * This method take the correct field from the metaData class for a given name.
-   *
-   * <p>
-   * See {@link #knownCategoricalColumns}, when the metadata+its reader would understand
-   * dynamic columns, this method would be unnecessary.
-   * </p>
-   * @param columnName the name of the column.
-   * @param metaData the metaData instanec you'd like the value of.
-   * @return the value corresponding to the column.
-   */
-  @SuppressWarnings("checkstyle:MethodLength")
-  private static String getValueForColumnName(String columnName, MetaData metaData) {
-    switch (columnName) {
-      case "genotypicDST":
-        return metaData.genotypicDSTPattern;
-      case "phenotypicDST":
-        return metaData.phenotypicDSTPattern;
-      case "Lineage":
-        return metaData.lineage;
-      case  "hivStatus":
-        return metaData.hivStatus.name();
-      case  "cohort":
-        return metaData.cohort;
-      case  "studyGeographicDistrict":
-        return metaData.studyGeographicDistrict;
-      case  "specimenType":
-        return metaData.specimenType;
-      case   "microscopySmearStatus":
-        return metaData.microscopySmearStatus.name();
-      case  "dnaIsolation":
-        return metaData.dnaIsolation.name();
-      case  "capreomycin":
-        return metaData.capreomycin;
-      case  "ethambutol":
-        return metaData.ethambutol;
-      case  "ethionamide":
-        return metaData.ethionamide;
-      case  "isoniazid":
-        return metaData.isoniazid;
-      case  "kanamycin":
-        return metaData.kanamycin;
-      case  "pyrazinamide":
-        return metaData.pyrazinamide;
-      case  "ofloxacin":
-        return metaData.ofloxacin;
-      case  "rifampin":
-        return metaData.rifampin;
-      case  "streptomycin":
-        return metaData.streptomycin;
-      case  "digitalSpoligotype":
-        return metaData.digitalSpoligotype;
-      case  "sex":
-        return metaData.sex.name();
-      default:
-        throw new RuntimeException("Undefined column in temp method");
-    }
   }
 
   private void initializeGoTo() {
@@ -359,7 +243,7 @@ public class SearchPaneController implements Initializable {
 
       map.clear();
       masterData.forEach(metaData -> {
-        Arrays.stream(knownCategoricalColumns).forEach(columnName -> {
+        Arrays.stream(MetaData.KNOWN_CATEGORICAL_COLUMNS).forEach(columnName -> {
           final CategoricalProperty property;
           if (map.containsKey(columnName)) {
             property = map.get(columnName);
@@ -369,7 +253,7 @@ public class SearchPaneController implements Initializable {
                 .addListener((ListChangeListener<? super String>) change -> updateTable());
             map.put(property.name, property);
           }
-          property.addValue(getValueForColumnName(columnName, metaData));
+          property.addValue(metaData.getValueForColumnName(columnName));
         });
       });
 
@@ -407,5 +291,30 @@ public class SearchPaneController implements Initializable {
   public void setData(Collection<MetaData> metaData) {
     masterData.clear();
     masterData.addAll(metaData);
+  }
+
+  /**
+   * This class is a helper class to represent a categorical property.
+   *
+   * <p>
+   * It holds the combobox together with a name.
+   * </p>
+   */
+  private static class CategoricalProperty {
+
+    final String name;
+    final CheckComboBox<String> checkComboBox;
+
+    CategoricalProperty(String name) {
+      this.name = name;
+      checkComboBox = new CheckComboBox<>();
+      checkComboBox.setMaxWidth(150);
+    }
+
+    void addValue(String value) {
+      if (!checkComboBox.getItems().contains(value)) {
+        checkComboBox.getItems().add(value);
+      }
+    }
   }
 }
