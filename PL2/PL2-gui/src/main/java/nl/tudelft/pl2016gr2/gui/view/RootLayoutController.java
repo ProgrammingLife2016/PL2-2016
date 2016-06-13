@@ -270,7 +270,6 @@ public class RootLayoutController implements
     boolean isOSx = os.contains("mac") || os.contains("darwin");
 
     rootPane.getScene().addEventFilter(KeyEvent.KEY_PRESSED, keyEvent -> {
-      System.out.println("KEYEVENT");
       switch (keyEvent.getCode()) {
         case F:
           if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {

@@ -28,7 +28,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
@@ -225,7 +224,7 @@ public class SearchPaneController implements Initializable {
     goToButton.setOnAction(actionEvent -> {
       String fieldText = goToField.getText();
       if (fieldText.matches("\\d+")) {
-        graphPaneController.centreOnLevel(Integer.valueOf(fieldText));
+        graphPaneController.centerOnLevel(Integer.valueOf(fieldText));
       } else {
         goToField.clear();
       }

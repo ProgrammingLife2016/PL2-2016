@@ -194,7 +194,6 @@ public class GfaReader {
       while (chars[index] != '.' && chars[index] != ';') {
         ++index;
       }
-      //  genomes.add(new String(chars, start, index - start));
       GenomeMap.getInstance().addGenome(new String(chars, start, index - start));
       while (chars[index] != ';') {
         ++index;

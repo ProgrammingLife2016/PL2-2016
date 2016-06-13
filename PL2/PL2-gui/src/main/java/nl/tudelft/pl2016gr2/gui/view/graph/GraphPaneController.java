@@ -794,9 +794,11 @@ public class GraphPaneController implements Initializable {
    *
    * @param level the level to center at.
    */
-  public void centreOnLevel(int level) {
+  public void centerOnLevel(int level) {
+    GraphNode nodeToCenter = 
+        mainGraphOrder.getGraphMapper().findBase(GenomeMap.getInstance().getReferenceId(), level);
     double levelsToDraw = mainPane.getWidth() / zoomFactor.get();
-    updateScrollbarValue((level - levelsToDraw / 2.0) / amountOfLevels.get());
+    updateScrollbarValue((nodeToCenter.getLevel() - levelsToDraw / 2.0) / amountOfLevels.get());
   }
 
   /**
