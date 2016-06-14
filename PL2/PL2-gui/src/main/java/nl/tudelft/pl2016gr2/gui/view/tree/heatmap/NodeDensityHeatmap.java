@@ -6,10 +6,9 @@ import javafx.animation.KeyValue;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   private final Pane pane;
   private final Area area;
   @TestId(id = "currentLeaves")
-  private ArrayList<ViewNode> currentLeaves;
+  private ArrayList<TreeNodeCircle> currentLeaves;
 
   /**
    * Create an instance of this class.
@@ -36,14 +35,14 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * @param currentLeaves the current leaves.
    * @param heatmapArea   the area of the pane that may be user to draw the heatmap.
    */
-  public NodeDensityHeatmap(Pane pane, ArrayList<ViewNode> currentLeaves, Area heatmapArea) {
+  public NodeDensityHeatmap(Pane pane, ArrayList<TreeNodeCircle> currentLeaves, Area heatmapArea) {
     this.pane = pane;
     this.area = heatmapArea;
     onChange(currentLeaves);
   }
 
   @Override
-  public void onChange(ArrayList<ViewNode> newLeaves) {
+  public void onChange(ArrayList<TreeNodeCircle> newLeaves) {
     currentLeaves = newLeaves;
     pane.getChildren().clear();
     int maxChildren = getMaxChildren();
@@ -51,7 +50,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
     double height;
     double width = area.getWidth();
     double startX = area.getStartX();
-    for (ViewNode currentLeaf : currentLeaves) {
+    for (TreeNodeCircle currentLeaf : currentLeaves) {
       Area nodeArea = currentLeaf.getGraphArea();
       startY = nodeArea.getStartY();
       height = nodeArea.getHeight();
@@ -73,7 +72,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
    * @param leaf        the view node.
    * @param heatmapRect the heatmap rectangle associated with the given view node.
    */
-  private void addAnimationEventHandler(ViewNode leaf, Rectangle heatmapRect) {
+  private void addAnimationEventHandler(TreeNodeCircle leaf, Rectangle heatmapRect) {
     leaf.addEventHandler(AnimationEvent.ANIMATION_EVENT, (AnimationEvent event) -> {
       double newHeight = heatmapRect.getHeight() * event.getScale();
       double newY = heatmapRect.getY() - (event.getStartY() - event.getEndY())
@@ -93,7 +92,7 @@ public class NodeDensityHeatmap implements INodeHeatmap {
   @TestId(id = "getMaxChildren")
   private int getMaxChildren() {
     int maxChildren = 1;
-    for (ViewNode currentLeave : currentLeaves) {
+    for (TreeNodeCircle currentLeave : currentLeaves) {
       int curChildren = currentLeave.getDataNode().getChildCount();
       if (curChildren > maxChildren) {
         maxChildren = curChildren;

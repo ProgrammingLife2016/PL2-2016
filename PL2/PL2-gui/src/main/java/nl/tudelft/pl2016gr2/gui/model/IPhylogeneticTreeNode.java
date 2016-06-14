@@ -1,5 +1,10 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.scene.paint.Color;
+
+import java.util.ArrayList;
+
 /**
  * This is an interface which contains all of the methods which must be implemented by a container
  * class of a phylogenetic tree.
@@ -52,4 +57,56 @@ public interface IPhylogeneticTreeNode {
    * @return the index of the child ndoe.
    */
   int getChildIndex(IPhylogeneticTreeNode child);
+
+  /**
+   * Get all of the genomes whic are present in this branch of the tree.
+   *
+   * @return all of the genomes whic are present in this branch of the tree.
+   */
+  ArrayList<String> getGenomes();
+
+  /**
+   * Get the length of the edge to this node.
+   *
+   * @return the length of the edge to this node.
+   */
+  double getEdgeLength();
+
+  /**
+   * Check if this node is a leaf node.
+   *
+   * @return if this node is a leaf node.
+   */
+  boolean isLeaf();
+
+  /**
+   * Get the drawn in top property. This property is true iff all of the genomes in this tree node
+   * are drawn in the top graph.
+   *
+   * @return the drawn in top property
+   */
+  BooleanProperty getDrawnInTopProperty();
+
+  /**
+   * Get the drawn in bottom property. This property is true iff all of the genomes in this tree
+   * node are drawn in the bottom graph.
+   *
+   * @return the drawn in bottom property
+   */
+  BooleanProperty getDrawnInBottomProperty();
+
+  /**
+   * Get the lineage color of this node.
+   *
+   * @return the lineage color of this node.
+   */
+  Color getLineageColor();
+
+  /**
+   * Get a string containing metadata about the genome in the leaf node. Returns an empty string if
+   * it is called on a non-leaf node.
+   *
+   * @return a string containing metadata about the genome in the leaf node.
+   */
+  String getMetaData();
 }

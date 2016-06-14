@@ -1,9 +1,8 @@
 package nl.tudelft.pl2016gr2.gui.view.tree.heatmap;
 
 import javafx.scene.layout.Pane;
-
 import nl.tudelft.pl2016gr2.gui.view.tree.Area;
-import nl.tudelft.pl2016gr2.gui.view.tree.ViewNode;
+import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -26,18 +25,16 @@ public class HeatmapManager {
    */
   public HeatmapManager(Pane pane) {
     this.pane = pane;
+    initHeatmaps();
   }
 
   /**
-   * Set the initial leaves of the phylogenetic tree. Here leaves mean the nodes which don't have
-   * any child nodes in the user interface. This doesn't mean that these nodes are real leave nodes,
-   * as there may just be too few space to display the child nodes of a node.
-   *
-   * @param currentLeaves the initial leaves.
+   * Initialize the heatmaps with an empty list of leaves.
    */
-  public void initLeaves(ArrayList<ViewNode> currentLeaves) {
+  @TestId(id = "initHeatmaps()")
+  private void initHeatmaps() {
     Area area = new Area(10, 20, 0, pane.getHeight());
-    densityMap = new NodeDensityHeatmap(pane, currentLeaves, area);
+    densityMap = new NodeDensityHeatmap(pane, new ArrayList<>(), area);
   }
 
   /**
@@ -47,7 +44,7 @@ public class HeatmapManager {
    *
    * @param currentLeaves the new leaves.
    */
-  public void setLeaves(ArrayList<ViewNode> currentLeaves) {
+  public void setLeaves(ArrayList<TreeNodeCircle> currentLeaves) {
     densityMap.onChange(currentLeaves);
   }
 }

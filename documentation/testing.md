@@ -30,24 +30,24 @@ Code Coverage
 In this chapter we will discuss the code coverage of each module separately.
 
 ### Core
-![core module coverage](./coverage images/sprint 3/core module.png)
-The core module is fully tested. The AlgoRunner class is not used (it was created for testing purposes only) and will be removed from the project soon.
+![core module coverage](./coverage images/sprint 4/core module.png)
+The core module is almost fully tested (everything above 80%).
 
 ### Gui
-![gui module coverage](./coverage images/sprint 3/gui module.png)
+![gui module coverage](./coverage images/sprint 4/gui module.png)
 The most important components of the GUI module are covered. See the special cases section for missing coverage.
 
 ### Launcher
-![launcher module coverage](./coverage images/sprint 3/launcher module.png)
-Currently the launcher module is not tested (see special cases).
+![launcher module coverage](./coverage images/sprint 4/launcher module.png)
+Currently the launcher module decently tested (see special cases).
 
 ### Parser
-![parser module coverage](./coverage images/sprint 3/parser module.png)
+![parser module coverage](./coverage images/sprint 4/parser module.png)
 The parser is fully tested.
 
 ### Shared
-![shared module coverage](./coverage images/sprint 3/shared module.png)
-Most of the shared module classes are tested. Only the Bubble and AbstractNode classes require considerable more coverage. The TestAnnotationException and AccessPrivate classes are not part of our project (they are third party classes), so please don't consider these classes. They are not removed from the image to make sure the total coverage adds up. We will try to remove them from the coverage reports as soon as possible.
+![shared module coverage](./coverage images/sprint 4/shared module.png)
+Most of the shared module classes are tested. Only the OriginalGraph and AbstractNode classes require considerable more coverage. We plan to refactor a large part of the shared module, so we have delayed testing more rigorously till this is completed (which will be next sprint; sprint 5). The TestAnnotationException and AccessPrivate classes are not part of our project (they are third party classes), so please don't consider these classes. They are not removed from the image to make sure the total coverage adds up. We will try to remove them from the coverage reports as soon as possible.
 
 Special Cases
 ===================
@@ -70,16 +70,9 @@ Some parts of the gui module are very hard to test using automated tests and ver
   - Methods: <code>initializeZoomOutEventHandler</code>, <code>initializeZoomEventHandler</code>, <code>zoomIn</code>, <code>zoomOut</code>, <code>initializeGraphSizeListeners</code>
   - Reason: All of these methods are used to zoom in or out on the phylogenetic tree, or adjust the size of the phylogenetic tree when the window is resized. Zooming in and out is based on animations and thus not reasonably possible to test.
   - How to test: Launch the application and zoom in or out on child nodes of the phylogenetic tree by scrolling while hovering over them (or to the right of them.).
-- Class <code>RootLayout</code>
-  - Reason: This class is initialized by JavaFX (it is the controller class of a fxml file) and it mainly initializes parts of the user interface. This behavior has to be tested using integration tests and we have not yet had time to write these (we have only unit tested so far). Next sprint we will write some integration tests.
-  - How to test: Currently it is only possible to test this class by launching the application. If things appear on the screen (i.e. no white screen), this class is doing its job.
-- Class <code>RootLayout</code>
-  - Reason: This is an adapter class for the external class: <code>net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode</code> and should actually be moved to a different module. This is only a wrapper class of the external class so it was a low priority to test. It will be moved to a different module (and possibly tested if we have enough time) during the next sprint.
-  - How to test: This class isn't intended to be tested manually.
-
 
 ### Launcher
-Currently the launcher module is not tested. The reason for this is that the launcher module doesn't implement any new functionality, since it only initializes other parts of the application. This module can thus not be unit tested. The actions performed by the launcher module will be tested using intergration tests in the other modules (in the near future), so there is no need to test this behavior again in the launcher module.
+The launcher module doesn't implement any new functionality, since it only initializes other parts of the application. This module can thus not be unit tested. The actions performed by the launcher module are tested using intergration tests in the other modules, so there is no need to test this behavior again in the launcher module. We have however added a single integration test to this module to make the report look a bit nicer.
 
 ### Parser
 None.
@@ -109,4 +102,23 @@ These are the coverage reports of the dev branch at the end of sprint 3.
 ###### Shared module
 ![shared module coverage](./coverage images/sprint 3/shared module.png)
 
-> last updated at 13/5/2016 (end of sprint 3)
+### Sprint 4
+These are the coverage reports of the dev branch at the end of sprint 4.
+
+###### Core module
+![core module coverage](./coverage images/sprint 4/core module.png)
+
+###### GUI module
+![gui module coverage](./coverage images/sprint 4/gui module.png)
+
+###### Launcher module
+![launcher module coverage](./coverage images/sprint 4/launcher module.png)
+
+###### Parser module
+![parser module coverage](./coverage images/sprint 4/parser module.png)
+
+###### Shared module
+![shared module coverage](./coverage images/sprint 4/shared module.png)
+
+
+> last updated at 20/5/2016 (end of sprint 4)

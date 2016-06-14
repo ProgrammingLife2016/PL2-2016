@@ -1,21 +1,12 @@
 package nl.tudelft.pl2016gr2.launcher;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
-import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.gui.model.PhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.gui.view.RootLayoutController;
-import nl.tudelft.pl2016gr2.parser.controller.FullGfaReader;
+import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The launcher (main class) of the application.
@@ -24,49 +15,34 @@ import java.util.logging.Logger;
  */
 public class Dnav extends Application {
 
-  private Tree tree;
+  private static final double INITIAL_WINDOW_WIDTH = 1000d;
+  private static final double INITIAL_WINDOW_HEIGHT = 800d;
+  private static final double MINIMUM_WINDOW_WIDTH = 600d;
+  private static final double MINIMUM_WINDOW_HEIGHT = 700d;
+
+  @TestId(id = "primaryStage")
+  private static Stage primaryStage;
+  @TestId(id = "rootLayout")
+  private static RootLayoutController rootLayout;
 
   /**
    * Start the application. This method is automatically called by JavaFX when the API is
    * initialized, after the call to launch(args) in the main method.
    *
-   * @param primaryStage the primary stage of the application.
+   * @param stage the primary stage of the application.
    * @throws java.io.IOException this exception occurs when the fxml isn't found.
    */
   @Override
-  public void start(Stage primaryStage) throws IOException {
-    FXMLLoader loader = new FXMLLoader();
-    loader.setLocation(getClass().getClassLoader().getResource("pages/RootLayout.fxml"));
-
-    Scene scene = new Scene(loader.load(), 1000, 800);
-    primaryStage.setMinHeight(700);
-    primaryStage.setMinWidth(600);
+  public void start(Stage stage) throws IOException {
+    primaryStage = stage;
+    rootLayout = RootLayoutController.loadView();
+    Scene scene = new Scene(rootLayout.getPane(), INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT);
+    primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
+    primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
     primaryStage.setScene(scene);
-    primaryStage.show();
-
-    RootLayoutController controller = loader.getController();
-    insertData(controller);
-  }
-
-  /**
-   * Load the data into the root layout.
-   *
-   * @param controller the controller of the root layout.
-   */
-  private void insertData(RootLayoutController controller) {
-
-    // abusing NWKReader class as this class' classloader can access the correct resource
-    Reader reader = new InputStreamReader(
-        FullGfaReader.class.getClassLoader().getResourceAsStream("340tree.rooted.TKK.nwk"));
-    BufferedReader br = new BufferedReader(reader);
-    TreeParser tp = new TreeParser(br);
-
-    tree = tp.tokenize("340tree.rooted.TKK");
-    controller.setData(new PhylogeneticTreeNode(tree.getRoot()));
-    try {
-      reader.close();
-    } catch (IOException ex) {
-      Logger.getLogger(Dnav.class.getName()).log(Level.SEVERE, null, ex);
+    if (!Boolean.getBoolean("test")) {
+      primaryStage.show();
+      rootLayout.promptFileChooser();
     }
   }
 

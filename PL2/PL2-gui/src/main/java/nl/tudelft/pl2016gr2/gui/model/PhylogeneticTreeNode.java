@@ -1,86 +1,271 @@
 package nl.tudelft.pl2016gr2.gui.model;
 
-import java.util.Objects;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.scene.paint.Color;
+import net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode;
+import nl.tudelft.pl2016gr2.model.Annotation;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * This class is an adapter class which maps the methods of the
- * net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode class to the interface which is needed by
- * our application.
+ * This class is a storage class for a phylogenetic tree node. It retrieves and stores the needed
+ * values of the newick parser {@link TreeNode}.
  *
  * @author Faris
  */
-public class PhylogeneticTreeNode implements IPhylogeneticTreeNode {
+public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<PhylogeneticTreeNode> {
 
-  private final net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node;
+  private final String label;
+  private final float weight;
+  private final PhylogeneticTreeNode[] children;
+  private final PhylogeneticTreeNode parent;
+  private Annotation annotation;
+
+  /**
+   * If all of the child nodes of this node are drawn in the top graph.
+   */
+  private final BooleanProperty drawnInTop = new SimpleBooleanProperty(false);
+
+  /**
+   * If all of the child nodes of this node are drawn in the bottom graph.
+   */
+  private final BooleanProperty drawnInBottom = new SimpleBooleanProperty(false);
 
   /**
    * Construct a phylogenetic tree node.
    *
-   * @param node the TreeNode of this node.
+   * @param node   the TreeNode of this node.
+   * @param parent the parent of this phylogenetic tree node.
    */
-  public PhylogeneticTreeNode(net.sourceforge.olduvai.treejuxtaposer.drawer.TreeNode node) {
-    this.node = node;
+  protected PhylogeneticTreeNode(TreeNode node, PhylogeneticTreeNode parent) {
+    this.weight = node.weight;
+    this.parent = parent;
+
+    if (node.numberChildren() == 2) { // node with children
+      children = new PhylogeneticTreeNode[2];
+      children[0] = new PhylogeneticTreeNode(node.getChild(0), this);
+      children[1] = new PhylogeneticTreeNode(node.getChild(1), this);
+    } else { // leaf node
+      children = null;
+    }
+
+    if (node.numberChildren() == 0) {
+      this.label = node.label.split("\\.", 2)[0];
+    } else {
+      label = null;
+    }
   }
 
   @Override
   public boolean hasParent() {
-    return !node.isRoot();
+    return parent != null;
   }
 
   @Override
   public IPhylogeneticTreeNode getParent() {
-    return new PhylogeneticTreeNode(node.parent());
+    return parent;
   }
 
   @Override
   public int getDirectChildCount() {
-    return node.numberChildren();
+    if (isLeaf()) {
+      return 0;
+    } else {
+      return 2;
+    }
   }
 
   @Override
   public int getChildCount() {
-    int total = node.numberChildren();
-
-    for (int i = 0; i < getDirectChildCount(); i++) {
-      total += new PhylogeneticTreeNode(node.getChild(i)).getChildCount();
+    if (isLeaf()) {
+      return 0;
+    } else {
+      return 2 + children[0].getChildCount() + children[1].getChildCount();
     }
-
-    return total;
   }
 
   @Override
   public IPhylogeneticTreeNode getChild(int index) {
-    return new PhylogeneticTreeNode(node.getChild(index));
+    return children[index];
   }
 
   @Override
   public int getChildIndex(IPhylogeneticTreeNode child) {
-    int idx = 0;
-    while (true) {
-      if (getChild(idx).equals(child)) {
-        return idx;
+    for (int i = 0; i < 2; i++) {
+      if (children[i] == child) {
+        return i;
       }
-      ++idx;
     }
+    throw new IndexOutOfBoundsException();
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
+  public ArrayList<String> getGenomes() {
+    ArrayList<String> res = new ArrayList<>();
+    if (isLeaf()) {
+      res.add(label);
+    } else {
+      for (PhylogeneticTreeNode child : children) {
+        res.addAll(child.getGenomes());
+      }
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final PhylogeneticTreeNode other = (PhylogeneticTreeNode) obj;
-    return this.node == other.node;
+    return res;
   }
 
   @Override
-  public int hashCode() {
-    int hash = 3;
-    hash = 41 * hash + Objects.hashCode(this.node);
-    return hash;
+  public double getEdgeLength() {
+    return weight;
   }
 
+  @Override
+  public boolean isLeaf() {
+    return children == null;
+  }
+
+  @Override
+  public BooleanProperty getDrawnInTopProperty() {
+    return drawnInTop;
+  }
+
+  @Override
+  public BooleanProperty getDrawnInBottomProperty() {
+    return drawnInBottom;
+  }
+
+  @Override
+  public Color getLineageColor() {
+    if (annotation != null) {
+      return LineageColor.toLineage(annotation.lineage).getColor();
+    } else {
+      return LineageColor.NONE.getColor();
+    }
+  }
+
+  /**
+   * Creates an iterator which iterates over all of the leaf nodes of the tree.
+   *
+   * @return an iterator which iterates over all of the leaf nodes of the tree.
+   */
+  @Override
+  public Iterator<PhylogeneticTreeNode> iterator() {
+    return new LeafNodeIterator();
+  }
+
+  @Override
+  public String getMetaData() {
+    System.out.println("annotation = " + annotation);
+    if (annotation == null) {
+      return "";
+    } else {
+      return annotation.buildMetaDataString();
+    }
+  }
+
+  /**
+   * Set the value of drawnInTop. If it is different from the previous value, update the parent node
+   * as well.
+   *
+   * @param isDrawn if this node is drawn in the top graph.
+   */
+  protected void setDrawnInTop(boolean isDrawn) {
+    if (drawnInTop.get() != isDrawn && (!isDrawn || childrenAreDrawnInTop())) {
+      drawnInTop.set(isDrawn);
+      if (hasParent()) {
+        parent.setDrawnInTop(isDrawn);
+      }
+    }
+  }
+
+  /**
+   * Set the value of drawnInBottom. If it is different from the previous value, update the parent
+   * node as well.
+   *
+   * @param isDrawn if this node is drawn in the bottom graph.
+   */
+  protected void setDrawnInBottom(boolean isDrawn) {
+    if (drawnInBottom.get() != isDrawn && (!isDrawn || childrenAreDrawnInBottom())) {
+      drawnInBottom.set(isDrawn);
+      if (hasParent()) {
+        parent.setDrawnInBottom(isDrawn);
+      }
+    }
+  }
+
+  /**
+   * Get the label of this leaf node. Note: this must be a leaf node!
+   *
+   * @return the label of this leaf node.
+   */
+  protected String getLabel() {
+    assert isLeaf();
+    return label;
+  }
+
+  /**
+   * Check if all of the children of this node are drawn in the top graph.
+   *
+   * @return if all of the children of this node are drawn in the top graph.
+   */
+  private boolean childrenAreDrawnInTop() {
+    return isLeaf() || children[0].drawnInTop.get() && children[1].drawnInTop.get();
+  }
+
+  /**
+   * Check if all of the children of this node are drawn in the bottom graph.
+   *
+   * @return if all of the children of this node are drawn in the bottom graph.
+   */
+  private boolean childrenAreDrawnInBottom() {
+    return isLeaf() || children[0].drawnInBottom.get() && children[1].drawnInBottom.get();
+  }
+
+  protected void setAnnotation(Annotation annotation) {
+    this.annotation = annotation;
+  }
+
+  /**
+   * An iterator which iterates over all of the leave nodes of the tree.
+   */
+  private class LeafNodeIterator implements Iterator<PhylogeneticTreeNode> {
+
+    private final Iterator<PhylogeneticTreeNode> leftChildIterator;
+    private final Iterator<PhylogeneticTreeNode> rightChildIterator;
+    private boolean nextGiveLeaf = isLeaf();
+
+    /**
+     * Construct a leaf node iterator.
+     */
+    private LeafNodeIterator() {
+      if (isLeaf()) {
+        leftChildIterator = null;
+        rightChildIterator = null;
+      } else {
+        leftChildIterator = children[0].iterator();
+        rightChildIterator = children[1].iterator();
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      return nextGiveLeaf || !isLeaf()
+          && (leftChildIterator.hasNext() || rightChildIterator.hasNext());
+    }
+
+    @Override
+    public PhylogeneticTreeNode next() {
+      if (nextGiveLeaf) {
+        nextGiveLeaf = false;
+        return PhylogeneticTreeNode.this;
+      }
+      if (leftChildIterator.hasNext()) {
+        return leftChildIterator.next();
+      } else if (rightChildIterator.hasNext()) {
+        return rightChildIterator.next();
+      }
+      throw new NoSuchElementException();
+    }
+  }
 }
