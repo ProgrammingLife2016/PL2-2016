@@ -181,11 +181,11 @@ public class PhylogeneticTreeNodeTest {
   }
 
   /**
-   * Test of getMetaData method, of class PhylogeneticTreeNode.
+   * Test of getMetaDataString method, of class PhylogeneticTreeNode.
    */
   @Test
   public void testGetMetaData() {
-    assertEquals("", treeNode.getMetaData());
+    assertEquals("", treeNode.getMetaDataString());
   }
 
   /**
@@ -222,7 +222,7 @@ public class PhylogeneticTreeNodeTest {
     MetaData meta = new MetaData();
     meta.lineage = "";
     treeNode.setMetaData(meta);
-    assertEquals(meta.buildMetaDataString(), treeNode.getMetaData());
+    assertEquals(meta.buildMetaDataString(), treeNode.getMetaDataString());
   }
 
   /**

@@ -2,16 +2,19 @@ package nl.tudelft.pl2016gr2.model.phylogenetictree;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.scene.paint.Color;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * This is an interface which contains all of the methods which must be implemented by a container
  * class of a phylogenetic tree.
  *
  * @author Faris
+ * @param <T> the type of the iterator.
  */
-public interface IPhylogeneticTreeNode {
+public interface IPhylogeneticTreeNode<T extends IPhylogeneticTreeNode> extends Iterable<T> {
 
   /**
    * Check if this node has a parent.
@@ -137,7 +140,14 @@ public interface IPhylogeneticTreeNode {
    *
    * @return a string containing metadata about the genome in the leaf node.
    */
-  String getMetaData();
+  String getMetaDataString();
+
+  /**
+   * Get the metadata of the genome of this phylogenetic tree node.
+   *
+   * @return the metadata of the genome of this phylogenetic tree node.
+   */
+  MetaData getMetaData();
 
   /**
    * Get the genome id of this leaf node. This node must be a leaf node.
@@ -145,4 +155,12 @@ public interface IPhylogeneticTreeNode {
    * @return the genome id of this leaf node.
    */
   int getGenomeId();
+
+  /**
+   * Creates an iterator which iterates over all of the leaf nodes of the tree.
+   *
+   * @return an iterator which iterates over all of the leaf nodes of the tree.
+   */
+  @Override
+  Iterator<T> iterator();
 }

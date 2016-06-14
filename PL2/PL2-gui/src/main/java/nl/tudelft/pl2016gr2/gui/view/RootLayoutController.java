@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -84,6 +86,9 @@ public class RootLayoutController implements
   @FXML
   private SelectionPaneController selectionPaneController;
 
+  private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap = 
+      new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
+
   /**
    * Initializes the controller class.
    *
@@ -92,7 +97,7 @@ public class RootLayoutController implements
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    initializeSelectionManager();
+    initializeSubPanes();
     initializeLegend();
     Region graphRegion = graphPaneController.getGraphPane();
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
@@ -100,7 +105,7 @@ public class RootLayoutController implements
     rootPane.sceneProperty().addListener(new ChangeListener<Scene>() {
       @Override
       public void changed(ObservableValue<? extends Scene> observable, Scene oldValue,
-                          Scene newValue) {
+          Scene newValue) {
         if (newValue != null) {
           initializeSearchPaneController();
           // fire this only once when scene is set.
@@ -158,11 +163,12 @@ public class RootLayoutController implements
   }
 
   /**
-   * Initialize the selection manager (which manages showing the description of selected objects).
+   * Initialize the sub panes.
    */
-  private void initializeSelectionManager() {
+  private void initializeSubPanes() {
     selectionManager = new SelectionManager();
     treePaneController.setup(selectionManager, graphPaneController);
+    treePaneController.initializeHeatmaps(metadataPropertyMap);
     graphPaneController.setup(selectionManager);
     selectionPaneController.setup(selectionManager);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
@@ -292,7 +298,7 @@ public class RootLayoutController implements
       Tree tree = treeFactory.getTree();
       List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
       List<Annotation> annotations = new AnnotationReader(annotationFile).read();
-
+      metadataPropertyMap.set(new MetadataPropertyMap(metaDatas));
       if (graph != null && tree != null) {
         IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
         treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();

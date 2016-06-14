@@ -27,7 +27,7 @@ public class TreeLeafDescription implements ISelectionInfo {
     TextArea text = new TextArea();
     text.setWrapText(true);
     text.setEditable(false);
-    text.setText(treeLeaf.getMetaData());
+    text.setText(treeLeaf.getMetaDataString());
     return text;
   }
 

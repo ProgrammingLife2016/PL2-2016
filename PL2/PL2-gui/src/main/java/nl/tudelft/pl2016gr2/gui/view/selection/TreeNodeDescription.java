@@ -18,7 +18,7 @@ import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
  */
 public class TreeNodeDescription implements ISelectionInfo {
 
-  private final IPhylogeneticTreeNode treeNode;
+  private final IPhylogeneticTreeNode<?> treeNode;
   private final GraphPaneController graphPaneController;
   private final EventHandler<ActionEvent> buttonClicked = new EventHandler<ActionEvent>() {
     @Override
