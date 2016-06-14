@@ -168,7 +168,7 @@ public class CompareSubgraphs {
     areaMap.put(node, complexNodeArea);
 
     SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
-    
+
     node.getGuiData().relativeYPos = nodeArea.getCenter() / VERTICAL_PRECISION;
     node.getGuiData().maxHeight = nodeArea.getHeight() / (double) VERTICAL_PRECISION;
     return complexNodeArea;

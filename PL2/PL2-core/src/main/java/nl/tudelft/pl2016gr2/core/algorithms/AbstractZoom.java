@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public abstract class ZoomIn {
+public abstract class AbstractZoom {
   
   /**
   * Zoom in on a given bubble. This method makes new bubbles within 

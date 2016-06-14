@@ -17,16 +17,16 @@ import java.util.Map;
  * @author Casper
  *
  */
-public class ZoomInRandom extends ZoomIn {
+public class GraphBubbleZoom extends AbstractZoom {
   
-  private FilterRandomBubbles filter;
+  private GraphBubbleFilter filter;
   
   /**
    * Creates an object to zoom in on a random bubble with.
    * 
    * @param filter an instance of FilterRandomBubbles.
    */
-  public ZoomInRandom(FilterRandomBubbles filter) {
+  public GraphBubbleZoom(GraphBubbleFilter filter) {
     this.filter = filter;
   }
   

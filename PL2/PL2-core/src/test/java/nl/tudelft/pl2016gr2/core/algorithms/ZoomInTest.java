@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * This class tests the {@link ZoomIn} class.
+ * This class tests the {@link AbstractZoom} class.
  *
  * @author Faris
  */

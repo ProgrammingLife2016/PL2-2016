@@ -21,7 +21,7 @@ import nl.tudelft.pl2016gr2.core.GraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.TreeFactory;
-import nl.tudelft.pl2016gr2.core.algorithms.BuildTree;
+import nl.tudelft.pl2016gr2.core.algorithms.TreeBuilder;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
@@ -301,7 +301,7 @@ public class RootLayoutController implements
       metadataPropertyMap.set(new MetadataPropertyMap(metaDatas));
       if (graph != null && tree != null) {
         IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
-        treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
+        treeRoot = new TreeBuilder(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
         searchPaneController.setData(metaDatas);

@@ -3,11 +3,13 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import java.util.List;
 
 /**
- * Interface of the phylo bubble filter class.
+ * Interface of the bubble filter class. This interface needs to be 
+ * implemented by classes that create GraphBubbles or PhyloBubbles, 
+ * to be able to zoom in on the graph.
  *
  * @author Casper
  */
-public interface PhyloFilter {
+public interface BubbleFilter {
 
   /**
    * Zoom in on the bubble.

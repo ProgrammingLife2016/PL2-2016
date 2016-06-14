@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
-import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,13 +15,13 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- * Class to make 'random' bubbles. These are bubbles that are made solely based
+ * Class to make graph bubbles. These are bubbles that are made solely based
  * on the graph, not looking at phylogeny.
  * 
  * @author Casper
  *
  */
-public class FilterRandomBubbles extends FilterBubbles {
+public class GraphBubbleFilter extends AbstractBubbleFilter {
   
   private int mutationId = -1;
   
@@ -30,7 +30,7 @@ public class FilterRandomBubbles extends FilterBubbles {
    * 
    * @param orderedNodes the nodes that need to be bubbled.
    */
-  public FilterRandomBubbles(Collection<GraphNode> orderedNodes) {
+  public GraphBubbleFilter(Collection<GraphNode> orderedNodes) {
     super(orderedNodes);
   }
   
@@ -50,7 +50,7 @@ public class FilterRandomBubbles extends FilterBubbles {
     
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     ArrayList<GraphNode> graphNodes = new ArrayList<>(findBubbles(startNodes, null, newBubbles));
-    graphNodes.add(rootNodes.iterator().next());
+    graphNodes.addAll(rootNodes);
     pruneNodes(graphNodes, newBubbles);
     
     Collections.sort(graphNodes, (GraphNode first, GraphNode second) -> {
@@ -61,7 +61,7 @@ public class FilterRandomBubbles extends FilterBubbles {
   
   @Override
   public List<GraphNode> zoomIn(Bubble bubble) {
-    return new ZoomInRandom(this).zoom(bubble);
+    return new GraphBubbleZoom(this).zoom(bubble);
   }
   
   /**
@@ -87,6 +87,16 @@ public class FilterRandomBubbles extends FilterBubbles {
     return visitNodes(toVisit, visited, end, poppedNodes, newBubbles);
   }
   
+  /**
+   * Visits all nodes until the end is reached (if the end != null) and makes bubbles.
+   * 
+   * @param toVisit : nodes to visit.
+   * @param visited : nodes already visited.
+   * @param end : the end node.
+   * @param poppedNodes : list of new nodes.
+   * @param newBubbles : list of new bubbles.
+   * @return a list of new nodes.
+   */
   private Collection<GraphNode> visitNodes(Queue<GraphNode> toVisit, Set<GraphNode> visited, 
       GraphNode end, Set<GraphNode> poppedNodes, ArrayList<Bubble> newBubbles) {
     while (!toVisit.isEmpty()) {
@@ -114,6 +124,13 @@ public class FilterRandomBubbles extends FilterBubbles {
     return poppedNodes;
   }
   
+  /**
+   * Creates a bubble.
+   * 
+   * @param start : start of the bubble.
+   * @param currentEnd : the end of the bubble should be before this node.
+   * @return : a bubble (or null).
+   */
   private Bubble createBubble(GraphNode start, GraphNode currentEnd) {
     Set<Integer> genomes = new HashSet<>(start.getGenomes());
     Set<GraphNode> visited = new HashSet<>();
@@ -131,9 +148,20 @@ public class FilterRandomBubbles extends FilterBubbles {
     return bubble;
   }
   
+  /**
+   * Makes a bubble.
+   * 
+   * @param toVisit : nodes to visit.
+   * @param visited : nodes already visited.
+   * @param start : start of bubble.
+   * @param endNode : end of the bubble should be before this node.
+   * @param nestedNodes : nestednodes of the bubble.
+   * @param genomes : genomes of the bubble.
+   * @return : a bubble (or null).
+   */
   private Bubble makeBubble(Queue<GraphNode> toVisit, Set<GraphNode> visited, GraphNode start, 
       GraphNode endNode, Set<GraphNode> nestedNodes, Set<Integer> genomes) {
-    PhyloBubble bubble = null;
+    GraphBubble bubble = null;
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
       visited.add(next);
@@ -143,7 +171,7 @@ public class FilterRandomBubbles extends FilterBubbles {
       Set<Integer> nextGenomes = new HashSet<>(next.getGenomes());
       if (nextGenomes.size() == genomes.size() && nextGenomes.containsAll(genomes)) {
         endNode = next;
-        bubble = new PhyloBubble(mutationId, null, this, 
+        bubble = new GraphBubble(mutationId, this, 
             Collections.singletonList(start), Collections.singletonList(endNode));
         mutationId--;
       } else if (nextGenomes.size() < genomes.size()) {

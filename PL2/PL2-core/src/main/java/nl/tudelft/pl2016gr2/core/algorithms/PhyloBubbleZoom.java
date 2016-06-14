@@ -22,16 +22,16 @@ import java.util.Set;
  * @author Casper
  *
  */
-public class ZoomInPhylo extends ZoomIn {
+public class PhyloBubbleZoom extends AbstractZoom {
   
-  private final FilterPhyloBubbles filter;
+  private final PhyloBubbleFilter filter;
   
   /**
    * Creates an object to zoom in on a phylo bubble with.
    * 
    * @param filter an instance of FilterPhyloBubbles.
    */
-  protected ZoomInPhylo(FilterPhyloBubbles filter) {
+  protected PhyloBubbleZoom(PhyloBubbleFilter filter) {
     super();
     this.filter = filter;
   }

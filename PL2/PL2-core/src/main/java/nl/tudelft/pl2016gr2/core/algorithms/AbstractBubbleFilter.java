@@ -1,8 +1,8 @@
 package nl.tudelft.pl2016gr2.core.algorithms;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.BubbleFilter;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
-import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,24 +12,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Class used to filter bubbles based on the phylogenetic tree.
+ * This is an AbstractBubbleFilter. This class stores the rootNodes of the original graph
+ * and the original in and out edges. 
  *
  * @author Casper
  *
  */
-public abstract class FilterBubbles implements PhyloFilter {
+public abstract class AbstractBubbleFilter implements BubbleFilter {
 
   private final Map<Integer, Collection<GraphNode>> originalInEdges;
   private final Map<Integer, Collection<GraphNode>> originalOutEdges;
   private final Collection<GraphNode> rootNodes;
 
   /**
-   * Creates a FilterBubbles object, with the graph to be filtered and the node of the phylogenetic
-   * tree based on which this graph will be filtered.
+   * Creates an AbstractBubbleFilter object, with the graph nodes to be filtered.
    *
    * @param orderedNodes : the nodes to be filtered.
    */
-  public FilterBubbles(Collection<GraphNode> orderedNodes) {
+  public AbstractBubbleFilter(Collection<GraphNode> orderedNodes) {
     this.rootNodes = new ArrayList<>();
     for (GraphNode orderedNode : orderedNodes) {
       if (orderedNode.getInEdges().isEmpty()) {
@@ -46,7 +46,7 @@ public abstract class FilterBubbles implements PhyloFilter {
       originalOutEdges.put(node.getId(), new ArrayList<>(node.getOutEdges()));
     }
   }
-  
+
   /**
    * Returns a map which maps the ids of nodes in the graph before it was filterbubbled
    * to its inedges.
@@ -56,7 +56,7 @@ public abstract class FilterBubbles implements PhyloFilter {
   protected Map<Integer, Collection<GraphNode>> getOriginalInEdges() {
     return originalInEdges;
   }
-  
+
   /**
    * Returns a map which maps the ids of nodes in the graph before it was filterbubbled
    * to its outedges.
@@ -66,7 +66,7 @@ public abstract class FilterBubbles implements PhyloFilter {
   protected Map<Integer, Collection<GraphNode>> getOriginalOutEdges() {
     return originalOutEdges;
   }
-  
+
   /**
    * Returns the rootnodes of the graph.
    * 

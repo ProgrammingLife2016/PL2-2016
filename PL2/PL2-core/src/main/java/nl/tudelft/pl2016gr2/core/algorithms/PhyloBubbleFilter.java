@@ -17,11 +17,22 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
-public class FilterPhyloBubbles extends FilterBubbles {
+/**
+ * Class used to make PhyloBubbles. These are bubbles based on the phylogenetic tree.
+ * 
+ * @author Casper
+ *
+ */
+public class PhyloBubbleFilter extends AbstractBubbleFilter {
   
   private int mutationId = -1;
   
-  public FilterPhyloBubbles(Collection<GraphNode> orderedNodes) {
+  /**
+   * Creates an instance of this class.
+   * 
+   * @param orderedNodes : the nodes of the original graph.
+   */
+  public PhyloBubbleFilter(Collection<GraphNode> orderedNodes) {
     super(orderedNodes);
   }
   
@@ -34,7 +45,7 @@ public class FilterPhyloBubbles extends FilterBubbles {
   @Override
   public List<GraphNode> zoomIn(Bubble bubble) {
     mutationId--;
-    return new ZoomInPhylo(this).zoom(bubble);
+    return new PhyloBubbleZoom(this).zoom(bubble);
   }
 
   /**
@@ -48,7 +59,7 @@ public class FilterPhyloBubbles extends FilterBubbles {
    * @return a filtered graph.
    */
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
-    IPhylogeneticTreeRoot newRoot = new BuildTree(treeRoot, genomes).getTree();
+    IPhylogeneticTreeRoot newRoot = new TreeBuilder(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
