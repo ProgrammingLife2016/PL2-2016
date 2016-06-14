@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.Annotation;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
@@ -257,6 +259,21 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   Collection<Integer> getGenomesOverEdge(GraphNode node);
 
   /**
+   * Get the amount of genomes which are present in this node.
+   *
+   * @return the amount of genomes which are present in this node.
+   */
+  int getGenomeSize();
+
+  /**
+   * Approximate the amount of genomes which go over the edge to the given node.
+   *
+   * @param node the node to which the edge goes.
+   * @return an approximation of the amount of genomes which go over the given edge.
+   */
+  int approximateGenomesOverEdge(GraphNode node);
+
+  /**
    * Trims the capacity of this <code>GraphNode</code> instance to the currently used size.
    * <p>
    * This method can be used to minimize the storage of this <code>GraphNode</code>.
@@ -265,9 +282,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void trimToSize();
 
   @Override
-  default void accept(NodeVisitor visitor) {
-    visitor.visit(this);
-  }
+  void accept(NodeVisitor visitor);
 
   /**
    * Copies all of the elements of this node, including its inedges, outedges, genomes/treenode.
@@ -325,5 +340,11 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return true is the bubble is popped
    */
   boolean isPopped();
+
+  void setAnnotation(Annotation annotation);
+
+  boolean hasAnnotation();
+
+  Annotation getAnnotation();
 
 }

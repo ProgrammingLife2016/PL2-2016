@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -25,12 +27,14 @@ import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreePaneController;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.PhylogeneticTreeRoot;
+import nl.tudelft.pl2016gr2.parser.controller.AnnotationReader;
 import nl.tudelft.pl2016gr2.parser.controller.MetaDataReader;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -56,8 +60,8 @@ public class RootLayoutController implements
 
   @FXML
   private AnchorPane rootPane;
-  @FXML
-  private SelectionPaneController selectionPaneController;
+  // @FXML
+  // private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML
@@ -79,6 +83,12 @@ public class RootLayoutController implements
   @FXML
   private GraphPaneController graphPaneController;
 
+  @FXML
+  private SelectionPaneController selectionPaneController;
+
+  private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap = 
+      new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
+
   /**
    * Initializes the controller class.
    *
@@ -87,7 +97,7 @@ public class RootLayoutController implements
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    initializeSelectionManager();
+    initializeSubPanes();
     initializeLegend();
     Region graphRegion = graphPaneController.getGraphPane();
     graphRegion.prefHeightProperty().bind(mainPane.heightProperty());
@@ -117,11 +127,13 @@ public class RootLayoutController implements
   /**
    * Load the data into the root layout.
    *
-   * @param graph    the graph you want to load
-   * @param treeRoot the root of the loaded tree.
+   * @param graph       the graph you want to load
+   * @param treeRoot    the root of the loaded tree.
+   * @param annotations the list of annotations.
    */
-  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot) {
-    this.graphPaneController.loadMainGraph(graph, treeRoot);
+  public void loadGraph(SequenceGraph graph, IPhylogeneticTreeRoot treeRoot,
+      List<Annotation> annotations) {
+    this.graphPaneController.loadMainGraph(graph, treeRoot, annotations);
   }
 
   /**
@@ -151,28 +163,20 @@ public class RootLayoutController implements
   }
 
   /**
-   * Draw two subgraphs.
-   *
-   * @param topGenomes    the genomes of the top graph.
-   * @param bottomGenomes the genomes of the bottom graph.
+   * Initialize the sub panes.
    */
-  public void drawGraph(ArrayList<Integer> topGenomes, ArrayList<Integer> bottomGenomes) {
-    graphPaneController.compareTwoGraphs(topGenomes, bottomGenomes);
-  }
-
-  /**
-   * Initialize the selection manager (which manages showing the description of selected objects).
-   */
-  private void initializeSelectionManager() {
-    selectionManager = new SelectionManager(this, selectionPaneController);
+  private void initializeSubPanes() {
+    selectionManager = new SelectionManager();
+    treePaneController.setup(selectionManager, graphPaneController);
+    treePaneController.initializeHeatmaps(metadataPropertyMap);
+    graphPaneController.setup(selectionManager);
+    selectionPaneController.setup(selectionManager);
     mainPane.setOnMouseClicked((MouseEvent event) -> {
       if (!event.isConsumed()) {
         selectionManager.deselect();
         event.consume();
       }
     });
-    treePaneController.setup(selectionManager, graphPaneController);
-    graphPaneController.setup(selectionManager);
   }
 
   /**
@@ -280,11 +284,12 @@ public class RootLayoutController implements
         default:
       }
     });
-    searchPaneController.setSelectionManager(selectionManager);
+    searchPaneController.setup(selectionManager, graphPaneController);
   }
 
   @Override
-  public void filesLoaded(InputStream treeFile, InputStream graphFile, InputStream metadataFile) {
+  public void filesLoaded(InputStream treeFile, InputStream graphFile,
+      InputStream metadataFile, InputStream annotationFile) {
     try {
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
@@ -292,11 +297,12 @@ public class RootLayoutController implements
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
       List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
-
+      List<Annotation> annotations = new AnnotationReader(annotationFile).read();
+      metadataPropertyMap.set(new MetadataPropertyMap(metaDatas));
       if (graph != null && tree != null) {
         IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
         treeRoot = new BuildTree(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
-        loadGraph(graph, treeRoot);
+        loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
         searchPaneController.setData(metaDatas);
       } else {

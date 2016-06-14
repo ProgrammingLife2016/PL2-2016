@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
@@ -18,7 +19,8 @@ public abstract class AbstractGraphNode implements GraphNode {
   @TestId(id = "id_field")
   private int identifier;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
-  
+  private Annotation annotation;
+
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
 
@@ -56,6 +58,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     this.identifier = abstractGraphNode.identifier;
     this.inEdges = abstractGraphNode.inEdges;
     this.outEdges = abstractGraphNode.outEdges;
+    this.annotation = abstractGraphNode.annotation;
   }
 
   @Override
@@ -84,9 +87,14 @@ public abstract class AbstractGraphNode implements GraphNode {
     });
     getGenomes().stream().filter(
         genome -> node.getGenomes().contains(genome) && !otherGenomes.contains(genome)).forEach(
-        genomes::add);
+            genomes::add);
 
     return genomes;
+  }
+
+  @Override
+  public int approximateGenomesOverEdge(GraphNode node) {
+    return Math.min(getGenomeSize(), node.getGenomeSize());
   }
 
   @Override
@@ -140,7 +148,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   public void removeOutEdge(GraphNode node) {
     outEdges.remove(node);
   }
-  
+
   @Override
   public void trimToSize() {
     //inEdges.trimToSize();
@@ -168,5 +176,20 @@ public abstract class AbstractGraphNode implements GraphNode {
   @Override
   public GraphNodeGuiData getGuiData() {
     return guiData;
+  }
+
+  @Override
+  public void setAnnotation(Annotation annotation) {
+    this.annotation = annotation;
+  }
+
+  @Override
+  public boolean hasAnnotation() {
+    return annotation != null;
+  }
+
+  @Override
+  public Annotation getAnnotation() {
+    return annotation;
   }
 }

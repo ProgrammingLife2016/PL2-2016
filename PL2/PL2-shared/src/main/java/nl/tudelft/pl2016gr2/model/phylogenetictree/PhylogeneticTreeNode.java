@@ -18,7 +18,7 @@ import java.util.NoSuchElementException;
  *
  * @author Faris
  */
-public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<PhylogeneticTreeNode> {
+public class PhylogeneticTreeNode implements IPhylogeneticTreeNode<PhylogeneticTreeNode> {
 
   private final int genomeId;
   private final float weight;
@@ -255,7 +255,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   }
 
   @Override
-  public String getMetaData() {
+  public String getMetaDataString() {
     if (metaData == null) {
       return "";
     } else {
@@ -371,6 +371,11 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode, Iterable<Phy
   @Override
   public int getGenomeId() {
     return genomeId;
+  }
+
+  @Override
+  public MetaData getMetaData() {
+    return metaData;
   }
 
   /**

@@ -1,11 +1,15 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.GraphBaseMapper;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +22,8 @@ import java.util.logging.Logger;
 public class GraphOrdererThread extends Thread {
 
   private final SequenceGraph graph;
+  private GraphBaseMapper mapper;
+  private List<Annotation> annotations;
 
   /**
    * Construct a graph orderer thread.
@@ -26,6 +32,17 @@ public class GraphOrdererThread extends Thread {
    */
   public GraphOrdererThread(SequenceGraph graph) {
     this.graph = graph;
+  }
+
+  /**
+   * Construct a graph orderer thread.
+   *
+   * @param graph       the graph to order.
+   * @param annotations the annotations to map onto the ordered graph.
+   */
+  public GraphOrdererThread(SequenceGraph graph, List<Annotation> annotations) {
+    this.graph = graph;
+    this.annotations = annotations;
   }
 
   /**
@@ -93,10 +110,29 @@ public class GraphOrdererThread extends Thread {
   }
 
   /**
+   * Wait till the thread completes its execution and get the graph base mapper.
+   *
+   * @return get the graph base mapper.
+   */
+  public GraphBaseMapper getGraphMapper() {
+    try {
+      this.join();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return mapper;
+  }
+
+  /**
    * Calculate the graph order.
    */
   @Override
   public void run() {
     calculateGraphOrder();
+    if (annotations != null) {
+      mapper = new GraphBaseMapper(graph);
+      mapper.mapAnnotations(new LinkedList<>(annotations));
+      annotations = null;
+    }
   }
 }

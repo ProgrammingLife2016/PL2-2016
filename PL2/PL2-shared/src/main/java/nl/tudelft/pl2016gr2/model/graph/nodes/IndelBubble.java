@@ -29,6 +29,11 @@ public class IndelBubble extends Bubble {
   }
 
   @Override
+  public int getGenomeSize() {
+    return getInEdges().iterator().next().getGenomeSize();
+  }
+
+  @Override
   public GraphNode copy() {
     return new IndelBubble(this, aligner);
   }
@@ -79,7 +84,7 @@ public class IndelBubble extends Bubble {
     outEdge.removeInEdge(this);
     outEdge.addInEdge(lastNode);
     outEdge.addInEdge(inEdge);
-    
+
     firstNode.setInEdges(getInEdges());
     lastNode.setOutEdges(getOutEdges());
   }

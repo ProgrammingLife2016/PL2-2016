@@ -38,6 +38,15 @@ public abstract class GraphBubble extends Bubble {
     this.filter = filter;
   }
   
+  @Override
+  public int getGenomeSize() {
+    int count = 0;
+    for (GraphNode inEdge : getInEdges()) {
+      count += inEdge.getGenomeSize();
+    }
+    return count;
+  }
+  
   /**
    * Returns the phylofilter of this bubble.
    * 

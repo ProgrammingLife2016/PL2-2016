@@ -15,7 +15,8 @@ import java.util.List;
  *
  * @author Faris
  */
-public class PhylogeneticTreeRoot extends PhylogeneticTreeNode implements IPhylogeneticTreeRoot {
+public class PhylogeneticTreeRoot extends PhylogeneticTreeNode 
+    implements IPhylogeneticTreeRoot<PhylogeneticTreeNode> {
 
   private final HashMap<Integer, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
   private final List<MetaData> metaDatas;

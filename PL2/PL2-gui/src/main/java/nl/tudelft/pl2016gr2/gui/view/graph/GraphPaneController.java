@@ -2,6 +2,8 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import com.sun.javafx.collections.ObservableSetWrapper;
 import javafx.animation.AnimationTimer;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.binding.When;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -10,7 +12,10 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.ImageView;
@@ -22,12 +27,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
+import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
@@ -41,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -75,6 +81,14 @@ public class GraphPaneController implements Initializable {
   private Pane topGraphIndicationArea;
   @FXML
   private Pane bottomGraphIndicationArea;
+  @FXML
+  private Canvas topEdgeCanvas;
+  @FXML
+  private Canvas bottomEdgeCanvas;
+  @FXML
+  private Label showingRange;
+  @FXML
+  private Label totalBases;
 
   public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
   public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
@@ -145,12 +159,38 @@ public class GraphPaneController implements Initializable {
 
     initializeScrollbar();
     initializeScrollEvent();
+    initializeOnMouseEventHandler();
+    initializeBaseLabels();
+  }
+
+  /**
+   * Initialize the position and content of the labels which show the range of bases which is
+   * currently shown in the user interface.
+   */
+  private void initializeBaseLabels() {
+    totalBases.textProperty().bind(amountOfLevels.asString(Locale.US, "%,d"));
+    NumberBinding startLevel = amountOfLevels.multiply(scrollbar.valueProperty());
+
+    NumberBinding endLevel = mainPane.widthProperty().divide(zoomFactor).add(startLevel);
+    NumberBinding actualEndLevel
+        = new When(endLevel.lessThan(amountOfLevels)).then(endLevel).otherwise(amountOfLevels);
+    showingRange.textProperty().bind(startLevel.asString(Locale.US, "%,.0f")
+        .concat(" - ").concat(actualEndLevel.asString(Locale.US, "%,.0f")));
+    showingRange.translateXProperty().bind(
+        mainPane.widthProperty().add(showingRange.widthProperty().negate()).divide(2.0));
+  }
+
+  /**
+   * Initialize the mouse handlers.
+   */
+  private void initializeOnMouseEventHandler() {
     mainPane.setOnMouseClicked(event -> {
       if (contextMenu != null) {
         contextMenu.hide();
         contextMenu = null;
       }
     });
+    initializeEdgeCanvas();
   }
 
   /**
@@ -203,14 +243,27 @@ public class GraphPaneController implements Initializable {
   }
 
   /**
+   * Initialize the edge canvas'.
+   */
+  private void initializeEdgeCanvas() {
+    topEdgeCanvas.widthProperty().bind(mainPane.widthProperty());
+    topEdgeCanvas.heightProperty().bind(topPane.prefHeightProperty());
+    bottomEdgeCanvas.widthProperty().bind(mainPane.widthProperty());
+    bottomEdgeCanvas.heightProperty().bind(bottomPane.prefHeightProperty());
+  }
+
+  /**
    * Verify and update the scroll bar value.
    *
    * @param newValue the new value of the scrollbar.
    */
   private void updateScrollbarValue(double newValue) {
+    if (Double.isNaN(newValue) || Double.isInfinite(newValue)) {
+      return;
+    }
     if (newValue < 0.0) {
       scrollbar.setValue(0.0);
-    } else if (newValue > scrollbar.getMax()) {
+    } else if (scrollbar.getMax() > 0.0 && newValue > scrollbar.getMax()) {
       scrollbar.setValue(scrollbar.getMax());
     } else {
       scrollbar.setValue(newValue);
@@ -328,7 +381,7 @@ public class GraphPaneController implements Initializable {
         } catch (Exception ex) {
           Logger.getLogger(GraphPaneController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        event.setDropCompleted(true);
+        event.setDropCompleted(false);
         event.consume();
       }
     });
@@ -353,7 +406,7 @@ public class GraphPaneController implements Initializable {
         handleGenomesDropped(GenomeMap.getInstance().mapAll(genomes), event,
             getBottomGraphGenomes(),
             getTopGraphGenomes());
-        event.setDropCompleted(true);
+        event.setDropCompleted(false);
         event.consume();
       }
     });
@@ -513,8 +566,9 @@ public class GraphPaneController implements Initializable {
 
     amountOfLevels.set(topGraphOrder.get(topGraphOrder.size() - 1).getLevel());
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-    scrollbar.setValue(0);
+    scrollbar.setValue(0.0);
     updateGraphSize();
+    System.gc();
     graphUpdater.update();
   }
 
@@ -539,11 +593,11 @@ public class GraphPaneController implements Initializable {
   private void compareTwoGraphs() {
     Pair<OrderedGraph, OrderedGraph> compareRes
         = SubgraphAlgorithmManager.compareTwoGraphs(
-        getTopGraphGenomes(),
-        getBottomGraphGenomes(),
-        mainGraph,
-        mainGraphOrder,
-        treeRoot);
+            getTopGraphGenomes(),
+            getBottomGraphGenomes(),
+            mainGraph,
+            mainGraphOrder,
+            treeRoot);
     this.topGraph = compareRes.left;
     this.bottomGraph = compareRes.right;
     drawTwoGraphs();
@@ -563,22 +617,25 @@ public class GraphPaneController implements Initializable {
       amountOfLevels.set(highestBottomLevel);
     }
     zoomFactor.set(mainPane.getWidth() / amountOfLevels.get());
-    scrollbar.setValue(0);
+    scrollbar.setValue(0.0);
     updateGraphSize();
+    System.gc();
     graphUpdater.update();
   }
 
   /**
    * Load a new main graph.
    *
-   * @param graph the graph.
-   * @param root  the root of the phylogenetic tree.
+   * @param graph       the graph.
+   * @param root        the root of the phylogenetic tree.
+   * @param annotations the list of annotations.
    */
-  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root) {
+  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root,
+      List<Annotation> annotations) {
     clear();
     treeRoot = root;
     mainGraph = graph;
-    mainGraphOrder = new GraphOrdererThread(mainGraph);
+    mainGraphOrder = new GraphOrdererThread(mainGraph, annotations);
     mainGraphOrder.start();
   }
 
@@ -627,12 +684,12 @@ public class GraphPaneController implements Initializable {
       startLevel = 0;
     }
     if (topGraph != null) {
-      drawGraph(topPane, topGraph, topGraph.getSubgraph().getGenomes().size(),
+      drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
     }
     if (bottomGraph != null) {
-      drawGraph(bottomPane, bottomGraph, bottomGraph.getSubgraph().getGenomes().size(), startLevel,
-          startLevel + levelsToDraw);
+      drawGraph(bottomPane, bottomEdgeCanvas, bottomGraph,
+          bottomGraph.getSubgraph().getGenomes().size(), startLevel, startLevel + levelsToDraw);
     }
   }
 
@@ -640,12 +697,13 @@ public class GraphPaneController implements Initializable {
    * Draw the given graph in the given pane.
    *
    * @param pane       the pane to draw the graph in.
+   * @param canvas     the canvas in which to draw the edges.
    * @param graphOrder the graph node order.
    * @param graph      the graph.
    * @param startLevel the level where to start drawing.
    * @param endLevel   the level where to stop drawing.
    */
-  private void drawGraph(Pane pane, OrderedGraph orderedGraph, int genomeCount,
+  private void drawGraph(Pane pane, Canvas canvas, OrderedGraph orderedGraph, int genomeCount,
       int startLevel, int endLevel) {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
@@ -653,7 +711,8 @@ public class GraphPaneController implements Initializable {
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, 0, fullRange);
     }
-    drawEdges(pane, drawnGraphNodes, startLevel, genomeCount);
+    canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
+    drawEdges(canvas, drawnGraphNodes, startLevel, genomeCount);
   }
 
   /**
@@ -675,6 +734,7 @@ public class GraphPaneController implements Initializable {
     drawnGraphNodes.add(node);
     node.getGuiData().range = viewRange;
     double width = calculateNodeWidth(node);
+    double fade = calculateBubbleFadeFactor(node, width);
     if (width < MIN_VISIBILITY_WIDTH || !isInView(node, startLevel, endLevel)) {
       return;
     }
@@ -683,12 +743,22 @@ public class GraphPaneController implements Initializable {
       height = width;
     }
     IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
-        width, height, nestedDepth,selectionManager);
-    pane.getChildren().add(viewNode.get());
+        width, height, nestedDepth);
+
+    if (fade > 0.0) {
+      viewNode.get().setOnMouseClicked(mouseEvent -> {
+        selectionManager.select(viewNode);
+        mouseEvent.consume();
+      });
+      // select when previously selected node is equal to this new one
+      selectionManager.checkSelected(viewNode);
+      pane.getChildren().add(viewNode.get());
+      viewNode.setOpacity(fade);
+    }
     viewNode.centerXProperty().set(zoomFactor.get()
         * (node.getLevel() - startLevel - node.size() / 2.0));
     viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().relativeYPos
-        + viewRange.rangeStartY);//addLabel(pane, circle, node.getId());
+        + viewRange.rangeStartY);
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
       drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,
@@ -696,6 +766,37 @@ public class GraphPaneController implements Initializable {
     } else {
       node.unpop();
     }
+    if (node.hasAnnotation()) {
+      Annotation annotation = node.getAnnotation();
+      Label label = new Label(annotation.getAttribute("name"));
+      label.setWrapText(true);
+      label.setMaxWidth(viewNode.getWidth());
+      label.setLayoutX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
+      label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
+      pane.getChildren().add(label);
+    }
+  }
+
+  private double calculateBubbleFadeFactor(GraphNode bubble, double width) {
+    if (!bubble.hasChildren()) {
+      return 1.0;
+    }
+    double fade = (mainPane.getWidth() / width - 1.0) * 2.0 + 1.0;
+    if (fade >= 1.0) {
+      return 1.0;
+    } else {
+      return fade;
+    }
+  }
+
+  /**
+   * Go to the given level.
+   *
+   * @param level the level to center at.
+   */
+  public void centreOnLevel(int level) {
+    double levelsToDraw = mainPane.getWidth() / zoomFactor.get();
+    updateScrollbarValue((level - levelsToDraw / 2.0) / amountOfLevels.get());
   }
 
   /**
@@ -750,25 +851,25 @@ public class GraphPaneController implements Initializable {
   /**
    * Draw the edges between all of the nodes which are drawn on the screen.
    *
-   * @param pane            the pane in which to draw the edges.
+   * @param canvas          the canvas in which to draw the edges.
    * @param drawnGraphNodes the set of nodes which are drawn on the screen.
    * @param startLevel      the start level: where to start drawing.
    * @param genomeCount     the amount of genomes which are present in the drawn graph.
    */
-  private void drawEdges(Pane pane, HashSet<GraphNode> drawnGraphNodes, int startLevel,
+  private void drawEdges(Canvas canvas, HashSet<GraphNode> drawnGraphNodes, int startLevel,
       int genomeCount) {
     drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
           double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(pane, node, outEdge, edgeWidth, startLevel, node.getGuiData().range,
-              outEdge.getGuiData().range);
+          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel,
+              node.getGuiData().range, outEdge.getGuiData().range);
         }
         for (GraphNode inEdge : node.getInEdges()) {
           if (!drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
-            drawEdge(pane, inEdge, node, edgeWidth, startLevel, node.getGuiData().range,
-                inEdge.getGuiData().range);
+            drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel,
+                node.getGuiData().range, inEdge.getGuiData().range);
           }
         }
       }
@@ -778,37 +879,33 @@ public class GraphPaneController implements Initializable {
   /**
    * Draw an edge from the fromNode to the toNode.
    *
-   * @param pane       the pane in which to draw the edges.
-   * @param fromNode   the node from which to draw the edge.
-   * @param toNode     the node to draw the edge to.
-   * @param edgeWidth  the width of the edge.
-   * @param startLevel the start level: where to start drawing.
-   * @param viewRange  the range of values which may be used as y coordinate to draw this edge.
+   * @param graphicContext the graphicContext to which to add the edges.
+   * @param fromNode       the node from which to draw the edge.
+   * @param toNode         the node to draw the edge to.
+   * @param edgeWidth      the width of the edge.
+   * @param startLevel     the start level: where to start drawing.
+   * @param viewRange      the range of values which may be used as y coordinate to draw this edge.
    */
-  private void drawEdge(Pane pane, GraphNode fromNode, GraphNode toNode, double edgeWidth,
-      int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
-    Line edge = new Line();
-    //edge.setSmooth(true);
-    edge.setStrokeWidth(edgeWidth * 2);
-    pane.getChildren().add(edge);
+  private void drawEdge(GraphicsContext graphicContext, GraphNode fromNode, GraphNode toNode,
+      double edgeWidth, int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
+    graphicContext.setLineWidth(edgeWidth * 2);
+    double startX;
     if (fromNode.hasChildren()) {
-      edge.setStartX(zoomFactor.get()
-          * (fromNode.getLevel() - startLevel /*- fromNode.size() * (1.0 - HALF_NODE_MARGIN)*/));
+      startX = zoomFactor.get() * (fromNode.getLevel() - startLevel);
     } else {
-      edge.setStartX(zoomFactor.get()
-          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN)));
+      startX = zoomFactor.get()
+          * (fromNode.getLevel() - startLevel - fromNode.size() * (1.0 - HALF_NODE_MARGIN));
     }
+    double endX;
     if (toNode.hasChildren()) {
-      edge.setEndX(zoomFactor.get()
-          * (toNode.getLevel() - startLevel - toNode.size()/* * HALF_NODE_MARGIN*/));
+      endX = zoomFactor.get() * (toNode.getLevel() - startLevel - toNode.size());
     } else {
-      edge.setEndX(zoomFactor.get()
-          * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN));
+      endX = zoomFactor.get() * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN);
     }
-    edge.setStartY(fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
-        + fromRange.rangeStartY);
-    edge.setEndY(toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY);
-    //edge.toBack();
+    double startY = fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
+        + fromRange.rangeStartY;
+    double endY = toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY;
+    graphicContext.strokeLine(startX, startY, endX, endY);
   }
 
   /**
@@ -822,7 +919,7 @@ public class GraphPaneController implements Initializable {
    * @return the edge width.
    */
   private double calculateEdgeWidth(int maxGenomes, GraphNode from, GraphNode to) {
-    int genomesOverEdge = from.getGenomesOverEdge(to).size();
+    int genomesOverEdge = from.approximateGenomesOverEdge(to);
     // see javadoc
     double edgeWith = Math.log(100.0 * genomesOverEdge / maxGenomes) * 0.8 * zoomFactor.get();
     if (edgeWith > MAX_EDGE_WIDTH) {
@@ -852,21 +949,6 @@ public class GraphPaneController implements Initializable {
   }
 
   /**
-   * Add a label with the ID of the node to the circle.
-   *
-   * @param pane      the pane to add the label to.
-   * @param graphNode the graph node object to which to add the label.
-   * @param id        the id to write in the label.
-   */
-  //  private static void addLabel(Pane pane, IViewGraphNode graphNode, int id) {
-  //    Label label = new Label(Integer.toString(id));
-  //    label.setMouseTransparent(true);
-  //    label.layoutXProperty().bind(graphNode.centerXProperty().add(-graphNode.getWidth() / 2.0));
-  //    label.layoutYProperty().bind(graphNode.centerYProperty().add(-graphNode.getHeight() / 2.0));
-  //    label.setTextFill(Color.ALICEBLUE);
-  //    pane.getChildren().add(label);
-  //  }
-  /**
    * This method clears the bottom graph when the cross icon is clicked. It is linked by JavaFX via
    * the fxml file (using reflection), so it appears to be unused to code quality tools. For this
    * reason the suppress warning "unused" annotation is used.
@@ -886,6 +968,9 @@ public class GraphPaneController implements Initializable {
    */
   public void setup(SelectionManager selectionManager) {
     this.selectionManager = selectionManager;
+    selectionManager.addListener((observable, oldValue, newValue) -> {
+      graphUpdater.update();
+    });
   }
 
   /**

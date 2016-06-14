@@ -141,6 +141,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     SequenceNode node = new SequenceNode(this.getId(), sequence);
     node.level = level;
     node.getGuiData().overlapping = getGuiData().overlapping;
+    node.setAnnotation(this.getAnnotation());
     return node;
   }
 
@@ -171,7 +172,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   public String toString() {
     String sequenceString = getSequence();
     if (sequenceString.length() > 20) {
-      sequenceString = sequenceString.substring(0, 20);
+      sequenceString = String.format("%s...", sequenceString.substring(0, 20));
     }
     return String.format("Sequence %d:\n%s\n", getId(), sequenceString);
   }
@@ -211,6 +212,11 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   @Override
   public boolean hasChild(GraphNode child) {
     return false;
+  }
+
+  @Override
+  public int getGenomeSize() {
+    return genomes.size();
   }
 
 }

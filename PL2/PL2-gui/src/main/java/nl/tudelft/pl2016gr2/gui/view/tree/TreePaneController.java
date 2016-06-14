@@ -1,16 +1,18 @@
 package nl.tudelft.pl2016gr2.gui.view.tree;
 
 import javafx.animation.Timeline;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.MenuButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
+import nl.tudelft.pl2016gr2.gui.view.MetadataPropertyMap;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
@@ -34,14 +36,21 @@ public class TreePaneController implements Initializable {
   public static final double GRAPH_BORDER_OFFSET = 5.0;
 
   @FXML
-  @TestId(id = "mainPane")
-  private AnchorPane mainPane;
-  @FXML
   @TestId(id = "treePane")
   private Pane treePane;
   @FXML
-  @TestId(id = "heatmapPane")
-  private Pane heatmapPane;
+  @TestId(id = "firstHeatmap")
+  private Pane firstHeatmap;
+  @FXML
+  @TestId(id = "secondHeatmap")
+  private Pane secondHeatmap;
+  @FXML
+  @TestId(id = "firstMenuButton")
+  private MenuButton firstMenuButton;
+  @FXML
+  @TestId(id = "secondMenuButton")
+  private MenuButton secondMenuButton;
+
   @TestId(id = "currentRoot")
   private TreeNodeCircle currentRoot;
   private TreeNodeCircle currentHighlightedNode;
@@ -49,9 +58,7 @@ public class TreePaneController implements Initializable {
   private final ArrayList<Observer> childLeaveObservers = new ArrayList<>();
   @TestId(id = "selectionManager")
   private SelectionManager selectionManager;
-  private HeatmapManager heatmapManager;
-
-  private IPhylogeneticTreeRoot rootNode;
+  private IPhylogeneticTreeRoot<?> rootNode;
   private GraphPaneController graphPaneController;
 
   @Override
@@ -59,7 +66,16 @@ public class TreePaneController implements Initializable {
     initializeZoomEventHandler();
     initializeGraphSizeListeners();
     initializeZoomAreaHighlighter();
-    heatmapManager = new HeatmapManager(heatmapPane);
+  }
+
+  /**
+   * Initialize the heatmaps.
+   *
+   * @param metadataPropertyMap the meta data property map.
+   */
+  public void initializeHeatmaps(ObservableValue<MetadataPropertyMap> metadataPropertyMap) {
+    HeatmapManager heatmapManager = new HeatmapManager(firstHeatmap, secondHeatmap,
+        firstMenuButton, secondMenuButton, metadataPropertyMap);
     this.setOnLeavesChanged((Observable observable, Object arg) -> {
       heatmapManager.setLeaves(getCurrentLeaves());
     });
@@ -68,12 +84,15 @@ public class TreePaneController implements Initializable {
   /**
    * Set the selection manager and initialize listeners to the selection manager.
    *
-   * @param selectionManager the selection manager.
+   * @param selectionManager    the selection manager.
    * @param graphPaneController the graphPane controller.
    */
   public void setup(SelectionManager selectionManager, GraphPaneController graphPaneController) {
     this.selectionManager = selectionManager;
     this.graphPaneController = graphPaneController;
+    selectionManager.addListener((observable, oldValue, newValue) -> {
+      checkSelectedForNodeAndLeaves(currentRoot);
+    });
     initializeTopGraphSelectionManger();
     initializeBottomGraphSelectionManger();
     initializeSearchBoxSelectionManager();
@@ -131,7 +150,7 @@ public class TreePaneController implements Initializable {
    *
    * @param root the root of the tree.
    */
-  public void loadTree(IPhylogeneticTreeRoot root) {
+  public void loadTree(IPhylogeneticTreeRoot<?> root) {
     rootNode = root;
     setCurrentRoot(root);
   }
@@ -245,9 +264,9 @@ public class TreePaneController implements Initializable {
    * @param root the root of the part of the tree which should be shown.
    */
   @TestId(id = "setRoot")
-  private void setCurrentRoot(IPhylogeneticTreeNode root) {
+  private void setCurrentRoot(IPhylogeneticTreeNode<?> root) {
     treePane.getChildren().clear();
-    currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, selectionManager);
+    currentRoot = TreeNodeCircle.drawNode(root, getGraphPaneArea(), treePane, this);
     childLeaveObservers.forEach((Observer observer) -> {
       observer.update(null, null);
     });
@@ -314,21 +333,36 @@ public class TreePaneController implements Initializable {
   }
 
   /**
-   * Get the pane in which the tree is drawn.
+   * Recursively iterate the given node and its children and check Selection.
    *
-   * @return the pane in which the tree is drawn.
+   * <p>
+   * This method will call {@link SelectionManager#checkSelected(ISelectable)} for each child.
+   * </p>
+   *
+   * @param node check for this node.
    */
-  public Region getTreePane() {
-    return mainPane;
+  private void checkSelectedForNodeAndLeaves(TreeNodeCircle node) {
+    if (node != null) {
+      selectionManager.checkSelected(node);
+      node.getChildren().forEach(this::checkSelectedForNodeAndLeaves);
+    }
   }
 
   /**
-   * Get the root of the tree.
+   * Getter for the selectionManager
    *
-   * @return the root of the tree.
+   * @return the selectionManager.
    */
-  public IPhylogeneticTreeRoot getTreeRoot() {
-    return rootNode;
+  public SelectionManager getSelectionManager() {
+    return selectionManager;
   }
 
+  /**
+   * Getter for the graphPaneController.
+   *
+   * @return the graphPaneController.
+   */
+  public GraphPaneController getGraphPaneController() {
+    return graphPaneController;
+  }
 }

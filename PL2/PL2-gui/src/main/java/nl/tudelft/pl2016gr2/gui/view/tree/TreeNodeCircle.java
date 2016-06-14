@@ -22,7 +22,6 @@ import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
-import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
@@ -67,11 +66,11 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
       true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
 
-  private final IPhylogeneticTreeNode dataNode;
+  private final IPhylogeneticTreeNode<?> dataNode;
   @TestId(id = "children")
   private final ArrayList<TreeNodeCircle> children = new ArrayList<>();
   private final Area area;
-  private final SelectionManager selectionManager;
+  private final TreePaneController treePaneController;
   private boolean isLeaf;
   private final Line edge = new Line();
   private Rectangle highlightArea;
@@ -81,15 +80,15 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    *
    * @param dataNode         the data of the node.
    * @param graphArea        the graph area in which the node has to be drawn.
-   * @param selectionManager the selection manager.
+   * @param treePaneController the selection manager.
    */
   private TreeNodeCircle(IPhylogeneticTreeNode dataNode, Area graphArea,
-      SelectionManager selectionManager) {
+                         TreePaneController treePaneController) {
     super(NODE_RADIUS);
     setStrokeWidth(NODE_BORDER_WIDTH);
     this.dataNode = dataNode;
     this.area = graphArea;
-    this.selectionManager = selectionManager;
+    this.treePaneController = treePaneController;
 
     setColor();
     resetBorderColor();
@@ -126,7 +125,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void initializeClickedEvent() {
     this.setOnMouseClicked((MouseEvent event) -> {
-      selectionManager.select(this);
+      treePaneController.getSelectionManager().select(this);
       event.consume();
     });
   }
@@ -186,7 +185,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    *
    * @return the data of this node.
    */
-  public IPhylogeneticTreeNode getDataNode() {
+  public IPhylogeneticTreeNode<?> getDataNode() {
     return dataNode;
   }
 
@@ -196,18 +195,19 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param dataNode         the data of the node to draw.
    * @param graphArea        the area in which the node should be drawn.
    * @param graphPane        the pane in which to draw the node.
-   * @param selectionManager the selection manager.
+   * @param treePaneController the treePane controller.
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
   protected static TreeNodeCircle drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
-      Pane graphPane, SelectionManager selectionManager) {
+                                           Pane graphPane, TreePaneController treePaneController) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {
       return null; // not enough space to draw the tree node.
     }
-    TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
+    TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, treePaneController);
     graphPane.getChildren().add(node);
-    drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
+    drawChildren(node, dataNode, graphArea, graphPane);
+    treePaneController.getSelectionManager().checkSelected(node);
     return node;
   }
 
@@ -218,10 +218,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param dataNode         the data node.
    * @param area             the graph area of the node.
    * @param graphPane        the pane in which to draw the node.
-   * @param selectionManager the selection manager.
    */
   private static void drawChildren(TreeNodeCircle node, IPhylogeneticTreeNode dataNode, Area area,
-      Pane graphPane, SelectionManager selectionManager) {
+      Pane graphPane) {
     if (dataNode.isLeaf()) {
       node.isLeaf = true;
       return;
@@ -238,7 +237,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       double nextEndY = nextStartY + ySize;
       double nextEndX = area.getEndX() - calculateEdgeLength(dataNode.getChild(i));
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
-      TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
+      TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, node.treePaneController);
       node.children.add(child);
       child.drawEdge(node, child, graphPane);
     }
@@ -419,6 +418,10 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     return res;
   }
 
+  public List<TreeNodeCircle> getChildren() {
+    return children;
+  }
+
   /**
    * Get the closest parent node to the given x and y coordinates. Parent nodes contain the given x
    * and y coordinates in their {@code area}. The node which is the deepest in the tree and contains
@@ -478,10 +481,19 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   }
 
   @Override
-  public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
+  public ISelectionInfo getSelectionInfo() {
     if (dataNode.getChildCount() != 0) {
-      return new TreeNodeDescription(selectionManager, dataNode);
+      return new TreeNodeDescription(treePaneController.getGraphPaneController(), dataNode);
     }
     return new TreeLeafDescription(dataNode);
+  }
+
+  @Override
+  public boolean isEqualSelection(ISelectable other) {
+    if (other instanceof TreeNodeCircle) {
+      TreeNodeCircle that = (TreeNodeCircle) other;
+      return this.dataNode == that.dataNode;
+    }
+    return false;
   }
 }
