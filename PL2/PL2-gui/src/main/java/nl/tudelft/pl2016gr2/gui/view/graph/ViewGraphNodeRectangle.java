@@ -3,12 +3,13 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
+import java.util.Collections;
 
 /**
  * A square representation of a node, which can be drawn in the user interface.
@@ -23,17 +24,15 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
 
   /**
    * Constructor.
-   *  @param width  the width of the rectangle.
-   * @param height the height of the rectangle.
+   *
+   * @param width    the width of the rectangle.
+   * @param height   the height of the rectangle.
    * @param dataNode the data object.
    */
-  public ViewGraphNodeRectangle(double width, double height,
-                                GraphNode dataNode) {
-    super(width/* * GraphPaneController.NODE_MARGIN*/, height);
+  public ViewGraphNodeRectangle(double width, double height, GraphNode dataNode) {
+    super(width, height);
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));
-    setFill(Color.ALICEBLUE);
-    setStrokeWidth(height / 20.0d);
     this.dataNode = dataNode;
   }
 
@@ -54,12 +53,12 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
 
   @Override
   public void select() {
-    setStroke(Color.BLACK);
+    Collections.replaceAll(getStyleClass(), "graphUnselectedNode", "graphSelectedNode");
   }
 
   @Override
   public void deselect() {
-    setStroke(null);
+    Collections.replaceAll(getStyleClass(), "graphSelectedNode", "graphUnselectedNode");
   }
 
   @Override

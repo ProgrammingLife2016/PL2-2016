@@ -11,15 +11,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
@@ -39,32 +35,15 @@ import java.util.List;
  */
 public class TreeNodeCircle extends Circle implements ISelectable {
 
-  public static final Color LEAF_COLOR = Color.BLACK;
-  public static final Color NODE_COLOR = Color.ALICEBLUE;
   public static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  public static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
   private static final double EDGE_WIDTH = 2.0;
-  private static final double HIGHLIGHTED_EDGE_WIDTH = 6.0;
-
-  private static final List<Stop> MULTI_GRAPH_GRADIENT_STOPS = new ArrayList<>(2);
-
-  /**
-   * Initialize the colors of the multie graph gradient. DON'T MOVE THIS TO AFTER THE
-   * MULTI_GRAPH_GRADIENT DECLARATION. THIS WILL BREAK IT.
-   */
-  static {
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(0.0, GraphPaneController.TOP_GRAPH_COLOR));
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, GraphPaneController.BOTTOM_GRAPH_COLOR));
-  }
-
-  public static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
-      true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
+  private static final double HIGHLIGHTED_EDGE_WIDTH = 8.0;
 
   private final IPhylogeneticTreeNode<?> dataNode;
   @TestId(id = "children")
@@ -85,7 +64,6 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private TreeNodeCircle(IPhylogeneticTreeNode dataNode, Area graphArea,
                          TreePaneController treePaneController) {
     super(NODE_RADIUS);
-    setStrokeWidth(NODE_BORDER_WIDTH);
     this.dataNode = dataNode;
     this.area = graphArea;
     this.treePaneController = treePaneController;
@@ -158,11 +136,11 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void resetBorderColor() {
     if (dataNode.getDrawnInTopProperty().get() && dataNode.getDrawnInBottomProperty().get()) {
-      setStroke(MULTI_GRAPH_GRADIENT);
+      getStyleClass().add("treeNodeInBothGraphs");
     } else if (dataNode.getDrawnInTopProperty().get()) {
-      setStroke(GraphPaneController.TOP_GRAPH_COLOR);
+      getStyleClass().add("treeNodeInTopGraph");
     } else if (dataNode.getDrawnInBottomProperty().get()) {
-      setStroke(GraphPaneController.BOTTOM_GRAPH_COLOR);
+      getStyleClass().add("treeNodeInBottom");
     } else {
       setStroke(null);
     }
@@ -173,9 +151,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void setColor() {
     if (dataNode.isLeaf()) {
-      setFill(LEAF_COLOR);
+      getStyleClass().add("treeNodeLeaf");
     } else {
-      setFill(NODE_COLOR);
+      getStyleClass().add("treeNode");
     }
     edge.setStroke(dataNode.getLineageColor());
   }
@@ -453,7 +431,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   public void highlightArea(Pane treePane) {
     highlightArea = new Rectangle(area.getStartX(), area.getStartY(), area.getWidth(),
         area.getHeight());
-    highlightArea.setFill(Color.rgb(0, 0, 0, 0.075));
+    highlightArea.getStyleClass().add("treeHighlightArea");
     treePane.getChildren().add(highlightArea);
     highlightArea.toBack();
   }

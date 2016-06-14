@@ -26,7 +26,6 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
@@ -90,12 +89,7 @@ public class GraphPaneController implements Initializable {
   @FXML
   private Label totalBases;
 
-  public static final Color TOP_GRAPH_COLOR = Color.rgb(204, 114, 24);
-  public static final Color BOTTOM_GRAPH_COLOR = Color.rgb(24, 114, 204);
-
   public static final double NODE_MARGIN = 0.9;
-  public static final Color OVERLAP_COLOR = Color.rgb(0, 73, 73);
-  public static final Color NO_OVERLAP_COLOR = Color.rgb(255, 30, 30);
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
   private static final int MINUMUM_BASE_SIZE = 50;
@@ -346,10 +340,8 @@ public class GraphPaneController implements Initializable {
     bottomGraphIndicationArea.visibleProperty().bind(bottomPane.visibleProperty());
 
     topGraphIndicator.heightProperty().bind(topPane.prefHeightProperty());
-    topGraphIndicator.setFill(TOP_GRAPH_COLOR);
     bottomGraphIndicator.heightProperty().bind(bottomPane.prefHeightProperty());
     bottomGraphIndicator.visibleProperty().bind(bottomPane.visibleProperty());
-    bottomGraphIndicator.setFill(BOTTOM_GRAPH_COLOR);
   }
 
   /**
@@ -437,7 +429,9 @@ public class GraphPaneController implements Initializable {
       /* intended fall through */
       case 2:
         contextMenu.getItems().add(createClearAndAddToGraphMenuItem(genomes, genomeMap));
-        contextMenu.getItems().add(createAddToExistingGraphMenuItem(genomes, genomeMap));
+        if (!genomeMap.containsAll(genomes)) {
+          contextMenu.getItems().add(createAddToExistingGraphMenuItem(genomes, genomeMap));
+        }
         if (!Collections.disjoint(genomes, genomeMap)) {
           contextMenu.getItems().add(createRemoveFromGraphMenuItem(genomes, genomeMap));
         }
@@ -709,7 +703,7 @@ public class GraphPaneController implements Initializable {
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
     GraphViewRange fullRange = new GraphViewRange(0, pane.getPrefHeight());
     for (GraphNode node : orderedGraph.getGraphOrder()) {
-      drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, 0, fullRange);
+      drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, fullRange);
     }
     canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
     drawEdges(canvas, drawnGraphNodes, startLevel, genomeCount);
@@ -724,13 +718,11 @@ public class GraphPaneController implements Initializable {
    *                        child nodes of the given node which are drawn.
    * @param startLevel      the start level: where to start drawing.
    * @param endLevel        the start level: where to stop drawing.
-   * @param nestedDepth     the nested depth of this node: how many bubbels are drawn around this
-   *                        node.
    * @param viewRange       the range of values which may be used as y coordinate to draw this node.
    */
   @SuppressWarnings("checkstyle:MethodLength") // either this or long lines.
   private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int endLevel, int nestedDepth, GraphViewRange viewRange) {
+      int startLevel, int endLevel, GraphViewRange viewRange) {
     drawnGraphNodes.add(node);
     node.getGuiData().range = viewRange;
     double width = calculateNodeWidth(node);
@@ -742,8 +734,7 @@ public class GraphPaneController implements Initializable {
     if (height > width) {
       height = width;
     }
-    IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node,
-        width, height, nestedDepth);
+    IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node, width, height);
 
     if (fade > 0.0) {
       viewNode.get().setOnMouseClicked(mouseEvent -> {
@@ -761,8 +752,7 @@ public class GraphPaneController implements Initializable {
         + viewRange.rangeStartY);
     if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
-      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, nestedDepth,
-          bubbleViewRange);
+      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, bubbleViewRange);
     } else {
       node.unpop();
     }
@@ -795,8 +785,8 @@ public class GraphPaneController implements Initializable {
    * @param level the level to center at.
    */
   public void centerOnLevel(int level) {
-    GraphNode nodeToCenter = 
-        mainGraphOrder.getGraphMapper().findBase(GenomeMap.getInstance().getReferenceId(), level);
+    GraphNode nodeToCenter
+        = mainGraphOrder.getGraphMapper().findBase(GenomeMap.getInstance().getReferenceId(), level);
     double levelsToDraw = mainPane.getWidth() / zoomFactor.get();
     updateScrollbarValue((nodeToCenter.getLevel() - levelsToDraw / 2.0) / amountOfLevels.get());
   }
@@ -809,16 +799,14 @@ public class GraphPaneController implements Initializable {
    * @param drawnGraphNodes the list of drawn nodes to which to add all child nodes which are drawn.
    * @param startLevel      the start level: where to start drawing.
    * @param endLevel        the start level: where to stop drawing.
-   * @param nestedDepth     the nested depth of the bubble: how many bubbels are drawn around this
-   *                        bubble.
    * @param viewRange       the range of values which may be used as y coordinate to draw the
    *                        children of this bubble.
    */
   private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int endLevel, int nestedDepth, GraphViewRange viewRange) {
+      int startLevel, int endLevel, GraphViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
     for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, nestedDepth + 1, viewRange);
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange);
     }
   }
 

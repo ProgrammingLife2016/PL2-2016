@@ -1,12 +1,13 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Ellipse;
 import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
+import java.util.Collections;
 
 /**
  * An ellipse representation of a node, which can be drawn in the user interface.
@@ -26,7 +27,6 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
    */
   public ViewGraphNodeEllipse(double width, double height, GraphNode dataNode) {
     super(width * GraphPaneController.NODE_MARGIN / 2.0, height / 2.0);
-    setStrokeWidth(height / 20.0d);
     this.dataNode = dataNode;
   }
 
@@ -47,12 +47,12 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
   @Override
   public void select() {
-    setStroke(Color.BLACK);
+    Collections.replaceAll(getStyleClass(), "graphUnselectedNode", "graphSelectedNode");
   }
 
   @Override
   public void deselect() {
-    setStroke(null);
+    Collections.replaceAll(getStyleClass(), "graphSelectedNode", "graphUnselectedNode");
   }
 
   @Override

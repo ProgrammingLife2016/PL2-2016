@@ -1,9 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import static nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController.NO_OVERLAP_COLOR;
-import static nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController.OVERLAP_COLOR;
-
-import javafx.scene.paint.Color;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -22,7 +18,6 @@ public class ViewNodeBuilder implements NodeVisitor {
 
   private final double width;
   private final double height;
-  private final int nestedDepth;
   private IViewGraphNode viewNode;
 
   /**
@@ -31,12 +26,10 @@ public class ViewNodeBuilder implements NodeVisitor {
    *
    * @param width       the width of the node.
    * @param height      the height of the node.
-   * @param nestedDepth the amount of times this node is nested in a bubble.
    */
-  private ViewNodeBuilder(double width, double height, int nestedDepth) {
+  private ViewNodeBuilder(double width, double height) {
     this.width = width;
     this.height = height;
-    this.nestedDepth = nestedDepth;
   }
 
   /**
@@ -45,12 +38,10 @@ public class ViewNodeBuilder implements NodeVisitor {
    * @param node        the node of which to create a visual representation.
    * @param width       the width of the node.
    * @param height      the height of the node.
-   * @param nestedDepth the amount of times this node is nested in a bubble.
    * @return the visual representation of the node.
    */
-  public static IViewGraphNode buildNode(GraphNode node, double width, double height,
-      int nestedDepth) {
-    ViewNodeBuilder builder = new ViewNodeBuilder(width, height, nestedDepth);
+  public static IViewGraphNode buildNode(GraphNode node, double width, double height) {
+    ViewNodeBuilder builder = new ViewNodeBuilder(width, height);
     node.accept(builder);
     return builder.viewNode;
   }
@@ -64,44 +55,28 @@ public class ViewNodeBuilder implements NodeVisitor {
   @Override
   public void visit(PhyloBubble bubble) {
     ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
-    Color fill = Color.ALICEBLUE;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
+    rect.getStyleClass().addAll("graphBubblePhylo", "graphUnselectedNode");
     viewNode = rect;
   }
 
   @Override
   public void visit(StraightSequenceBubble bubble) {
     ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
-    Color fill = Color.LIGHTCORAL;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
+    rect.getStyleClass().addAll("graphBubbleStraight", "graphUnselectedNode");
     viewNode = rect;
   }
 
   @Override
   public void visit(IndelBubble bubble) {
     ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
-    Color fill = Color.LIGHTSKYBLUE;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
+    rect.getStyleClass().addAll("graphBubbleIndel", "graphUnselectedNode");
     viewNode = rect;
   }
 
   @Override
   public void visit(PointMutationBubble bubble) {
     ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
-    Color fill = Color.PLUM;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
+    rect.getStyleClass().addAll("graphBubblePoint", "graphUnselectedNode");
     viewNode = rect;
   }
 
@@ -109,9 +84,9 @@ public class ViewNodeBuilder implements NodeVisitor {
   public void visit(SequenceNode node) {
     ViewGraphNodeEllipse circle = new ViewGraphNodeEllipse(width, height, node);
     if (node.getGuiData().overlapping) {
-      circle.setFill(OVERLAP_COLOR);
+      circle.getStyleClass().addAll("graphNodeOverlap", "graphUnselectedNode");
     } else {
-      circle.setFill(NO_OVERLAP_COLOR);
+      circle.getStyleClass().addAll("graphNodeNoOverlap", "graphUnselectedNode");
     }
     viewNode = circle;
   }

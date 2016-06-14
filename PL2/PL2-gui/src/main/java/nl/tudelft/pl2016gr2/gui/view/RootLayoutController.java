@@ -13,7 +13,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
@@ -86,8 +85,8 @@ public class RootLayoutController implements
   @FXML
   private SelectionPaneController selectionPaneController;
 
-  private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap = 
-      new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
+  private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap
+      = new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
 
   /**
    * Initializes the controller class.
@@ -184,66 +183,80 @@ public class RootLayoutController implements
    */
   @SuppressWarnings("checkstyle:methodlength")
   private void initializeLegend() {
+    Circle overlapCircle = new Circle(10.0);
+    overlapCircle.getStyleClass().addAll("graphNodeOverlap", "graphUnselectedNode");
+    Circle noOverlapCircle = new Circle(10.0);
+    noOverlapCircle.getStyleClass().addAll("graphNodeNoOverlap", "graphUnselectedNode");
+    
+    Rectangle phyloBubble = new Rectangle(20.0, 20.0);
+    phyloBubble.getStyleClass().addAll("graphBubblePhylo", "graphUnselectedNode");
+    Rectangle straightSequenceBubble = new Rectangle(20.0, 20.0);
+    straightSequenceBubble.getStyleClass().addAll("graphBubbleStraight", "graphUnselectedNode");
+    Rectangle pointMutationBubble = new Rectangle(20.0, 20.0);
+    pointMutationBubble.getStyleClass().addAll("graphBubblePoint", "graphUnselectedNode");
+    Rectangle indelBubble = new Rectangle(20.0, 20.0);
+    indelBubble.getStyleClass().addAll("graphBubbleIndel", "graphUnselectedNode");
+    
     graphLegendController.initializeData(
         "Legend",
         -5.0, 5.0,
         new LegendController.LegendItem(
             "This node contains several other nodes based on phylogeny.",
             "Phylogenetic bubble",
-            new Rectangle(20, 20, Color.ALICEBLUE)),
+            phyloBubble),
         new LegendController.LegendItem(
             "This node contains several sequences without mutations.",
             "Straight sequence bubble",
-            new Rectangle(20, 20, Color.LIGHTCORAL)),
+            straightSequenceBubble),
         new LegendController.LegendItem(
             "This node contains a sequence that is not present in other genomes (InDel).",
             "InDel bubble",
-            new Rectangle(20, 20, Color.LIGHTSKYBLUE)),
+            indelBubble),
         new LegendController.LegendItem(
             "This node contains a point mutation.",
             "Point Mutation bubble",
-            new Rectangle(20, 20, Color.PLUM)),
+            pointMutationBubble),
         new LegendController.LegendItem(
             "This node represents a straight sequence of multiple nodes.",
             "Straight sequence.",
-            new Circle(10, graphPaneController.NO_OVERLAP_COLOR)),
+            noOverlapCircle),
         new LegendController.LegendItem(
             "This node has overlap with other (different) nodes.",
             "Overlapping sequence.",
-            new Circle(10, graphPaneController.OVERLAP_COLOR))
+            overlapCircle)
     );
 
+    Circle tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().add("treeNode");
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
     treeLegendItems.add(new LegendController.LegendItem(
         "Leaf node of the graph. This node has no children",
         "Leaf node",
-        new Circle(10, Color.BLACK)
+        tempCircle
     ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().add("treeNodeLeaf");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node of the graph. This node has children",
         "Node",
-        new Circle(10, Color.ALICEBLUE)
+        tempCircle
     ));
-    Circle tempCircle;
-    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
-    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
-    tempCircle.setStroke(graphPaneController.TOP_GRAPH_COLOR);
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().addAll("treeNode", "treeNodeInTopGraph");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in orange section of the graph (top)",
         "Top node",
         tempCircle
     ));
-    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
-    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
-    tempCircle.setStroke(TreeNodeCircle.MULTI_GRAPH_GRADIENT);
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().addAll("treeNode", "treeNodeInBothGraphs");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node both sections of the graph",
         "Shared node",
         tempCircle
     ));
-    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS, Color.ALICEBLUE);
-    tempCircle.setStrokeWidth(TreeNodeCircle.NODE_BORDER_WIDTH);
-    tempCircle.setStroke(graphPaneController.BOTTOM_GRAPH_COLOR);
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().addAll("treeNode", "treeNodeInBottom");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in blue section of the graph (bottom)",
         "Bottom node",
