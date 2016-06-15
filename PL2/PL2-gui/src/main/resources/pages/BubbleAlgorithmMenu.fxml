@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Menu fx:id="menu" mnemonicParsing="false" text="Settings" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.BubbleAlgorithmMenuController">
+   <items>
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Mutation based collapsing">
+         <content>
+            <CheckBox fx:id="mutationBasedCollapsingCheckbox" pickOnBounds="false" selected="true" text="Mutation based collapsing" />
+         </content>
+      </CustomMenuItem>
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Graph based collapsing">
+         <content>
+            <CheckBox fx:id="graphBasedCollapsingCheckbox" pickOnBounds="false" text="Graph based collapsing" />
+         </content>
+      </CustomMenuItem>
+      <SeparatorMenuItem mnemonicParsing="false" text="Mutation" />
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Point mutations">
+         <content>
+            <CheckBox fx:id="pointMutationCheckbox" pickOnBounds="false" selected="true" text="Point mutations" />
+         </content>
+      </CustomMenuItem>
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Indels">
+         <content>
+            <CheckBox fx:id="indelCheckbox" pickOnBounds="false" selected="true" text="Indels" />
+         </content>
+      </CustomMenuItem>
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Straight sequence">
+         <content>
+            <CheckBox fx:id="straightSequenceCheckbox" pickOnBounds="false" selected="true" text="Straight sequence" />
+         </content>
+      </CustomMenuItem>
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Phylogenetic">
+         <content>
+            <CheckBox fx:id="phylogeneticCheckbox" pickOnBounds="false" selected="true" text="Phylogenetic" />
+         </content>
+      </CustomMenuItem>
+      <SeparatorMenuItem mnemonicParsing="false" text="Graph" />
+      <CustomMenuItem hideOnClick="false" mnemonicParsing="false" text="Graph">
+         <content>
+            <CheckBox fx:id="graphCheckbox" disable="true" pickOnBounds="false" selected="true" text="Graph" />
+         </content>
+      </CustomMenuItem>
+   </items>
+</Menu>

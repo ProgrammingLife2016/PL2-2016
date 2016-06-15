@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.bubbles.mutations;
 
+import nl.tudelft.pl2016gr2.model.Settings;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
@@ -27,7 +28,8 @@ public class MutationBubbleAlgorithms {
   }
 
   /**
-   * Make bubbles in the given array list of nodes.
+   * Make bubbles in the given array list of nodes. Only performs the algorithms which are selected
+   * in the menu.
    *
    * @param orderedNodes the ordered list of nodes (by x coordinate) of the graph.
    * @return the new array list which contains the newly created bubbles and other nodes of the
@@ -39,12 +41,21 @@ public class MutationBubbleAlgorithms {
 
   private static ArrayList<GraphNode> initStraightInDelPoint(ArrayList<GraphNode> orderedGraph) {
     bubbleCount = Integer.MIN_VALUE;
-    ArrayList<GraphNode> orderedNodes = filterPointMutation(orderedGraph);
-    orderedNodes = filterIndel(orderedNodes);
-    orderedNodes.sort((GraphNode first, GraphNode second) -> first.getLevel() - second.getLevel());
-    orderedNodes = filterStraightSequence(orderedNodes);
+    Settings settings = Settings.getInstance();
+    List<Settings.BubbleAlgorithms> algorithms = settings.getAlgorithms();
 
-    orderedNodes.sort((GraphNode first, GraphNode second) -> first.getLevel() - second.getLevel());
+    ArrayList<GraphNode> orderedNodes = orderedGraph;
+    if (algorithms.contains(Settings.BubbleAlgorithms.POINT)) {
+      orderedNodes = filterPointMutation(orderedNodes);
+    }
+    if (algorithms.contains(Settings.BubbleAlgorithms.INDEL)) {
+      orderedNodes = filterIndel(orderedNodes);
+      orderedNodes.sort((GraphNode first, GraphNode secon) -> first.getLevel() - secon.getLevel());
+    }
+    if (algorithms.contains(Settings.BubbleAlgorithms.STRAIGHT)) {
+      orderedNodes = filterStraightSequence(orderedNodes);
+      orderedNodes.sort((GraphNode first, GraphNode secon) -> first.getLevel() - secon.getLevel());
+    }
     return orderedNodes;
   }
 
@@ -246,7 +257,7 @@ public class MutationBubbleAlgorithms {
    * @param visited   The visited list to avoid iterating over nodes multiple times
    * @return The <code>startNode</code> if no sequence was made, or the Bubble for the sequence
    */
-  private static Collection<GraphNode> detectStraightSequence(GraphNode startNode, 
+  private static Collection<GraphNode> detectStraightSequence(GraphNode startNode,
       Set<GraphNode> visited) {
     boolean overlap = startNode.getGuiData().overlapping;
     List<GraphNode> nestedNodes = new ArrayList<>();
@@ -267,17 +278,17 @@ public class MutationBubbleAlgorithms {
     }
     nestedNodes.remove(startNode);
     nestedNodes.remove(current);
-    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++, 
+    StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
         Collections.singletonList(startNode), Collections.singletonList(current), nestedNodes,
         VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
     return getNewNodes(startNode, current, bubble);
   }
-  
-  private static Collection<GraphNode> getNewNodes(GraphNode start, GraphNode end, 
+
+  private static Collection<GraphNode> getNewNodes(GraphNode start, GraphNode end,
       GraphNode bubble) {
     start.setOutEdges(Collections.singletonList(bubble));
     end.setInEdges(Collections.singletonList(bubble));
-     
+
     List<GraphNode> newNodes = new ArrayList<>();
     newNodes.add(start);
     newNodes.add(bubble);

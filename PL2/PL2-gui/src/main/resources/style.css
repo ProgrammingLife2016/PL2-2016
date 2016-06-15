@@ -50,6 +50,7 @@
 	graph-color-bubble-indel: rgb(112, 200, 255);
 	graph-color-bubble-point: rgb(255, 120, 255);
 	graph-color-bubble-phylo: rgb(200, 255, 255);
+  graph-color-bubble-graph: rgb(150, 150, 200);
 
 	graph-color-edge: rgb(0, 0, 0);
 
@@ -117,6 +118,10 @@
 
 .graphBubblePhylo {
 	-fx-fill: graph-color-bubble-phylo;
+}
+
+.graphBubbleGraph {
+	-fx-fill: graph-color-bubble-graph;
 }
 
 /*******************************************************************************
@@ -254,4 +259,14 @@
 .scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover,
 .scroll-bar:vertical .thumb:pressed, .scroll-bar:horizontal .thumb:pressed {
     -fx-background-color: grey2;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Check box                                                                   *
+ *                                                                             *
+ ******************************************************************************/
+.check-box {
+  -fx-font-family: 'Open Sans';
+  -fx-text-fill: dark-text-color;
 }

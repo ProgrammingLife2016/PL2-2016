@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.visitor;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -49,5 +50,9 @@ public class BubbleChildrenVisitor implements NodeVisitor {
 
   @Override
   public void visit(PointMutationBubble bubble) {
+  }
+
+  @Override
+  public void visit(GraphBubble bubble) {
   }
 }

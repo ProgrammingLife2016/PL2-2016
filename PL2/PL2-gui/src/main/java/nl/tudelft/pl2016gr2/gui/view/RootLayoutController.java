@@ -62,8 +62,6 @@ public class RootLayoutController implements
 
   @FXML
   private AnchorPane rootPane;
-  // @FXML
-  // private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML

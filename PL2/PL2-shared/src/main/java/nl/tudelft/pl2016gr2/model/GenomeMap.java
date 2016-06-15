@@ -50,7 +50,7 @@ public class GenomeMap {
    *
    * @return The Singleton instance
    */
-  public static GenomeMap getInstance() {
+  public static synchronized GenomeMap getInstance() {
     if (instance == null) {
       instance = new GenomeMap();
     }
