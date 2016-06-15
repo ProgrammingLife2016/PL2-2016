@@ -652,14 +652,14 @@ public class GraphPaneController implements Initializable {
     updateGraphSize();
     graphUpdater.update();
   }
-  
+
   /**
    * Clear the canvas of the edges.
    */
   private void clearEdgeCanvas() {
-    topEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, topEdgeCanvas.getWidth(), 
+    topEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, topEdgeCanvas.getWidth(),
         topEdgeCanvas.getWidth());
-    bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(), 
+    bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(),
         bottomEdgeCanvas.getWidth());
   }
 
@@ -908,6 +908,11 @@ public class GraphPaneController implements Initializable {
     double startY = fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
         + fromRange.rangeStartY;
     double endY = toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY;
+    if (toNode.getGenomeSize() < fromNode.getGenomeSize()) {
+      graphicContext.setStroke(toNode.getMostFrequentLineage().getColor());
+    } else {
+      graphicContext.setStroke(fromNode.getMostFrequentLineage().getColor());
+    }
     graphicContext.strokeLine(startX, startY, endX, endY);
   }
 
