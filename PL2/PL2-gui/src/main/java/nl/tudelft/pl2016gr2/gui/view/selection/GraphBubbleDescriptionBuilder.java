@@ -56,7 +56,13 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
 
   @Override
   public void visit(PhyloBubble bubble) {
-
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/PhyloBubbleDescription.fxml"));
+      Node out = loader.load();
+      loader.<PhyloBubbleDescriptionController>getController().setup(bubble);
+      return out;
+    };
   }
 
   @Override

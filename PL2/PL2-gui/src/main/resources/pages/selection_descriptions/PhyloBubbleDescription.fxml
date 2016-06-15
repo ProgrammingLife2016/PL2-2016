@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<VBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.PhyloBubbleDescriptionController">
+
+    <Label text="Phylogenetic bubble" />
+
+    <Label text="In this bubble:" />
+    <Label fx:id="labelIndelCount"/>
+    <Label fx:id="labelPointMutationCount"/>
+    <Label text="Genomes in this bubble:" />
+    <ListView fx:id="listViewGenomes" />
+
+</VBox>
