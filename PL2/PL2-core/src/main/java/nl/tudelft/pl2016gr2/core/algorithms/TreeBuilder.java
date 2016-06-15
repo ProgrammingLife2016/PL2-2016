@@ -17,7 +17,7 @@ import java.util.Set;
  * @author Casper
  *
  */
-public class BuildTree {
+public class TreeBuilder {
 
   private IPhylogeneticTreeRoot treeRoot;
   private Set<Integer> genomes;
@@ -30,7 +30,7 @@ public class BuildTree {
    *     the new tree.
    * @param genomes : the list of genomes that should be in the new tree.
    */
-  public BuildTree(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
+  public TreeBuilder(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
     this.treeRoot = treeRoot;
     this.genomes = new HashSet<>(genomes);
   }

@@ -71,6 +71,7 @@ public class CompareSubgraphs {
       return; // temporary check, actual problem should be fixed.
     }
     int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
+    
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
