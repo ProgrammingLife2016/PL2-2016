@@ -25,6 +25,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   private int identifier;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
   private Annotation annotation;
+  private LineageColor lineage;
 
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
@@ -197,8 +198,6 @@ public abstract class AbstractGraphNode implements GraphNode {
   public Annotation getAnnotation() {
     return annotation;
   }
-
-  LineageColor lineage;
 
   @Override
   public LineageColor getMostFrequentLineage() {

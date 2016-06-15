@@ -306,7 +306,7 @@ public class RootLayoutController implements
     try {
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
-      
+
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
       List<MetaData> metaData = new MetaDataReader(metadataFile).read();
