@@ -13,9 +13,13 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Right now this class mainly just shows the selection(s).
@@ -55,16 +59,37 @@ public class SelectionPaneController implements Initializable {
   private SimpleObjectProperty<ISelectable> primarySelection;
   private SimpleObjectProperty<ISelectable> secondarySelection;
 
+  /**
+   * Method wrapper for an exception.
+   *
+   * <p>
+   * This method calls {@link ISelectionInfo#getNode()} on the given {@link ISelectionInfo}
+   * and catches its {@link IOException}. In the latter case it will return a simple
+   * {@link Text} with an error.
+   * </p>
+   *
+   * @param info the given {@link ISelectionInfo}
+   * @return a {@link Node} that can be displayed
+   */
+  private Node safeGetDescription(ISelectionInfo info) {
+    try {
+      return info.getNode();
+    } catch (IOException e) {
+      Logger.getLogger(SelectionPaneController.class.getName()).log(Level.SEVERE, null, e);
+      return new Text("Something went wrong when loading a file.");
+    }
+  }
+
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
     this.primarySelection = new SimpleObjectProperty<>();
     this.secondarySelection = new SimpleObjectProperty<>();
 
     primarySelection.addListener((observable, oldValue, newValue) -> {
-      expandInAnchorPane(newValue.getSelectionInfo().getNode(), primarySelectionPane);
+      expandInAnchorPane(safeGetDescription(newValue.getSelectionInfo()), primarySelectionPane);
     });
     secondarySelection.addListener((observable, oldValue, newValue) -> {
-      expandInAnchorPane(newValue.getSelectionInfo().getNode(), secondarySelectionPane);
+      expandInAnchorPane(safeGetDescription(newValue.getSelectionInfo()), secondarySelectionPane);
     });
 
     primarySelection.set(SelectionManager.NO_SELECTION);

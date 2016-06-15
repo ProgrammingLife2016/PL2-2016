@@ -2,6 +2,8 @@ package nl.tudelft.pl2016gr2.gui.view.selection;
 
 import javafx.scene.Node;
 
+import java.io.IOException;
+
 /**
  * This interface provides a method for the selection manager to get a node containing the
  * description of a selection object.
@@ -15,6 +17,7 @@ public interface ISelectionInfo {
    * way to perform actions on the selected object.
    *
    * @return the node containing the description of the selected object.
+   * @throws IOException possible when {@link Node} is loaded via {@link javafx.fxml.FXMLLoader}
    */
-  Node getNode();
+  Node getNode() throws IOException;
 }
