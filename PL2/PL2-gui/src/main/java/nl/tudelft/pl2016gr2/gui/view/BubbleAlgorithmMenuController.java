@@ -1,6 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
-import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -22,7 +21,7 @@ public class BubbleAlgorithmMenuController implements Initializable {
   @FXML
   private Menu menu;
   @FXML
-  private CheckBox mutationBasedCollapsingCheckbox;
+  private CheckBox treeBasedCollapsingCheckbox;
   @FXML
   private CheckBox graphBasedCollapsingCheckbox;
   @FXML
@@ -46,18 +45,15 @@ public class BubbleAlgorithmMenuController implements Initializable {
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    mutationBasedCollapsingCheckbox.selectedProperty().addListener((obs, old, newValue) -> {
+    treeBasedCollapsingCheckbox.selectedProperty().addListener((obs, old, newValue) -> {
       graphBasedCollapsingCheckbox.setSelected(!newValue);
     });
     graphBasedCollapsingCheckbox.selectedProperty().addListener((obs, old, newValue) -> {
-      mutationBasedCollapsingCheckbox.setSelected(!newValue);
+      treeBasedCollapsingCheckbox.setSelected(!newValue);
     });
     graphCheckbox.disableProperty().bind(graphBasedCollapsingCheckbox.selectedProperty().not());
-    BooleanBinding inverseMutation = mutationBasedCollapsingCheckbox.selectedProperty().not();
-    pointMutationCheckbox.disableProperty().bind(inverseMutation);
-    indelCheckbox.disableProperty().bind(inverseMutation);
-    straightSequenceCheckbox.disableProperty().bind(inverseMutation);
-    phylogeneticCheckbox.disableProperty().bind(inverseMutation);
+    phylogeneticCheckbox.disableProperty()
+        .bind(treeBasedCollapsingCheckbox.selectedProperty().not());
     initializeMenuListener();
   }
 
@@ -68,10 +64,10 @@ public class BubbleAlgorithmMenuController implements Initializable {
   private void initializeMenuListener() {
     menu.setOnHidden(event -> {
       ArrayList<BubbleAlgorithms> algorithms = new ArrayList<>();
-      if (mutationBasedCollapsingCheckbox.isSelected()) {
-        addAlgorithm(algorithms, BubbleAlgorithms.POINT, pointMutationCheckbox.isSelected());
-        addAlgorithm(algorithms, BubbleAlgorithms.INDEL, indelCheckbox.isSelected());
-        addAlgorithm(algorithms, BubbleAlgorithms.STRAIGHT, straightSequenceCheckbox.isSelected());
+      addAlgorithm(algorithms, BubbleAlgorithms.POINT, pointMutationCheckbox.isSelected());
+      addAlgorithm(algorithms, BubbleAlgorithms.INDEL, indelCheckbox.isSelected());
+      addAlgorithm(algorithms, BubbleAlgorithms.STRAIGHT, straightSequenceCheckbox.isSelected());
+      if (treeBasedCollapsingCheckbox.isSelected()) {
         addAlgorithm(algorithms, BubbleAlgorithms.PHYLO, phylogeneticCheckbox.isSelected());
       } else {
         addAlgorithm(algorithms, BubbleAlgorithms.GRAPH, graphCheckbox.isSelected());
