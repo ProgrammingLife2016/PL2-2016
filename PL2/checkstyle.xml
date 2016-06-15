@@ -4,21 +4,14 @@
           "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 
 <!--
-
     Checkstyle configuration that checks the Google coding conventions from:
-
     -  Google Java Style
        https://google-styleguide.googlecode.com/svn-history/r130/trunk/javaguide.html
-
     Checkstyle is very configurable. Be sure to read the documentation at
     http://checkstyle.sf.net (or in your downloaded distribution).
-
     Most Checks are configurable, be sure to consult the documentation.
-
     To completely disable a check, just comment it out or delete it from the file.
-
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
-
  -->
 
 <module name = "Checker">
@@ -32,16 +25,9 @@
         <module name="FileTabCharacter">
             <property name="eachLine" value="true"/>
         </module>
-<<<<<<< HEAD
-        
-    <!-- Added by Cas because of an algorithm with a methodlenght om 50 -->
-	<module name="SuppressWarningsFilter" />
-	
-=======
 
     <module name="SuppressWarningsFilter" />
 
->>>>>>> dev
     <module name="TreeWalker">
         <!--    START   Custom additions    -->
         <module name="SuppressWarningsHolder" />
@@ -49,7 +35,6 @@
         <module name="MethodLength">
             <property name="max" value="25"/>
         </module>
-        <module name="SuppressWarningsHolder" />
         <!--    END     Custom additions    -->
 
         <module name="OuterTypeFilename"/>

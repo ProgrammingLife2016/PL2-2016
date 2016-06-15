@@ -1,7 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
-import javafx.scene.paint.Color;
-
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -79,39 +77,6 @@ public class ViewNodeBuilder implements NodeVisitor {
   public void visit(PointMutationBubble bubble) {
     ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
     rect.getStyleClass().addAll("graphBubblePoint", "graphUnselectedNode");
-    viewNode = rect;
-  }
-
-  @Override
-  public void visit(StraightSequenceBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
-    Color fill = Color.LIGHTCORAL;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
-    viewNode = rect;
-  }
-
-  @Override
-  public void visit(IndelBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
-    Color fill = Color.LIGHTSKYBLUE;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
-    viewNode = rect;
-  }
-
-  @Override
-  public void visit(PointMutationBubble bubble) {
-    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height);
-    Color fill = Color.PLUM;
-    for (int i = 0; i < nestedDepth; i++) {
-      fill = fill.deriveColor(0.0, 1.0, 0.9, 1.0);
-    }
-    rect.setFill(fill);
     viewNode = rect;
   }
 
