@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
@@ -8,7 +10,6 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
-
 
 /**
  * This class can be used to build {@link ISelectionInfo} for a {@link GraphNode}.
@@ -75,7 +76,13 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
 
   @Override
   public void visit(SequenceNode node) {
-
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/SequenceNodeDescription.fxml"));
+      Node out = loader.load();
+      loader.<SequenceNodeDescriptionController>getController().setup(node);
+      return out;
+    };
   }
 
 }
