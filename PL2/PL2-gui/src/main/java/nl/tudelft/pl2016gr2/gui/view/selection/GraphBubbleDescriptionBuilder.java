@@ -66,7 +66,13 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
 
   @Override
   public void visit(IndelBubble bubble) {
-
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/IndelBubbleDescription.fxml"));
+      Node out = loader.load();
+      loader.<IndelBubbleDescriptionController>getController().setup(bubble);
+      return out;
+    };
   }
 
   @Override
