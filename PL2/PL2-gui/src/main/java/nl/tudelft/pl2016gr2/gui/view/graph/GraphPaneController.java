@@ -55,8 +55,6 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-// TODO: Comments in this file must be fixed.
-
 /**
  * Draws two compared graphs above each other in a pane.
  *
@@ -922,7 +920,6 @@ public class GraphPaneController implements Initializable {
     return edgeWith;
   }
 
-
   /**
    * Get the observable list of genomes which must be drawn in the top graph.
    *
@@ -947,6 +944,7 @@ public class GraphPaneController implements Initializable {
    * reason the suppress warning "unused" annotation is used.
    */
   @FXML
+  @SuppressWarnings("unused")
   private void deleteBottomGraph() {
     getBottomGraphGenomes().clear();
     bottomGraph = null;
