@@ -14,13 +14,12 @@ import java.util.stream.Collectors;
  * This is necessary to minimize the memory consumption of storing the genome data in the graph.
  * </p>
  * <p>
- * Unless explicitly necessary, the programmer should use the IDs rather than the names.
- * This helps reduce memory usage when storing genomes.
+ * Unless explicitly necessary, the programmer should use the IDs rather than the names. This helps
+ * reduce memory usage when storing genomes.
  * </p>
  * <p>
- * This class implements the <i>Singleton design pattern</i>.
- * It can only be instantiated once.
- * This is useful because the mappings should be accessible everywhere.
+ * This class implements the <i>Singleton design pattern</i>. It can only be instantiated once. This
+ * is useful because the mappings should be accessible everywhere.
  * </p>
  *
  * @author Wouter Smit
@@ -32,8 +31,8 @@ public class GenomeMap {
    */
   private static final float LOAD_FACTOR = 0.50f;
   /**
-   * Defines the initial capacity for the hash map that contains the genomes.
-   * This value is simply the default initial capacity.
+   * Defines the initial capacity for the hash map that contains the genomes. This value is simply
+   * the default initial capacity.
    */
   private static final int INIT_CAPACITY = 16;
 
@@ -43,6 +42,7 @@ public class GenomeMap {
   private static final Integer REFERENCE_ID = 0;
 
   private ArrayList<String> genomes = new ArrayList<>();
+  private ArrayList<MetaData> metadata = new ArrayList<>();
   private HashMap<String, Integer> identifierMap = new HashMap<>(INIT_CAPACITY, LOAD_FACTOR);
 
   /**
@@ -132,6 +132,38 @@ public class GenomeMap {
   }
 
   /**
+   * Add the genome to annotation mapping.
+   *
+   * @param metadata the annotations.
+   */
+  public void addMetadata(Collection<MetaData> metadata) {
+    this.metadata = new ArrayList<>(genomes.size());
+    for (int i = 0; i < genomes.size(); i++) {
+      this.metadata.add(null);
+    }
+    for (MetaData data : metadata) {
+      Integer id = getId(data.specimenId);
+      if (id != null) {
+        this.metadata.set(id, data);
+      }
+    }
+  }
+
+  /**
+   * Get the metadata of the given genome.
+   *
+   * @param genomeId the id of the genome.
+   * @return the metadata of the genome.
+   */
+  public MetaData getMetadata(Integer genomeId) {
+    if (genomeId == null || genomeId > metadata.size()) {
+      return null;
+    } else {
+      return metadata.get(genomeId);
+    }
+  }
+
+  /**
    * Returns the ID of the reference genome.
    *
    * @return The ID of the reference genome, or <code>null</code> if no reference was set
@@ -203,8 +235,7 @@ public class GenomeMap {
   /**
    * Returns a collection of the genomes currently in the map.
    * <p>
-   * The collection is a copy of the genomes in this map.
-   * It can be used directly.
+   * The collection is a copy of the genomes in this map. It can be used directly.
    * </p>
    *
    * @return a copied collection of all genome ids.

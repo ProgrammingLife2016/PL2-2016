@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
+import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
@@ -347,4 +348,5 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
 
   Annotation getAnnotation();
 
+  LineageColor getMostFrequentLineage();
 }
