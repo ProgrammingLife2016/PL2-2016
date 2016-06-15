@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-
 /**
  * Tests the {@link GenomeMap} class.
  *
@@ -27,7 +26,6 @@ public class GenomeMapTest {
   private GenomeMap map;
   private static final String FIRST_GENOME = "firstGenome";
   private static final String SECOND_GENOME = "secondGenome";
-  private static final String REFERENCE_GENOME = "referenceGenome";
   private static final String NON_EXISTENT_GENOME = "nonExistentGenome";
   private static final int EXTREMELY_HIGH_CAPACITY = 1000000;
   private int amountOfGenomes;
@@ -141,46 +139,8 @@ public class GenomeMapTest {
   }
 
   @Test
-  public void testGetReferenceIdShouldReturnNullWhenNotSet() {
-    assertNull(AccessPrivate.getFieldValue("reference_id", GenomeMap.class, map));
-    assertNull(map.getReferenceId());
-  }
-
-  @Test
-  public void testGetReferenceIdShouldReturnCorrectId() {
-    Integer referenceTestId = amountOfGenomes;
-    AccessPrivate.setFieldValue("reference_id", GenomeMap.class, map, referenceTestId);
-
-    assertEquals(referenceTestId, map.getReferenceId());
-  }
-
-  @Test
-  public void testGetReferenceGenomeShouldReturnNullWhenNotSet() {
-    assertNull(map.getReferenceGenome());
-  }
-
-  @Test
-  public void testGetReferenceGenomeShouldReturnCorrectGenome() {
-    map.addReferenceGenome(REFERENCE_GENOME);
-
-    assertEquals(REFERENCE_GENOME, map.getReferenceGenome());
-  }
-
-  @Test
-  public void testAddReferenceGenomeShouldBindNewId() {
-    assertNull(map.getReferenceId());
-
-    map.addReferenceGenome(REFERENCE_GENOME);
-    assertNotNull(map.getReferenceId());
-  }
-
-  @Test
-  public void testAddReferenceGenomeShouldAddGenomeToMap() {
-    map.addReferenceGenome(REFERENCE_GENOME);
-    Integer referenceId = map.getReferenceId();
-
-    assertEquals(REFERENCE_GENOME, map.getGenome(referenceId));
-    assertEquals(referenceId, map.getId(REFERENCE_GENOME));
+  public void testGetReferenceGenomeShouldBeTheFirstGenome() {
+    assertEquals(FIRST_GENOME, map.getReferenceGenome());
   }
 
   @Test

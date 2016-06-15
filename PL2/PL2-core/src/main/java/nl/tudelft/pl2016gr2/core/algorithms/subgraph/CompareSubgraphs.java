@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is used to compare and align two subgraphs with each other, so all of the overlapping
@@ -28,57 +30,90 @@ public class CompareSubgraphs {
    */
   private CompareSubgraphs() {
   }
-  
-//  /**
-//   * Align two subgraphs, so their overlapping nodes are in the same level (graph depth).
-//   *
-//   * @param mainGraphOrder the main graph node order.
-//   * @param topGraph       the top graph.
-//   * @param bottomGraph    the bottom graph.
-//   * @return a pair containing as left value the graph node order of the top graph and as left value
-//   *         the node graph order of the bottom graph.
-//   */
-//  public static Pair<ArrayList<GraphNode>, ArrayList<GraphNode>> compareGraphs(
-//      SequenceGraph mainGraphOrder, SequenceGraph topGraph,
-//      SequenceGraph bottomGraph) {
-//    OverlapThread overlapThread = new OverlapThread(topGraph, bottomGraph);
-//    SubGraphOrderer topGraphOrderer = new SubGraphOrderer(mainGraphOrder, topGraph, overlapThread);
-//    SubGraphOrderer bottomGraphOrderer = new SubGraphOrderer(mainGraphOrder, bottomGraph,
-//        overlapThread);
-//    overlapThread.start();
-//    topGraphOrderer.start();
-//    bottomGraphOrderer.start();
-//
-//    ArrayList<GraphNode> orderedTopGraph = topGraphOrderer.getNodeOrder();
-//    ArrayList<GraphNode> orderedBottomGraph = bottomGraphOrderer.getNodeOrder();
-//
-//    //alignOverlappingNodes(orderedTopGraph, orderedBottomGraph);
-////    removeEmptyLevels(orderedTopGraph, orderedBottomGraph);
-//    return new Pair<>(orderedTopGraph, orderedBottomGraph);
-//  }
+
+  /**
+   * Align two subgraphs: mark the overlapping nodes and calculate the vertical position of all
+   * nodes.
+   *
+   * @param orderedTopGraph    the ordered top graph.
+   * @param orderedBottomGraph the ordered bottom graph.
+   */
+  public static void compareGraphs(ArrayList<GraphNode> orderedTopGraph,
+      ArrayList<GraphNode> orderedBottomGraph) {
+    OverlapThread overlapThread = new OverlapThread(orderedTopGraph, orderedBottomGraph);
+    GraphAlignThread topAligner = new GraphAlignThread(orderedTopGraph);
+    GraphAlignThread bottomAligner = new GraphAlignThread(orderedBottomGraph);
+
+    overlapThread.start();
+    topAligner.start();
+    bottomAligner.start();
+
+    try {
+      overlapThread.join();
+      topAligner.join();
+      bottomAligner.join();
+    } catch (InterruptedException ex) {
+      Logger.getLogger(CompareSubgraphs.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  /**
+   * Align the given graph nodes vertically.
+   *
+   * @param graphOrder    the list of ordered graph node (by x axis).
+   * @param bubbleInEdges the in edges of the bubble.
+   */
   public static void alignVertically(Collection<GraphNode> graphOrder,
       Collection<GraphNode> bubbleInEdges) {
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
     int index = 0;
+    if (bubbleInEdges.isEmpty()) {
+      return; // temporary check, actual problem should be fixed.
+    }
     int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
+    
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
-      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble.
-          getOutEdges(), graphOrder)));
+      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble
+          .getOutEdges(), graphOrder)));
+      index++;
     }
     for (GraphNode node : graphOrder) {
       if (areaMap.containsKey(node)) {
         continue;
       }
-      for (GraphNode inEdge : node.getInEdges()) {
-        assert inEdge.getOutEdges().contains(node);
-      }
-      for (GraphNode outEdge : node.getOutEdges()) {
-        assert outEdge.getInEdges().contains(node);
-      }
-
       calculateGraphArea(node, areaMap, graphOrder);
+    }
+  }
+
+  /**
+   * Align the given graph nodes vertically.
+   *
+   * @param graphOrder the list of ordered graph node (by x axis).
+   */
+  public static void alignVertically(Collection<GraphNode> graphOrder) {
+    ArrayList<GraphNode> rootNodes = new ArrayList<>();
+    for (GraphNode node : graphOrder) {
+      if (node.getInEdges().isEmpty()) {
+        rootNodes.add(node);
+      }
+    }
+    HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
+    int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
+    int index = 0;
+    for (GraphNode rootNode : rootNodes) {
+      int startY = index * heightPerRoot;
+      int endY = (index + 1) * heightPerRoot;
+      rootNode.getGuiData().relativeYPos = (startY + endY) / 2.0 / VERTICAL_PRECISION;
+      areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
+      index++;
+    }
+    for (GraphNode node : graphOrder) {
+      if (rootNodes.contains(node)) {
+        continue;
+      }
+      calculateGraphArea(node, areaMap, null);
     }
   }
 
@@ -108,56 +143,24 @@ public class CompareSubgraphs {
     return res;
   }
 
-  public static void alignVertically(Collection<GraphNode> graphOrder) {
-    ArrayList<GraphNode> rootNodes = new ArrayList<>();
-    for (GraphNode node : graphOrder) {
-      if (node.getInEdges().isEmpty()) {
-        rootNodes.add(node);
-      }
-    }
-    HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
-    int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
-    int index = 0;
-    for (GraphNode rootNode : rootNodes) {
-      int startY = index * heightPerRoot;
-      int endY = (index + 1) * heightPerRoot;
-      rootNode.setRelativeYPos((startY + endY) / 2.0 / VERTICAL_PRECISION);
-      areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
-      index++;
-    }
-    for (GraphNode node : graphOrder) {
-      if (rootNodes.contains(node)) {
-        continue;
-      }
-      for (GraphNode inEdge : node.getInEdges()) {
-        assert inEdge.getOutEdges().contains(node);
-      }
-      for (GraphNode outEdge : node.getOutEdges()) {
-        assert outEdge.getInEdges().contains(node);
-      }
-      calculateGraphArea(node, areaMap, null);
-    }
-  }
-
+  /**
+   * Calculate the graph area of the given node.
+   *
+   * @param node       the node.
+   * @param areaMap    the area map to which to add the node -> area mapping.
+   * @param graphOrder the ordered graph nodes.
+   * @return the calculated graph area.
+   */
   private static ComplexVerticalArea calculateGraphArea(GraphNode node,
       HashMap<GraphNode, ComplexVerticalArea> areaMap, Collection<GraphNode> graphOrder) {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-//    System.out.println("start " + node.getId());
     ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
     for (GraphNode inEdge : node.getInEdges()) {
       ComplexVerticalArea area = areaMap.get(inEdge);
       if (area == null) {
-//        System.out.println("added backwards edge caused by bubble");
-//        System.out.println("in");
-//        System.out.println(node.getId());
-
         area = calculateGraphArea(inEdge, areaMap, graphOrder);
-//        System.out.println("out");
-      }
-      if (area.curPart == area.splitParts.size()) {
-//        System.out.println("err");
       }
       inAreas.add(area);
     }
@@ -166,8 +169,8 @@ public class CompareSubgraphs {
 
     SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
 
-    node.setRelativeYPos(nodeArea.getCenter() / VERTICAL_PRECISION);
-    node.setMaxHeight(nodeArea.getHeight() / (double) VERTICAL_PRECISION);
+    node.getGuiData().relativeYPos = nodeArea.getCenter() / VERTICAL_PRECISION;
+    node.getGuiData().maxHeight = nodeArea.getHeight() / (double) VERTICAL_PRECISION;
     return complexNodeArea;
   }
 
@@ -238,6 +241,11 @@ public class CompareSubgraphs {
         return;
       }
       /////////////////////
+      splitParts(nodes, totalHeight);
+    }
+
+    @SuppressWarnings("checkstyle:MethodLength")
+    private void splitParts(Collection<GraphNode> nodes, int totalHeight) {
       int heightPerArea = totalHeight / nodes.size();
       Iterator<SimpleVerticalArea> it = areas.iterator();
       SimpleVerticalArea nextToAdd = it.next();
@@ -295,9 +303,6 @@ public class CompareSubgraphs {
     }
 
     private ComplexVerticalArea getPart() {
-//      if(splitParts.size() == curPart) {
-//        return splitParts.get(curPart - 1);
-//      }
       return splitParts.get(curPart++);
     }
 
@@ -354,6 +359,23 @@ public class CompareSubgraphs {
     @Override
     public int compareTo(SimpleVerticalArea other) {
       return startBlock - other.startBlock;
+    }
+  }
+
+  /**
+   * Thread which can be used to vertically align a subgraph and mark the overlapping nodes.
+   */
+  private static class GraphAlignThread extends Thread {
+
+    private final ArrayList<GraphNode> orderedGraph;
+
+    private GraphAlignThread(ArrayList<GraphNode> orderedGraph) {
+      this.orderedGraph = orderedGraph;
+    }
+
+    @Override
+    public void run() {
+      alignVertically(orderedGraph);
     }
   }
 }

@@ -1,5 +1,7 @@
 package nl.tudelft.pl2016gr2.model;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

@@ -5,9 +5,11 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 
 /**
  * This class is used by tree nodes to offer a tree node description view to the selection manager.
@@ -16,68 +18,64 @@ import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
  */
 public class TreeNodeDescription implements ISelectionInfo {
 
-  private final IPhylogeneticTreeNode treeNode;
-  private final SelectionManager selectionManager;
+  private final IPhylogeneticTreeNode<?> treeNode;
+  private final GraphPaneController graphPaneController;
   private final EventHandler<ActionEvent> buttonClicked = new EventHandler<ActionEvent>() {
     @Override
     public void handle(ActionEvent event) {
       IPhylogeneticTreeNode topNode = treeNode.getChild(0);
       IPhylogeneticTreeNode bottomNode = treeNode.getChild(1);
-      selectionManager.drawGraph(topNode.getGenomeIds(), bottomNode.getGenomeIds());
+      graphPaneController.compareTwoGraphs(topNode.getGenomeIds(), bottomNode.getGenomeIds());
     }
   };
 
   /**
    * Construct a tree node description.
    *
-   * @param selectionManager a reference to the selection manager.
+   * @param graphPaneController a reference to the graphpane controller.
    * @param treeNode         the tree node to describe.
    */
-  public TreeNodeDescription(SelectionManager selectionManager, IPhylogeneticTreeNode treeNode) {
-    this.selectionManager = selectionManager;
+  public TreeNodeDescription(GraphPaneController graphPaneController,
+                             IPhylogeneticTreeNode treeNode) {
+    this.graphPaneController = graphPaneController;
     this.treeNode = treeNode;
   }
 
   @Override
   public Node getNode() {
-    Pane pane = new Pane();
-    addButton(pane);
-    addText(pane);
-    return pane;
+    VBox vbox = new VBox();
+
+    Button button = makeButton();
+    TextArea textArea = makeTextArea();
+
+    VBox.setVgrow(button, Priority.NEVER);
+    VBox.setVgrow(textArea, Priority.ALWAYS);
+
+    vbox.getChildren().addAll(button, textArea);
+    return vbox;
   }
 
   /**
-   * Add a compare children button to the pane.
-   *
-   * @param pane the pane.
+   * Build a compare children button.
    */
-  private void addButton(Pane pane) {
+  private Button makeButton() {
     Button button = new Button("Compare children");
     button.getStyleClass().add("BigButton");
-    button.setLayoutX(75);
-    button.setLayoutY(50);
     button.setPrefHeight(50);
-    button.setPrefWidth(250);
     button.setOnAction(buttonClicked);
-
-    pane.getChildren().add(button);
+    return button;
   }
 
   /**
-   * Add a text description to the pane.
-   *
-   * @param pane the pane.
+   * Build a text description.
    */
-  private void addText(Pane pane) {
+  private TextArea makeTextArea() {
     TextArea text = new TextArea();
-    text.setLayoutX(50);
-    text.setLayoutY(250);
-    text.setPrefHeight(300);
-    text.setPrefWidth(300);
     text.setWrapText(true);
+    text.setEditable(false);
     text.setText(getGenomes());
 
-    pane.getChildren().add(text);
+    return text;
   }
 
   /**

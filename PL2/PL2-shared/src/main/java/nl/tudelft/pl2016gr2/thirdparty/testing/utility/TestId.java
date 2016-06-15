@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which makes it possible to give private methods and fields an ID so they can be
+ * MetaData which makes it possible to give private methods and fields an ID so they can be
  * accessed by test classes using the AccessPrivate class.
  *
  * @author Faris

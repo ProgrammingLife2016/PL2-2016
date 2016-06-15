@@ -6,9 +6,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -19,7 +19,6 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * This class tests the {@link GfaReader} class.

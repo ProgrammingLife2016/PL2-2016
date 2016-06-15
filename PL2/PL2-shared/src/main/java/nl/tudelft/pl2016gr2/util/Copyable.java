@@ -11,6 +11,7 @@ package nl.tudelft.pl2016gr2.util;
  * </p>
  *
  * @author Wouter Smit
+ * @param <T> the type of the class which can be coppied.
  */
 public interface Copyable<T> {
 

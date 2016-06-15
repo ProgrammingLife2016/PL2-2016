@@ -11,22 +11,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.LinearGradient;
-import javafx.scene.paint.Stop;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import nl.tudelft.pl2016gr2.gui.view.events.AnimationEvent;
-import nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
-import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeLeafDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.TreeNodeDescription;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.IPhylogeneticTreeNode;
+import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
@@ -40,38 +35,21 @@ import java.util.List;
  */
 public class TreeNodeCircle extends Circle implements ISelectable {
 
-  private static final Color LEAF_COLOR = Color.BLACK;
-  private static final Color NODE_COLOR = Color.ALICEBLUE;
-  private static final double NODE_RADIUS = 10.0;
+  public static final double NODE_RADIUS = 10.0;
   private static final double NODE_DIAMETER = NODE_RADIUS * 2.0;
-  private static final double NODE_BORDER_WIDTH = 4.0;
   private static final Duration ZOOM_IN_ANIMATION_DURATION = Duration.millis(750.0);
   private static final Duration ZOOM_OUT_ANIMATION_DURATION = Duration.millis(400.0);
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
   private static final double EDGE_WIDTH = 2.0;
-  private static final double HIGHLIGHTED_EDGE_WIDTH = 6.0;
+  private static final double HIGHLIGHTED_EDGE_WIDTH = 8.0;
 
-  private static final List<Stop> MULTI_GRAPH_GRADIENT_STOPS = new ArrayList<>(2);
-
-  /**
-   * Initialize the colors of the multie graph gradient. DON'T MOVE THIS TO AFTER THE
-   * MULTI_GRAPH_GRADIENT DECLARATION. THIS WILL BREAK IT.
-   */
-  static {
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(0.0, DrawComparedGraphs.TOP_GRAPH_COLOR));
-    MULTI_GRAPH_GRADIENT_STOPS.add(new Stop(1.0, DrawComparedGraphs.BOTTOM_GRAPH_COLOR));
-  }
-
-  private static final LinearGradient MULTI_GRAPH_GRADIENT = new LinearGradient(0.0, 0.0, 1.0, 1.0,
-      true, CycleMethod.NO_CYCLE, MULTI_GRAPH_GRADIENT_STOPS);
-
-  private final IPhylogeneticTreeNode dataNode;
+  private final IPhylogeneticTreeNode<?> dataNode;
   @TestId(id = "children")
   private final ArrayList<TreeNodeCircle> children = new ArrayList<>();
   private final Area area;
-  private final SelectionManager selectionManager;
+  private final TreePaneController treePaneController;
   private boolean isLeaf;
   private final Line edge = new Line();
   private Rectangle highlightArea;
@@ -81,15 +59,14 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    *
    * @param dataNode         the data of the node.
    * @param graphArea        the graph area in which the node has to be drawn.
-   * @param selectionManager the selection manager.
+   * @param treePaneController the selection manager.
    */
   private TreeNodeCircle(IPhylogeneticTreeNode dataNode, Area graphArea,
-      SelectionManager selectionManager) {
+                         TreePaneController treePaneController) {
     super(NODE_RADIUS);
-    setStrokeWidth(NODE_BORDER_WIDTH);
     this.dataNode = dataNode;
     this.area = graphArea;
-    this.selectionManager = selectionManager;
+    this.treePaneController = treePaneController;
 
     setColor();
     resetBorderColor();
@@ -126,7 +103,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void initializeClickedEvent() {
     this.setOnMouseClicked((MouseEvent event) -> {
-      selectionManager.select(this);
+      treePaneController.getSelectionManager().select(this);
       event.consume();
     });
   }
@@ -159,11 +136,11 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void resetBorderColor() {
     if (dataNode.getDrawnInTopProperty().get() && dataNode.getDrawnInBottomProperty().get()) {
-      setStroke(MULTI_GRAPH_GRADIENT);
+      getStyleClass().add("treeNodeInBothGraphs");
     } else if (dataNode.getDrawnInTopProperty().get()) {
-      setStroke(DrawComparedGraphs.TOP_GRAPH_COLOR);
+      getStyleClass().add("treeNodeInTopGraph");
     } else if (dataNode.getDrawnInBottomProperty().get()) {
-      setStroke(DrawComparedGraphs.BOTTOM_GRAPH_COLOR);
+      getStyleClass().add("treeNodeInBottom");
     } else {
       setStroke(null);
     }
@@ -174,9 +151,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    */
   private void setColor() {
     if (dataNode.isLeaf()) {
-      setFill(LEAF_COLOR);
+      getStyleClass().add("treeNodeLeaf");
     } else {
-      setFill(NODE_COLOR);
+      getStyleClass().add("treeNode");
     }
     edge.setStroke(dataNode.getLineageColor());
   }
@@ -186,7 +163,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    *
    * @return the data of this node.
    */
-  public IPhylogeneticTreeNode getDataNode() {
+  public IPhylogeneticTreeNode<?> getDataNode() {
     return dataNode;
   }
 
@@ -196,18 +173,19 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param dataNode         the data of the node to draw.
    * @param graphArea        the area in which the node should be drawn.
    * @param graphPane        the pane in which to draw the node.
-   * @param selectionManager the selection manager.
+   * @param treePaneController the treePane controller.
    * @return the drawn nl.tudelft.pl2016gr2.gui.view node.
    */
   protected static TreeNodeCircle drawNode(IPhylogeneticTreeNode dataNode, Area graphArea,
-      Pane graphPane, SelectionManager selectionManager) {
+                                           Pane graphPane, TreePaneController treePaneController) {
     if (graphArea.getWidth() < NODE_DIAMETER || graphArea.getHeight() < NODE_DIAMETER
         || dataNode == null) {
       return null; // not enough space to draw the tree node.
     }
-    TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, selectionManager);
+    TreeNodeCircle node = new TreeNodeCircle(dataNode, graphArea, treePaneController);
     graphPane.getChildren().add(node);
-    drawChildren(node, dataNode, graphArea, graphPane, selectionManager);
+    drawChildren(node, dataNode, graphArea, graphPane);
+    treePaneController.getSelectionManager().checkSelected(node);
     return node;
   }
 
@@ -218,10 +196,9 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param dataNode         the data node.
    * @param area             the graph area of the node.
    * @param graphPane        the pane in which to draw the node.
-   * @param selectionManager the selection manager.
    */
   private static void drawChildren(TreeNodeCircle node, IPhylogeneticTreeNode dataNode, Area area,
-      Pane graphPane, SelectionManager selectionManager) {
+      Pane graphPane) {
     if (dataNode.isLeaf()) {
       node.isLeaf = true;
       return;
@@ -238,7 +215,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       double nextEndY = nextStartY + ySize;
       double nextEndX = area.getEndX() - calculateEdgeLength(dataNode.getChild(i));
       Area childArea = new Area(area.getStartX(), nextEndX, nextStartY, nextEndY);
-      TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, selectionManager);
+      TreeNodeCircle child = drawNode(childDataNode, childArea, graphPane, node.treePaneController);
       node.children.add(child);
       child.drawEdge(node, child, graphPane);
     }
@@ -341,7 +318,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     double newX = getCenterX() + originalArea.getEndX() - zoomArea.getEndX();
     double newY = getCenterY() - zoomArea.getStartY();
     newY = newY / zoomArea.getHeight() * originalArea.getHeight();
-    newY += TreeManager.GRAPH_BORDER_OFFSET;
+    newY += TreePaneController.GRAPH_BORDER_OFFSET;
 
     KeyValue kvX = new KeyValue(this.centerXProperty(), newX, Interpolator.EASE_BOTH);
     KeyValue kvY = new KeyValue(this.centerYProperty(), newY, Interpolator.EASE_BOTH);
@@ -419,6 +396,10 @@ public class TreeNodeCircle extends Circle implements ISelectable {
     return res;
   }
 
+  public List<TreeNodeCircle> getChildren() {
+    return children;
+  }
+
   /**
    * Get the closest parent node to the given x and y coordinates. Parent nodes contain the given x
    * and y coordinates in their {@code area}. The node which is the deepest in the tree and contains
@@ -450,7 +431,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   public void highlightArea(Pane treePane) {
     highlightArea = new Rectangle(area.getStartX(), area.getStartY(), area.getWidth(),
         area.getHeight());
-    highlightArea.setFill(Color.rgb(0, 0, 0, 0.075));
+    highlightArea.getStyleClass().add("treeHighlightArea");
     treePane.getChildren().add(highlightArea);
     highlightArea.toBack();
   }
@@ -478,10 +459,19 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   }
 
   @Override
-  public ISelectionInfo getSelectionInfo(SelectionManager selectionManager) {
+  public ISelectionInfo getSelectionInfo() {
     if (dataNode.getChildCount() != 0) {
-      return new TreeNodeDescription(selectionManager, dataNode);
+      return new TreeNodeDescription(treePaneController.getGraphPaneController(), dataNode);
     }
     return new TreeLeafDescription(dataNode);
+  }
+
+  @Override
+  public boolean isEqualSelection(ISelectable other) {
+    if (other instanceof TreeNodeCircle) {
+      TreeNodeCircle that = (TreeNodeCircle) other;
+      return this.dataNode == that.dataNode;
+    }
+    return false;
   }
 }

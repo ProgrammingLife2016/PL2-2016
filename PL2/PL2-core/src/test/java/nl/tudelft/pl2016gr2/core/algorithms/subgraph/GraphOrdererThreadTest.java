@@ -2,16 +2,17 @@ package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import static org.junit.Assert.assertEquals;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Test of class {@link GraphOrdererThread}.
@@ -30,16 +31,18 @@ public class GraphOrdererThreadTest {
    */
   @Before
   public void initializeNodes() {
-    nodea = new SequenceNode(0);
-    nodeb = new SequenceNode(1);
-    nodec = new SequenceNode(2);
-    noded = new SequenceNode(3);
+    BaseSequence bases = new BaseSequence("A");
+    nodea = new SequenceNode(0, bases);
+    nodeb = new SequenceNode(1, bases);
+    nodec = new SequenceNode(2, bases);
+    noded = new SequenceNode(3, bases);
     nodea.addOutEdge(nodeb);
     nodeb.addInEdge(nodea);
     nodeb.addOutEdge(nodec);
     nodeb.addOutEdge(noded);
     nodec.addInEdge(nodeb);
     noded.addInEdge(nodeb);
+
   }
 
   /**
@@ -56,14 +59,9 @@ public class GraphOrdererThreadTest {
     ArrayList<Node> rootNodes = new ArrayList<>();
     rootNodes.add(nodea);
     SequenceGraph graph = new HashGraph(nodes, rootNodes, new ArrayList<>());
-    GraphOrdererThread orderer = new GraphOrdererThread(graph);
+    GraphOrdererThread orderer = new GraphOrdererThread(graph, new LinkedList<>());
     orderer.start();
     SequenceGraph orderedGraph = orderer.getGraph();
     assertEquals(4, orderedGraph.size());
-    assertEquals(0, nodea.getLevel());
-    assertEquals(1, nodeb.getLevel());
-    assertEquals(2, nodec.getLevel());
-    assertEquals(2, noded.getLevel());
   }
-
 }

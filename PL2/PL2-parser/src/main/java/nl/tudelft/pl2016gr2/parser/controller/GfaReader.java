@@ -1,12 +1,12 @@
 package nl.tudelft.pl2016gr2.parser.controller;
 
-import nl.tudelft.pl2016gr2.model.BaseSequence;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.HashGraph;
-import nl.tudelft.pl2016gr2.model.Node;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.HashGraph;
+import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
+import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.io.BufferedReader;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * This class reads a gfa file.
@@ -27,7 +28,6 @@ public class GfaReader {
 
   private static final int SHIFT_BY_BASE_10 = 10;
   @TestId(id = "genomes")
-  //  private final ArrayList<String> genomes = new ArrayList<>();
   private final HashMap<Integer, Node> nodes = new HashMap<>();
   private final InputStream fileStream;
   @TestId(id = "originalGraph")
@@ -55,6 +55,7 @@ public class GfaReader {
         Logger.getLogger(GfaReader.class.getName()).log(Level.SEVERE, null, ex);
       }
       originalGraph = new HashGraph(nodes, GenomeMap.getInstance().copyAllGenomes());
+      originalGraph.iterator().forEachRemaining(GraphNode::trimToSize);
     }
     return originalGraph;
   }
@@ -171,7 +172,9 @@ public class GfaReader {
       }
       startIndex = index + 1;
     }
-    nodeGens.forEach((String genome) -> node.addGenome(GenomeMap.getInstance().getId(genome)));
+    node.addAllGenomes(
+        nodeGens.stream().map(genome -> GenomeMap.getInstance().getId(genome)).collect(
+            Collectors.toCollection(ArrayList::new)));
   }
 
   /**
@@ -191,7 +194,6 @@ public class GfaReader {
       while (chars[index] != '.' && chars[index] != ';') {
         ++index;
       }
-      //  genomes.add(new String(chars, start, index - start));
       GenomeMap.getInstance().addGenome(new String(chars, start, index - start));
       while (chars[index] != ';') {
         ++index;

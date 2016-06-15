@@ -1,21 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="mainPane" minWidth="200.0" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.graph.DrawComparedGraphs">
-    <Pane fx:id="topGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(204, 114, 24, 0.08);" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-    <Pane fx:id="bottomGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: rgba(24, 114, 204, 0.08);" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
+<AnchorPane id="AnchorPane" fx:id="mainPane" minWidth="200.0" prefHeight="400.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController">
+    <Pane fx:id="topGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: graph-color-top-overlay-transparent;" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <Pane fx:id="bottomGraphIndicationArea" mouseTransparent="true" prefHeight="190.0" prefWidth="200.0" style="-fx-background-color: graph-color-bottom-overlay-transparent;" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" />
     <Pane fx:id="topPane" layoutX="37.0" layoutY="-33.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <Label layoutX="50.0" layoutY="190.0" text="Drag a node from the phylogenetic tree to this area to draw a graph of its genomes"/>
+        <Label layoutX="50.0" layoutY="190.0" text="Drag a node from the phylogenetic tree to this area to draw a graph of its genomes" />
     </Pane>
     <Pane fx:id="bottomPane" layoutX="66.0" layoutY="167.0" prefHeight="190.0" prefWidth="1000.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-    <Rectangle fx:id="topGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#cc7218" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-    <Rectangle fx:id="bottomGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#1872cc" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" />
+   <Canvas fx:id="topEdgeCanvas" height="190.0" mouseTransparent="true" width="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+   <Canvas fx:id="bottomEdgeCanvas" height="190.0" mouseTransparent="true" width="200.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <Rectangle fx:id="topGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#cc7218" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" style="-fx-fill: graph-color-top-overlay;" width="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+    <Rectangle fx:id="bottomGraphIndicator" arcHeight="5.0" arcWidth="5.0" fill="#1872cc" height="190.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" style="-fx-fill: graph-color-bottom-overlay;" width="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" />
     <ScrollBar fx:id="scrollbar" blockIncrement="0.1" max="1.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="20.0" unitIncrement="0.01" visibleAmount="0.01" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
     <ImageView fx:id="deleteBottomGraphImage" fitHeight="25.0" fitWidth="25.0" onMouseClicked="#deleteBottomGraph" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="25.0" AnchorPane.rightAnchor="5.0">
-        <Image url="@../icons/cross.png"/>
+        <Image url="@../icons/cross.png" />
     </ImageView>
+   <Label mouseTransparent="true" styleClass="default-light-text" text="0" textFill="WHITE" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="15.0">
+      <font>
+         <Font name="Arial Bold" size="14.0" />
+      </font>
+   </Label>
+   <Label fx:id="totalBases" mouseTransparent="true" styleClass="default-light-text" text="0" textFill="WHITE" AnchorPane.bottomAnchor="2.0" AnchorPane.rightAnchor="15.0">
+      <font>
+         <Font name="Arial Bold" size="14.0" />
+      </font>
+   </Label>
+   <Label fx:id="showingRange" mouseTransparent="true" styleClass="default-light-text" text="0" textFill="WHITE" translateX="500.0" AnchorPane.bottomAnchor="2.0">
+      <font>
+         <Font name="Arial Bold" size="14.0" />
+      </font>
+   </Label>
 </AnchorPane>

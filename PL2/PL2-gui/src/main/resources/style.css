@@ -5,47 +5,152 @@
  ******************************************************************************/
 
 .root {
-  -fx-base: derive(backgroundcolor, 60%); 
+	-fx-base: grey7; 
 
-  /* Base color for window backgrounds */
-  backgroundcolor: rgba(0, 0, 0, 1);
-  -fx-textcolor: rgba(150, 150, 150, 1);
+	light-text-color: grey7;
+	dark-text-color: grey1;
 
-  -fx-accent: transparent;
-  -fx-focus-color: transparent;
-  -fx-faint-focus-color: transparent;
+	-fx-accent: transparent;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+
+	/* General application colors */
+	grey8: rgb(255, 255, 255);
+	grey7: rgb(229, 229, 229); /* application background color */
+	grey6: rgb(153, 153, 153);
+	grey5: rgb(132, 132, 132);
+	grey4: rgb(113, 113, 113);
+	grey3: rgb(87, 87, 87);
+	grey2: rgb(53, 53, 53);
+	grey1: rgb(27, 27, 27);
+	grey0: rgb(0, 0, 0);
+
+	/*  app-color-LIN-1: rgb(237, 0, 195);
+	  app-color-LIN-2: rgb(0, 0, 255);
+	  app-color-LIN-3: rgb(80, 0, 121);
+	  app-color-LIN-4: rgb(255, 0, 0);
+	  app-color-LIN-5: rgb(78, 44, 0);
+	  app-color-LIN-6: rgb(105, 202, 0);
+	  app-color-LIN-7: rgb(255, 126, 0);
+	  
+	  app-color-LIN-B: rgb(0, 255, 156);
+	  app-color-LIN-ANIMAL: app-color-LIN-B;
+	  app-color-LIN-CANETTI: rgb(0, 255, 255);
+	  app-color-LIN-UNKNOWN: rgb(0, 0, 0);*/
+
+	/* Graph colors */
+	graph-color-top-overlay: rgb(204, 114, 24);
+	graph-color-bottom-overlay: rgb(24, 114, 204);
+	graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
+	graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
+
+	graph-color-node-overlap: rgb(0, 73, 73);
+	graph-color-node-no-overlap: rgb(255, 30, 30);
+	graph-color-bubble-straight: rgb(255, 168, 63);
+	graph-color-bubble-indel: rgb(112, 200, 255);
+	graph-color-bubble-point: rgb(255, 120, 255);
+	graph-color-bubble-phylo: rgb(200, 255, 255);
+
+	graph-color-edge: rgb(0, 0, 0);
+
+	/* Phylogenetic tree colors */
+	tree-color-node: rgb(150, 140, 150);
+	tree-color-node-leaf: rgb(0, 0, 0);
+
+	tree-color-node-border-top-selected: graph-color-top-overlay;
+	tree-color-node-border-bottom-selected: graph-color-bottom-overlay;
+	tree-color-node-border-both-selected: linear-gradient(
+		to bottom right, 
+		tree-color-node-border-top-selected,
+		tree-color-node-border-bottom-selected
+		);
+
+	/* Search area colors */
+
+}
+
+.default-light-text {
+	-fx-font-family: "Open Sans";
+	-fx-text-fill: light-text-color;
+}
+
+.default-dark-text {
+	-fx-font-family: "Open Sans";
+	-fx-text-fill: dark-text-color;
 }
 
 /*******************************************************************************
  *                                                                             *
- * Icons                                                                       *
+ * Genome Graph                                                                *
  *                                                                             *
  ******************************************************************************/
 
-.graphIcon {
-  -fx-image: url(icons/graph_icon.png);
+.graphNodeOverlap {
+	-fx-fill: graph-color-node-overlap;
 }
 
-.graphIcon:hover {
-  -fx-image: url(icons/graph_icon_hover.png);
-  -fx-cursor: hand;
+.graphNodeNoOverlap {
+	-fx-fill: graph-color-node-no-overlap;
 }
 
-.graphIcon:pressed {
-  -fx-image: url(icons/graph_icon_pressed.png);
+.graphUnselectedNode {
+	-fx-stroke: black;
+	-fx-stroke-width: 1.0;
 }
 
-.treeIcon {
-  -fx-image: url(icons/tree_icon.png);
+.graphSelectedNode {
+	-fx-stroke: black;
+	-fx-stroke-width: 5.0;
 }
 
-.treeIcon:hover {
-  -fx-image: url(icons/tree_icon_hover.png);
-  -fx-cursor: hand;
+.graphBubbleStraight {
+	-fx-fill: graph-color-bubble-straight;
 }
 
-.treeIcon:pressed {
-  -fx-image: url(icons/tree_icon_pressed.png);
+.graphBubbleIndel {
+	-fx-fill: graph-color-bubble-indel;
+}
+
+.graphBubblePoint {
+	-fx-fill: graph-color-bubble-point;
+}
+
+.graphBubblePhylo {
+	-fx-fill: graph-color-bubble-phylo;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Phylogenetic Tree                                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.treeNode, .treeNodeLeaf {
+	-fx-stroke-width: 4.0;
+}
+
+.treeNode {
+	-fx-fill: tree-color-node;
+}
+
+.treeNodeLeaf {
+	-fx-fill: tree-color-node-leaf;
+}
+
+.treeNodeInTopGraph {
+	-fx-stroke: tree-color-node-border-top-selected;
+}
+
+.treeNodeInBottom {
+	-fx-stroke: tree-color-node-border-bottom-selected;
+}
+
+.treeNodeInBothGraphs {
+	-fx-stroke: tree-color-node-border-both-selected;
+}
+
+.treeHighlightArea {
+	-fx-fill: derive(grey7, -25%);
 }
 
 /*******************************************************************************
@@ -54,29 +159,22 @@
  *                                                                             *
  ******************************************************************************/
 
-.button.BigButton {
-  -fx-background-radius: 8;
-  -fx-font: 14pt 'Verdana';
-  -fx-font-weight: bold;
-  -fx-text-fill: derive(backgroundcolor, 80%);
-  -fx-background-color: derive(backgroundcolor, 45%);
+.button {
+	-fx-font-family: 'Open Sans';
+	-fx-text-fill: light-text-color;
+	-fx-background-color:grey4;
 }
 
 .button:hover {
-  -fx-background-color: derive(backgroundcolor, 35%);
+	-fx-background-color: grey3;
 }
 
 .button:pressed {
-  -fx-background-color: derive(backgroundcolor, 30%);
+	-fx-background-color: grey2;
 }
 
 .button:disabled {
-  -fx-background-color: derive(backgroundcolor, 65%);
-}
-
-.zoomOutButton {
-  -fx-background-radius: 0 0 8 0;
-  -fx-graphic: url('images/left.png');
+	-fx-background-color: grey6;
 }
 
 /*******************************************************************************
@@ -86,12 +184,12 @@
  ******************************************************************************/
 
 .split-pane {
-  -fx-background-insets: 0;
-  -fx-padding: 0;
+	-fx-background-insets: 0;
+	-fx-padding: 0;
 }
 
 .split-pane:horizontal > .split-pane-divider {
-  -fx-background-color: derive(backgroundcolor, 50%);
+	-fx-background-color: grey2;
 }
 
 /*******************************************************************************
@@ -102,22 +200,21 @@
 
 
 .menu-bar {
-  -fx-font: bold 9pt 'Verdana';
-  -fx-background-color: derive(backgroundcolor, 20%);
-  -fx-effect: dropshadow(three-pass-box, white, 3px, 0, 0, 0);
+	-fx-font: bold 9pt 'Open Sans';
+	-fx-background-color: grey1;
 }
 
 .menu-bar > .container > .menu-button:hover,
 .menu-bar > .container > .menu-button:focused,
 .menu-bar > .container > .menu-button:showing {
-  -fx-background-color: derive(backgroundcolor, 40%);
+	-fx-background-color: grey3;
 }
 
 .menu-bar > .container > .menu-button:showing {
-  -fx-background-color: derive(backgroundcolor, 40%);
+	-fx-background-color: grey3;
 }
 .menu-bar > .container > .menu-button > .label {
-  -fx-text-fill: derive(backgroundcolor, 100%);
+	-fx-text-fill: light-text-color;
 }
 
 /*******************************************************************************
@@ -127,13 +224,34 @@
  ******************************************************************************/
 
 .menu-item > .label {
-  -fx-font: 10pt 'Verdana';
-  -fx-text-fill: derive(backgroundcolor, 20%);
+	-fx-font: 10pt 'Open Sans';
+	-fx-text-fill: dark-text-color;
 }
 
 .menu-item:focused,
 .menu-item:hover,
 .menu-item:focused > .label,
 .menu-item:hover > .label {
-  -fx-background-color: derive(backgroundcolor, 90%);
+	-fx-background-color: grey6;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Scroll bar                                                                  *
+ *                                                                             *
+ ******************************************************************************/
+.scroll-bar {
+    -fx-base: grey5;
+}
+
+.scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
+    -fx-background-color: grey3;
+    -fx-background-insets: 2, 0, 0;
+    -fx-background-radius: 0.5em;
+	-fx-border-radius: 0.5em;
+}
+
+.scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:pressed, .scroll-bar:horizontal .thumb:pressed {
+    -fx-background-color: grey2;
 }

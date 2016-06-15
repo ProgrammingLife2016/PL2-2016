@@ -4,8 +4,16 @@
 <?import javafx.scene.layout.*?>
 
 <AnchorPane fx:id="rootPane" pickOnBounds="false" prefHeight="700.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
-    <SplitPane fx:id="mainPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
-    <Pane fx:id="selectionDescriptionPane" prefHeight="600.0" prefWidth="400.0" visible="false" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0" />
+    <SplitPane orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" >
+        <SplitPane fx:id="mainPane" orientation="HORIZONTAL" >
+            <fx:include fx:id="treePane" source="TreePane.fxml" />
+            <fx:include fx:id="graphPane" source="CompareGraphsPane.fxml" />
+        </SplitPane>
+        <SplitPane orientation="HORIZONTAL" VBox.vgrow="NEVER" maxHeight="300" >
+            <fx:include fx:id="searchPane" minWidth="800" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
+            <fx:include fx:id="selectionPane" maxWidth="750" prefWidth="750" minWidth="600" source="selectionPane.fxml"  />
+        </SplitPane>
+    </SplitPane>
     <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Menu mnemonicParsing="false" text="File">
             <MenuItem mnemonicParsing="false" onAction="#openFileMenuItemClicked" text="Open"/>
@@ -21,8 +29,5 @@
         </Menu>
     </MenuBar>
     <fx:include fx:id="graphLegend" source="Legend.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
-    <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="25.0" />
-    <HBox alignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" pickOnBounds="false">
-        <fx:include visible="false" fx:id="searchPane" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);"/>
-    </HBox>
+    <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="315.0" AnchorPane.topAnchor="25.0" />
 </AnchorPane>

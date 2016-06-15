@@ -1,149 +1,83 @@
 package nl.tudelft.pl2016gr2.model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import nl.tudelft.pl2016gr2.util.Pair;
+
+import java.util.HashMap;
 
 /**
- * POJO for the Annotations found in the metadata.xlsx.
+ * Stores the annotations read from the annotation file.
  *
- * <p>
- * One consideration is to make enums/actual classes for several properties to give more
- * functionality. An example is to have cyclic references to easily lookup other annotations with
- * the same property.
- * </p>
+ * @author Faris
  */
 public class Annotation {
 
-  public String specimenId;
+  public final String sequenceId;
+  public final String source;
+  public final String type;
+  public final int start;
+  public final int end;
+  public final double score;
+  public final String strand;
+  public final String phase;
+  private final HashMap<String, String> attributes = new HashMap<>();
 
-  public Integer age;
-
-  public Sex sex;
-
-  public Status hivStatus;
-
-  public String cohort;
-
-  public Date dateOfCollection;
-
-  public String studyGeographicDistrict;
-
-  // consider introducing an enum?
-  public String specimenType;
-
-  public Status microscopySmearStatus;
-
-  public Isolation dnaIsolation;
-
-  @SuppressWarnings("AbbreviationAsWordInName")
-  public String phenotypicDSTPattern;
-
-  // consider introducing an enum?
-  public String capreomycin;
-
-  // consider introducing an enum?
-  public String ethambutol;
-
-  // consider introducing an enum?
-  public String ethionamide;
-
-  // consider introducing an enum?
-  public String isoniazid;
-
-  // consider introducing an enum?
-  public String kanamycin;
-
-  // consider introducing an enum?
-  public String pyrazinamide;
-
-  // consider introducing an enum?
-  public String ofloxacin;
-
-  // consider introducing an enum?
-  public String rifampin;
-
-  // consider introducing an enum?
-  public String streptomycin;
-
-  public String digitalSpoligotype;
-
-  // consider introducing an enum?
-  public String lineage;
-
-  // consider introducing an enum?
-  @SuppressWarnings("AbbreviationAsWordInName")
-  public String genotypicDSTPattern;
-
-  // TODO: Tugela Ferry vs. non-Tugela Ferry XDR
-  // A lot of n/a, also not clear what to name this property..
-  public enum Sex {
-    Male,
-    Female,
-    unknown
-  }
-
-  public enum Status {
-    Positive,
-    Negative,
-    unknown
-  }
-
-  public enum Isolation {
-    Single,
-    NonSingle
-  }
-
-  @Override
-  public String toString() {
-    return String.format(
-        "<%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s>",
-        specimenId, age, sex, hivStatus, cohort,
-        dateOfCollection, studyGeographicDistrict,
-        specimenType, microscopySmearStatus, dnaIsolation,
-        phenotypicDSTPattern, capreomycin, ethambutol,
-        ethionamide, isoniazid, kanamycin, pyrazinamide,
-        ofloxacin, rifampin, streptomycin, digitalSpoligotype,
-        lineage, genotypicDSTPattern);
+  /**
+   * Create an Annotation, used by the AnnotationReader.
+   * @param sequenceId the id of the sequence
+   * @param source the source
+   * @param type the type
+   * @param start the start
+   * @param end the end
+   * @param score the score 
+   * @param strand the strand
+   * @param phase the phase
+   */
+  public Annotation(String sequenceId, String source, String type, int start, int end, 
+      double score, String strand, String phase) {
+    this.sequenceId = sequenceId;
+    this.source = source;
+    this.type = type;
+    this.start = start;
+    this.end = end;
+    this.score = score;
+    this.strand = strand;
+    this.phase = phase;
   }
 
   /**
-   * Build a string containing all of the metadata in this file.
+   * Add an attribute to the attributes.
    *
-   * @return a string containing all of the metadata in this file.
+   * @param attribute a Pair containing the attribute/value pair. 
    */
-  @SuppressWarnings("checkstyle:MethodLength")
-  public String buildMetaDataString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("ID\t\t\t\t\t\t").append(specimenId).append('\n');
-    sb.append("Specimen Type\t\t\t").append(specimenType).append('\n');
-    sb.append("Lineage\t\t\t\t\t").append(lineage).append('\n');
-    sb.append("Isolation\t\t\t\t\t").append(dnaIsolation).append('\n');
-    sb.append("Age\t\t\t\t\t\t").append(age).append('\n');
-    sb.append("Capreomycin\t\t\t\t").append(capreomycin).append('\n');
-    sb.append("Cohort\t\t\t\t\t").append(cohort).append('\n');
-    sb.append("Date of collection\t\t\t");
-    if (dateOfCollection == null) {
-      sb.append("Unknown").append('\n');
-    } else {
-      sb.append(new SimpleDateFormat("dd-MM-yyyy").format(dateOfCollection)).append('\n');
-    }
-    sb.append("Digital Spoligo type\t\t\t").append(digitalSpoligotype).append('\n');
-    sb.append("Ethambutol\t\t\t\t").append(ethambutol).append('\n');
-    sb.append("Ethionamide\t\t\t\t").append(ethionamide).append('\n');
-    sb.append("Genotypic DST Pattern\t\t").append(genotypicDSTPattern).append('\n');
-    sb.append("Phenotypic DST Pattern\t\t").append(phenotypicDSTPattern).append('\n');
-    sb.append("HIV Status\t\t\t\t").append(hivStatus).append('\n');
-    sb.append("Isoniazid\t\t\t\t\t").append(isoniazid).append('\n');
-    sb.append("Kanamyoin\t\t\t\t").append(kanamycin).append('\n');
-    sb.append("Microscopy Smear Status\t").append(microscopySmearStatus).append('\n');
-    sb.append("Ofloxaoin\t\t\t\t\t").append(ofloxacin).append('\n');
-    sb.append("Pyrazinamid\t\t\t\t").append(pyrazinamide).append('\n');
-    sb.append("Rifampin\t\t\t\t\t").append(rifampin).append('\n');
-    sb.append("Sex\t\t\t\t\t\t").append(sex).append('\n');
-    sb.append("Specimen Type\t\t\t").append(specimenType).append('\n');
-    sb.append("Rifampin\t\t\t\t\t").append(rifampin).append('\n');
-    sb.append("Streptomycin\t\t\t\t").append(streptomycin).append('\n');
-    sb.append("Study Geographic District\t").append(studyGeographicDistrict).append('\n');
-    return sb.toString();
+  public void addAttribute(Pair<String, String> attribute) {
+    attributes.put(attribute.left.toLowerCase(), attribute.right);
+  }
+
+  /**
+   * Get an attribute.
+   *
+   * @param attribute the attribute to get.
+   * @return the value of the attribute.
+   */
+  public String getAttribute(String attribute) {
+    return attributes.get(attribute.toLowerCase());
+  }
+
+  /**
+   * Check if there is a value for the given attribute.
+   *
+   * @param attribute the attribute to check.
+   * @return if the attribute has a value.
+   */
+  public boolean containsAttribute(String attribute) {
+    return attributes.containsKey(attribute.toLowerCase());
+  }
+  
+  /**
+   * Returns all attributes.
+   * @return a hashmap of attributes.
+   */
+  public HashMap<String, String> getAttributes() {
+    return attributes;
   }
 }

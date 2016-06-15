@@ -1,14 +1,11 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import static org.junit.Assert.assertEquals;
-
-import nl.tudelft.pl2016gr2.model.GenomeMap;
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,25 +45,26 @@ public class CompareSubgraphsTest {
   /**
    * Test of compareGraphs method, of class CompareSubgraphs.
    */
-//  @Test
-//  public void testCompareGraphs() {
-//
-//    SequenceGraph graph = gfaReader.read();
-//    GraphOrdererThread thread = new GraphOrdererThread(graph);
-//    thread.start();
-//    HashMap<GraphNode, NodePosition> mainGraphOrder = thread.getOrderedGraph();
-//
-//    ArrayList<String> topGenomes = new ArrayList<>();
-//    topGenomes.add("TKK_02_0005");
-//    ArrayList<String> bottomGenomes = new ArrayList<>();
-//    bottomGenomes.add("TKK_02_0008");
-//    GenomeMap genomeMap = GenomeMap.getInstance();
-//    SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(topGenomes));
-//    SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(bottomGenomes));
-//
-//    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> res = CompareSubgraphs.compareGraphs(
-//        mainGraphOrder, topGraph, bottomGraph);
-//    assertEquals(4, res.left.size());
-//    assertEquals(4, res.right.size());
-//  }
+  @Test
+  public void testCompareGraphs() {
+    //    SequenceGraph graph = gfaReader.read();
+    //    GraphOrdererThread thread = new GraphOrdererThread(graph);
+    //    thread.start();
+    //    HashMap<GraphNode, NodePosition> mainGraphOrder = thread.getOrderedGraph();
+    //
+    //    ArrayList<String> topGenomes = new ArrayList<>();
+    //    topGenomes.add("TKK_02_0005");
+    //    ArrayList<String> bottomGenomes = new ArrayList<>();
+    //    bottomGenomes.add("TKK_02_0008");
+    //    GenomeMap genomeMap = GenomeMap.getInstance();
+    //    SequenceGraph topGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(topGenomes));
+    //    SequenceGraph bottomGraph = new SplitGraphs(graph).getSubgraph(genomeMap.mapAll(
+    //bottomGenomes));
+    //
+    //    Pair<ArrayList<NodePosition>, ArrayList<NodePosition>> res = CompareSubgraphs.
+    //compareGraphs(
+    //        mainGraphOrder, topGraph, bottomGraph);
+    //    assertEquals(4, res.left.size());
+    //    assertEquals(4, res.right.size());
+  }
 }

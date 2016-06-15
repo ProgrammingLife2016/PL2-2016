@@ -3,8 +3,13 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
+import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+
+import java.util.Collections;
 
 /**
  * A square representation of a node, which can be drawn in the user interface.
@@ -15,18 +20,20 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
 
   private final DoubleProperty centerXProperty = new SimpleDoubleProperty();
   private final DoubleProperty centerYProperty = new SimpleDoubleProperty();
+  private final GraphNode dataNode;
 
   /**
    * Constructor.
    *
-   * @param width  the width of the rectangle.
-   * @param height the height of the rectangle.
+   * @param width    the width of the rectangle.
+   * @param height   the height of the rectangle.
+   * @param dataNode the data object.
    */
-  public ViewGraphNodeRectangle(double width, double height) {
-    super(width/* * DrawComparedGraphs.NODE_MARGIN*/, height);
+  public ViewGraphNodeRectangle(double width, double height, GraphNode dataNode) {
+    super(width, height);
     layoutXProperty().bind(centerXProperty.add(-width / 2.0));
     layoutYProperty().bind(centerYProperty.add(-height / 2.0));
-    setFill(Color.ALICEBLUE);
+    this.dataNode = dataNode;
   }
 
   @Override
@@ -42,5 +49,29 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
   @Override
   public Node get() {
     return this;
+  }
+
+  @Override
+  public void select() {
+    Collections.replaceAll(getStyleClass(), "graphUnselectedNode", "graphSelectedNode");
+  }
+
+  @Override
+  public void deselect() {
+    Collections.replaceAll(getStyleClass(), "graphSelectedNode", "graphUnselectedNode");
+  }
+
+  @Override
+  public ISelectionInfo getSelectionInfo() {
+    return new GraphBubbleDescription(dataNode.toString());
+  }
+
+  @Override
+  public boolean isEqualSelection(ISelectable other) {
+    if (other instanceof ViewGraphNodeRectangle) {
+      ViewGraphNodeRectangle that = (ViewGraphNodeRectangle) other;
+      return this.dataNode.getId() == that.dataNode.getId();
+    }
+    return false;
   }
 }

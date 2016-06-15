@@ -1,15 +1,20 @@
 package nl.tudelft.pl2016gr2.visitor;
 
-import nl.tudelft.pl2016gr2.model.GraphNode;
-import nl.tudelft.pl2016gr2.model.IndelBubble;
-import nl.tudelft.pl2016gr2.model.PhyloBubble;
-import nl.tudelft.pl2016gr2.model.PointMutationBubble;
-import nl.tudelft.pl2016gr2.model.SequenceNode;
-import nl.tudelft.pl2016gr2.model.StraightSequenceBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
+import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.StraightSequenceBubble;
 
+/**
+ * This class is used to visit the phylo bubbles and add children to them.
+ *
+ * @author Casper
+ */
 public class BubbleChildrenVisitor implements NodeVisitor {
 
-  private GraphNode child;
+  private final GraphNode child;
 
   /**
    * Creates a visitor which can be accepted by any GraphNode, but is specifically meant for
@@ -28,7 +33,6 @@ public class BubbleChildrenVisitor implements NodeVisitor {
 
   @Override
   public void visit(GraphNode node) {
-    // DO NOTHING
   }
 
   @Override
@@ -36,11 +40,11 @@ public class BubbleChildrenVisitor implements NodeVisitor {
   }
 
   @Override
-  public void visit(IndelBubble bubble) {
+  public void visit(StraightSequenceBubble bubble) {
   }
 
   @Override
-  public void visit(StraightSequenceBubble bubble) {
+  public void visit(IndelBubble bubble) {
   }
 
   @Override

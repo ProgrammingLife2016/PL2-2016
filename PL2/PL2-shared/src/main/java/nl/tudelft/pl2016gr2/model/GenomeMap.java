@@ -40,8 +40,7 @@ public class GenomeMap {
   @TestId(id = "singleton_instance")
   private static GenomeMap instance;
 
-  @TestId(id = "reference_id")
-  private Integer referenceId;
+  private static final Integer REFERENCE_ID = 0;
 
   private ArrayList<String> genomes = new ArrayList<>();
   private HashMap<String, Integer> identifierMap = new HashMap<>(INIT_CAPACITY, LOAD_FACTOR);
@@ -138,7 +137,7 @@ public class GenomeMap {
    * @return The ID of the reference genome, or <code>null</code> if no reference was set
    */
   public Integer getReferenceId() {
-    return referenceId;
+    return REFERENCE_ID;
   }
 
   /**
@@ -147,26 +146,7 @@ public class GenomeMap {
    * @return The name of the reference genome, or <code>null</code> if no reference was set
    */
   public String getReferenceGenome() {
-    if (getReferenceId() == null) {
-      return null;
-    }
-    return getGenome(referenceId);
-  }
-
-  /**
-   * Adds the genome to the map and marks it as the reference genome of the map.
-   * <p>
-   * This generates an ID for the genome, which is returned.
-   * </p>
-   *
-   * @param genome The name of the genome
-   * @return The ID that is now associated with the added genome
-   * @throws AssertionError if the genome already exists in the map
-   */
-  public int addReferenceGenome(String genome) {
-    int identifier = addGenome(genome);
-    referenceId = identifier;
-    return identifier;
+    return getGenome(REFERENCE_ID);
   }
 
   /**
@@ -197,7 +177,6 @@ public class GenomeMap {
   public void clear() {
     genomes = new ArrayList<>();
     identifierMap = new HashMap<>(INIT_CAPACITY, LOAD_FACTOR);
-    referenceId = null;
   }
 
   /**
