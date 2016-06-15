@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.core.algorithms.PhyloBubbleFilter;
-import nl.tudelft.pl2016gr2.core.algorithms.mutations.MutationBubbleAlgorithms;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.mutations.MutationBubbleAlgorithms;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree.PhyloBubbleFilter;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;

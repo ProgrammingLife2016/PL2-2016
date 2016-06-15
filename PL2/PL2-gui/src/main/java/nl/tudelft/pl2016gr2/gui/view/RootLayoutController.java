@@ -1,5 +1,8 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
+import static javafx.scene.input.KeyCode.ESCAPE;
+import static javafx.scene.input.KeyCode.F;
+
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -16,11 +19,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.core.GraphFactory;
-import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
-import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
-import nl.tudelft.pl2016gr2.core.TreeFactory;
-import nl.tudelft.pl2016gr2.core.algorithms.TreeBuilder;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree.TreeBuilder;
+import nl.tudelft.pl2016gr2.core.factories.GraphFactory;
+import nl.tudelft.pl2016gr2.core.factories.InputStreamGraphFactory;
+import nl.tudelft.pl2016gr2.core.factories.InputStreamTreeFactory;
+import nl.tudelft.pl2016gr2.core.factories.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;

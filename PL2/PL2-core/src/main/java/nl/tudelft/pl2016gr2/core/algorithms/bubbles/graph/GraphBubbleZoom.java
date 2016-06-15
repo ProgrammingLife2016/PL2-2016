@@ -1,5 +1,6 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.graph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.AbstractZoom;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 

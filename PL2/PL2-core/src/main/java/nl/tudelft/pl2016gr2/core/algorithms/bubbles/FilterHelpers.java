@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 
@@ -24,7 +24,7 @@ public class FilterHelpers {
    * @param toVisit the current queue
    * @param visited the set of visited ints
    */
-  protected static void addToVisit(GraphNode visitor, Queue<GraphNode> toVisit, 
+  public static void addToVisit(GraphNode visitor, Queue<GraphNode> toVisit, 
       Set<GraphNode> visited) {
     if (!visited.contains(visitor) && !toVisit.contains(visitor)) {
       toVisit.add(visitor);
@@ -40,7 +40,7 @@ public class FilterHelpers {
    * @param leaves the labels of the leaves of the phylo node
    * @return true if the node is shared
    */
-  protected static boolean isShared(GraphNode node, List<Integer> leaves) {
+  public static boolean isShared(GraphNode node, List<Integer> leaves) {
     if (node.getGenomes().containsAll(leaves)) {
       return true;
     }

@@ -1,5 +1,6 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree;
 
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.AbstractZoom;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
@@ -41,9 +42,9 @@ public class PhyloBubbleZoom extends AbstractZoom {
     Map<Integer, Collection<GraphNode>> originalInEdges = new HashMap<>();
     Map<Integer, Collection<GraphNode>> originalOutEdges = new HashMap<>();
     setOriginalEdges(originalInEdges, originalOutEdges, bubble);
-    IPhylogeneticTreeNode curTreeNode = getTreeNode(bubble);
-    IPhylogeneticTreeNode childOne = curTreeNode.getChild(0);
-    IPhylogeneticTreeNode childTwo = curTreeNode.getChild(1);
+    IPhylogeneticTreeNode<?> curTreeNode = getTreeNode(bubble);
+    IPhylogeneticTreeNode<?> childOne = curTreeNode.getChild(0);
+    IPhylogeneticTreeNode<?> childTwo = curTreeNode.getChild(1);
     Set<GraphNode> poppedNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(poppedNodes, childOne, bubble, newBubbles);
@@ -55,13 +56,13 @@ public class PhyloBubbleZoom extends AbstractZoom {
     return alignNodes(graphNodes, bubble);
   }
   
-  private IPhylogeneticTreeNode getTreeNode(Bubble bubble) {
+  private IPhylogeneticTreeNode<?> getTreeNode(Bubble bubble) {
     BubblePhyloVisitor visitor = new BubblePhyloVisitor();
     bubble.accept(visitor);
     return visitor.getTreeNode();
   }
   
-  private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode treeNode, 
+  private List<Bubble> debubble(Set<GraphNode> poppedNodes, IPhylogeneticTreeNode<?> treeNode, 
       Bubble bubble, ArrayList<Bubble> newBubbles) {
     Collection<GraphNode> startNodes = bubble.getInEdges();
     ArrayList<Integer> leaves = treeNode.getGenomes();

@@ -1,10 +1,10 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
-import nl.tudelft.pl2016gr2.core.InputStreamGraphFactory;
-import nl.tudelft.pl2016gr2.core.InputStreamTreeFactory;
-import nl.tudelft.pl2016gr2.core.TreeFactory;
-import nl.tudelft.pl2016gr2.core.algorithms.mutations.VerticalAligner;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.mutations.VerticalAligner;
+import nl.tudelft.pl2016gr2.core.factories.InputStreamGraphFactory;
+import nl.tudelft.pl2016gr2.core.factories.InputStreamTreeFactory;
+import nl.tudelft.pl2016gr2.core.factories.TreeFactory;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.MetaData;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
