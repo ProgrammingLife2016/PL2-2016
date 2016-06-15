@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree;
 
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
@@ -19,8 +19,8 @@ import java.util.Set;
  */
 public class TreeBuilder {
 
-  private IPhylogeneticTreeRoot treeRoot;
-  private Set<Integer> genomes;
+  private final IPhylogeneticTreeRoot<?> treeRoot;
+  private final Set<Integer> genomes;
   private PhylogeneticTreeNode newRoot;
 
   /**
@@ -30,7 +30,7 @@ public class TreeBuilder {
    *     the new tree.
    * @param genomes : the list of genomes that should be in the new tree.
    */
-  public TreeBuilder(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
+  public TreeBuilder(IPhylogeneticTreeRoot<?> treeRoot, Collection<Integer> genomes) {
     this.treeRoot = treeRoot;
     this.genomes = new HashSet<>(genomes);
   }
@@ -40,7 +40,7 @@ public class TreeBuilder {
    * 
    * @return the root of the new tree.
    */
-  public IPhylogeneticTreeRoot getTree() {
+  public IPhylogeneticTreeRoot<?> getTree() {
     if (genomes.isEmpty()) {
       return treeRoot;
     }
@@ -53,15 +53,15 @@ public class TreeBuilder {
   }
 
   // WARNING, O(n2) algorithm incomming
-  private void buildTree(IPhylogeneticTreeNode node, PhylogeneticTreeNode parent) {
+  private void buildTree(IPhylogeneticTreeNode<?> node, PhylogeneticTreeNode parent) {
     if (node.isLeaf()) {
       PhylogeneticTreeNode newNode = new PhylogeneticTreeNode(node.getGenomeId(), parent,
           node.getEdgeLength());
       addChild(parent, newNode);
     } else {
-      IPhylogeneticTreeNode child1 = node.getChild(0);
+      IPhylogeneticTreeNode<?> child1 = node.getChild(0);
       boolean child1HasGenome = containsGenome(child1.getGenomes());
-      IPhylogeneticTreeNode child2 = node.getChild(1);
+      IPhylogeneticTreeNode<?> child2 = node.getChild(1);
       boolean child2HasGenome = containsGenome(child2.getGenomes());
 
       // Both branches contain at least one genome

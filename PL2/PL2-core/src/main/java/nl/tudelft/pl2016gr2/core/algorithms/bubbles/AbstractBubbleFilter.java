@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.BubbleFilter;
@@ -53,7 +53,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
    * 
    * @return a map with node Ids mapped to original outedges of that node.
    */
-  protected Map<Integer, Collection<GraphNode>> getOriginalInEdges() {
+  public Map<Integer, Collection<GraphNode>> getOriginalInEdges() {
     return originalInEdges;
   }
 
@@ -63,7 +63,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
    * 
    * @return a map with node Ids mapped to original outedges of that node.
    */
-  protected Map<Integer, Collection<GraphNode>> getOriginalOutEdges() {
+  public Map<Integer, Collection<GraphNode>> getOriginalOutEdges() {
     return originalOutEdges;
   }
 
@@ -72,7 +72,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
    * 
    * @return a Collection of graphnodes which represent the rootnodes of the graph.
    */
-  protected Collection<GraphNode> getRootNodes() {
+  public Collection<GraphNode> getRootNodes() {
     return rootNodes;
   }
 
@@ -85,7 +85,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
    * @param graphNodes a list of graphnodes for which the edges need to be set.
    * @param newBubbles a list of bubbles which already have correct edges.
    */
-  protected void pruneNodes(List<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
+  public void pruneNodes(List<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
     pruneBubbles(newBubbles);
 
     Iterator<GraphNode> iterator = graphNodes.iterator();

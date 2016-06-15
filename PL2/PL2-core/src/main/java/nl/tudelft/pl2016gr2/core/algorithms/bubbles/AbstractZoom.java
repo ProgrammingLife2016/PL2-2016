@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles;
 
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.CompareSubgraphs;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
@@ -29,7 +29,7 @@ public abstract class AbstractZoom {
    * @param bubble the bubble in which these graphnodes were contained.
    * @return the list of graphnodes without the in and outedges of the bubble aligned.
    */
-  protected List<GraphNode> alignNodes(List<GraphNode> graphNodes, Bubble bubble) {
+  public List<GraphNode> alignNodes(List<GraphNode> graphNodes, Bubble bubble) {
     graphNodes.sort((GraphNode left, GraphNode right) -> left.getLevel() - right.getLevel());
     graphNodes.removeAll(bubble.getInEdges());
     graphNodes.removeAll(bubble.getOutEdges());
@@ -44,7 +44,7 @@ public abstract class AbstractZoom {
    * @param originalOutEdges Mapping of ids to outedges.
    * @param bubble the bubble for which the in and out edges need to be mapped.
    */
-  protected void setOriginalEdges(Map<Integer, Collection<GraphNode>> originalInEdges, 
+  public void setOriginalEdges(Map<Integer, Collection<GraphNode>> originalInEdges, 
       Map<Integer, Collection<GraphNode>> originalOutEdges, Bubble bubble) {
     bubble.getInEdges().forEach(node -> {
       originalInEdges.put(node.getId(), new ArrayList<>(node.getInEdges()));
@@ -64,7 +64,7 @@ public abstract class AbstractZoom {
    * @param outEdges a mapping of ids to the original outedges of nodes.
    * @param bubbleId the id of the bubble.
    */
-  protected void pruneStart(Collection<GraphNode> bubbleInEdges, 
+  public void pruneStart(Collection<GraphNode> bubbleInEdges, 
       Map<Integer, Collection<GraphNode>> inEdges, Map<Integer, Collection<GraphNode>> outEdges,
       int bubbleId) {
     Iterator<GraphNode> inlinkIterator = bubbleInEdges.iterator();
@@ -87,7 +87,7 @@ public abstract class AbstractZoom {
    * @param outEdges a mapping of ids to the original outedges of nodes.
    * @param bubbleId the id of the bubble.
    */
-  protected void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
+  public void pruneEnd(Collection<GraphNode> bubbleOutEdges, 
       Map<Integer, Collection<GraphNode>> outEdges, Map<Integer, Collection<GraphNode>> inEdges,
       int bubbleId) {
     Iterator<GraphNode> outlinkIterator = bubbleOutEdges.iterator();

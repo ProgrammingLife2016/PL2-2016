@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core.algorithms.mutations;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.mutations;
 
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;

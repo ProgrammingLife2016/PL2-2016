@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core;
+package nl.tudelft.pl2016gr2.core.factories;
 
 import net.sourceforge.olduvai.treejuxtaposer.TreeParser;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;

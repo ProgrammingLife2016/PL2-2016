@@ -1,4 +1,4 @@
-package nl.tudelft.pl2016gr2.core;
+package nl.tudelft.pl2016gr2.core.factories;
 
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;

@@ -1,6 +1,6 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
-import nl.tudelft.pl2016gr2.core.algorithms.GraphBaseMapper;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.graph.GraphBaseMapper;
 import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;

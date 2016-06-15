@@ -1,5 +1,7 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.graph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.AbstractBubbleFilter;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.FilterHelpers;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;

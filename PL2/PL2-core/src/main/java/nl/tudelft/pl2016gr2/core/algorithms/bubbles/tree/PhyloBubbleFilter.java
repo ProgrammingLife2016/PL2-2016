@@ -1,5 +1,7 @@
-package nl.tudelft.pl2016gr2.core.algorithms;
+package nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree;
 
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.AbstractBubbleFilter;
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.FilterHelpers;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Bubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -58,8 +60,9 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
    * @param genomes the genomes that are selected
    * @return a filtered graph.
    */
-  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot treeRoot, Collection<Integer> genomes) {
-    IPhylogeneticTreeRoot newRoot = new TreeBuilder(treeRoot, genomes).getTree();
+  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot<?> treeRoot, 
+      Collection<Integer> genomes) {
+    IPhylogeneticTreeRoot<?> newRoot = new TreeBuilder(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
@@ -72,7 +75,7 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
     return poppedNodes;
   }
 
-  private List<Bubble> debubble(Set<GraphNode> graphNodes, IPhylogeneticTreeNode treeNode,
+  private List<Bubble> debubble(Set<GraphNode> graphNodes, IPhylogeneticTreeNode<?> treeNode,
       ArrayList<Bubble> newBubbles) {
     mutationId--;
     ArrayList<Integer> leaves = treeNode.getGenomes();
@@ -110,7 +113,7 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
   @SuppressWarnings("checkstyle:MethodLength")
   protected void filterBubbles(Queue<GraphNode> toVisit, Set<GraphNode> visited,
       Set<GraphNode> poppedNodes, ArrayList<Integer> leaves, Bubble bubble,
-      IPhylogeneticTreeNode treeNode, List<Bubble> newBubbles) {
+      IPhylogeneticTreeNode<?> treeNode, List<Bubble> newBubbles) {
     Set<GraphNode> endNodes = new HashSet<>();
     if (bubble != null) {
       endNodes.addAll(bubble.getOutEdges());
@@ -145,7 +148,7 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
     }
   }
 
-  private void createBubble(IPhylogeneticTreeNode treeNode, GraphNode inlink,
+  private void createBubble(IPhylogeneticTreeNode<?> treeNode, GraphNode inlink,
       List<GraphNode> bubbleLinks, List<Integer> leaves, Queue<GraphNode> toVisit,
       Set<GraphNode> visited, List<Bubble> newBubbles, Set<GraphNode> poppedNodes) {
     if (!bubbleLinks.isEmpty()) {
