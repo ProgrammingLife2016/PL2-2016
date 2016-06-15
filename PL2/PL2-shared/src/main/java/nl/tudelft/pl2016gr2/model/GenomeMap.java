@@ -18,8 +18,9 @@ import java.util.stream.Collectors;
  * reduce memory usage when storing genomes.
  * </p>
  * <p>
- * This class implements the <i>Singleton design pattern</i>. It can only be instantiated once. This
- * is useful because the mappings should be accessible everywhere.
+ * This class implements the <i>Singleton design pattern</i>.
+ * It can only be instantiated once.
+ * This is useful because the mappings should be accessible everywhere.
  * </p>
  *
  * @author Wouter Smit
