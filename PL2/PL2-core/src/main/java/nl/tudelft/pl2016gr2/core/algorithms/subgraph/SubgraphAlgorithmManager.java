@@ -33,11 +33,16 @@ public class SubgraphAlgorithmManager {
   /**
    * Create, compare and align the nodes of two subgraphs.
    *
-   * @param topGenomes     the genomes which must be present in the top subgraph.
-   * @param bottomGenomes  the genomes which must be present in the bottom subgraph.
-   * @param mainGraph      the main graph.
-   * @param mainGraphOrder the order of the main graph.
-   * @param treeRoot       the root of the phylogenetic tree.
+   * @param topGenomes
+   *          the genomes which must be present in the top subgraph.
+   * @param bottomGenomes
+   *          the genomes which must be present in the bottom subgraph.
+   * @param mainGraph
+   *          the main graph.
+   * @param mainGraphOrder
+   *          the order of the main graph.
+   * @param treeRoot
+   *          the root of the phylogenetic tree.
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
@@ -72,10 +77,14 @@ public class SubgraphAlgorithmManager {
   /**
    * Create and align the nodes of a single subgraph.
    *
-   * @param genomes        the genomes which must be present in the subgraph.
-   * @param mainGraph      the main graph.
-   * @param mainGraphOrder the order of the main graph.
-   * @param treeRoot       the root of the phylogenetic tree.
+   * @param genomes
+   *          the genomes which must be present in the subgraph.
+   * @param mainGraph
+   *          the main graph.
+   * @param mainGraphOrder
+   *          the order of the main graph.
+   * @param treeRoot
+   *          the root of the phylogenetic tree.
    * @return the ordered graph.
    */
   @SuppressWarnings("checkstyle:methodlength")
@@ -87,7 +96,11 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
+    // FilterBubbles filter = new FilterBubbles(subgraph);
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
+    // filter.filter(treeRoot, genomes);
+
+    // ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
 
     ArrayList<GraphNode> newNodes = new ArrayList<>();
@@ -109,6 +122,10 @@ public class SubgraphAlgorithmManager {
     orderedNodes = filter.filter(treeRoot, genomes);
     CompareSubgraphs.alignVertically(orderedNodes);
 
+    // FilterBubbles filter = new FilterBubbles(subgraph);
+    // ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
+    // CompareSubgraphs.alignVertically(orderedNodes);
+
     return new OrderedGraph(subgraph, orderedNodes);
   }
 
@@ -125,8 +142,10 @@ public class SubgraphAlgorithmManager {
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
      * the given genomes.
      *
-     * @param splitGraphs a {@link SplitGraphs} object.
-     * @param genomes     the list of genomes which must be present in the subgraph.
+     * @param splitGraphs
+     *          a {@link SplitGraphs} object.
+     * @param genomes
+     *          the list of genomes which must be present in the subgraph.
      */
     private SplitGraphsThread(SplitGraphs splitGraphs, Collection<Integer> genomes) {
       this.splitGraphs = splitGraphs;
@@ -203,6 +222,7 @@ public class SubgraphAlgorithmManager {
 
   /**
    * Get a unique dummy node id.
+   * 
    * @return a unique dummy node id.
    */
   private static synchronized int getUniqueDummyNodeId() {
