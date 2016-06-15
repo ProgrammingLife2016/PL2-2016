@@ -44,7 +44,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * @return An integer value that represents the <code>GraphNode</code>'s id.
    */
   int getId();
-  
+
   /**
    * Returns true if this node is an aggregate (a bubble) of more nodes, which are its children.
    *
