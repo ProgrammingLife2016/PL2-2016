@@ -61,7 +61,13 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
 
   @Override
   public void visit(StraightSequenceBubble bubble) {
-
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/StraightSequenceBubbleDescription.fxml"));
+      Node out = loader.load();
+      loader.<StraightSequenceBubbleDescriptionController>getController().setup(bubble);
+      return out;
+    };
   }
 
   @Override
