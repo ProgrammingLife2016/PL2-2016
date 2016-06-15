@@ -71,7 +71,13 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
 
   @Override
   public void visit(PointMutationBubble bubble) {
-
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/PointMutationBubbleDescription.fxml"));
+      Node out = loader.load();
+      loader.<PointMutationBubbleDescriptionController>getController().setup(bubble);
+      return out;
+    };
   }
 
   @Override

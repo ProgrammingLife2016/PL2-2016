@@ -3,15 +3,13 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.ListView?>
 <VBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.PointMutationBubbleDescriptionController">
 
     <Label text="Point mutation:" />
-    <ScrollPane >
-        <Label fx:id="labelSequence" />
-    </ScrollPane>
-    <Label text="Genomes in this sequence:" />
-    <ListView fx:id="listViewGenomes" />
+    <Label fx:id="labelGenomesOne" />
+    <ListView fx:id="listViewGenomesOne" />
+    <Label fx:id="labelGenomesTwo" />
+    <ListView fx:id="listViewGenomesTwo" />
 
 </VBox>
