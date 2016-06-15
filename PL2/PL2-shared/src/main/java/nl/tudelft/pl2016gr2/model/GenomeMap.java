@@ -9,13 +9,13 @@ import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Represents the mapping of genome names and the corresponding metadata to IDs.
+ * Represents the mapping of genome names to IDs that can be used throughout the application.
  * <p>
  * This is necessary to minimize the memory consumption of storing the genome data in the graph.
  * </p>
  * <p>
- * Unless explicitly necessary, the programmer should use the IDs rather than the names. This helps
- * reduce memory usage when storing genomes.
+ * Unless explicitly necessary, the programmer should use the IDs rather than the names.
+ * This helps reduce memory usage when storing genomes.
  * </p>
  * <p>
  * This class implements the <i>Singleton design pattern</i>.
@@ -43,7 +43,6 @@ public class GenomeMap {
   private static final Integer REFERENCE_ID = 0;
 
   private ArrayList<String> genomes = new ArrayList<>();
-  private ArrayList<MetaData> metadata = new ArrayList<>();
   private HashMap<String, Integer> identifierMap = new HashMap<>(INIT_CAPACITY, LOAD_FACTOR);
 
   /**
@@ -133,42 +132,6 @@ public class GenomeMap {
   }
 
   /**
-   * Add the genome to metadata mapping.
-   * <p>
-   * Automatically associates every metadata object with the correct genome IDs.
-   * This method will skip any metadata on genomes that are not present in the map.
-   * </p>
-   *
-   * @param metadata the complete <code>Collection</code> of metadata objects
-   */
-  public void addMetadata(Collection<MetaData> metadata) {
-    this.metadata = new ArrayList<>(genomes.size());
-    for (int i = 0; i < genomes.size(); i++) {
-      this.metadata.add(null);
-    }
-    for (MetaData data : metadata) {
-      Integer id = getId(data.specimenId);
-      if (id != null) {
-        this.metadata.set(id, data);
-      }
-    }
-  }
-
-  /**
-   * Get the metadata of the given genome.
-   *
-   * @param genomeId the id of the genome whose metadata to find
-   * @return the metadata of the genome, or <code>null</code> if it is not available
-   */
-  public MetaData getMetadata(Integer genomeId) {
-    if (genomeId == null || genomeId > metadata.size()) {
-      return null;
-    } else {
-      return metadata.get(genomeId);
-    }
-  }
-
-  /**
    * Returns the ID of the reference genome.
    *
    * @return The ID of the reference genome, or <code>null</code> if no reference was set
@@ -208,8 +171,7 @@ public class GenomeMap {
   /**
    * Clears all elements from the map.
    * <p>
-   * Can be used to reset the map.
-   * <b>All</b> data stored will be lost.
+   * Can be used to reset the map. <b>All</b> data stored will be lost.
    * </p>
    */
   public void clear() {

@@ -309,19 +309,19 @@ public class RootLayoutController implements
 
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
-      List<MetaData> metaData = new MetaDataReader(metadataFile).read();
-      GenomeMap.getInstance().addMetadata(metaData);
+      List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
       List<Annotation> annotations = new AnnotationReader(annotationFile).read();
-      metadataPropertyMap.set(new MetadataPropertyMap(metaData));
+      metadataPropertyMap.set(new MetadataPropertyMap(metaDatas));
       if (graph != null && tree != null) {
-        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaData);
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
         treeRoot = new TreeBuilder(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
-        searchPaneController.setData(metaData);
+        searchPaneController.setData(metaDatas);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
-            Level.SEVERE, "tree or graph was null");
+            Level.SEVERE,
+            "tree or graph was null");
       }
     } catch (IOException | InvalidFormatException ex) {
       Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);

@@ -1,16 +1,11 @@
 package nl.tudelft.pl2016gr2.model.graph.nodes;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import nl.tudelft.pl2016gr2.model.Annotation;
-import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
-import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -25,7 +20,6 @@ public abstract class AbstractGraphNode implements GraphNode {
   private int identifier;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
   private Annotation annotation;
-  private LineageColor lineage;
 
   private HashSet<GraphNode> inEdges;
   private HashSet<GraphNode> outEdges;
@@ -197,26 +191,5 @@ public abstract class AbstractGraphNode implements GraphNode {
   @Override
   public Annotation getAnnotation() {
     return annotation;
-  }
-
-  @Override
-  public LineageColor getMostFrequentLineage() {
-    if (lineage == null) {
-      HashMap<LineageColor, Integer> lineageFrequency = new HashMap<>();
-      GenomeMap genomeMap = GenomeMap.getInstance();
-      for (Integer genome : getGenomes()) {
-        LineageColor color = LineageColor.toLineage(genomeMap.getMetadata(genome).lineage);
-        lineageFrequency.put(color, lineageFrequency.getOrDefault(color, 0) + 1);
-      }
-      final IntegerProperty maxFreq = new SimpleIntegerProperty(0);
-      lineage = LineageColor.NONE;
-      lineageFrequency.forEach((LineageColor color, Integer freq) -> {
-        if (freq > maxFreq.get()) {
-          maxFreq.set(freq);
-          lineage = color;
-        }
-      });
-    }
-    return lineage;
   }
 }

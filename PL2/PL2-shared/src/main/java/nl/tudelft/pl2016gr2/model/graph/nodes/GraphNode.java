@@ -3,7 +3,6 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphNodeGuiData;
-import nl.tudelft.pl2016gr2.model.metadata.LineageColor;
 import nl.tudelft.pl2016gr2.util.Copyable;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
@@ -19,16 +18,16 @@ import java.util.Collection;
  * </p>
  * <p>
  * This interface uses the <i>composite design pattern</i> to (not) distinguish between
- * {@link Bubble}s and {@link Node}s.
+ * {@link Bubble}s and {@link Node}s
  * </p>
  * <p>
  * This interface uses the <i>visitor design pattern</i> to allow external actors to target specific
- * implementations of this interface.
- * This is useful when these are stored in a {@link SequenceGraph}.
+ * implementations of this interface. This is useful when these are stored in a
+ * {@link SequenceGraph}.
  * </p>
  * <p>
- * This interface uses the <i>factory method design pattern</i> to allow external actors to copy
- * the concrete instance of a GraphNode.
+ * This interface uses the <i>factory method design pattern</i> to allow external actors to copy the
+ * concrete instance of a GraphNode.
  * </p>
  *
  * @author Wouter Smit
@@ -119,8 +118,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding edges should be done with {@link #addAllInEdges(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllInEdges(Collection)}.
    * </p>
    *
    * @param node The node to add to the in-edges of this <code>GraphNode</code>.
@@ -220,8 +219,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding genomes should be done with {@link #addAllGenomes(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding genomes should
+   * be done with {@link #addAllGenomes(Collection)}.
    * </p>
    *
    * @param genome The name of the genome to add to this <code>GraphNode</code>.
@@ -348,14 +347,4 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
 
   Annotation getAnnotation();
 
-  /**
-   * Calculates the most frequent lineage in this node.
-   * <p>
-   * The most frequent lineage has the most genomes running through this node, compared to other
-   * lineages that are present in this node.
-   * </p>
-   *
-   * @return The most frequent <code>LineageColor</code>
-   */
-  LineageColor getMostFrequentLineage();
 }
