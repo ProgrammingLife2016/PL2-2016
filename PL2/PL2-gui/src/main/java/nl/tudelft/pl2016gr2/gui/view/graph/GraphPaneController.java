@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -30,6 +31,14 @@ import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.GraphBubbleDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IHeatmapColorer;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IndelDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.MutationDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.OverlapHeatmap;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PhyloBubbleDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PointMutationDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.StraightSequenceDensity;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
@@ -46,8 +55,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -89,19 +100,28 @@ public class GraphPaneController implements Initializable {
   private Label showingRange;
   @FXML
   private Label totalBases;
+  @FXML
+  private Canvas heatmap;
+  @FXML
+  private ComboBox<String> heatmapChooser;
+  @FXML
+  private Label heatmapLabel;
 
   public static final double NODE_MARGIN = 0.9;
   private static final double HALF_NODE_MARGIN = 1.0 - (1.0 - NODE_MARGIN) / 2.0;
   private static final double MIN_VISIBILITY_WIDTH = 5.0;
-  private static final int MINUMUM_BASE_SIZE = 50;
+  public static final int MINUMUM_BASE_SIZE = 150;
   private static final double MAX_EDGE_WIDTH = 4.0;
-  private static final double MIN_EDGE_WIDTH = 0.04;
+  private static final double MIN_EDGE_WIDTH = 0.1;
   private static final double SCROLL_BAR_HEIGHT = 20.0;
   private static final double UNIT_INCREMENT_RATE = 100.0;
   private static final double BLOCK_INCREMENT_RATE = 1000.0;
   private static final double SCROLL_ZOOM_FACTOR = 0.0025;
-  private static final double MAX_ZOOM_FACTOR = 6.0;
+  private static final double MAX_ZOOM_FACTOR = 180.0;
   private static final double BUBBLE_POP_SIZE = 150.0;
+  private static final double GRAPH_HEATMAP_HEIGHT = 20.0;
+  private static final double DECENT_NODE_WIDTH = 30.0;
+  public static final double HALF_HEATMAP_HEIGHT = GRAPH_HEATMAP_HEIGHT / 2.0;
 
   private ContextMenu contextMenu;
   private IPhylogeneticTreeRoot<?> treeRoot;
@@ -124,6 +144,11 @@ public class GraphPaneController implements Initializable {
   private final ObservableSet<Integer> bottomGraphGenomes
       = new ObservableSetWrapper<>(new HashSet<>());
 
+  private IHeatmapColorer heatmapColorer = (node, start) -> {
+  };
+
+  private final Map<String, IHeatmapColorer> heatmapOptions = new LinkedHashMap<>();
+
   /**
    * Get the pane in which the graphs are drawn.
    *
@@ -141,11 +166,12 @@ public class GraphPaneController implements Initializable {
    */
   @Override
   public void initialize(URL location, ResourceBundle resources) {
-    topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT));
+    topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT
+        - GRAPH_HEATMAP_HEIGHT));
     bottomPane.setVisible(false);
     deleteBottomGraphImage.setVisible(false);
     bottomPane.prefHeightProperty().bind(
-        mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
+        mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT - GRAPH_HEATMAP_HEIGHT).divide(2.0));
 
     initializeIndicatorLayout();
     initializeTopDragOverEvent();
@@ -156,7 +182,47 @@ public class GraphPaneController implements Initializable {
     initializeScrollEvent();
     initializeOnMouseEventHandler();
     initializeBaseLabels();
+    initializeHeatmap();
     Settings.getInstance().addListener(invalid -> redrawGraphs());
+  }
+
+  /**
+   * Initialize the graph heatmap.
+   */
+  private void initializeHeatmap() {
+    addHeatmapOptions();
+    heatmap.setHeight(GRAPH_HEATMAP_HEIGHT);
+    heatmap.widthProperty().bind(mainPane.widthProperty());
+    heatmapOptions.forEach((String name, IHeatmapColorer heatmap) -> {
+      heatmapChooser.getItems().add(name);
+    });
+    heatmapChooser.getSelectionModel().selectedItemProperty().addListener((obs, old, newValue) -> {
+      if (newValue.length() > 30) {
+        heatmapLabel.setText(newValue.substring(0, 30) + "...");
+      } else {
+        heatmapLabel.setText(newValue);
+      }
+      heatmapColorer = heatmapOptions.get(newValue);
+      graphUpdater.update();
+    });
+  }
+
+  /**
+   * Add all of the possible heatmap options.
+   */
+  private void addHeatmapOptions() {
+    GraphicsContext heatmapGraphics = heatmap.getGraphicsContext2D();
+    heatmapOptions.put("Amount of mutations (parralel paths in the graph)",
+        new MutationDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Point mutation bubbels",
+        new PointMutationDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Indel bubbels", new IndelDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Straight sequences bubbels",
+        new StraightSequenceDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Phylogenetic bubbles", new PhyloBubbleDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Graph based bubbles", new GraphBubbleDensity(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Equalities between the graphs (dark = equal, light = not equal",
+        new OverlapHeatmap(heatmapGraphics, zoomFactor));
   }
 
   /**
@@ -626,7 +692,7 @@ public class GraphPaneController implements Initializable {
    * @param root        the root of the phylogenetic tree.
    * @param annotations the list of annotations.
    */
-  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot root,
+  public void loadMainGraph(SequenceGraph graph, IPhylogeneticTreeRoot<?> root,
       List<Annotation> annotations) {
     clear();
     treeRoot = root;
@@ -642,7 +708,7 @@ public class GraphPaneController implements Initializable {
     if (getDrawnGraphs() == 0) {
       return;
     }
-    clearEdgeCanvas();
+    clearCanvas();
     getTopGraphGenomes().clear();
     getBottomGraphGenomes().clear();
     topPane.getChildren().clear();
@@ -654,13 +720,15 @@ public class GraphPaneController implements Initializable {
   }
 
   /**
-   * Clear the canvas of the edges.
+   * Clear all of the canvas'.
    */
-  private void clearEdgeCanvas() {
+  private void clearCanvas() {
     topEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, topEdgeCanvas.getWidth(),
         topEdgeCanvas.getWidth());
     bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(),
         bottomEdgeCanvas.getWidth());
+    heatmap.getGraphicsContext2D().clearRect(0, 0, heatmap.getWidth(),
+        heatmap.getHeight());
   }
 
   /**
@@ -669,12 +737,13 @@ public class GraphPaneController implements Initializable {
    */
   private void updateGraphSize() {
     if (getDrawnGraphs() < 2) {
-      topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT));
+      topPane.prefHeightProperty().bind(mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT
+          - GRAPH_HEATMAP_HEIGHT));
       bottomPane.setVisible(false);
       deleteBottomGraphImage.setVisible(false);
     } else {
       topPane.prefHeightProperty().bind(
-          mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT).divide(2.0));
+          mainPane.prefHeightProperty().add(-SCROLL_BAR_HEIGHT - GRAPH_HEATMAP_HEIGHT).divide(2.0));
       bottomPane.setVisible(true);
       deleteBottomGraphImage.setVisible(true);
     }
@@ -685,12 +754,12 @@ public class GraphPaneController implements Initializable {
    */
   private void updateGraph() {
     double graphWidth = mainPane.getWidth();
-    int levelsToDraw = (int) (graphWidth / zoomFactor.get());
-    int startLevel = (int) (amountOfLevels.get() * scrollbar.getValue());
+    int levelsToDraw = (int) (graphWidth / zoomFactor.get()) + 1;
+    double startLevel = amountOfLevels.get() * scrollbar.getValue();
     if (startLevel < 0) {
       startLevel = 0;
     }
-    clearEdgeCanvas();
+    clearCanvas();
     if (topGraph != null) {
       drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
@@ -712,7 +781,7 @@ public class GraphPaneController implements Initializable {
    * @param endLevel   the level where to stop drawing.
    */
   private void drawGraph(Pane pane, Canvas canvas, OrderedGraph orderedGraph, int genomeCount,
-      int startLevel, int endLevel) {
+      double startLevel, double endLevel) {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
     GraphViewRange fullRange = new GraphViewRange(0, pane.getPrefHeight());
@@ -735,12 +804,14 @@ public class GraphPaneController implements Initializable {
    */
   @SuppressWarnings("checkstyle:MethodLength") // either this or long lines.
   private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int endLevel, GraphViewRange viewRange) {
+      double startLevel, double endLevel, GraphViewRange viewRange) {
     drawnGraphNodes.add(node);
     node.getGuiData().range = viewRange;
-    double width = calculateNodeWidth(node);
-    double fade = calculateBubbleFadeFactor(node, width);
-    if (width < MIN_VISIBILITY_WIDTH || !isInView(node, startLevel, endLevel)) {
+    double width = calculateNodeWidth(node, zoomFactor.get());
+    if (!isInView(node, startLevel, endLevel)) {
+      return;
+    } else if (width < MIN_VISIBILITY_WIDTH) {
+      heatmapColorer.drawHeatmap(node, startLevel);
       return;
     }
     double height = node.getGuiData().maxHeight * viewRange.rangeHeight;
@@ -749,6 +820,7 @@ public class GraphPaneController implements Initializable {
     }
     IViewGraphNode viewNode = ViewNodeBuilder.buildNode(node, width, height);
 
+    double fade = calculateBubbleFadeFactor(node, width);
     if (fade > 0.0) {
       viewNode.get().setOnMouseClicked(mouseEvent -> {
         selectionManager.select(viewNode);
@@ -778,8 +850,17 @@ public class GraphPaneController implements Initializable {
       label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
       pane.getChildren().add(label);
     }
+    heatmapColorer.drawHeatmap(node, startLevel);
   }
 
+  /**
+   * Calculate the fade factor of the bubbles. If a bubble is twice the size of the screen it will
+   * be fully faded out.
+   *
+   * @param bubble the bubble.
+   * @param width  the width.
+   * @return the fade factor.
+   */
   private double calculateBubbleFadeFactor(GraphNode bubble, double width) {
     if (!bubble.hasChildren()) {
       return 1.0;
@@ -816,7 +897,7 @@ public class GraphPaneController implements Initializable {
    *                        children of this bubble.
    */
   private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      int startLevel, int endLevel, GraphViewRange viewRange) {
+      double startLevel, double endLevel, GraphViewRange viewRange) {
     Collection<GraphNode> poppedNodes = bubble.pop();
     for (GraphNode poppedNode : poppedNodes) {
       drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange);
@@ -831,7 +912,7 @@ public class GraphPaneController implements Initializable {
    * @param endLevel   the end level of the current view.
    * @return if the node is inside of the view.
    */
-  private boolean isInView(GraphNode node, int startLevel, int endLevel) {
+  private boolean isInView(GraphNode node, double startLevel, double endLevel) {
     int nodeStart = node.getLevel() - node.size();
     int nodeEnd = node.getLevel();
     return nodeStart < endLevel && nodeEnd > startLevel;
@@ -840,15 +921,20 @@ public class GraphPaneController implements Initializable {
   /**
    * Calculate the radius of the node. The radius depends on the amount of bases inside the node.
    *
-   * @param node the node.
+   * @param node       the node.
+   * @param zoomfactor the current zoom factor.
    * @return the radius.
    */
-  private double calculateNodeWidth(GraphNode node) {
+  public static double calculateNodeWidth(GraphNode node, double zoomfactor) {
     int nodeSize = node.size();
-    if (nodeSize < MINUMUM_BASE_SIZE) {
-      nodeSize = MINUMUM_BASE_SIZE;
+    double width = nodeSize * zoomfactor;
+    if (nodeSize < MINUMUM_BASE_SIZE && width < DECENT_NODE_WIDTH) {
+      width = MINUMUM_BASE_SIZE * zoomfactor;
+      if (width > DECENT_NODE_WIDTH) {
+        return DECENT_NODE_WIDTH;
+      }
     }
-    return nodeSize * zoomFactor.get();
+    return width;
   }
 
   /**
@@ -859,7 +945,7 @@ public class GraphPaneController implements Initializable {
    * @param startLevel      the start level: where to start drawing.
    * @param genomeCount     the amount of genomes which are present in the drawn graph.
    */
-  private void drawEdges(Canvas canvas, HashSet<GraphNode> drawnGraphNodes, int startLevel,
+  private void drawEdges(Canvas canvas, HashSet<GraphNode> drawnGraphNodes, double startLevel,
       int genomeCount) {
     drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
@@ -890,7 +976,7 @@ public class GraphPaneController implements Initializable {
    * @param viewRange      the range of values which may be used as y coordinate to draw this edge.
    */
   private void drawEdge(GraphicsContext graphicContext, GraphNode fromNode, GraphNode toNode,
-      double edgeWidth, int startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
+      double edgeWidth, double startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
     graphicContext.setLineWidth(edgeWidth * 2);
     double startX;
     if (fromNode.hasChildren()) {
