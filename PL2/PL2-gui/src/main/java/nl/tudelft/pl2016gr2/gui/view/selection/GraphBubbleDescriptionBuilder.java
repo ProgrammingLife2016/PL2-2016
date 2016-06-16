@@ -3,6 +3,7 @@ package nl.tudelft.pl2016gr2.gui.view.selection;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -61,6 +62,17 @@ public class GraphBubbleDescriptionBuilder implements NodeVisitor {
           .getResource("pages/selection_descriptions/PhyloBubbleDescription.fxml"));
       Node out = loader.load();
       loader.<PhyloBubbleDescriptionController>getController().setup(bubble);
+      return out;
+    };
+  }
+
+  @Override
+  public void visit(GraphBubble bubble) {
+    selectionInfo = () -> {
+      FXMLLoader loader = new FXMLLoader(getClass().getClassLoader()
+          .getResource("pages/selection_descriptions/GraphBubbleDescription.fxml"));
+      Node out = loader.load();
+      loader.<GraphBubbleDescriptionController>getController().setup(bubble);
       return out;
     };
   }
