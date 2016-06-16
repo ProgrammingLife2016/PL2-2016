@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
+import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 
 import java.net.URL;
@@ -57,9 +58,10 @@ public class PointMutationBubbleDescriptionController implements Initializable {
       GraphNode childOne = it.next();
       GraphNode childTwo = it.next();
 
-      if (childOne.getClass() == SequenceNode.class && childTwo.getClass() == SequenceNode.class) {
-        SequenceNode seqOne = ((SequenceNode) childOne);
-        SequenceNode seqTwo = ((SequenceNode) childTwo);
+      if (!childOne.hasChildren() && !childTwo.hasChildren()) {
+        /* we can now assume the children implement Node */
+        Node seqOne = ((Node) childOne);
+        Node seqTwo = ((Node) childTwo);
 
         setupLabels(seqOne, seqTwo);
         setupListViews(seqOne, seqTwo);
@@ -70,7 +72,7 @@ public class PointMutationBubbleDescriptionController implements Initializable {
   /**
    * Sets up the labels.
    */
-  private void setupLabels(SequenceNode seqOne, SequenceNode seqTwo) {
+  private void setupLabels(Node seqOne, Node seqTwo) {
     String labelText = "Genomes with base %s:";
     labelGenomesOne.setText(String.format(labelText, seqOne.getSequence()));
     labelGenomesTwo.setText(String.format(labelText, seqTwo.getSequence()));
@@ -79,7 +81,7 @@ public class PointMutationBubbleDescriptionController implements Initializable {
   /**
    * Sets up the list views.
    */
-  private void setupListViews(SequenceNode seqOne, SequenceNode seqTwo) {
+  private void setupListViews(Node seqOne, Node seqTwo) {
     List<String> genomesOne = seqOne.getGenomes().stream().map(
         genomeId -> GenomeMap.getInstance().getGenome(genomeId)
     ).sorted().collect(Collectors.toCollection(ArrayList::new));
