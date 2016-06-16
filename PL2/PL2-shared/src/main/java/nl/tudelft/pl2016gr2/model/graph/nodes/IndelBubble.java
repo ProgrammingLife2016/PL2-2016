@@ -75,6 +75,9 @@ public class IndelBubble extends Bubble {
 
   @Override
   public void unpop() {
+    for (GraphNode child : getChildren()) {
+      child.unpop();
+    }
     if (isPopped) {
       setUnpoppedEdges();
       isPopped = false;
