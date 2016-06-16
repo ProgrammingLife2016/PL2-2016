@@ -52,7 +52,7 @@
 	graph-color-bubble-phylo: rgb(200, 255, 255);
   graph-color-bubble-graph: rgb(150, 150, 200);
 
-	graph-color-edge: rgb(0, 0, 0);
+  graph-color-annotation: rgb(255, 220, 0);
 
 	/* Phylogenetic tree colors */
 	tree-color-node: rgb(150, 140, 150);
@@ -307,7 +307,26 @@
  * Check box                                                                   *
  *                                                                             *
  ******************************************************************************/
+
 .check-box {
   -fx-font-family: 'Open Sans';
   -fx-text-fill: dark-text-color;
 }
+
+/*******************************************************************************
+ *                                                                             *
+ * Graph Annotations                                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.annotationBox {
+  -fx-fill: graph-color-annotation;
+  -fx-stroke: black;
+  -fx-stroke-width: 1.0;
+}
+
+.annotationBoxLabel {
+  -fx-font: 8pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+

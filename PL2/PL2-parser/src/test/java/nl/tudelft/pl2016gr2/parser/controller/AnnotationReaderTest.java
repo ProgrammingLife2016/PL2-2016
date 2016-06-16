@@ -110,8 +110,8 @@ public class AnnotationReaderTest {
   @Test
   public void testReadStart() {
     Iterator<Annotation> it = readResult.iterator();
-    assertEquals(3552761, it.next().start);
-    assertEquals(3116828, it.next().start);
+    assertEquals(3552760, it.next().start);
+    assertEquals(3116827, it.next().start);
   }
 
   /**
@@ -120,8 +120,8 @@ public class AnnotationReaderTest {
   @Test
   public void testReadEnd() {
     Iterator<Annotation> it = readResult.iterator();
-    assertEquals(3553087, it.next().end);
-    assertEquals(3118237, it.next().end);
+    assertEquals(3553086, it.next().end);
+    assertEquals(3118236, it.next().end);
   }
 
   /**

@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author Faris
  */
-public class PhylogeneticTreeRoot extends PhylogeneticTreeNode 
+public class PhylogeneticTreeRoot extends PhylogeneticTreeNode
     implements IPhylogeneticTreeRoot<PhylogeneticTreeNode> {
 
   private final HashMap<Integer, PhylogeneticTreeNode> genomeToTreeMap = new HashMap<>();
@@ -71,12 +71,18 @@ public class PhylogeneticTreeRoot extends PhylogeneticTreeNode
 
   @Override
   public void setDrawnInTop(int genome, boolean isDrawn) {
-    genomeToTreeMap.get(genome).setDrawnInTop(isDrawn);
+    PhylogeneticTreeNode node = genomeToTreeMap.get(genome);
+    if (node != null) {
+      genomeToTreeMap.get(genome).setDrawnInTop(isDrawn);
+    }
   }
 
   @Override
   public void setDrawnInBottom(int genome, boolean isDrawn) {
-    genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
+    PhylogeneticTreeNode node = genomeToTreeMap.get(genome);
+    if (node != null) {
+      genomeToTreeMap.get(genome).setDrawnInBottom(isDrawn);
+    }
   }
 
   @Override

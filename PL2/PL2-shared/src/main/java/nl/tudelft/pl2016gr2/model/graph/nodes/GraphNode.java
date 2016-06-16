@@ -9,6 +9,7 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
 
 import java.util.Collection;
+import java.util.PriorityQueue;
 
 /**
  * Represents a node in a <code>SequenceGraph</code> and provides basic operations on it.
@@ -342,11 +343,26 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    */
   boolean isPopped();
 
-  void setAnnotation(Annotation annotation);
+  /**
+   * Add an annotation to this node.
+   * 
+   * @param annotation the annotation to add.
+   */
+  void addAnnotation(Annotation annotation);
 
-  boolean hasAnnotation();
+  /**
+   * Check if this node has an annotation.
+   * 
+   * @return if this node has an annotation.
+   */
+  boolean hasAnnotations();
 
-  Annotation getAnnotation();
+  /**
+   * Get the annotations ordered by position.
+   *
+   * @return the annotations ordered by position.
+   */
+  PriorityQueue<Annotation> getAnnotations();
 
   /**
    * Calculates the most frequent lineage in this node.

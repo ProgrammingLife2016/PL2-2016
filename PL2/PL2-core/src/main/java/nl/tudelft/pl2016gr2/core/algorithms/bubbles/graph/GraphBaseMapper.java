@@ -85,14 +85,18 @@ public class GraphBaseMapper {
 
   private void mapAnnotation(GraphNode firstNode, Annotation annotation, int nodeStart,
       Integer genomeId) {
-    firstNode.setAnnotation(annotation);
+    annotation.setStartInGraph(firstNode.getLevel() - firstNode.size()
+        + annotation.start - nodeStart);
+
+    firstNode.addAnnotation(annotation);
     int basePosition = nodeStart + firstNode.size();
     GraphNode curNode = firstNode;
     while (basePosition < annotation.end) {
       curNode = getNextNode(curNode, genomeId);
-      curNode.setAnnotation(annotation);
+      curNode.addAnnotation(annotation);
       basePosition += curNode.size();
     }
+    annotation.setEndInGraph(curNode.getLevel() + annotation.end - basePosition);
   }
 
   /**

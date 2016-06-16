@@ -21,23 +21,23 @@ import java.util.Set;
 
 /**
  * Class used to make PhyloBubbles. These are bubbles based on the phylogenetic tree.
- * 
+ *
  * @author Casper
  *
  */
 public class PhyloBubbleFilter extends AbstractBubbleFilter {
-  
+
   private int mutationId = -1;
-  
+
   /**
    * Creates an instance of this class.
-   * 
+   *
    * @param orderedNodes : the nodes of the original graph.
    */
   public PhyloBubbleFilter(Collection<GraphNode> orderedNodes) {
     super(orderedNodes);
   }
-  
+
   /**
    * Zooms in on this node, if it's a bubble, by going down a level in the phylogenetic tree.
    *
@@ -57,10 +57,10 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
    * these.
    *
    * @param treeRoot the root of the tree.
-   * @param genomes the genomes that are selected
+   * @param genomes  the genomes that are selected
    * @return a filtered graph.
    */
-  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot<?> treeRoot, 
+  public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot<?> treeRoot,
       Collection<Integer> genomes) {
     IPhylogeneticTreeRoot<?> newRoot = new TreeBuilder(treeRoot, genomes).getTree();
     Set<GraphNode> graphNodes = new HashSet<>();
@@ -197,7 +197,9 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
   private List<GraphNode> calcNodeOutlinks(Collection<GraphNode> outEdges,
       ArrayList<Integer> leaves, Bubble bubble) {
     List<GraphNode> curNodeOutlinks = new ArrayList<>();
-
+    if (outEdges == null) {
+      return curNodeOutlinks; // should be fixed??? -> occurs for first bubble of the graph
+    }
     for (GraphNode outlink : outEdges) {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
@@ -211,9 +213,6 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
         }
       }
     }
-
     return curNodeOutlinks;
   }
-  
-  
 }

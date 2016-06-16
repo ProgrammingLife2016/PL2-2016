@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.model.metadata;
 
 import javafx.scene.paint.Color;
+import nl.tudelft.pl2016gr2.model.MetaData;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,6 +33,20 @@ public enum LineageColor {
 
   public Color getColor() {
     return color;
+  }
+
+  /**
+   * Transforms the lineage string of the given metadata into a lineage.
+   *
+   * @param metadata the metadata.
+   * @return the lineage.
+   */
+  @SuppressWarnings("checkstyle:MethodLength")
+  public static LineageColor toLineage(MetaData metadata) {
+    if (metadata == null) {
+      return NONE;
+    }
+    return toLineage(metadata.lineage);
   }
 
   /**
