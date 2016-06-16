@@ -68,6 +68,8 @@ public class RootLayoutController implements
 
   @FXML
   private MetadataSearchPaneController metadataSearchPaneController;
+  @FXML
+  private AnnotationSearchPaneController annotationSearchPaneController;
 
   @TestId(id = "treeManager")
   @FXML
@@ -295,6 +297,7 @@ public class RootLayoutController implements
       }
     });
     metadataSearchPaneController.setup(selectionManager, graphPaneController);
+    annotationSearchPaneController.setup(graphPaneController);
   }
 
   @Override
@@ -316,6 +319,7 @@ public class RootLayoutController implements
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
         metadataSearchPaneController.setData(metaData);
+        annotationSearchPaneController.setData(annotations);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE, "tree or graph was null");

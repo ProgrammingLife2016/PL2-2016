@@ -17,6 +17,7 @@
                         <fx:include fx:id="metadataSearchPane" source="MetadataSearchPane.fxml" />
                     </Tab>
                     <Tab text="Annotations" closable="false">
+                        <fx:include fx:id="annotationSearchPane" source="AnnotationSearchPane.fxml" />
                     </Tab>
                 </tabs>
             </TabPane>
