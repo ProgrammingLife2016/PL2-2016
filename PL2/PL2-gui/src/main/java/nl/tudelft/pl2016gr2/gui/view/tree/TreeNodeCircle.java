@@ -26,6 +26,7 @@ import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * This class represent a node of the phylogenetic tree which can be drawn in the user interface (it
@@ -42,8 +43,10 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private static final double MAX_EDGE_LENGTH = 200.0;
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
-  private static final double EDGE_WIDTH = 2.0;
-  private static final double HIGHLIGHTED_EDGE_WIDTH = 8.0;
+
+  private static final double EDGE_WIDTH = 12.0;
+  private static final double EDGE_INNER_WIDTH = 4.0;
+
 
   private final IPhylogeneticTreeNode<?> dataNode;
   @TestId(id = "children")
@@ -51,7 +54,8 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private final Area area;
   private final TreePaneController treePaneController;
   private boolean isLeaf;
-  private final Line edge = new Line();
+  private final Line edgeInner = new Line();
+  private final Line edgeOuter = new Line();
   private Rectangle highlightArea;
 
   /**
@@ -90,11 +94,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
       resetBorderColor();
     });
     dataNode.getInHighlightedPathProperty().addListener((observable, oldValue, newValue) -> {
-      if (newValue) {
-        edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
-      } else {
-        edge.setStrokeWidth(EDGE_WIDTH);
-      }
+      setColor();
     });
   }
 
@@ -148,14 +148,29 @@ public class TreeNodeCircle extends Circle implements ISelectable {
 
   /**
    * Set the default color of this node.
+   *
+   * <p>
+   * Will also set the inner line to white when this node should be highlighted.
+   * </p>
    */
   private void setColor() {
+
     if (dataNode.isLeaf()) {
       getStyleClass().add("treeNodeLeaf");
     } else {
       getStyleClass().add("treeNode");
     }
-    edge.setStroke(dataNode.getLineageColor());
+
+    if (dataNode.getInHighlightedPathProperty().get()) {
+      edgeInner.setStroke(Color.WHITE);
+    } else {
+      edgeInner.setStroke(Color.TRANSPARENT);
+    }
+
+    edgeOuter.setStroke(dataNode.getLineageColor());
+    edgeInner.toBack();
+    edgeOuter.toBack();
+
   }
 
   /**
@@ -266,18 +281,17 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * @param graphPane the pane in which the edge should be drawn.
    */
   private void drawEdge(TreeNodeCircle parent, TreeNodeCircle child, Pane graphPane) {
-    edge.setSmooth(true);
-    edge.startXProperty().bind(parent.centerXProperty());
-    edge.startYProperty().bind(parent.centerYProperty());
-    edge.endXProperty().bind(child.centerXProperty());
-    edge.endYProperty().bind(child.centerYProperty());
-    graphPane.getChildren().add(edge);
-    edge.toBack();
-    if (dataNode.getInHighlightedPathProperty().get()) {
-      edge.setStrokeWidth(HIGHLIGHTED_EDGE_WIDTH);
-    } else {
-      edge.setStrokeWidth(EDGE_WIDTH);
-    }
+    Stream.of(edgeInner, edgeOuter).forEach(edge -> {
+      edge.setSmooth(true);
+      edge.startXProperty().bind(parent.centerXProperty());
+      edge.startYProperty().bind(parent.centerYProperty());
+      edge.endXProperty().bind(child.centerXProperty());
+      edge.endYProperty().bind(child.centerYProperty());
+    });
+    edgeOuter.setStrokeWidth(EDGE_WIDTH);
+    edgeInner.setStrokeWidth(EDGE_INNER_WIDTH);
+    graphPane.getChildren().addAll(edgeInner, edgeOuter);
+    setColor();
   }
 
   /**
