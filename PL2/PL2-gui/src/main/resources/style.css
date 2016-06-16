@@ -67,17 +67,16 @@
 		);
 
 	/* Search area colors */
-
 }
 
 .default-light-text {
-	-fx-font-family: "Open Sans";
-	-fx-text-fill: light-text-color;
+  -fx-font-family: "Open Sans";
+  -fx-text-fill: light-text-color;
 }
 
 .default-dark-text {
-	-fx-font-family: "Open Sans";
-	-fx-text-fill: dark-text-color;
+  -fx-font-family: "Open Sans";
+  -fx-text-fill: dark-text-color;
 }
 
 /*******************************************************************************
@@ -87,37 +86,41 @@
  ******************************************************************************/
 
 .graphNodeOverlap {
-	-fx-fill: graph-color-node-overlap;
+  -fx-fill: graph-color-node-overlap;
 }
 
 .graphNodeNoOverlap {
-	-fx-fill: graph-color-node-no-overlap;
+  -fx-fill: graph-color-node-no-overlap;
 }
 
 .graphUnselectedNode {
-	-fx-stroke: black;
-	-fx-stroke-width: 1.0;
+  -fx-stroke: black;
+  -fx-stroke-width: 1.0;
 }
 
 .graphSelectedNode {
-	-fx-stroke: black;
-	-fx-stroke-width: 5.0;
+  -fx-stroke: black;
+  -fx-stroke-width: 5.0;
 }
 
 .graphBubbleStraight {
-	-fx-fill: graph-color-bubble-straight;
+  -fx-fill: graph-color-bubble-straight;
 }
 
 .graphBubbleIndel {
-	-fx-fill: graph-color-bubble-indel;
+  -fx-fill: graph-color-bubble-indel;
 }
 
 .graphBubblePoint {
-	-fx-fill: graph-color-bubble-point;
+  -fx-fill: graph-color-bubble-point;
 }
 
 .graphBubblePhylo {
-	-fx-fill: graph-color-bubble-phylo;
+  -fx-fill: graph-color-bubble-phylo;
+}
+
+.graphBubbleGraph {
+  -fx-fill: graph-color-bubble-graph;
 }
 
 .graphBubbleGraph {
@@ -131,31 +134,31 @@
  ******************************************************************************/
 
 .treeNode, .treeNodeLeaf {
-	-fx-stroke-width: 4.0;
+  -fx-stroke-width: 4.0;
 }
 
 .treeNode {
-	-fx-fill: tree-color-node;
+  -fx-fill: tree-color-node;
 }
 
 .treeNodeLeaf {
-	-fx-fill: tree-color-node-leaf;
+  -fx-fill: tree-color-node-leaf;
 }
 
 .treeNodeInTopGraph {
-	-fx-stroke: tree-color-node-border-top-selected;
+  -fx-stroke: tree-color-node-border-top-selected;
 }
 
 .treeNodeInBottom {
-	-fx-stroke: tree-color-node-border-bottom-selected;
+  -fx-stroke: tree-color-node-border-bottom-selected;
 }
 
 .treeNodeInBothGraphs {
-	-fx-stroke: tree-color-node-border-both-selected;
+  -fx-stroke: tree-color-node-border-both-selected;
 }
 
 .treeHighlightArea {
-	-fx-fill: derive(grey7, -25%);
+  -fx-fill: derive(grey7, -25%);
 }
 
 /*******************************************************************************
@@ -165,21 +168,21 @@
  ******************************************************************************/
 
 .button {
-	-fx-font-family: 'Open Sans';
-	-fx-text-fill: light-text-color;
-	-fx-background-color:grey4;
+  -fx-font-family: 'Open Sans';
+  -fx-text-fill: light-text-color;
+  -fx-background-color:grey4;
 }
 
 .button:hover {
-	-fx-background-color: grey3;
+  -fx-background-color: grey3;
 }
 
 .button:pressed {
-	-fx-background-color: grey2;
+  -fx-background-color: grey2;
 }
 
 .button:disabled {
-	-fx-background-color: grey6;
+  -fx-background-color: grey6;
 }
 
 /*******************************************************************************
@@ -189,12 +192,12 @@
  ******************************************************************************/
 
 .split-pane {
-	-fx-background-insets: 0;
-	-fx-padding: 0;
+  -fx-background-insets: 0;
+  -fx-padding: 0;
 }
 
 .split-pane:horizontal > .split-pane-divider {
-	-fx-background-color: grey2;
+  -fx-background-color: grey2;
 }
 
 /*******************************************************************************
@@ -203,23 +206,22 @@
  *                                                                             *
  ******************************************************************************/
 
-
 .menu-bar {
-	-fx-font: bold 9pt 'Open Sans';
-	-fx-background-color: grey1;
+  -fx-font: bold 9pt 'Open Sans';
+  -fx-background-color: grey1;
 }
 
 .menu-bar > .container > .menu-button:hover,
 .menu-bar > .container > .menu-button:focused,
 .menu-bar > .container > .menu-button:showing {
-	-fx-background-color: grey3;
+  -fx-background-color: grey3;
 }
 
 .menu-bar > .container > .menu-button:showing {
-	-fx-background-color: grey3;
+  -fx-background-color: grey3;
 }
 .menu-bar > .container > .menu-button > .label {
-	-fx-text-fill: light-text-color;
+  -fx-text-fill: light-text-color;
 }
 
 /*******************************************************************************
@@ -229,15 +231,15 @@
  ******************************************************************************/
 
 .menu-item > .label {
-	-fx-font: 10pt 'Open Sans';
-	-fx-text-fill: dark-text-color;
+  -fx-font: 10pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
 }
 
 .menu-item:focused,
 .menu-item:hover,
 .menu-item:focused > .label,
 .menu-item:hover > .label {
-	-fx-background-color: grey6;
+  -fx-background-color: grey6;
 }
 
 /*******************************************************************************
@@ -245,20 +247,59 @@
  * Scroll bar                                                                  *
  *                                                                             *
  ******************************************************************************/
+
 .scroll-bar {
-    -fx-base: grey5;
+  -fx-base: grey5;
 }
 
 .scroll-bar:vertical .thumb, .scroll-bar:horizontal .thumb {
-    -fx-background-color: grey3;
-    -fx-background-insets: 2, 0, 0;
-    -fx-background-radius: 0.5em;
-	-fx-border-radius: 0.5em;
+  -fx-background-color: grey3;
+  -fx-background-insets: 2, 0, 0;
+  -fx-background-radius: 0.5em;
+  -fx-border-radius: 0.5em;
 }
 
 .scroll-bar:vertical .thumb:hover, .scroll-bar:horizontal .thumb:hover,
 .scroll-bar:vertical .thumb:pressed, .scroll-bar:horizontal .thumb:pressed {
-    -fx-background-color: grey2;
+  -fx-background-color: grey2;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Check box                                                                   *
+ *                                                                             *
+ ******************************************************************************/
+
+.check-box {
+  -fx-font-family: 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Graph Geatmap Combobox                                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.graphHeatmapLabel {
+  -fx-font: 10pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+
+.graphHeatmapCombobox .list-view .list-cell {
+  -fx-font: 10pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+
+.graphHeatmapCombobox .list-view .list-cell:focused,
+.graphHeatmapCombobox .list-view .list-cell:focused:hover {
+  -fx-background-color: grey3;
+  -fx-text-fill: light-text-color;
+}
+
+.graphHeatmapCombobox .list-view .list-cell:hover {
+  -fx-background-color: grey6;
+  -fx-text-fill: dark-text-color;
 }
 
 /*******************************************************************************
