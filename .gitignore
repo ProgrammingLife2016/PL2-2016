@@ -261,3 +261,8 @@ manifest.mf
 build.xml
 nbactions.xml
 nb-configuration.xml
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
