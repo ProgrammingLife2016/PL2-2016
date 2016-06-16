@@ -951,14 +951,12 @@ public class GraphPaneController implements Initializable {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
           double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel,
-              node.getGuiData().range, outEdge.getGuiData().range);
+          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel);
         }
         for (GraphNode inEdge : node.getInEdges()) {
           if (!drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
-            drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel,
-                node.getGuiData().range, inEdge.getGuiData().range);
+            drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel);
           }
         }
       }
@@ -973,10 +971,10 @@ public class GraphPaneController implements Initializable {
    * @param toNode         the node to draw the edge to.
    * @param edgeWidth      the width of the edge.
    * @param startLevel     the start level: where to start drawing.
-   * @param viewRange      the range of values which may be used as y coordinate to draw this edge.
    */
+  @SuppressWarnings("checkstyle:MethodLength")
   private void drawEdge(GraphicsContext graphicContext, GraphNode fromNode, GraphNode toNode,
-      double edgeWidth, double startLevel, GraphViewRange fromRange, GraphViewRange toRange) {
+      double edgeWidth, double startLevel) {
     graphicContext.setLineWidth(edgeWidth * 2);
     double startX;
     if (fromNode.hasChildren()) {
@@ -991,6 +989,8 @@ public class GraphPaneController implements Initializable {
     } else {
       endX = zoomFactor.get() * (toNode.getLevel() - startLevel - toNode.size() * HALF_NODE_MARGIN);
     }
+    GraphViewRange fromRange = fromNode.getGuiData().range;
+    GraphViewRange toRange = toNode.getGuiData().range;
     double startY = fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
         + fromRange.rangeStartY;
     double endY = toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY;
