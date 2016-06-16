@@ -1,6 +1,7 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
 import nl.tudelft.pl2016gr2.parser.controller.GfaReader;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;

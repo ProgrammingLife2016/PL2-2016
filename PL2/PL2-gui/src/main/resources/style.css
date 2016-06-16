@@ -5,69 +5,68 @@
  ******************************************************************************/
 
 .root {
-  -fx-base: grey7; 
+	-fx-base: grey7; 
 
-  light-text-color: grey7;
-  dark-text-color: grey1;
+	light-text-color: grey7;
+	dark-text-color: grey1;
 
-  -fx-accent: transparent;
-  -fx-focus-color: transparent;
-  -fx-faint-focus-color: transparent;
+	-fx-accent: transparent;
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
 
-  /* General application colors */
-  grey8: rgb(255, 255, 255);
-  grey7: rgb(229, 229, 229); /* application background color */
-  grey6: rgb(153, 153, 153);
-  grey5: rgb(132, 132, 132);
-  grey4: rgb(113, 113, 113);
-  grey3: rgb(87, 87, 87);
-  grey2: rgb(53, 53, 53);
-  grey1: rgb(27, 27, 27);
-  grey0: rgb(0, 0, 0);
+	/* General application colors */
+	grey8: rgb(255, 255, 255);
+	grey7: rgb(229, 229, 229); /* application background color */
+	grey6: rgb(153, 153, 153);
+	grey5: rgb(132, 132, 132);
+	grey4: rgb(113, 113, 113);
+	grey3: rgb(87, 87, 87);
+	grey2: rgb(53, 53, 53);
+	grey1: rgb(27, 27, 27);
+	grey0: rgb(0, 0, 0);
 
-  /*  app-color-LIN-1: rgb(237, 0, 195);
-    app-color-LIN-2: rgb(0, 0, 255);
-    app-color-LIN-3: rgb(80, 0, 121);
-    app-color-LIN-4: rgb(255, 0, 0);
-    app-color-LIN-5: rgb(78, 44, 0);
-    app-color-LIN-6: rgb(105, 202, 0);
-    app-color-LIN-7: rgb(255, 126, 0);
-    
-    app-color-LIN-B: rgb(0, 255, 156);
-    app-color-LIN-ANIMAL: app-color-LIN-B;
-    app-color-LIN-CANETTI: rgb(0, 255, 255);
-    app-color-LIN-UNKNOWN: rgb(0, 0, 0);*/
+	/*  app-color-LIN-1: rgb(237, 0, 195);
+	  app-color-LIN-2: rgb(0, 0, 255);
+	  app-color-LIN-3: rgb(80, 0, 121);
+	  app-color-LIN-4: rgb(255, 0, 0);
+	  app-color-LIN-5: rgb(78, 44, 0);
+	  app-color-LIN-6: rgb(105, 202, 0);
+	  app-color-LIN-7: rgb(255, 126, 0);
+	  
+	  app-color-LIN-B: rgb(0, 255, 156);
+	  app-color-LIN-ANIMAL: app-color-LIN-B;
+	  app-color-LIN-CANETTI: rgb(0, 255, 255);
+	  app-color-LIN-UNKNOWN: rgb(0, 0, 0);*/
 
-  /* Graph colors */
-  graph-color-top-overlay: rgb(204, 114, 24);
-  graph-color-bottom-overlay: rgb(24, 114, 204);
-  graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
-  graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
+	/* Graph colors */
+	graph-color-top-overlay: rgb(204, 114, 24);
+	graph-color-bottom-overlay: rgb(24, 114, 204);
+	graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
+	graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
 
-  graph-color-node-overlap: rgb(0, 73, 73);
-  graph-color-node-no-overlap: rgb(255, 30, 30);
-  graph-color-bubble-straight: rgb(255, 168, 63);
-  graph-color-bubble-indel: rgb(112, 200, 255);
-  graph-color-bubble-point: rgb(255, 120, 255);
-  graph-color-bubble-phylo: rgb(200, 255, 255);
+	graph-color-node-overlap: rgb(0, 73, 73);
+	graph-color-node-no-overlap: rgb(255, 30, 30);
+	graph-color-bubble-straight: rgb(255, 168, 63);
+	graph-color-bubble-indel: rgb(112, 200, 255);
+	graph-color-bubble-point: rgb(255, 120, 255);
+	graph-color-bubble-phylo: rgb(200, 255, 255);
   graph-color-bubble-graph: rgb(150, 150, 200);
 
-  graph-color-edge: rgb(0, 0, 0);
+	graph-color-edge: rgb(0, 0, 0);
 
-  /* Phylogenetic tree colors */
-  tree-color-node: rgb(150, 140, 150);
-  tree-color-node-leaf: rgb(0, 0, 0);
+	/* Phylogenetic tree colors */
+	tree-color-node: rgb(150, 140, 150);
+	tree-color-node-leaf: rgb(0, 0, 0);
 
-  tree-color-node-border-top-selected: graph-color-top-overlay;
-  tree-color-node-border-bottom-selected: graph-color-bottom-overlay;
-  tree-color-node-border-both-selected: linear-gradient(
-    to bottom right, 
-    tree-color-node-border-top-selected,
-    tree-color-node-border-bottom-selected
-    );
+	tree-color-node-border-top-selected: graph-color-top-overlay;
+	tree-color-node-border-bottom-selected: graph-color-bottom-overlay;
+	tree-color-node-border-both-selected: linear-gradient(
+		to bottom right, 
+		tree-color-node-border-top-selected,
+		tree-color-node-border-bottom-selected
+		);
 
-  /* Search area colors */
-
+	/* Search area colors */
 }
 
 .default-light-text {
@@ -122,6 +121,10 @@
 
 .graphBubbleGraph {
   -fx-fill: graph-color-bubble-graph;
+}
+
+.graphBubbleGraph {
+	-fx-fill: graph-color-bubble-graph;
 }
 
 /*******************************************************************************
@@ -296,5 +299,15 @@
 
 .graphHeatmapCombobox .list-view .list-cell:hover {
   -fx-background-color: grey6;
+  -fx-text-fill: dark-text-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Check box                                                                   *
+ *                                                                             *
+ ******************************************************************************/
+.check-box {
+  -fx-font-family: 'Open Sans';
   -fx-text-fill: dark-text-color;
 }

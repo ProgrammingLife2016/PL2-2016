@@ -16,10 +16,22 @@ public class IndelBubble extends Bubble {
   private final IVerticalAligner aligner;
   private boolean isPopped;
   private boolean verticallyAligned;
+  private Collection<Integer> genomes;
 
+  /**
+   * Constructs an indelBubble. In the constructor, the genomes of this indelBubble are set to
+   * the genomes of its inedge.
+   * 
+   * @param id          the id of the bubble.
+   * @param inEdges     the in edges of the bubble.
+   * @param outEdges    the out edges of the bubble.
+   * @param nestedNodes the nested nodes of the bubble.
+   * @param aligner     aligner to align the nodes vertically.
+   */
   public IndelBubble(int id, Collection<GraphNode> inEdges,
       Collection<GraphNode> outEdges, List<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
+    this.genomes = inEdges.iterator().next().getGenomes();
     this.aligner = aligner;
   }
 
@@ -31,6 +43,11 @@ public class IndelBubble extends Bubble {
   @Override
   public int getGenomeSize() {
     return getInEdges().iterator().next().getGenomeSize();
+  }
+  
+  @Override
+  public Collection<Integer> getGenomes() {
+    return genomes;
   }
 
   @Override

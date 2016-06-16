@@ -50,9 +50,6 @@ public class GraphOrdererThread extends Thread {
    * list contains the nodes in order from left to right. Nodes which are at the same horizontal
    * position have sequential positions in the array list and have the same value for their level
    * field.
-   *
-   * @param graph the graph.
-   * @return the node order.
    */
   private void calculateGraphOrder() {
     HashMap<GraphNode, Integer> reachedCount = new HashMap<>();
