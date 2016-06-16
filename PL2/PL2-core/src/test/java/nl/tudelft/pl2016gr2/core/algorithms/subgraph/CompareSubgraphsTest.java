@@ -12,7 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * Test of class {@link CompareSubgraphsOld}.
+ * Test of class {@link CompareSubgraphs}.
  *
  * @author Faris
  */
