@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.visitor;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -62,4 +63,11 @@ public interface NodeVisitor {
    * @param node The node to act on
    */
   void visit(SequenceNode node);
+
+  /**
+   * Peforms that action that the visitor must apply to the specified node.
+   *
+   * @param bubble The bubble to act on
+   */
+  void visit(GraphBubble bubble);
 }

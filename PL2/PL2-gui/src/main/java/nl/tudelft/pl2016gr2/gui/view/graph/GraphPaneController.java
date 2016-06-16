@@ -33,6 +33,7 @@ import nl.tudelft.pl2016gr2.core.algorithms.subgraph.SubgraphAlgorithmManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.Annotation;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
+import nl.tudelft.pl2016gr2.model.Settings;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.GraphViewRange;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
@@ -103,7 +104,7 @@ public class GraphPaneController implements Initializable {
   private static final double BUBBLE_POP_SIZE = 150.0;
 
   private ContextMenu contextMenu;
-  private IPhylogeneticTreeRoot treeRoot;
+  private IPhylogeneticTreeRoot<?> treeRoot;
   private final GraphUpdater graphUpdater = new GraphUpdater(this);
 
   private GraphOrdererThread mainGraphOrder;
@@ -155,6 +156,7 @@ public class GraphPaneController implements Initializable {
     initializeScrollEvent();
     initializeOnMouseEventHandler();
     initializeBaseLabels();
+    Settings.getInstance().addListener(invalid -> redrawGraphs());
   }
 
   /**
@@ -640,6 +642,7 @@ public class GraphPaneController implements Initializable {
     if (getDrawnGraphs() == 0) {
       return;
     }
+    clearEdgeCanvas();
     getTopGraphGenomes().clear();
     getBottomGraphGenomes().clear();
     topPane.getChildren().clear();
@@ -648,6 +651,16 @@ public class GraphPaneController implements Initializable {
     topGraph = null;
     updateGraphSize();
     graphUpdater.update();
+  }
+
+  /**
+   * Clear the canvas of the edges.
+   */
+  private void clearEdgeCanvas() {
+    topEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, topEdgeCanvas.getWidth(),
+        topEdgeCanvas.getWidth());
+    bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(),
+        bottomEdgeCanvas.getWidth());
   }
 
   /**
@@ -677,6 +690,7 @@ public class GraphPaneController implements Initializable {
     if (startLevel < 0) {
       startLevel = 0;
     }
+    clearEdgeCanvas();
     if (topGraph != null) {
       drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getSubgraph().getGenomes().size(),
           startLevel, startLevel + levelsToDraw);
@@ -705,7 +719,6 @@ public class GraphPaneController implements Initializable {
     for (GraphNode node : orderedGraph.getGraphOrder()) {
       drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, fullRange);
     }
-    canvas.getGraphicsContext2D().clearRect(0, 0, canvas.getWidth(), canvas.getWidth());
     drawEdges(canvas, drawnGraphNodes, startLevel, genomeCount);
   }
 
@@ -895,6 +908,11 @@ public class GraphPaneController implements Initializable {
     double startY = fromNode.getGuiData().relativeYPos * fromRange.rangeHeight
         + fromRange.rangeStartY;
     double endY = toNode.getGuiData().relativeYPos * toRange.rangeHeight + toRange.rangeStartY;
+    if (toNode.getGenomeSize() < fromNode.getGenomeSize()) {
+      graphicContext.setStroke(toNode.getMostFrequentLineage().getColor());
+    } else {
+      graphicContext.setStroke(fromNode.getMostFrequentLineage().getColor());
+    }
     graphicContext.strokeLine(startX, startY, endX, endY);
   }
 

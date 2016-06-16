@@ -1,7 +1,9 @@
 package nl.tudelft.pl2016gr2.core.algorithms.subgraph;
 
+import nl.tudelft.pl2016gr2.core.algorithms.bubbles.graph.GraphBubbleFilter;
 import nl.tudelft.pl2016gr2.core.algorithms.bubbles.mutations.MutationBubbleAlgorithms;
 import nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree.PhyloBubbleFilter;
+import nl.tudelft.pl2016gr2.model.Settings;
 import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
@@ -11,6 +13,7 @@ import nl.tudelft.pl2016gr2.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,22 +36,17 @@ public class SubgraphAlgorithmManager {
   /**
    * Create, compare and align the nodes of two subgraphs.
    *
-   * @param topGenomes
-   *          the genomes which must be present in the top subgraph.
-   * @param bottomGenomes
-   *          the genomes which must be present in the bottom subgraph.
-   * @param mainGraph
-   *          the main graph.
-   * @param mainGraphOrder
-   *          the order of the main graph.
-   * @param treeRoot
-   *          the root of the phylogenetic tree.
+   * @param topGenomes     the genomes which must be present in the top subgraph.
+   * @param bottomGenomes  the genomes which must be present in the bottom subgraph.
+   * @param mainGraph      the main graph.
+   * @param mainGraphOrder the order of the main graph.
+   * @param treeRoot       the root of the phylogenetic tree.
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
       Collection<Integer> bottomGenomes, SequenceGraph mainGraph, GraphOrdererThread mainGraphOrder,
-      IPhylogeneticTreeRoot treeRoot) {
+      IPhylogeneticTreeRoot<?> treeRoot) {
     dummyRootNodeId = Integer.MAX_VALUE;
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         topGenomes);
@@ -77,32 +75,58 @@ public class SubgraphAlgorithmManager {
   /**
    * Create and align the nodes of a single subgraph.
    *
-   * @param genomes
-   *          the genomes which must be present in the subgraph.
-   * @param mainGraph
-   *          the main graph.
-   * @param mainGraphOrder
-   *          the order of the main graph.
-   * @param treeRoot
-   *          the root of the phylogenetic tree.
+   * @param genomes        the genomes which must be present in the subgraph.
+   * @param mainGraph      the main graph.
+   * @param mainGraphOrder the order of the main graph.
+   * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
-  @SuppressWarnings("checkstyle:methodlength")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
-      GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot treeRoot) {
+      GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot<?> treeRoot) {
     dummyRootNodeId = Integer.MAX_VALUE;
     SplitGraphsThread topSubGraphThread = new SplitGraphsThread(new SplitGraphs(mainGraph),
         genomes);
     topSubGraphThread.start();
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
-    // FilterBubbles filter = new FilterBubbles(subgraph);
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
-    // filter.filter(treeRoot, genomes);
+    orderedNodes = performBubblingAlgorithms(orderedNodes, genomes, treeRoot);
 
-    // ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
+    return new OrderedGraph(subgraph, orderedNodes);
+  }
+
+  /**
+   * Bubble the given graph according to the selected bubbling algorithms in the menu.
+   *
+   * @param orderedNodes the ordered list of nodes.
+   * @param genomes      the genomes.
+   * @param treeRoot     the root of the tree.
+   */
+  private static ArrayList<GraphNode> performBubblingAlgorithms(ArrayList<GraphNode> orderedNodes,
+      Collection<Integer> genomes, IPhylogeneticTreeRoot<?> treeRoot) {
+    Settings settings = Settings.getInstance();
+    List<Settings.BubbleAlgorithms> algorithms = settings.getAlgorithms();
+
     orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
+    if (algorithms.contains(Settings.BubbleAlgorithms.PHYLO)) {
+      PhyloBubbleFilter filter = new PhyloBubbleFilter(orderedNodes);
+      orderedNodes = filter.filter(treeRoot, genomes);
+    } else if (algorithms.contains(Settings.BubbleAlgorithms.GRAPH)) {
+      GraphBubbleFilter graphFilter = new GraphBubbleFilter(orderedNodes);
+      orderedNodes = graphFilter.filter();
+    }
+    CompareSubgraphs.alignVertically(orderedNodes);
 
+    addDummyNodes(orderedNodes);
+    return orderedNodes;
+  }
+
+  /**
+   * Add dummy nodes before each root node.
+   *
+   * @param orderedNodes the ordered list of nodes.
+   */
+  private static void addDummyNodes(ArrayList<GraphNode> orderedNodes) {
     ArrayList<GraphNode> newNodes = new ArrayList<>();
     for (GraphNode node : orderedNodes) {
       if (node.getInEdges().isEmpty()) {
@@ -117,16 +141,6 @@ public class SubgraphAlgorithmManager {
     orderedNodes.sort((GraphNode first, GraphNode second) -> {
       return first.getLevel() - second.getLevel();
     });
-
-    PhyloBubbleFilter filter = new PhyloBubbleFilter(orderedNodes);
-    orderedNodes = filter.filter(treeRoot, genomes);
-    CompareSubgraphs.alignVertically(orderedNodes);
-
-    // FilterBubbles filter = new FilterBubbles(subgraph);
-    // ArrayList<GraphNode> orderedNodes = filter.filter(treeRoot, genomes);
-    // CompareSubgraphs.alignVertically(orderedNodes);
-
-    return new OrderedGraph(subgraph, orderedNodes);
   }
 
   /**
@@ -142,10 +156,8 @@ public class SubgraphAlgorithmManager {
      * Construct a split graph thread. Subtracts a subgraph from the given graph, containing all of
      * the given genomes.
      *
-     * @param splitGraphs
-     *          a {@link SplitGraphs} object.
-     * @param genomes
-     *          the list of genomes which must be present in the subgraph.
+     * @param splitGraphs a {@link SplitGraphs} object.
+     * @param genomes     the list of genomes which must be present in the subgraph.
      */
     private SplitGraphsThread(SplitGraphs splitGraphs, Collection<Integer> genomes) {
       this.splitGraphs = splitGraphs;
@@ -179,11 +191,11 @@ public class SubgraphAlgorithmManager {
 
     private final SequenceGraph subgraph;
     private final Collection<Integer> genomes;
-    private final IPhylogeneticTreeRoot treeRoot;
+    private final IPhylogeneticTreeRoot<?> treeRoot;
     private ArrayList<GraphNode> orderedNodes;
 
     private FilterBubbleThread(SequenceGraph subgraph, Collection<Integer> genomes,
-        IPhylogeneticTreeRoot treeRoot) {
+        IPhylogeneticTreeRoot<?> treeRoot) {
       this.subgraph = subgraph;
       this.genomes = genomes;
       this.treeRoot = treeRoot;
@@ -201,28 +213,13 @@ public class SubgraphAlgorithmManager {
     @Override
     public void run() {
       orderedNodes = subgraph.getOrderedGraph();
-      orderedNodes = MutationBubbleAlgorithms.makeBubbels(orderedNodes);
-      PhyloBubbleFilter filter = new PhyloBubbleFilter(orderedNodes);
-      orderedNodes = filter.filter(treeRoot, genomes);
-      ArrayList<GraphNode> newNodes = new ArrayList<>();
-      for (GraphNode node : orderedNodes) {
-        if (node.getInEdges().isEmpty()) {
-          SequenceNode newRoot = new SequenceNode(getUniqueDummyNodeId(), new BaseSequence(""));
-          newNodes.add(newRoot);
-          newRoot.addOutEdge(node);
-          node.addInEdge(newRoot);
-        }
-      }
-      orderedNodes.addAll(newNodes);
-      orderedNodes.sort((GraphNode first, GraphNode second) -> {
-        return first.getLevel() - second.getLevel();
-      });
+      orderedNodes = performBubblingAlgorithms(orderedNodes, genomes, treeRoot);
     }
   }
 
   /**
    * Get a unique dummy node id.
-   * 
+   *
    * @return a unique dummy node id.
    */
   private static synchronized int getUniqueDummyNodeId() {

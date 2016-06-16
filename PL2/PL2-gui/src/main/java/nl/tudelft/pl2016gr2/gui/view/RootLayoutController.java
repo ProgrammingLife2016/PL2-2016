@@ -62,8 +62,6 @@ public class RootLayoutController implements
 
   @FXML
   private AnchorPane rootPane;
-  // @FXML
-  // private SelectionPaneController selectionPaneController;
   @FXML
   private SplitPane mainPane;
   @FXML
@@ -311,19 +309,19 @@ public class RootLayoutController implements
 
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
-      List<MetaData> metaDatas = new MetaDataReader(metadataFile).read();
+      List<MetaData> metaData = new MetaDataReader(metadataFile).read();
+      GenomeMap.getInstance().addMetadata(metaData);
       List<Annotation> annotations = new AnnotationReader(annotationFile).read();
-      metadataPropertyMap.set(new MetadataPropertyMap(metaDatas));
+      metadataPropertyMap.set(new MetadataPropertyMap(metaData));
       if (graph != null && tree != null) {
-        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaDatas);
+        IPhylogeneticTreeRoot treeRoot = new PhylogeneticTreeRoot(tree.getRoot(), metaData);
         treeRoot = new TreeBuilder(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
-        searchPaneController.setData(metaDatas);
+        searchPaneController.setData(metaData);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
-            Level.SEVERE,
-            "tree or graph was null");
+            Level.SEVERE, "tree or graph was null");
       }
     } catch (IOException | InvalidFormatException ex) {
       Logger.getLogger(RootLayoutController.class.getName()).log(Level.SEVERE, null, ex);

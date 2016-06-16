@@ -1,5 +1,6 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PhyloBubble;
@@ -89,5 +90,12 @@ public class ViewNodeBuilder implements NodeVisitor {
       circle.getStyleClass().addAll("graphNodeNoOverlap", "graphUnselectedNode");
     }
     viewNode = circle;
+  }
+
+  @Override
+  public void visit(GraphBubble bubble) {
+    ViewGraphNodeRectangle rect = new ViewGraphNodeRectangle(width, height, bubble);
+    rect.getStyleClass().addAll("graphBubbleGraph", "graphUnselectedNode");
+    viewNode = rect;
   }
 }
