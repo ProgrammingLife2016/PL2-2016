@@ -212,7 +212,7 @@ public class GraphPaneController implements Initializable {
    */
   private void addHeatmapOptions() {
     GraphicsContext heatmapGraphics = heatmap.getGraphicsContext2D();
-    heatmapOptions.put("Amount of mutations (parralel paths in the graph)",
+    heatmapOptions.put("Amount of mutations (parallel paths in the graph)",
         new MutationDensity(heatmapGraphics, zoomFactor));
     heatmapOptions.put("Point mutation bubbels",
         new PointMutationDensity(heatmapGraphics, zoomFactor));

@@ -70,6 +70,7 @@ public abstract class AbstractHeatmap implements IHeatmapColorer, NodeVisitor {
 
   @Override
   public void visit(GraphNode node) {
+    throw new AssertionError("Unknown node class.");
   }
 
   @Override
