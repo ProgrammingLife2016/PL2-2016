@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
 /**
- * This interface must be implemented by all objects which can be seleted.
+ * This interface must be implemented by all objects which can be selected.
  *
  * @author Faris
  */

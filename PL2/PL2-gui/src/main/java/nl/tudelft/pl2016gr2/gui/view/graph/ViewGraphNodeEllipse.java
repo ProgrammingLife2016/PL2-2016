@@ -2,7 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.scene.Node;
 import javafx.scene.shape.Ellipse;
-import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescription;
+import nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescriptionBuilder;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
@@ -57,7 +57,7 @@ public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
   @Override
   public ISelectionInfo getSelectionInfo() {
-    return new GraphBubbleDescription(dataNode.toString());
+    return GraphBubbleDescriptionBuilder.buildInfo(dataNode);
   }
 
   @Override
