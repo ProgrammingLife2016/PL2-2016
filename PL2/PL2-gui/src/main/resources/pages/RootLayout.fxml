@@ -11,7 +11,15 @@
             <fx:include fx:id="graphPane" source="CompareGraphsPane.fxml" />
         </SplitPane>
         <SplitPane dividerPositions="0.5" maxHeight="300" orientation="HORIZONTAL" VBox.vgrow="NEVER">
-            <fx:include fx:id="searchPane" minWidth="800" source="SearchPane.fxml" style="-fx-background-color: rgba(255, 255, 255, 1.0);" />
+            <TabPane>
+                <tabs>
+                    <Tab text="Metadata" closable="false">
+                        <fx:include fx:id="metadataSearchPane" source="MetadataSearchPane.fxml" />
+                    </Tab>
+                    <Tab text="Annotations" closable="false">
+                    </Tab>
+                </tabs>
+            </TabPane>
             <fx:include fx:id="selectionPane" maxWidth="750" minWidth="600" prefWidth="750" source="selectionPane.fxml" />
         </SplitPane>
     </SplitPane>

@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * </p>
  */
 @SuppressWarnings("AbbreviationAsWordInName")
-public class SearchPaneController implements Initializable {
+public class MetadataSearchPaneController implements Initializable {
 
   @FXML
   private Node root;

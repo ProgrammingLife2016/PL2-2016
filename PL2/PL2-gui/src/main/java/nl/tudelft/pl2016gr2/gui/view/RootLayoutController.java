@@ -1,8 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
-import static javafx.scene.input.KeyCode.ESCAPE;
-import static javafx.scene.input.KeyCode.F;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -70,7 +67,7 @@ public class RootLayoutController implements
   private LegendController treeLegendController;
 
   @FXML
-  private SearchPaneController searchPaneController;
+  private MetadataSearchPaneController metadataSearchPaneController;
 
   @TestId(id = "treeManager")
   @FXML
@@ -287,7 +284,7 @@ public class RootLayoutController implements
       switch (keyEvent.getCode()) {
         case F:
           if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
-            searchPaneController.requestSearchFieldFocus();
+            metadataSearchPaneController.requestSearchFieldFocus();
             keyEvent.consume();
           }
           break;
@@ -297,7 +294,7 @@ public class RootLayoutController implements
         default:
       }
     });
-    searchPaneController.setup(selectionManager, graphPaneController);
+    metadataSearchPaneController.setup(selectionManager, graphPaneController);
   }
 
   @Override
@@ -318,7 +315,7 @@ public class RootLayoutController implements
         treeRoot = new TreeBuilder(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
-        searchPaneController.setData(metaData);
+        metadataSearchPaneController.setData(metaData);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE, "tree or graph was null");
