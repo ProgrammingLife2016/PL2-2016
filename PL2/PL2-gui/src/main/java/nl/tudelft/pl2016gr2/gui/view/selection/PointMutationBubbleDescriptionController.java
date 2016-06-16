@@ -46,8 +46,7 @@ public class PointMutationBubbleDescriptionController implements Initializable {
    *
    * <p>
    * Fills in the data of this view. Please refer to
-   * {@link PointMutationBubbleDescriptionController}
-   * for more information about this view.
+   * {@link PointMutationBubbleDescriptionController} for more information about this view.
    * </p>
    *
    * @param bubble the {@link PointMutationBubble} that holds the data.

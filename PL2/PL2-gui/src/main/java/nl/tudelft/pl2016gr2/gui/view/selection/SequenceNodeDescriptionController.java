@@ -17,8 +17,7 @@ import java.util.stream.Collectors;
  * This controller controls the selection View for a {@link SequenceNode}.
  *
  * <p>
- * It shows the actual base sequence and the genomes this sequence
- * belongs to.
+ * It shows the actual base sequence and the genomes this sequence belongs to.
  * </p>
  */
 public class SequenceNodeDescriptionController implements Initializable {

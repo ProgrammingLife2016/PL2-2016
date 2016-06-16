@@ -45,8 +45,7 @@ public class StraightSequenceBubbleDescriptionController implements Initializabl
    *
    * <p>
    * Fills in the data of this view. Please refer to
-   * {@link StraightSequenceBubbleDescriptionController}
-   * for more information about this view.
+   * {@link StraightSequenceBubbleDescriptionController} for more information about this view.
    * </p>
    *
    * @param bubble the {@link StraightSequenceBubble} that holds the data.

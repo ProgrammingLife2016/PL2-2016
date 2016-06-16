@@ -19,9 +19,9 @@ import java.util.stream.Collectors;
  * This controller controls the selection View for a {@link PhyloBubble}.
  *
  * <p>
- * It will list the count of Indels and Point mutations in the children. Also lists all
- * genomes that are contained in this bubble. Furthermore it includes a button
- * to select the corresponding treeNode in the tree.
+ * It will list the count of Indels and Point mutations in the children. Also lists all genomes
+ * that are contained in this bubble. Furthermore it includes a button to select the
+ * corresponding treeNode in the tree.
  * </p>
  *
  */
@@ -64,8 +64,8 @@ public class PhyloBubbleDescriptionController implements Initializable {
    * This method setups the count labels.
    *
    * <p>
-   * Occurrences of {@link IndelBubble} and {@link PointMutationBubble} are
-   * counted and displayed on the labels.
+   * Occurrences of {@link IndelBubble} and {@link PointMutationBubble} are counted and displayed
+   * on the labels.
    * </p>
    */
   private void setupCountLabels(PhyloBubble bubble) {

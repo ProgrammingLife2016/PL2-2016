@@ -66,8 +66,7 @@ public class IndelBubbleDescriptionController implements Initializable {
    * Sets up the list views.
    *
    * <p>
-   * The views represent all the genomes that are either
-   * in or not in (del) for this indel.
+   * The views represent all the genomes that are either in or not in (del) for this indel.
    * </p>
    */
   private void setupListViews(Collection<Integer> inGenomeIds, Collection<Integer> delGenomeIds) {
