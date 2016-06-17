@@ -101,7 +101,6 @@ public class SelectionPaneController implements Initializable {
     });
 
     setSecondaryButton.setOnAction(actionEvent -> {
-      System.out.println("clicked (onAction)");
       secondarySelection.set(primarySelection.getValue());
     });
     compareButton.setOnAction(actionEvent -> {

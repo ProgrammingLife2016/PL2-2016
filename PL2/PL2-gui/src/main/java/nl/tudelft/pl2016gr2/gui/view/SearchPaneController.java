@@ -123,7 +123,7 @@ public class SearchPaneController implements Initializable {
         cellData -> new SimpleStringProperty(cellData.getValue().specimenType));
 
     lineageColumn.setCellValueFactory(cellData ->
-        new SimpleObjectProperty<>(LineageColor.toLineage(cellData.getValue().lineage)));
+        new SimpleObjectProperty<>(LineageColor.toLineage(cellData.getValue())));
     lineageColumn.setCellFactory(metaDataStringTableColumn ->
         new TableCell<MetaData, LineageColor>() {
           @Override

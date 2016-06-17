@@ -56,7 +56,7 @@ public class AnnotationTest {
    */
   @Test
   public void testConstructorStart() {
-    assertEquals(1, annotation.start);
+    assertEquals(0, annotation.start);
   }
 
   /**
@@ -64,7 +64,7 @@ public class AnnotationTest {
    */
   @Test
   public void testConstructorEnd() {
-    assertEquals(2, annotation.end);
+    assertEquals(1, annotation.end);
   }
 
   /**

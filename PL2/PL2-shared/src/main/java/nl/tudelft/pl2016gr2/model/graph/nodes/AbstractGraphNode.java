@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 
 /**
  * Aides in implementing the <code>GraphNode</code> interface by implementing methods that should
@@ -24,7 +25,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   @TestId(id = "id_field")
   private int identifier;
   private final GraphNodeGuiData guiData = new GraphNodeGuiData();
-  private Annotation annotation;
+  private PriorityQueue<Annotation> annotations;
   private LineageColor lineage;
 
   private HashSet<GraphNode> inEdges;
@@ -39,6 +40,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     this.identifier = identifier;
     this.inEdges = new HashSet<>();
     this.outEdges = new HashSet<>();
+    this.annotations = new PriorityQueue<>();
   }
 
   /**
@@ -53,6 +55,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     this.identifier = identifier;
     this.inEdges = new HashSet<>(inEdges);
     this.outEdges = new HashSet<>(outEdges);
+    this.annotations = new PriorityQueue<>();
   }
 
   /**
@@ -64,7 +67,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     this.identifier = abstractGraphNode.identifier;
     this.inEdges = abstractGraphNode.inEdges;
     this.outEdges = abstractGraphNode.outEdges;
-    this.annotation = abstractGraphNode.annotation;
+    this.annotations = abstractGraphNode.annotations;
   }
 
   @Override
@@ -183,20 +186,24 @@ public abstract class AbstractGraphNode implements GraphNode {
   public GraphNodeGuiData getGuiData() {
     return guiData;
   }
-
-  @Override
-  public void setAnnotation(Annotation annotation) {
-    this.annotation = annotation;
+  
+  protected void setAnnotations(AbstractGraphNode node) {
+    this.annotations = node.annotations;
   }
 
   @Override
-  public boolean hasAnnotation() {
-    return annotation != null;
+  public void addAnnotation(Annotation annotation) {
+    annotations.add(annotation);
   }
 
   @Override
-  public Annotation getAnnotation() {
-    return annotation;
+  public boolean hasAnnotations() {
+    return !annotations.isEmpty();
+  }
+
+  @Override
+  public PriorityQueue<Annotation> getAnnotations() {
+    return annotations;
   }
 
   @Override
@@ -205,7 +212,7 @@ public abstract class AbstractGraphNode implements GraphNode {
       HashMap<LineageColor, Integer> lineageFrequency = new HashMap<>();
       GenomeMap genomeMap = GenomeMap.getInstance();
       for (Integer genome : getGenomes()) {
-        LineageColor color = LineageColor.toLineage(genomeMap.getMetadata(genome).lineage);
+        LineageColor color = LineageColor.toLineage(genomeMap.getMetadata(genome));
         lineageFrequency.put(color, lineageFrequency.getOrDefault(color, 0) + 1);
       }
       final IntegerProperty maxFreq = new SimpleIntegerProperty(0);

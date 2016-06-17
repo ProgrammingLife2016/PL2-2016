@@ -122,6 +122,7 @@ public class GraphPaneController implements Initializable {
   private static final double GRAPH_HEATMAP_HEIGHT = 20.0;
   private static final double DECENT_NODE_WIDTH = 30.0;
   public static final double HALF_HEATMAP_HEIGHT = GRAPH_HEATMAP_HEIGHT / 2.0;
+  private static final double ANNOTATION_HEIGHT = 15.0;
 
   private static final double MIN_ZOOMED_DISTANCE = 10.0;
 
@@ -841,22 +842,82 @@ public class GraphPaneController implements Initializable {
         * (node.getLevel() - startLevel - node.size() / 2.0));
     viewNode.centerYProperty().set(viewRange.rangeHeight * node.getGuiData().relativeYPos
         + viewRange.rangeStartY);
-    if (node.hasChildren() && width > BUBBLE_POP_SIZE) {
+    if (node.hasChildren() && (width > BUBBLE_POP_SIZE || node.getChildren().size() <= 2)) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
       drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, bubbleViewRange);
     } else {
       node.unpop();
     }
-    if (node.hasAnnotation()) {
-      Annotation annotation = node.getAnnotation();
-      Label label = new Label(annotation.getAttribute("name"));
-      label.setWrapText(true);
-      label.setMaxWidth(viewNode.getWidth());
-      label.setLayoutX(viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0);
-      label.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
-      pane.getChildren().add(label);
-    }
+    drawAnnotationBox(node, viewNode, pane, startLevel);
     heatmapColorer.drawHeatmap(node, startLevel);
+  }
+
+  /**
+   * Draw the annotations of the node.
+   *
+   * @param node       the node.
+   * @param viewNode   the view node of the node.
+   * @param pane       the pane in which to draw the annotation.
+   * @param startLevel the start level of the current view.
+   */
+  private void drawAnnotationBox(GraphNode node, IViewGraphNode viewNode, Pane pane,
+      double startLevel) {
+    if (!node.hasAnnotations()) {
+      return;
+    }
+    boolean odd = false;
+    for (Annotation annotation : node.getAnnotations()) {
+      double annotationStart = calcAnnotationStart(annotation, viewNode, startLevel);
+      double annotationEnd = getAnnotationEnd(annotation, viewNode, startLevel);
+
+      ViewAnnotation viewAnnotation = new ViewAnnotation(annotation, selectionManager);
+      viewAnnotation.setWidth(annotationEnd - annotationStart);
+      viewAnnotation.setLayoutX(annotationStart);
+      viewAnnotation.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
+      double maxHeight = viewNode.getHeight() / 2.0;
+      viewAnnotation.setHeight(Math.min(maxHeight, ANNOTATION_HEIGHT));
+      viewAnnotation.setOddOffset(odd);
+
+      pane.getChildren().add(viewAnnotation);
+      viewAnnotation.addLabel(pane);
+      odd = !odd;
+    }
+  }
+
+  /**
+   * Calculate the start position of the annotation.
+   *
+   * @param annotation the annotation.
+   * @param viewNode   the view node onto which the annotation is mapped.
+   * @param startLevel the start level of the current view.
+   * @return the start position of the annotation.
+   */
+  private double calcAnnotationStart(Annotation annotation, IViewGraphNode viewNode,
+      double startLevel) {
+    double nodeStart = viewNode.centerXProperty().get() - viewNode.getWidth() / 2.0;
+    double nodeCenter = nodeStart + viewNode.getWidth() / 2.0;
+    double annotationStart = (annotation.getStartInGraph() - startLevel) * zoomFactor.get();
+    annotationStart += (annotationStart - nodeCenter) * (1.0 - NODE_MARGIN);
+    annotationStart = Math.max(nodeStart, annotationStart);
+    return annotationStart;
+  }
+
+  /**
+   * Calculate the end position of the annotation.
+   *
+   * @param annotation the annotation.
+   * @param viewNode   the view node onto which the annotation is mapped.
+   * @param startLevel the start level of the current view.
+   * @return the end position of the annotation.
+   */
+  private double getAnnotationEnd(Annotation annotation, IViewGraphNode viewNode,
+      double startLevel) {
+    double nodeEnd = viewNode.centerXProperty().get() + viewNode.getWidth() / 2.0;
+    double nodeCenter = nodeEnd - viewNode.getWidth() / 2.0;
+    double annotationEnd = (annotation.getEndInGraph() - startLevel) * zoomFactor.get();
+    annotationEnd += (annotationEnd - nodeCenter) * (1.0 - NODE_MARGIN);
+    annotationEnd = Math.min(nodeEnd, annotationEnd);
+    return annotationEnd;
   }
 
   /**

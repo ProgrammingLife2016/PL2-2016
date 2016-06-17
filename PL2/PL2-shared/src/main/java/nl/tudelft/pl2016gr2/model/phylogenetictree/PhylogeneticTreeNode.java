@@ -329,7 +329,7 @@ public class PhylogeneticTreeNode implements IPhylogeneticTreeNode<PhylogeneticT
    */
   protected void setMetaData(MetaData metaData) {
     this.metaData = metaData;
-    setLineageColor(LineageColor.toLineage(metaData.lineage));
+    setLineageColor(LineageColor.toLineage(metaData));
   }
 
   /**
