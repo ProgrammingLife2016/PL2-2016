@@ -100,6 +100,7 @@
                 <configuration>
                     <excludes>
                         <exclude>nl/tudelft/pl2016gr2/gui/**/*</exclude>
+                        <exclude>nl/tudelft/pl2016gr2/launcher/*</exclude>
                     </excludes>
                 </configuration>
                 <reportSets>
@@ -214,6 +215,7 @@
                 <configuration>
                     <excludes>
                         <exclude>nl/tudelft/pl2016gr2/gui/**/*</exclude>
+                        <exclude>nl/tudelft/pl2016gr2/launcher/*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
