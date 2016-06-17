@@ -227,7 +227,7 @@ public class RootLayoutController implements
     );
 
     Circle tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
-    tempCircle.getStyleClass().add("treeNode");
+    tempCircle.getStyleClass().add("treeNodeLeaf");
     List<LegendController.LegendItem> treeLegendItems = new ArrayList<>();
     treeLegendItems.add(new LegendController.LegendItem(
         "Leaf node of the graph. This node has no children",
@@ -235,7 +235,7 @@ public class RootLayoutController implements
         tempCircle
     ));
     tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
-    tempCircle.getStyleClass().add("treeNodeLeaf");
+    tempCircle.getStyleClass().add("treeNode");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node of the graph. This node has children",
         "Node",
