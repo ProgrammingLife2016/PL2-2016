@@ -12,9 +12,9 @@
 
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Button?>
-<GridPane fx:id="root" prefHeight="300.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.SearchPaneController">
+<GridPane fx:id="root" prefHeight="300.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.MetadataSearchPaneController">
     <AnchorPane GridPane.columnIndex="0" GridPane.hgrow="NEVER">
-        <TableView fx:id="annotationTable" maxWidth="300.0" minWidth="300.0" prefHeight="300.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+        <TableView fx:id="metaDataTableView" maxWidth="300.0" minWidth="300.0" prefHeight="300.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
             <columns>
                 <TableColumn fx:id="specimenIdColumn" prefWidth="120.0" text="Specimen ID" />
                 <TableColumn fx:id="specimentTypeColumn" prefWidth="100.0" text="Type" />

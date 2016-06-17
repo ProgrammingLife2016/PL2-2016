@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
  * </p>
  */
 @SuppressWarnings("AbbreviationAsWordInName")
-public class SearchPaneController implements Initializable {
+public class MetadataSearchPaneController implements Initializable {
 
   @FXML
   private Node root;
@@ -59,7 +59,7 @@ public class SearchPaneController implements Initializable {
   @FXML
   private TextField filterField;
   @FXML
-  private TableView<MetaData> annotationTable;
+  private TableView<MetaData> metaDataTableView;
 
   @FXML private TableColumn<MetaData, String> specimenIdColumn;
   @FXML private TableColumn<MetaData, String> specimentTypeColumn;
@@ -105,8 +105,8 @@ public class SearchPaneController implements Initializable {
   @SuppressWarnings("checkstyle:MethodLength")
   private void initializeTable() {
     // from http://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
-    annotationTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    annotationTable.getSelectionModel().getSelectedItems().addListener(
+    metaDataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+    metaDataTableView.getSelectionModel().getSelectedItems().addListener(
         (ListChangeListener<MetaData>) c -> {
           System.out.println("SELECTED: ");
           selectionManager.getSearchBoxSelectedGenomes().setAll(
@@ -149,10 +149,10 @@ public class SearchPaneController implements Initializable {
     SortedList<MetaData> sortedData = new SortedList<>(filteredData);
 
     // Bind the SortedList comparator to the TableView comparator.
-    sortedData.comparatorProperty().bind(annotationTable.comparatorProperty());
-    annotationTable.setItems(sortedData);
+    sortedData.comparatorProperty().bind(metaDataTableView.comparatorProperty());
+    metaDataTableView.setItems(sortedData);
 
-    annotationTable.setRowFactory(tv -> {
+    metaDataTableView.setRowFactory(tv -> {
       TableRow<MetaData> row = new TableRow<>();
 
       row.setOnDragDetected((MouseEvent event) -> {
@@ -192,7 +192,7 @@ public class SearchPaneController implements Initializable {
    */
   @SuppressWarnings("checkstyle:MethodLength")
   private void updateTable() {
-    annotationTable.getSelectionModel().clearSelection();
+    metaDataTableView.getSelectionModel().clearSelection();
     filteredData.setPredicate(metadata -> {
 
       for (CategoricalProperty property : map.values()) {

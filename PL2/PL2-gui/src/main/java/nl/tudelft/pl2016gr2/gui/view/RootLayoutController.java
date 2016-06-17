@@ -1,8 +1,5 @@
 package nl.tudelft.pl2016gr2.gui.view;
 
-import static javafx.scene.input.KeyCode.ESCAPE;
-import static javafx.scene.input.KeyCode.F;
-
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -70,7 +67,9 @@ public class RootLayoutController implements
   private LegendController treeLegendController;
 
   @FXML
-  private SearchPaneController searchPaneController;
+  private MetadataSearchPaneController metadataSearchPaneController;
+  @FXML
+  private AnnotationSearchPaneController annotationSearchPaneController;
 
   @TestId(id = "treeManager")
   @FXML
@@ -287,7 +286,7 @@ public class RootLayoutController implements
       switch (keyEvent.getCode()) {
         case F:
           if (keyEvent.isControlDown() || isOSx && keyEvent.isMetaDown()) {
-            searchPaneController.requestSearchFieldFocus();
+            metadataSearchPaneController.requestSearchFieldFocus();
             keyEvent.consume();
           }
           break;
@@ -297,7 +296,8 @@ public class RootLayoutController implements
         default:
       }
     });
-    searchPaneController.setup(selectionManager, graphPaneController);
+    metadataSearchPaneController.setup(selectionManager, graphPaneController);
+    annotationSearchPaneController.setup(selectionManager, graphPaneController);
   }
 
   @Override
@@ -306,7 +306,6 @@ public class RootLayoutController implements
     try {
       GraphFactory graphFactory = new InputStreamGraphFactory(graphFile);
       TreeFactory treeFactory = new InputStreamTreeFactory(treeFile);
-
       SequenceGraph graph = graphFactory.getGraph();
       Tree tree = treeFactory.getTree();
       List<MetaData> metaData = new MetaDataReader(metadataFile).read();
@@ -318,7 +317,8 @@ public class RootLayoutController implements
         treeRoot = new TreeBuilder(treeRoot, GenomeMap.getInstance().copyAllGenomes()).getTree();
         loadGraph(graph, treeRoot, annotations);
         loadTree(treeRoot);
-        searchPaneController.setData(metaData);
+        metadataSearchPaneController.setData(metaData);
+        annotationSearchPaneController.setData(annotations);
       } else {
         Logger.getLogger(RootLayoutController.class.getName()).log(
             Level.SEVERE, "tree or graph was null");

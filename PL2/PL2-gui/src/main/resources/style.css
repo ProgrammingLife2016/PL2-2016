@@ -53,6 +53,7 @@
   graph-color-bubble-graph: rgb(150, 150, 200);
 
   graph-color-annotation: rgb(255, 220, 0);
+  graph-color-annotation-selected: rgb(80,200,255);
 
 	/* Phylogenetic tree colors */
 	tree-color-node: rgb(150, 140, 150);
@@ -322,7 +323,10 @@
 .annotationBox {
   -fx-fill: graph-color-annotation;
   -fx-stroke: black;
-  -fx-stroke-width: 1.0;
+}
+.annotationBoxSelected {
+  -fx-fill: graph-color-annotation-selected;
+  -fx-stroke: black;
 }
 
 .annotationBoxLabel {
