@@ -123,6 +123,8 @@ public class GraphPaneController implements Initializable {
   private static final double DECENT_NODE_WIDTH = 30.0;
   public static final double HALF_HEATMAP_HEIGHT = GRAPH_HEATMAP_HEIGHT / 2.0;
 
+  private static final double MIN_ZOOMED_DISTANCE = 10.0;
+
   private ContextMenu contextMenu;
   private IPhylogeneticTreeRoot<?> treeRoot;
   private final GraphUpdater graphUpdater = new GraphUpdater(this);
@@ -144,10 +146,10 @@ public class GraphPaneController implements Initializable {
   private final ObservableSet<Integer> bottomGraphGenomes
       = new ObservableSetWrapper<>(new HashSet<>());
 
+  private double zoomedDistance;
+  private final Map<String, IHeatmapColorer> heatmapOptions = new LinkedHashMap<>();
   private IHeatmapColorer heatmapColorer = (node, start) -> {
   };
-
-  private final Map<String, IHeatmapColorer> heatmapOptions = new LinkedHashMap<>();
 
   /**
    * Get the pane in which the graphs are drawn.
@@ -295,11 +297,15 @@ public class GraphPaneController implements Initializable {
    */
   private void initializeScrollEvent() {
     mainPane.setOnScroll((ScrollEvent event) -> {
-      double relativeXPos = event.getX() / mainPane.getWidth();
-      if (event.getDeltaY() > 0) {
-        zoomIn(event.getDeltaY(), relativeXPos);
-      } else {
-        zoomOut(-event.getDeltaY(), relativeXPos);
+      zoomedDistance += event.getDeltaY();
+      if (Math.abs(zoomedDistance) > MIN_ZOOMED_DISTANCE) {
+        double relativeXPos = event.getX() / mainPane.getWidth();
+        if (zoomedDistance > 0) {
+          zoomIn(zoomedDistance, relativeXPos);
+        } else {
+          zoomOut(-zoomedDistance, relativeXPos);
+        }
+        zoomedDistance = 0;
       }
     });
   }
