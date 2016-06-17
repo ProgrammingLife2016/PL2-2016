@@ -64,7 +64,7 @@ public class AnnotationSearchPaneController implements Initializable {
             // annotations in the graph
             selectionManager.select(new ViewAnnotation(selection, selectionManager));
             graphPaneController.centerOnLevel(
-                selection.start + (selection.end - selection.start) / 2);
+                selection.getStartInGraph());
           }
         }
     );
@@ -79,10 +79,11 @@ public class AnnotationSearchPaneController implements Initializable {
     annotationTableView.getSelectionModel().clearSelection();
     filteredData.setPredicate(annotation -> {
 
-      String lowerCaseFilter = filterField.getText().toLowerCase();
-      if (lowerCaseFilter.isEmpty()) {
+      String filterText = filterField.getText();
+      if (filterText == null || filterText.isEmpty()) {
         return true;
       }
+      String lowerCaseFilter = filterText.toLowerCase();
 
       for (Map.Entry<String, String> entry : annotation.getAttributes().entrySet()) {
         if (entry.getValue().toLowerCase().contains(lowerCaseFilter)) {
