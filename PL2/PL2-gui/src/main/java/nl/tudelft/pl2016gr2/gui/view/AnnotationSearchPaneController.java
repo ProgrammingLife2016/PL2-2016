@@ -2,6 +2,7 @@ package nl.tudelft.pl2016gr2.gui.view;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
@@ -11,6 +12,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.graph.ViewAnnotation;
+import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.Annotation;
 
 import java.net.URL;
@@ -28,6 +31,8 @@ public class AnnotationSearchPaneController implements Initializable {
   @FXML
   private TableColumn<Annotation, String> nameColumn;
 
+  private SelectionManager selectionManager;
+
   private GraphPaneController graphPaneController;
 
   private final ObservableList<Annotation> masterData = FXCollections.observableArrayList();
@@ -42,18 +47,27 @@ public class AnnotationSearchPaneController implements Initializable {
   private void initializeTable() {
     nameColumn.setCellValueFactory(
         cellData -> new SimpleStringProperty(cellData.getValue().getAttribute("name")));
-
     // Set the filter Predicate whenever the filter changes.
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
       updateTable();
     });
-
     // Wrap the FilteredList in a SortedList.
     SortedList<Annotation> sortedData = new SortedList<>(filteredData);
-
     // Bind the SortedList comparator to the TableView comparator.
     sortedData.comparatorProperty().bind(annotationTableView.comparatorProperty());
     annotationTableView.setItems(sortedData);
+    annotationTableView.getSelectionModel().getSelectedItems().addListener(
+        (ListChangeListener<Annotation>) c -> {
+          Annotation selection = annotationTableView.getSelectionModel().getSelectedItem();
+          if (selection != null && selectionManager.getSelection() != selection) {
+            // This is a bit hacky. But as of now there is no working highlighting for the
+            // annotations in the graph
+            selectionManager.select(new ViewAnnotation(selection, selectionManager));
+            graphPaneController.centerOnLevel(
+                selection.start + (selection.end - selection.start) / 2);
+          }
+        }
+    );
   }
 
 
@@ -82,9 +96,11 @@ public class AnnotationSearchPaneController implements Initializable {
 
   /**
    * Sets up this Controller.
+   * @param selectionManager the selection manager
    * @param graphPaneController the graphPaneController
    */
-  public void setup(GraphPaneController graphPaneController) {
+  public void setup(SelectionManager selectionManager, GraphPaneController graphPaneController) {
+    this.selectionManager = selectionManager;
     this.graphPaneController = graphPaneController;
   }
 
