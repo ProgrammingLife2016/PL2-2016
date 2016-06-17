@@ -208,7 +208,7 @@
                 <version>0.7.6.201602180812</version>
                 <configuration>
                     <excludes>
-                        <exclude>nl.tudelft.pl2016gr2.gui.*</exclude>
+                        <exclude>**gui*</exclude>
                     </excludes>
                 </configuration>
                 <executions>

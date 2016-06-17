@@ -49,6 +49,7 @@ public class GenomeMapTest {
    */
   @After
   public void tearDown() {
+    GenomeMap.getInstance().clear();
     AccessPrivate.setFieldValue("singleton_instance", GenomeMap.class, null, null);
   }
 
