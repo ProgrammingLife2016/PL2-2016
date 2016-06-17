@@ -97,6 +97,11 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.7.6.201602180812</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/gui/*.class</exclude>
+                    </excludes>
+                </configuration>
                 <reportSets>
                 <reportSet>
                     <reports>
@@ -208,7 +213,7 @@
                 <version>0.7.6.201602180812</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/gui*.class</exclude>
+                        <exclude>**/gui/*.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
