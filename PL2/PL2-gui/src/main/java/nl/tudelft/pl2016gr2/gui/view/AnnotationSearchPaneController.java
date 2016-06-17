@@ -46,7 +46,7 @@ public class AnnotationSearchPaneController implements Initializable {
 
   private void initializeTable() {
     nameColumn.setCellValueFactory(
-        cellData -> new SimpleStringProperty(cellData.getValue().getAttribute("name")));
+        cellData -> new SimpleStringProperty(cellData.getValue().getName()));
     // Set the filter Predicate whenever the filter changes.
     filterField.textProperty().addListener((observable, oldValue, newValue) -> {
       updateTable();
