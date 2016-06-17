@@ -41,7 +41,6 @@ public enum LineageColor {
    * @param metadata the metadata.
    * @return the lineage.
    */
-  @SuppressWarnings("checkstyle:MethodLength")
   public static LineageColor toLineage(MetaData metadata) {
     if (metadata == null) {
       return NONE;
