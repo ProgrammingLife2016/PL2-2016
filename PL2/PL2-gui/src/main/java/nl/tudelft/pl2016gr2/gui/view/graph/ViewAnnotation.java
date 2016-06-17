@@ -9,6 +9,8 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.Annotation;
 
+import java.util.Collections;
+
 /**
  * This is an annotation indicator object which can be added to a IViewGraphNode to indicate that it
  * has an annotation.
@@ -34,6 +36,8 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
       selectionManager.select(this);
       event.consume();
     });
+
+    selectionManager.checkSelected(this);
   }
 
   /**
@@ -69,10 +73,12 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
 
   @Override
   public void select() {
+    Collections.replaceAll(getStyleClass(), "annotationBox", "annotationBoxSelected");
   }
 
   @Override
   public void deselect() {
+    Collections.replaceAll(getStyleClass(), "annotationBoxSelected", "annotationBox");
   }
 
   @Override
