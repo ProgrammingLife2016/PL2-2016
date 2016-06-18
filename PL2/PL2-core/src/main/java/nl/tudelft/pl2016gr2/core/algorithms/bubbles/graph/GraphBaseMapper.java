@@ -109,7 +109,7 @@ public class GraphBaseMapper {
   public GraphNode findBase(Integer genome, int baseOffset) {
     Iterator<GraphNode> it = orderedGraph.iterator();
     GraphNode firstNode = it.next();
-    while (it.hasNext() && !firstNode.getGenomes().contains(genome)) {
+    while (it.hasNext() && !firstNode.containsGenome(genome)) {
       firstNode = it.next();
     }
     return findBase(genome, baseOffset, 0, firstNode).right;
@@ -134,7 +134,7 @@ public class GraphBaseMapper {
     GraphNode nextNode = null;
     int nextLevel = Integer.MAX_VALUE;
     for (GraphNode outEdge : curGraphNode.getOutEdges()) {
-      if (outEdge.getLevel() < nextLevel && outEdge.getGenomes().contains(genome)) {
+      if (outEdge.getLevel() < nextLevel && outEdge.containsGenome(genome)) {
         nextLevel = outEdge.getLevel();
         nextNode = outEdge;
       }

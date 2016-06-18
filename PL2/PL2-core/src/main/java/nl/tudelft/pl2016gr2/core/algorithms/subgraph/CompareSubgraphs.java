@@ -156,14 +156,7 @@ public class CompareSubgraphs {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
-    for (GraphNode inEdge : node.getInEdges()) {
-      ComplexVerticalArea area = areaMap.get(inEdge);
-      if (area == null) {
-        area = calculateGraphArea(inEdge, areaMap, graphOrder);
-      }
-      inAreas.add(area);
-    }
+    ArrayList<ComplexVerticalArea> inAreas = getInAreas(node, areaMap, graphOrder);
     ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
     areaMap.put(node, complexNodeArea);
 
@@ -172,6 +165,19 @@ public class CompareSubgraphs {
     node.getGuiData().relativeYPos = nodeArea.getCenter() / VERTICAL_PRECISION;
     node.getGuiData().maxHeight = nodeArea.getHeight() / (double) VERTICAL_PRECISION;
     return complexNodeArea;
+  }
+  
+  private static ArrayList<ComplexVerticalArea> getInAreas(GraphNode node, 
+      HashMap<GraphNode, ComplexVerticalArea> areaMap, Collection<GraphNode> graphOrder) {
+    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
+    for (GraphNode inEdge : node.getInEdges()) {
+      ComplexVerticalArea area = areaMap.get(inEdge);
+      if (area == null) {
+        area = calculateGraphArea(inEdge, areaMap, graphOrder);
+      }
+      inAreas.add(area);
+    }
+    return inAreas;
   }
 
   private static class ComplexVerticalArea {
@@ -285,8 +291,8 @@ public class CompareSubgraphs {
       int mostGenomes = 0;
       GraphNode mostGenomeNode = null;
       for (GraphNode node : nodes) {
-        if (node.getGenomes().size() > mostGenomes) {
-          mostGenomes = node.getGenomes().size();
+        if (node.getGenomeSize() > mostGenomes) {
+          mostGenomes = node.getGenomeSize();
           mostGenomeNode = node;
         }
       }

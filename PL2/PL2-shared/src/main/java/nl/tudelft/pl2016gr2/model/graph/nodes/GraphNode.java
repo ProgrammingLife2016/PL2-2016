@@ -9,7 +9,9 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 import nl.tudelft.pl2016gr2.visitor.Visitable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.PriorityQueue;
+import java.util.function.Consumer;
 
 /**
  * Represents a node in a <code>SequenceGraph</code> and provides basic operations on it.
@@ -24,12 +26,12 @@ import java.util.PriorityQueue;
  * </p>
  * <p>
  * This interface uses the <i>visitor design pattern</i> to allow external actors to target specific
- * implementations of this interface.
- * This is useful when these are stored in a {@link SequenceGraph}.
+ * implementations of this interface. This is useful when these are stored in a
+ * {@link SequenceGraph}.
  * </p>
  * <p>
- * This interface uses the <i>factory method design pattern</i> to allow external actors to copy
- * the concrete instance of a GraphNode.
+ * This interface uses the <i>factory method design pattern</i> to allow external actors to copy the
+ * concrete instance of a GraphNode.
  * </p>
  *
  * @author Wouter Smit
@@ -120,8 +122,8 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
    * </p>
    * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding edges should be done with {@link #addAllInEdges(Collection)}.
+   * This method will have to expand the underlying data structure. Repeatedly adding edges should
+   * be done with {@link #addAllInEdges(Collection)}.
    * </p>
    *
    * @param node The node to add to the in-edges of this <code>GraphNode</code>.
@@ -201,7 +203,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void removeOutEdge(GraphNode node);
 
   /**
-   * Returns the names of all genomes that go through this <code>GraphNode</code>.
+   * Returns a sorted list of all genomes that go through this <code>GraphNode</code>.
    * <p>
    * Paths through the <code>SequenceGraph</code> describe certain genomes. Every
    * <code>GraphNode</code> is annotated with information about its genomes.
@@ -213,21 +215,7 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
    *
    * @return The genomes of this <code>GraphNode</code>
    */
-  Collection<Integer> getGenomes();
-
-  /**
-   * Adds the genome name to the set of genomes of this <code>GraphNode</code>.
-   * <p>
-   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
-   * </p>
-   * <p>
-   * This method will have to expand the underlying data structure.
-   * Repeatedly adding genomes should be done with {@link #addAllGenomes(Collection)}.
-   * </p>
-   *
-   * @param genome The name of the genome to add to this <code>GraphNode</code>.
-   */
-  void addGenome(int genome);
+  List<Integer> getGenomes();
 
   /**
    * Adds all genomes to the current genomes, leaving the old genomes untouched.
@@ -240,14 +228,47 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
   void addAllGenomes(Collection<Integer> genomes);
 
   /**
-   * Removes the genome name from the set of genomes of this <code>GraphNode</code>.
-   * <p>
-   * After calling this method, the caller must make sure to also call {@link #trimToSize()}.
-   * </p>
+   * Check if this node contains all of the given genomes. Should run in O(n) time.
    *
-   * @param genome The name of the genome to remove from this <code>GraphNode</code>.
+   * @param genomes a sorted list of genomes.
+   * @return if this node contains all of the given genomes.
    */
-  void removeGenome(int genome);
+  boolean containsAllGenomes(List<Integer> genomes);
+  
+  /**
+   * Check if this node has exactly the same set of genomes as the given set of sorted genomes.
+   * Should run in O(n).
+   * 
+   * @param genomes the given sorted set of genomes.
+   * @return if this node contains exactly the same set of genomes.
+   */
+  boolean hasSameGenomes(List<Integer> genomes);
+  
+  /**
+   * Check if any of the given sorted genomes is present in this node. Should run in O(n).
+   * 
+   * @param genomes the given sorted list of genomes.
+   * @return if any of the given sorted genomes is present in this node.
+   */
+  boolean containsAnyGenome(List<Integer> genomes);
+  
+  /**
+   * Check if this node contains the given genomes. Should run in O(log(n)) time.
+   *
+   * @param genome the genome to check for.
+   * @return if this node contains the given genomes.
+   */
+  boolean containsGenome(Integer genome);
+
+  /**
+   * Perform the given action for each genome which is contained both in the given list of sorted
+   * genomes and in this node.
+   *
+   * @param genomes        the sorted list of genomes.
+   * @param genomeConsumer the action to perform for each genome which is contained both in the
+   *                       given list of sorted genomes and in this node.
+   */
+  void forEachContainedGenome(List<Integer> genomes, Consumer<Integer> genomeConsumer);
 
   /**
    * Calculates the genomes that pass over the edge between this node and the specified node.
@@ -345,14 +366,14 @@ public interface GraphNode extends Visitable, Copyable<GraphNode> {
 
   /**
    * Add an annotation to this node.
-   * 
+   *
    * @param annotation the annotation to add.
    */
   void addAnnotation(Annotation annotation);
 
   /**
    * Check if this node has an annotation.
-   * 
+   *
    * @return if this node has an annotation.
    */
   boolean hasAnnotations();

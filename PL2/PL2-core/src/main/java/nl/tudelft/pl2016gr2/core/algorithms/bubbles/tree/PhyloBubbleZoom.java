@@ -8,6 +8,7 @@ import nl.tudelft.pl2016gr2.visitor.BubblePhyloVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,15 +46,19 @@ public class PhyloBubbleZoom extends AbstractZoom {
     IPhylogeneticTreeNode<?> curTreeNode = getTreeNode(bubble);
     IPhylogeneticTreeNode<?> childOne = curTreeNode.getChild(0);
     IPhylogeneticTreeNode<?> childTwo = curTreeNode.getChild(1);
-    Set<GraphNode> poppedNodes = new HashSet<>();
+    HashSet<GraphNode> poppedNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(poppedNodes, childOne, bubble, newBubbles);
     debubble(poppedNodes, childTwo, bubble, newBubbles);
     pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
     pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
-    ArrayList<GraphNode> graphNodes = new ArrayList<>(poppedNodes);
-    filter.pruneNodes(graphNodes, newBubbles);
-    return alignNodes(graphNodes, bubble);
+    filter.pruneNodes(poppedNodes, newBubbles);
+    
+    ArrayList<GraphNode> sortedNodes = new ArrayList<>(poppedNodes);
+    Collections.sort(sortedNodes, (GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
+    });
+    return alignNodes(sortedNodes, bubble);
   }
   
   private IPhylogeneticTreeNode<?> getTreeNode(Bubble bubble) {

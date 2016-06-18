@@ -43,13 +43,18 @@ public class GraphBubbleZoom extends AbstractZoom {
     end.setInEdges(new HashSet<>());
     
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    ArrayList<GraphNode> graphNodes = new ArrayList<>(
-        filter.findBubbles(Collections.singletonList(startNode), end, newBubbles));
+    HashSet<GraphNode> graphNodes = 
+        filter.findBubbles(Collections.singletonList(startNode), end, newBubbles);
     graphNodes.add(end);
     pruneStart(bubble.getInEdges(), originalInEdges, originalOutEdges, bubble.getId());
     pruneEnd(bubble.getOutEdges(), originalOutEdges, originalInEdges, bubble.getId());
     filter.pruneNodes(graphNodes, newBubbles);
     
-    return alignNodes(graphNodes, bubble);
+    ArrayList<GraphNode> sortedNodes = new ArrayList<>(graphNodes);
+    Collections.sort(sortedNodes, (GraphNode first, GraphNode second) -> {
+      return first.getLevel() - second.getLevel();
+    });
+    
+    return alignNodes(sortedNodes, bubble);
   }
 }
