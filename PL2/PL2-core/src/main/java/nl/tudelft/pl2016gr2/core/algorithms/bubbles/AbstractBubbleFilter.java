@@ -7,8 +7,8 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -85,7 +85,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
    * @param graphNodes a list of graphnodes for which the edges need to be set.
    * @param newBubbles a list of bubbles which already have correct edges.
    */
-  public void pruneNodes(List<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
+  public void pruneNodes(HashSet<GraphNode> graphNodes, ArrayList<Bubble> newBubbles) {
     pruneBubbles(newBubbles);
 
     Iterator<GraphNode> iterator = graphNodes.iterator();
@@ -120,7 +120,7 @@ public abstract class AbstractBubbleFilter implements BubbleFilter {
   }
 
   private Collection<GraphNode> pruneLinks(Collection<GraphNode> links,
-      List<GraphNode> graphNodes) {
+      HashSet<GraphNode> graphNodes) {
     Collection<GraphNode> prunedLinks = new ArrayList<>();
     links.forEach(link -> {
       if (graphNodes.contains(link)) {

@@ -5,6 +5,8 @@ import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A simple implementation of <code>Node</code> that offers the DNA sequence as a String, but
@@ -29,7 +31,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
    */
   public SequenceNode(int identifier) {
     super(identifier);
-    genomes = new ArrayList<>();
+    genomes = new ArrayList<>(0);
   }
 
   /**
@@ -41,7 +43,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   public SequenceNode(int identifier, BaseSequence sequence) {
     super(identifier);
     this.sequence = sequence;
-    genomes = new ArrayList<>();
+    genomes = new ArrayList<>(0);
   }
 
   /**
@@ -55,6 +57,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     super(identifier);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
+    this.genomes.sort(null);
     this.genomes.trimToSize();
   }
 
@@ -75,6 +78,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
     super(identifier, inEdges, outEdges);
     this.sequence = sequence;
     this.genomes = new ArrayList<>(genomes);
+    this.genomes.sort(null);
   }
 
   /**
@@ -102,28 +106,20 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   }
 
   @Override
-  public Collection<Integer> getGenomes() {
+  public List<Integer> getGenomes() {
     return genomes;
-  }
-
-  @Override
-  public void addGenome(int genome) {
-    //assert !genomes.contains(
-    //    genome) : "Adding existing genome: " + genome + ". NodeID: " + this.getId();
-    genomes.add(genome);
-  }
-
-  @Override
-  public void removeGenome(int genome) {
-    assert genomes.contains(
-        genome) : "Removing non-existent genome: " + genome + ". NodeID: " + this.getId();
-    genomes.remove((Integer) genome);
   }
 
   @Override
   public void addAllGenomes(Collection<Integer> genomes) {
     this.genomes.addAll(genomes);
     this.genomes.trimToSize();
+    this.genomes.sort(null);
+  }
+  
+  @Override
+  public boolean containsGenome(Integer genome) {
+    return Collections.binarySearch(genomes, genome, null) >= 0;
   }
 
   /**

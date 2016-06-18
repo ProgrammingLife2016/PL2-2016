@@ -27,8 +27,8 @@ public abstract class AbstractGraphBubble extends Bubble {
     this.filter = filter;
   }
   
-  protected AbstractGraphBubble(int id, BubbleFilter filter,
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, List<GraphNode> nestedNodes) {
+  protected AbstractGraphBubble(int id, BubbleFilter filter, Collection<GraphNode> inEdges, 
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes) {
     super(id, inEdges, outEdges, nestedNodes);
     this.filter = filter;
   }

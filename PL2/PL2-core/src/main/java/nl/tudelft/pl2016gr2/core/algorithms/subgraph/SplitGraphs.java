@@ -57,12 +57,12 @@ public class SplitGraphs {
    *                                genomes
    */
   public SequenceGraph getSubgraph(Collection<Integer> genomes) {
-    HashSet<Integer> genomeSet = new HashSet<>(genomes);
+    ArrayList<Integer> sortedGenomes = new ArrayList<>(genomes);
     assert mainGraph.getGenomes().containsAll(
-        genomeSet) : "Tried splitting graph on absent genomes";
+        sortedGenomes) : "Tried splitting graph on absent genomes";
 
-    HashMap<Integer, GraphNode> nodeMap = findSubgraphNodes(genomeSet);
-    return createNewGraph(nodeMap, genomeSet);
+    HashMap<Integer, GraphNode> nodeMap = findSubgraphNodes(sortedGenomes);
+    return createNewGraph(nodeMap, sortedGenomes);
   }
 
   /**
@@ -71,13 +71,13 @@ public class SplitGraphs {
    * The nodes in the returned map are backed by the original nodes.
    * </p>
    *
-   * @param genomeSet the genomes that should be included in the subgraph.
+   * @param genomes the genomes that should be included in the subgraph.
    * @return a map containing all of the nodes which are part of the subgraph.
    */
-  private HashMap<Integer, GraphNode> findSubgraphNodes(HashSet<Integer> genomeSet) {
+  private HashMap<Integer, GraphNode> findSubgraphNodes(ArrayList<Integer> genomes) {
     HashMap<Integer, GraphNode> nodeMap = new HashMap<>();
     mainGraph.forEach(node -> {
-      if (node.getGenomes().stream().anyMatch(genomeSet::contains)) {
+      if (node.containsAnyGenome(genomes)) {
         nodeMap.put(node.getId(), node);
       }
     });
@@ -99,7 +99,7 @@ public class SplitGraphs {
    * @return the new graph which contains all of the newly created nodes.
    */
   private SequenceGraph createNewGraph(HashMap<Integer, GraphNode> oldNodes,
-      HashSet<Integer> genomes) {
+      ArrayList<Integer> genomes) {
     HashMap<Integer, GraphNode> newNodes = new HashMap<>();
 
     oldNodes.forEach((id, originalNode) -> newNodes.put(id, originalNode.copy()));
@@ -123,11 +123,13 @@ public class SplitGraphs {
    * @return The updated map of nodes
    */
   private HashMap<Integer, GraphNode> pruneNodes(HashMap<Integer, GraphNode> newNodes,
-      HashMap<Integer, GraphNode> oldNodes, HashSet<Integer> genomes) {
+      HashMap<Integer, GraphNode> oldNodes, ArrayList<Integer> genomes) {
     newNodes.forEach((id, node) -> {
       node.addAllInEdges(pruneInEdges(node, newNodes, oldNodes, genomes));
-      node.addAllOutEdges(pruneOutEdges(node, newNodes, oldNodes, genomes));
       node.addAllGenomes(pruneGenomes(oldNodes.get(id), genomes));
+    });
+    newNodes.forEach((id, node) -> {
+      node.addAllOutEdges(pruneOutEdges(node, newNodes, oldNodes));
     });
 
     return newNodes;
@@ -175,15 +177,13 @@ public class SplitGraphs {
    * @return The intersection of the node outLinks and the subgraph nodes
    */
   private Collection<GraphNode> pruneOutEdges(GraphNode newNode,
-      HashMap<Integer, GraphNode> newNodes, HashMap<Integer, GraphNode> oldNodes,
-      Collection<Integer> genomes) {
+      HashMap<Integer, GraphNode> newNodes, HashMap<Integer, GraphNode> oldNodes) {
     Collection<GraphNode> prunedOutEdges = new ArrayList<>();
     GraphNode oldNode = oldNodes.get(newNode.getId());
     oldNode.getOutEdges().forEach(outEdge -> {
-      if (oldNode.getGenomesOverEdge(outEdge).stream().anyMatch(genomes::contains)) {
+      GraphNode newOutEdge = newNodes.get(outEdge.getId());
+      if (newOutEdge != null && newOutEdge.getInEdges().contains(newNode)) {
         // Edge is valid
-        GraphNode newOutEdge = newNodes.get(outEdge.getId());
-        assert newOutEdge != null;
         prunedOutEdges.add(newOutEdge);
       }
     });
@@ -200,13 +200,9 @@ public class SplitGraphs {
    * @param graphGenomes The set of genomes in the graph
    * @return The intersection of the node and graph genomes
    */
-  private ArrayList<Integer> pruneGenomes(GraphNode node, HashSet<Integer> graphGenomes) {
+  private ArrayList<Integer> pruneGenomes(GraphNode node, ArrayList<Integer> graphGenomes) {
     ArrayList<Integer> prunedGenomes = new ArrayList<>();
-    node.getGenomes().forEach(genome -> {
-      if (graphGenomes.contains(genome)) {
-        prunedGenomes.add(genome);
-      }
-    });
+    node.forEachContainedGenome(graphGenomes, prunedGenomes::add);
     return prunedGenomes;
   }
 }

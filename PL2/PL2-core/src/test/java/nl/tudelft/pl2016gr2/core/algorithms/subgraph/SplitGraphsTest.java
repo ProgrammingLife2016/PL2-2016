@@ -14,7 +14,6 @@ import nl.tudelft.pl2016gr2.model.graph.SequenceGraph;
 import nl.tudelft.pl2016gr2.model.graph.data.BaseSequence;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
-
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.AccessPrivate;
 import org.junit.Before;
 import org.junit.Rule;
@@ -99,8 +98,10 @@ public class SplitGraphsTest {
     for (Integer outLink : outLinks) {
       outLinkNodes.add(mockNode(outLink, false));
     }
-    return new SequenceNode(identifier, new BaseSequence("ACTG"), Arrays.asList(genomes),
-        inLinkNodes, outLinkNodes);
+    SequenceNode node = new SequenceNode(identifier, new BaseSequence("ACTG"), 
+        Arrays.asList(genomes), inLinkNodes, outLinkNodes);
+    node.setLevel(node.getId());
+    return node;
   }
 
   @Test
