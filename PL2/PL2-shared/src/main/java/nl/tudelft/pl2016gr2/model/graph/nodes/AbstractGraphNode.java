@@ -92,8 +92,8 @@ public abstract class AbstractGraphNode implements GraphNode {
         otherGenomes.addAll(outEdge.getGenomes());
       }
     });
-    List<Integer> nodeGenomes = node.getGenomes();
-    forEachContainedGenome(nodeGenomes, genome -> {
+    List<Integer> thisGenomes = getGenomes();
+    node.forEachContainedGenome(thisGenomes, genome -> {
       if (!otherGenomes.contains(genome)) {
         genomes.add(genome);
       }

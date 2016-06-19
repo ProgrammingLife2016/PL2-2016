@@ -381,8 +381,7 @@ public class SequenceNodeTest {
   public void testPop() {
     SequenceNode node = new SequenceNode(0);
     node.trimToSize();
-    assertEquals(1, node.pop().size());
-    assertTrue(node.pop().contains(node));
+    assertEquals(0, node.pop().size());
   }
 
   @Test

@@ -15,41 +15,23 @@ import java.util.List;
 public class StraightSequenceBubble extends Bubble {
 
   private final IVerticalAligner aligner;
-  private final GraphNode firstNode;
-  private final GraphNode lastNode;
   private boolean isPopped;
   private boolean verticallyAligned;
 
-  /**
-   * Construct a sequence bubble.
-   *
-   * @param id          .
-   * @param inEdges     .
-   * @param outEdges    .
-   * @param nestedNodes .
-   * @param aligner     .
-   * @param firstNode   .
-   * @param lastNode    .
-   */
   public StraightSequenceBubble(int id, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner,
-      GraphNode firstNode, GraphNode lastNode) {
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.aligner = aligner;
-    this.firstNode = firstNode;
-    this.lastNode = lastNode;
   }
 
   private StraightSequenceBubble(StraightSequenceBubble bubble, IVerticalAligner aligner) {
     super(bubble);
     this.aligner = aligner;
-    this.firstNode = bubble.firstNode;
-    this.lastNode = bubble.lastNode;
   }
 
   @Override
   public int getGenomeSize() {
-    return firstNode.getGenomeSize();
+    return getFirstNode().getGenomeSize();
   }
 
   @Override
@@ -97,10 +79,10 @@ public class StraightSequenceBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       setUnpoppedEdges();
       isPopped = false;
     }
@@ -110,12 +92,14 @@ public class StraightSequenceBubble extends Bubble {
    * Remove the edges to this bubble and set the edges to the nested nodes.
    */
   private void setPoppedEdges() {
+    GraphNode firstNode = getFirstNode();
     firstNode.setInEdges(getInEdges());
 
     for (GraphNode inEdge : getInEdges()) {
       inEdge.removeOutEdge(this);
       inEdge.addOutEdge(firstNode);
     }
+    GraphNode lastNode = getLastNode();
     lastNode.setOutEdges(getOutEdges());
     for (GraphNode outEdge : getOutEdges()) {
       outEdge.removeInEdge(this);
@@ -127,6 +111,9 @@ public class StraightSequenceBubble extends Bubble {
    * Remove the edges to the nodes in this bubble and set the edges to this bubble.
    */
   private void setUnpoppedEdges() {
+    GraphNode firstNode = getFirstNode();
+    GraphNode lastNode = getLastNode();
+    
     for (GraphNode inEdge : firstNode.getInEdges()) {
       inEdge.removeOutEdge(firstNode);
       inEdge.addOutEdge(this);

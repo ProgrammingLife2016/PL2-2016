@@ -205,8 +205,7 @@ public class MutationBubbleAlgorithms {
     outEdges.add(endNode);
 
     IndelBubble bubble = new IndelBubble(bubbleCount++, inEdges, outEdges,
-        new HashSet<>(nestedNodes), VerticalAligner.INDEL_ALIGNER, 
-        startNode.getOutEdges().iterator().next(), endNode.getInEdges().iterator().next());
+        new HashSet<>(nestedNodes), VerticalAligner.INDEL_ALIGNER);
 
     startNode.removeOutEdge(nestedNodes.get(0));
     startNode.removeOutEdge(endNode);
@@ -284,8 +283,7 @@ public class MutationBubbleAlgorithms {
     nestedNodes.remove(current);
     StraightSequenceBubble bubble = new StraightSequenceBubble(bubbleCount++,
         Collections.singletonList(startNode), Collections.singletonList(current), nestedNodes,
-        VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER, startNode.getOutEdges().iterator().next(),
-        current.getInEdges().iterator().next());
+        VerticalAligner.STRAIGHT_SEQUENCE_ALIGNER);
     return getNewNodes(startNode, current, bubble);
   }
 

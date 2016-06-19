@@ -822,6 +822,7 @@ public class GraphPaneController implements Initializable {
     if (!isInView(node, startLevel, endLevel)) {
       return;
     } else if (width < MIN_VISIBILITY_WIDTH) {
+      node.unpop();
       heatmapColorer.drawHeatmap(node, startLevel);
       return;
     }
@@ -854,6 +855,25 @@ public class GraphPaneController implements Initializable {
     }
     drawAnnotationBox(node, viewNode, pane, startLevel);
     heatmapColorer.drawHeatmap(node, startLevel);
+  }
+
+  /**
+   * Draw the nodes which are nested in the given bubble.
+   *
+   * @param pane            the pane in which to draw the nested nodes.
+   * @param bubble          the bubble which contains the nested nodes.
+   * @param drawnGraphNodes the list of drawn nodes to which to add all child nodes which are drawn.
+   * @param startLevel      the start level: where to start drawing.
+   * @param endLevel        the start level: where to stop drawing.
+   * @param viewRange       the range of values which may be used as y coordinate to draw the
+   *                        children of this bubble.
+   */
+  private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
+      double startLevel, double endLevel, GraphViewRange viewRange) {
+    Collection<GraphNode> poppedNodes = bubble.pop();
+    for (GraphNode poppedNode : poppedNodes) {
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange);
+    }
   }
 
   /**
@@ -956,25 +976,6 @@ public class GraphPaneController implements Initializable {
         = mainGraphOrder.getGraphMapper().findBase(GenomeMap.getInstance().getReferenceId(), level);
     double levelsToDraw = mainPane.getWidth() / zoomFactor.get();
     updateScrollbarValue((nodeToCenter.getLevel() - levelsToDraw / 2.0) / amountOfLevels.get());
-  }
-
-  /**
-   * Draw the nodes which are nested in the given bubble.
-   *
-   * @param pane            the pane in which to draw the nested nodes.
-   * @param bubble          the bubble which contains the nested nodes.
-   * @param drawnGraphNodes the list of drawn nodes to which to add all child nodes which are drawn.
-   * @param startLevel      the start level: where to start drawing.
-   * @param endLevel        the start level: where to stop drawing.
-   * @param viewRange       the range of values which may be used as y coordinate to draw the
-   *                        children of this bubble.
-   */
-  private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      double startLevel, double endLevel, GraphViewRange viewRange) {
-    Collection<GraphNode> poppedNodes = bubble.pop();
-    for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange);
-    }
   }
 
   /**

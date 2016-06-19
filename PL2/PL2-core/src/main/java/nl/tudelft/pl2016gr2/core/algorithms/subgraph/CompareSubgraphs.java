@@ -309,6 +309,12 @@ public class CompareSubgraphs {
     }
 
     private ComplexVerticalArea getPart() {
+      if (splitParts.size() == curPart) {
+        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in CompareSubgraphs, "
+            + "method: getPart -> index out of bounds. Two nodes possibly got the same vertical "
+            + "position because of this error.");
+        return splitParts.get(curPart - 1);
+      }
       return splitParts.get(curPart++);
     }
 

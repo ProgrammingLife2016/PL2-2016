@@ -48,7 +48,7 @@ public class FilterHelpers {
     }
 
     for (Integer genome : node.getGenomes()) {
-      if (genome != 0 && Collections.binarySearch(leaves, genome, null) < 0) {
+      if (genome != 0 && Collections.binarySearch(leaves, genome) < 0) {
         return true;
       }
     }

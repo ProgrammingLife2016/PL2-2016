@@ -15,46 +15,37 @@ import java.util.List;
 public class IndelBubble extends Bubble {
 
   private final IVerticalAligner aligner;
-  private final GraphNode firstNode;
-  private final GraphNode lastNode;
   private boolean isPopped;
   private boolean verticallyAligned;
   private List<Integer> genomes;
 
   /**
-   * Constructs an indelBubble. In the constructor, the genomes of this indelBubble are set to
-   * the genomes of its inedge.
-   * 
+   * Constructs an indelBubble. In the constructor, the genomes of this indelBubble are set to the
+   * genomes of its inedge.
+   *
    * @param id          the id of the bubble.
    * @param inEdges     the in edges of the bubble.
    * @param outEdges    the out edges of the bubble.
    * @param nestedNodes the nested nodes of the bubble.
    * @param aligner     aligner to align the nodes vertically.
-   * @param firstNode the first node of the indel bubble.
-   * @param lastNode the last node of the indel bubble.
    */
   public IndelBubble(int id, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner,
-      GraphNode firstNode, GraphNode lastNode) {
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.genomes = inEdges.iterator().next().getGenomes();
     this.aligner = aligner;
-    this.firstNode = firstNode;
-    this.lastNode = lastNode;
   }
 
   private IndelBubble(IndelBubble bubble, IVerticalAligner aligner) {
     super(bubble);
     this.aligner = aligner;
-    this.firstNode = bubble.firstNode;
-    this.lastNode = bubble.lastNode;
   }
 
   @Override
   public int getGenomeSize() {
     return genomes.size();
   }
-  
+
   @Override
   public List<Integer> getGenomes() {
     return genomes;
@@ -90,10 +81,10 @@ public class IndelBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       setUnpoppedEdges();
       isPopped = false;
     }
@@ -105,11 +96,13 @@ public class IndelBubble extends Bubble {
   private void setPoppedEdges() {
     GraphNode inEdge = getInEdges().iterator().next();
     GraphNode outEdge = getOutEdges().iterator().next();
-
+    
+    GraphNode firstNode = getFirstNode();
     inEdge.removeOutEdge(this);
     inEdge.addOutEdge(firstNode);
     inEdge.addOutEdge(outEdge);
-
+    
+    GraphNode lastNode = getLastNode();
     outEdge.removeInEdge(this);
     outEdge.addInEdge(lastNode);
     outEdge.addInEdge(inEdge);
@@ -125,11 +118,11 @@ public class IndelBubble extends Bubble {
     GraphNode inEdge = getInEdges().iterator().next();
     GraphNode outEdge = getOutEdges().iterator().next();
 
-    inEdge.removeOutEdge(firstNode);
+    inEdge.removeOutEdge(getFirstNode());
     inEdge.removeOutEdge(outEdge);
     inEdge.addOutEdge(this);
 
-    outEdge.removeInEdge(lastNode);
+    outEdge.removeInEdge(getLastNode());
     outEdge.removeInEdge(inEdge);
     outEdge.addInEdge(this);
   }

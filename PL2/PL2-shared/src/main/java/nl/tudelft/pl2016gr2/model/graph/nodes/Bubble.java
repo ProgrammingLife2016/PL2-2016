@@ -189,18 +189,37 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
     return level;
   }
 
-  @Override
-  public String toString() {
-
-    StringBuilder out = new StringBuilder();
-
+  /**
+   * Get the first node of the bubble.
+   *
+   * @return the first node of the bubble.
+   */
+  protected GraphNode getFirstNode() {
+    int lowestLevel = Integer.MAX_VALUE;
+    GraphNode firstNode = null;
     for (GraphNode child : getChildren()) {
-      out.append(child.toString());
+      if (child.getLevel() < lowestLevel) {
+        lowestLevel = child.getLevel();
+        firstNode = child;
+      }
     }
-
-    return out.toString();
+    return firstNode;
   }
 
-
-
+  /**
+   * Get the first node of the bubble.
+   *
+   * @return the first node of the bubble.
+   */
+  protected GraphNode getLastNode() {
+    int highestLevel = Integer.MIN_VALUE;
+    GraphNode lastNode = null;
+    for (GraphNode child : getChildren()) {
+      if (child.getLevel() > highestLevel) {
+        highestLevel = child.getLevel();
+        lastNode = child;
+      }
+    }
+    return lastNode;
+  }
 }

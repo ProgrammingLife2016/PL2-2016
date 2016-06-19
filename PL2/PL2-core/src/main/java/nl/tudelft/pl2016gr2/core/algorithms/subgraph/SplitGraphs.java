@@ -61,6 +61,7 @@ public class SplitGraphs {
     assert mainGraph.getGenomes().containsAll(
         sortedGenomes) : "Tried splitting graph on absent genomes";
 
+    sortedGenomes.sort(null);
     HashMap<Integer, GraphNode> nodeMap = findSubgraphNodes(sortedGenomes);
     return createNewGraph(nodeMap, sortedGenomes);
   }
@@ -152,14 +153,15 @@ public class SplitGraphs {
       Collection<Integer> genomes) {
     Collection<GraphNode> prunedInEdges = new ArrayList<>();
     GraphNode oldNode = oldNodes.get(newNode.getId());
-    oldNode.getInEdges().forEach(oldInEdge -> {
-      if (oldInEdge.getGenomesOverEdge(oldNode).stream().anyMatch(genomes::contains)) {
+    for (GraphNode oldInEdge : oldNode.getInEdges()) {
+      if (oldNodes.containsKey(oldInEdge.getId())
+          && oldInEdge.getGenomesOverEdge(oldNode).stream().anyMatch(genomes::contains)) {
         // Edge is valid
         GraphNode newInEdge = newNodes.get(oldInEdge.getId());
         assert newInEdge != null;
         prunedInEdges.add(newInEdge);
       }
-    });
+    }
     return prunedInEdges;
   }
 

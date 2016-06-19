@@ -119,7 +119,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
   
   @Override
   public boolean containsGenome(Integer genome) {
-    return Collections.binarySearch(genomes, genome, null) >= 0;
+    return Collections.binarySearch(genomes, genome) >= 0;
   }
 
   /**
@@ -186,9 +186,7 @@ public class SequenceNode extends AbstractGraphNode implements Node {
 
   @Override
   public Collection<GraphNode> pop() {
-    ArrayList<GraphNode> res = new ArrayList<>(1);
-    res.add(this);
-    return res;
+    return new ArrayList<>(0);
   }
 
   @Override

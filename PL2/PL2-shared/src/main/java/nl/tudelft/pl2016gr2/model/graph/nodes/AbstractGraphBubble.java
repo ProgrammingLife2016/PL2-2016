@@ -87,10 +87,10 @@ public abstract class AbstractGraphBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       isPopped = false;
       for (GraphNode node : getInEdges()) {
         unpoppedOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));
