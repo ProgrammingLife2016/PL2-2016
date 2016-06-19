@@ -1024,11 +1024,13 @@ public class GraphPaneController implements Initializable {
     drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
-          double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel);
+          if (outEdge.getGuiData().range != null) {
+            double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
+            drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel);
+          }
         }
         for (GraphNode inEdge : node.getInEdges()) {
-          if (!drawnGraphNodes.contains(inEdge)) {
+          if (inEdge.getGuiData().range != null && !drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
             drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel);
           }
