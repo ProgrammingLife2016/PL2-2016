@@ -12,7 +12,7 @@ import java.util.List;
  */
 public abstract class Bubble extends AbstractGraphNode implements GraphNode {
 
-  private final List<GraphNode> nestedNodes;
+  private final HashSet<GraphNode> nestedNodes;
 
   private int size = -1;
   private int level = -1;
@@ -31,7 +31,7 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
    */
   public Bubble(int id) {
     super(id);
-    this.nestedNodes = new ArrayList<>();
+    this.nestedNodes = new HashSet<>();
   }
 
   /**
@@ -43,7 +43,7 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
    */
   public Bubble(int id, Collection<GraphNode> inEdges, Collection<GraphNode> outEdges) {
     super(id, inEdges, outEdges);
-    this.nestedNodes = new ArrayList<>();
+    this.nestedNodes = new HashSet<>();
   }
 
   /**
@@ -55,7 +55,7 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
    * @param nestedNodes the nested nodes of the bubble.
    */
   public Bubble(int id, Collection<GraphNode> inEdges, Collection<GraphNode> outEdges,
-      List<GraphNode> nestedNodes) {
+      HashSet<GraphNode> nestedNodes) {
     super(id, inEdges, outEdges);
     this.nestedNodes = nestedNodes;
     initOverlap();
@@ -90,9 +90,6 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
    * @param child the child node.
    */
   public void addChild(GraphNode child) {
-    if (nestedNodes.contains(child)) {
-      return;
-    }
     nestedNodes.add(child);
     if (child.getGuiData().overlapping) {
       getGuiData().overlapping = true;
@@ -130,24 +127,24 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
   }
 
   @Override
-  public Collection<Integer> getGenomes() {
-    HashSet<Integer> genomeSet = new HashSet<>();
+  public List<Integer> getGenomes() {
+    ArrayList<Integer> genomes = new ArrayList<>();
     for (GraphNode nestedNode : nestedNodes) {
-      genomeSet.addAll(nestedNode.getGenomes());
+      genomes.addAll(nestedNode.getGenomes());
     }
-    return genomeSet;
+    genomes.sort(null);
+    return genomes;
   }
+  
 
   @Override
-  public void addGenome(int genome) {
-    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
-        + "bubbles before the bubbles are made.");
-  }
-
-  @Override
-  public void removeGenome(int genome) {
-    throw new UnsupportedOperationException("This must be performed on the nodes inside of the "
-        + "bubbles before the bubbles are made.");
+  public boolean containsGenome(Integer genome) {
+    for (GraphNode nestedNode : nestedNodes) {
+      if (nestedNode.containsGenome(genome)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -163,8 +160,7 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
         + "not a direct successor. This = " + this.getId();
 
     Collection<Integer> genomes = new ArrayList<>();
-    getGenomes().stream().filter(genome -> node.getGenomes().contains(genome))
-        .forEach(genomes::add);
+    forEachContainedGenome(node.getGenomes(), genomes::add);
     return genomes;
   }
 

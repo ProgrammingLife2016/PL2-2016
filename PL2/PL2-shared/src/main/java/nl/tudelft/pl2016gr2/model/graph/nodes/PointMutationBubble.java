@@ -3,8 +3,8 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This kind of bubble contains a point mutation.
@@ -18,7 +18,7 @@ public class PointMutationBubble extends Bubble {
   private boolean verticallyAligned;
 
   public PointMutationBubble(int id, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, List<GraphNode> nestedNodes, IVerticalAligner aligner) {
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.aligner = aligner;
   }

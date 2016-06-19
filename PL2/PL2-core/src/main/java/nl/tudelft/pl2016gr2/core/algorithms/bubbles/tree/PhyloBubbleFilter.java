@@ -27,7 +27,7 @@ import java.util.Set;
  */
 public class PhyloBubbleFilter extends AbstractBubbleFilter {
 
-  private int mutationId = -1;
+  private static int mutationId = -1;
 
   /**
    * Creates an instance of this class.
@@ -36,6 +36,9 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
    */
   public PhyloBubbleFilter(Collection<GraphNode> orderedNodes) {
     super(orderedNodes);
+    if (mutationId < Integer.MIN_VALUE / 4) {
+      mutationId = -1;
+    }
   }
 
   /**
@@ -63,16 +66,16 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
   public ArrayList<GraphNode> filter(IPhylogeneticTreeRoot<?> treeRoot,
       Collection<Integer> genomes) {
     IPhylogeneticTreeRoot<?> newRoot = new TreeBuilder(treeRoot, genomes).getTree();
-    Set<GraphNode> graphNodes = new HashSet<>();
+    HashSet<GraphNode> graphNodes = new HashSet<>();
     ArrayList<Bubble> newBubbles = new ArrayList<>();
     debubble(graphNodes, newRoot, newBubbles);
-    ArrayList<GraphNode> poppedNodes = new ArrayList<>(graphNodes);
-    pruneNodes(poppedNodes, newBubbles);
+    pruneNodes(graphNodes, newBubbles);
 
-    Collections.sort(poppedNodes, (GraphNode first, GraphNode second) -> {
+    ArrayList<GraphNode> sortedNodes = new ArrayList<>(graphNodes);
+    Collections.sort(sortedNodes, (GraphNode first, GraphNode second) -> {
       return first.getLevel() - second.getLevel();
     });
-    return poppedNodes;
+    return sortedNodes;
   }
 
   private List<Bubble> debubble(Set<GraphNode> graphNodes, IPhylogeneticTreeNode<?> treeNode,
@@ -204,10 +207,9 @@ public class PhyloBubbleFilter extends AbstractBubbleFilter {
       if (bubble != null && !bubble.hasChild(outlink)) {
         continue;
       }
-      ArrayList<Integer> genomes = new ArrayList<>(outlink.getGenomes());
 
       for (Integer leaf : leaves) {
-        if (genomes.contains(leaf)) {
+        if (outlink.containsGenome(leaf)) {
           curNodeOutlinks.add(outlink);
           break;
         }

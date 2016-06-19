@@ -51,14 +51,15 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
     }
     
     ArrayList<Bubble> newBubbles = new ArrayList<>();
-    ArrayList<GraphNode> graphNodes = new ArrayList<>(findBubbles(startNodes, null, newBubbles));
+    HashSet<GraphNode> graphNodes = findBubbles(startNodes, null, newBubbles);
     graphNodes.addAll(rootNodes);
     pruneNodes(graphNodes, newBubbles);
     
-    Collections.sort(graphNodes, (GraphNode first, GraphNode second) -> {
+    ArrayList<GraphNode> sortedNodes = new ArrayList<>(graphNodes);
+    Collections.sort(sortedNodes, (GraphNode first, GraphNode second) -> {
       return first.getLevel() - second.getLevel();
     });
-    return graphNodes;
+    return sortedNodes;
   }
   
   @Override
@@ -75,9 +76,9 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
    * @param newBubbles a list which contains all the newly made bubbles.
    * @return A list of new graphnodes in the specified interval after they have been bubbled.
    */
-  protected Collection<GraphNode> findBubbles(Collection<GraphNode> startNodes, GraphNode end, 
+  protected HashSet<GraphNode> findBubbles(Collection<GraphNode> startNodes, GraphNode end, 
       ArrayList<Bubble> newBubbles) {
-    Set<GraphNode> poppedNodes = new HashSet<>();
+    HashSet<GraphNode> poppedNodes = new HashSet<>();
     Set<GraphNode> visited = new HashSet<>();
     Queue<GraphNode> toVisit = new LinkedList<>();
     
@@ -99,8 +100,8 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
    * @param newBubbles : list of new bubbles.
    * @return a list of new nodes.
    */
-  private Collection<GraphNode> visitNodes(Queue<GraphNode> toVisit, Set<GraphNode> visited, 
-      GraphNode end, Set<GraphNode> poppedNodes, ArrayList<Bubble> newBubbles) {
+  private HashSet<GraphNode> visitNodes(Queue<GraphNode> toVisit, Set<GraphNode> visited, 
+      GraphNode end, HashSet<GraphNode> poppedNodes, ArrayList<Bubble> newBubbles) {
     while (!toVisit.isEmpty()) {
       GraphNode start = toVisit.poll();
       if (end != null && start.getLevel() >= end.getLevel()) {
@@ -134,13 +135,12 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
    * @return : a bubble (or null).
    */
   private Bubble createBubble(GraphNode start, GraphNode currentEnd) {
-    Set<Integer> genomes = new HashSet<>(start.getGenomes());
     Set<GraphNode> visited = new HashSet<>();
     Queue<GraphNode> toVisit = new LinkedList<>();
     toVisit.addAll(getOriginalOutEdges().get(start.getId()));
     Set<GraphNode> nestedNodes = new HashSet<>();
     
-    Bubble bubble = makeBubble(toVisit, visited, start, currentEnd, nestedNodes, genomes);
+    Bubble bubble = makeBubble(toVisit, visited, start, currentEnd, nestedNodes);
     if (bubble != null) {
       for (GraphNode node : nestedNodes) {
         bubble.addChild(node);
@@ -158,11 +158,10 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
    * @param start : start of bubble.
    * @param endNode : end of the bubble should be before this node.
    * @param nestedNodes : nestednodes of the bubble.
-   * @param genomes : genomes of the bubble.
    * @return : a bubble (or null).
    */
   private Bubble makeBubble(Queue<GraphNode> toVisit, Set<GraphNode> visited, GraphNode start, 
-      GraphNode endNode, Set<GraphNode> nestedNodes, Set<Integer> genomes) {
+      GraphNode endNode, Set<GraphNode> nestedNodes) {
     GraphBubble bubble = null;
     while (!toVisit.isEmpty()) {
       GraphNode next = toVisit.poll();
@@ -170,13 +169,12 @@ public class GraphBubbleFilter extends AbstractBubbleFilter {
       if (endNode != null && next.getLevel() >= endNode.getLevel()) {
         continue;
       }
-      Set<Integer> nextGenomes = new HashSet<>(next.getGenomes());
-      if (nextGenomes.size() == genomes.size() && nextGenomes.containsAll(genomes)) {
+      if (next.hasSameGenomes(start.getGenomes())) {
         endNode = next;
         bubble = new GraphBubble(mutationId, this, 
             Collections.singletonList(start), Collections.singletonList(endNode));
         mutationId--;
-      } else if (nextGenomes.size() < genomes.size()) {
+      } else if (next.getGenomeSize() < start.getGenomeSize()) {
         nestedNodes.add(next);
         for (GraphNode out : getOriginalOutEdges().get(next.getId())) {
           if (endNode == null || out.getLevel() < endNode.getLevel()) {

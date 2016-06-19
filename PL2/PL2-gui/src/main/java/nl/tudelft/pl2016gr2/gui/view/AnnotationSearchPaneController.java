@@ -64,7 +64,7 @@ public class AnnotationSearchPaneController implements Initializable {
             // annotations in the graph
             selectionManager.select(new ViewAnnotation(selection, selectionManager));
             graphPaneController.centerOnLevel(
-                selection.getStartInGraph());
+                selection.start);
           }
         }
     );

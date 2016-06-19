@@ -27,6 +27,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
@@ -35,6 +36,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.GraphBubbleDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IHeatmapColorer;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IndelDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.MutationDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.NoOverlapHeatmap;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.OverlapHeatmap;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PhyloBubbleDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PointMutationDensity;
@@ -226,6 +228,8 @@ public class GraphPaneController implements Initializable {
     heatmapOptions.put("Graph based bubbles", new GraphBubbleDensity(heatmapGraphics, zoomFactor));
     heatmapOptions.put("Equalities between the graphs (dark = equal, light = not equal",
         new OverlapHeatmap(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Differences between the graphs (dark = not equal, light = equal",
+        new NoOverlapHeatmap(heatmapGraphics, zoomFactor));
   }
 
   /**
@@ -734,8 +738,8 @@ public class GraphPaneController implements Initializable {
         topEdgeCanvas.getWidth());
     bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(),
         bottomEdgeCanvas.getWidth());
-    heatmap.getGraphicsContext2D().clearRect(0, 0, heatmap.getWidth(),
-        heatmap.getHeight());
+    heatmap.getGraphicsContext2D().setFill(Color.WHITE);
+    heatmap.getGraphicsContext2D().fillRect(0, 0, heatmap.getWidth(), heatmap.getHeight());
   }
 
   /**
@@ -865,7 +869,7 @@ public class GraphPaneController implements Initializable {
     if (!node.hasAnnotations()) {
       return;
     }
-    boolean odd = false;
+    double previousEndPosition = Double.NEGATIVE_INFINITY;
     for (Annotation annotation : node.getAnnotations()) {
       double annotationStart = calcAnnotationStart(annotation, viewNode, startLevel);
       double annotationEnd = getAnnotationEnd(annotation, viewNode, startLevel);
@@ -876,11 +880,13 @@ public class GraphPaneController implements Initializable {
       viewAnnotation.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
       double maxHeight = viewNode.getHeight() / 2.0;
       viewAnnotation.setHeight(Math.min(maxHeight, ANNOTATION_HEIGHT));
-      viewAnnotation.setOddOffset(odd);
-
+      if (annotationStart < previousEndPosition) {
+        viewAnnotation.setOddOffset();
+      } else {
+        previousEndPosition = annotationEnd;
+      }
       pane.getChildren().add(viewAnnotation);
       viewAnnotation.addLabel(pane);
-      odd = !odd;
     }
   }
 
@@ -1017,11 +1023,13 @@ public class GraphPaneController implements Initializable {
     drawnGraphNodes.forEach((GraphNode node) -> {
       if (!node.isPopped()) {
         for (GraphNode outEdge : node.getOutEdges()) {
-          double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
-          drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel);
+          if (outEdge.getGuiData().range != null) {
+            double edgeWidth = calculateEdgeWidth(genomeCount, node, outEdge);
+            drawEdge(canvas.getGraphicsContext2D(), node, outEdge, edgeWidth, startLevel);
+          }
         }
         for (GraphNode inEdge : node.getInEdges()) {
-          if (!drawnGraphNodes.contains(inEdge)) {
+          if (inEdge.getGuiData().range != null && !drawnGraphNodes.contains(inEdge)) {
             double edgeWidth = calculateEdgeWidth(genomeCount, inEdge, node);
             drawEdge(canvas.getGraphicsContext2D(), inEdge, node, edgeWidth, startLevel);
           }

@@ -71,7 +71,7 @@ public class CompareSubgraphs {
       return; // temporary check, actual problem should be fixed.
     }
     int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
-    
+
     for (GraphNode bubble : bubbleInEdges) {
       int startY = index * heightPerRoot;
       int endY = (index + 1) * heightPerRoot;
@@ -156,14 +156,7 @@ public class CompareSubgraphs {
     if (areaMap.containsKey(node)) {
       return areaMap.get(node);
     }
-    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
-    for (GraphNode inEdge : node.getInEdges()) {
-      ComplexVerticalArea area = areaMap.get(inEdge);
-      if (area == null) {
-        area = calculateGraphArea(inEdge, areaMap, graphOrder);
-      }
-      inAreas.add(area);
-    }
+    ArrayList<ComplexVerticalArea> inAreas = getInAreas(node, areaMap, graphOrder);
     ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
     areaMap.put(node, complexNodeArea);
 
@@ -172,6 +165,19 @@ public class CompareSubgraphs {
     node.getGuiData().relativeYPos = nodeArea.getCenter() / VERTICAL_PRECISION;
     node.getGuiData().maxHeight = nodeArea.getHeight() / (double) VERTICAL_PRECISION;
     return complexNodeArea;
+  }
+
+  private static ArrayList<ComplexVerticalArea> getInAreas(GraphNode node,
+      HashMap<GraphNode, ComplexVerticalArea> areaMap, Collection<GraphNode> graphOrder) {
+    ArrayList<ComplexVerticalArea> inAreas = new ArrayList<>();
+    for (GraphNode inEdge : node.getInEdges()) {
+      ComplexVerticalArea area = areaMap.get(inEdge);
+      if (area == null) {
+        area = calculateGraphArea(inEdge, areaMap, graphOrder);
+      }
+      inAreas.add(area);
+    }
+    return inAreas;
   }
 
   private static class ComplexVerticalArea {
@@ -233,7 +239,7 @@ public class CompareSubgraphs {
       /////////////////////
       // TEMPORARY HACK TO AVOID BUG WITH 328 GRAPH:
       // TOO MANY NODES ARE DRAWN IN THE SAME LOCATION
-      if (totalHeight < nodes.size()) {
+      if (totalHeight / 5 / nodes.size() <= 1) {
         int start = areas.get(0).startBlock;
         for (int i = 0; i < nodes.size(); i++) {
           splitParts.add(new ComplexVerticalArea(new SimpleVerticalArea(start + i, start + i + 1)));
@@ -246,14 +252,37 @@ public class CompareSubgraphs {
 
     @SuppressWarnings("checkstyle:MethodLength")
     private void splitParts(Collection<GraphNode> nodes, int totalHeight) {
-      int heightPerArea = totalHeight / nodes.size();
+
+      // devide 20 percent of the space evenly amongst the parts
+      int[] heights = new int[nodes.size()];
+      int evenSpace = totalHeight / 5;
+      for (int i = 0; i < nodes.size(); i++) {
+        heights[i] = evenSpace / nodes.size();
+      }
+      heights[0] += evenSpace % nodes.size(); // use the leftover space
+
+      // devide the other 80 percent based on the amount of genomes which goes through each node
+      int totalGenomes = 0;
+      for (GraphNode node : nodes) {
+        totalGenomes += node.getGenomeSize();
+      }
+      int leftoverSpace = totalHeight - evenSpace;
+      int spacePerGenome = leftoverSpace / totalGenomes;
+      int index = 0;
+      for (GraphNode node : nodes) {
+        heights[index] += node.getGenomeSize() * spacePerGenome;
+        index++;
+      }
+      heights[nodes.size() - 1] += leftoverSpace % totalGenomes;
+
+      // calculate the actual simple vertical area(s) to give to each part
       Iterator<SimpleVerticalArea> it = areas.iterator();
       SimpleVerticalArea nextToAdd = it.next();
       for (int i = 0; i < nodes.size(); i++) {
         ArrayList<SimpleVerticalArea> partAreas = new ArrayList<>();
         partAreas.add(nextToAdd);
         int partHeight = nextToAdd.getHeight();
-        while (partHeight < heightPerArea) {
+        while (partHeight < heights[i]) {
           SimpleVerticalArea nextArea = it.next();
           partHeight += nextArea.getHeight();
           partAreas.add(nextArea);
@@ -262,9 +291,9 @@ public class CompareSubgraphs {
           while (it.hasNext()) {
             partAreas.add(it.next());
           }
-        } else if (partHeight > heightPerArea) {
+        } else if (partHeight > heights[i]) {
           Pair<SimpleVerticalArea, SimpleVerticalArea> split = partAreas.get(partAreas.size() - 1)
-              .splitFromEnd(partHeight - heightPerArea);
+              .splitFromEnd(partHeight - heights[i]);
           partAreas.set(partAreas.size() - 1, split.left);
           nextToAdd = split.right;
         } else {
@@ -285,8 +314,8 @@ public class CompareSubgraphs {
       int mostGenomes = 0;
       GraphNode mostGenomeNode = null;
       for (GraphNode node : nodes) {
-        if (node.getGenomes().size() > mostGenomes) {
-          mostGenomes = node.getGenomes().size();
+        if (node.getGenomeSize() > mostGenomes) {
+          mostGenomes = node.getGenomeSize();
           mostGenomeNode = node;
         }
       }
