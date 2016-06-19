@@ -66,17 +66,19 @@ public class CompareSubgraphs {
   public static void alignVertically(Collection<GraphNode> graphOrder,
       Collection<GraphNode> bubbleInEdges) {
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
-    int index = 0;
-    if (bubbleInEdges.isEmpty()) {
-      return; // temporary check, actual problem should be fixed.
+    Collection<GraphNode> bubbleRoots = new ArrayList<>(bubbleInEdges);
+    for (GraphNode graphNode : graphOrder) {
+      if (graphNode.getInEdges().isEmpty() && !bubbleRoots.contains(graphNode)) {
+        bubbleRoots.add(graphNode);
+      }
     }
-    int heightPerRoot = VERTICAL_PRECISION / bubbleInEdges.size();
-
-    for (GraphNode bubble : bubbleInEdges) {
-      int startY = index * heightPerRoot;
-      int endY = (index + 1) * heightPerRoot;
-      areaMap.put(bubble, new ComplexVerticalArea(startY, endY, getExclusiveNodes(bubble
-          .getOutEdges(), graphOrder)));
+    int[] heights = calculateNodeHeights(bubbleRoots, VERTICAL_PRECISION);
+    int startHeight = 0;
+    int index = 0;
+    for (GraphNode bubble : bubbleRoots) {
+      areaMap.put(bubble, new ComplexVerticalArea(startHeight, startHeight + heights[index],
+          getExclusiveNodes(bubble.getOutEdges(), graphOrder)));
+      startHeight += heights[index];
       index++;
     }
     for (GraphNode node : graphOrder) {
@@ -100,13 +102,14 @@ public class CompareSubgraphs {
       }
     }
     HashMap<GraphNode, ComplexVerticalArea> areaMap = new HashMap<>();
-    int heightPerRoot = VERTICAL_PRECISION / rootNodes.size();
+    int[] heights = calculateNodeHeights(rootNodes, VERTICAL_PRECISION);
+    int startHeight = 0;
     int index = 0;
     for (GraphNode rootNode : rootNodes) {
-      int startY = index * heightPerRoot;
-      int endY = (index + 1) * heightPerRoot;
-      rootNode.getGuiData().relativeYPos = (startY + endY) / 2.0 / VERTICAL_PRECISION;
-      areaMap.put(rootNode, new ComplexVerticalArea(startY, endY, rootNode.getOutEdges()));
+      int endY = startHeight + heights[index];
+      rootNode.getGuiData().relativeYPos = (startHeight + endY) / 2.0 / VERTICAL_PRECISION;
+      areaMap.put(rootNode, new ComplexVerticalArea(startHeight, endY, rootNode.getOutEdges()));
+      startHeight = endY;
       index++;
     }
     for (GraphNode node : graphOrder) {
@@ -115,6 +118,52 @@ public class CompareSubgraphs {
       }
       calculateGraphArea(node, areaMap, null);
     }
+  }
+
+  /**
+   * Calculate the vertical space to give to each node. Nodes get more vertical space if they
+   * contain more genomes, because with more genomes the chance of many mutations is higher.
+   *
+   * @param nodes       the nodes to calculate the height for.
+   * @param totalHeight the total vertical space to devide between the nodes.
+   * @return the vertical space to give each node.
+   */
+  @SuppressWarnings("checkstyle:MethodLength")
+  private static int[] calculateNodeHeights(Collection<GraphNode> nodes, int totalHeight) {
+    // devide 25 percent of the space evenly amongst the parts
+    int[] heights = new int[nodes.size()];
+    int evenSpace = totalHeight / 4;
+    for (int i = 0; i < nodes.size(); i++) {
+      heights[i] = evenSpace / nodes.size();
+    }
+    heights[0] += evenSpace % nodes.size(); // use the leftover space
+
+    // devide the other 75 percent based on the amount of genomes which goes through each node
+    int totalGenomes = 0;
+    for (GraphNode node : nodes) {
+      totalGenomes += node.getGenomeSize();
+    }
+    if (totalGenomes == 0) {
+      devideHeightsEvenly(heights, totalHeight);
+      return heights;
+    }
+    int leftoverSpace = totalHeight - evenSpace;
+    int spacePerGenome = leftoverSpace / totalGenomes;
+    int index = 0;
+    for (GraphNode node : nodes) {
+      heights[index] += node.getGenomeSize() * spacePerGenome;
+      index++;
+    }
+    heights[nodes.size() - 1] += leftoverSpace % totalGenomes;
+    return heights;
+  }
+
+  private static void devideHeightsEvenly(int[] heights, int totalHeight) {
+    int heightPerPart = totalHeight / heights.length;
+    for (int i = 0; i < heights.length; i++) {
+      heights[i] = heightPerPart;
+    }
+    heights[0] += totalHeight % heights.length;
   }
 
   /**
@@ -157,7 +206,7 @@ public class CompareSubgraphs {
       return areaMap.get(node);
     }
     ArrayList<ComplexVerticalArea> inAreas = getInAreas(node, areaMap, graphOrder);
-    ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(inAreas, node.getOutEdges());
+    ComplexVerticalArea complexNodeArea = new ComplexVerticalArea(node, inAreas);
     areaMap.put(node, complexNodeArea);
 
     SimpleVerticalArea nodeArea = complexNodeArea.getLargestArea();
@@ -183,17 +232,15 @@ public class CompareSubgraphs {
   private static class ComplexVerticalArea {
 
     private final List<SimpleVerticalArea> areas;
-    private final ArrayList<ComplexVerticalArea> splitParts = new ArrayList<>(1);
-    private int curPart = 0;
+    private final HashMap<GraphNode, ComplexVerticalArea> splitParts = new HashMap<>(4);
 
-    private ComplexVerticalArea(List<ComplexVerticalArea> complexAreas,
-        Collection<GraphNode> nodes) {
+    private ComplexVerticalArea(GraphNode node, List<ComplexVerticalArea> complexAreas) {
       areas = new LinkedList<>();
       for (ComplexVerticalArea complexArea : complexAreas) {
-        areas.addAll(complexArea.getPart().areas);
+        areas.addAll(complexArea.getPart(node).areas);
       }
       mergeSequentialAreas();
-      splitParts(nodes);
+      splitParts(node.getOutEdges());
     }
 
     private ComplexVerticalArea(int startY, int endY, Collection<GraphNode> nodes) {
@@ -241,8 +288,11 @@ public class CompareSubgraphs {
       // TOO MANY NODES ARE DRAWN IN THE SAME LOCATION
       if (totalHeight / 5 / nodes.size() <= 1) {
         int start = areas.get(0).startBlock;
-        for (int i = 0; i < nodes.size(); i++) {
-          splitParts.add(new ComplexVerticalArea(new SimpleVerticalArea(start + i, start + i + 1)));
+        int index = 0;
+        for (GraphNode node : nodes) {
+          splitParts.put(node,
+              new ComplexVerticalArea(new SimpleVerticalArea(start + index, start + index + 1)));
+          index++;
         }
         return;
       }
@@ -252,93 +302,44 @@ public class CompareSubgraphs {
 
     @SuppressWarnings("checkstyle:MethodLength")
     private void splitParts(Collection<GraphNode> nodes, int totalHeight) {
+      // most common path at the bottom
+      ArrayList<GraphNode> sortedNodes = new ArrayList<>(nodes);
+      sortedNodes.sort((first, second) -> first.getGenomeSize() - second.getGenomeSize());
+      
+      int[] heights = calculateNodeHeights(sortedNodes, totalHeight);
 
-      // devide 20 percent of the space evenly amongst the parts
-      int[] heights = new int[nodes.size()];
-      int evenSpace = totalHeight / 5;
-      for (int i = 0; i < nodes.size(); i++) {
-        heights[i] = evenSpace / nodes.size();
-      }
-      heights[0] += evenSpace % nodes.size(); // use the leftover space
-
-      // devide the other 80 percent based on the amount of genomes which goes through each node
-      int totalGenomes = 0;
-      for (GraphNode node : nodes) {
-        totalGenomes += node.getGenomeSize();
-      }
-      int leftoverSpace = totalHeight - evenSpace;
-      int spacePerGenome = leftoverSpace / totalGenomes;
-      int index = 0;
-      for (GraphNode node : nodes) {
-        heights[index] += node.getGenomeSize() * spacePerGenome;
-        index++;
-      }
-      heights[nodes.size() - 1] += leftoverSpace % totalGenomes;
-
-      // calculate the actual simple vertical area(s) to give to each part
       Iterator<SimpleVerticalArea> it = areas.iterator();
       SimpleVerticalArea nextToAdd = it.next();
-      for (int i = 0; i < nodes.size(); i++) {
+      int index = 0;
+      
+      for (GraphNode node : sortedNodes) {
         ArrayList<SimpleVerticalArea> partAreas = new ArrayList<>();
         partAreas.add(nextToAdd);
         int partHeight = nextToAdd.getHeight();
-        while (partHeight < heights[i]) {
+        while (partHeight < heights[index]) {
           SimpleVerticalArea nextArea = it.next();
           partHeight += nextArea.getHeight();
           partAreas.add(nextArea);
         }
-        if (i == nodes.size() - 1) {
+        if (index == sortedNodes.size() - 1) {
           while (it.hasNext()) {
             partAreas.add(it.next());
           }
-        } else if (partHeight > heights[i]) {
+        } else if (partHeight > heights[index]) {
           Pair<SimpleVerticalArea, SimpleVerticalArea> split = partAreas.get(partAreas.size() - 1)
-              .splitFromEnd(partHeight - heights[i]);
+              .splitFromEnd(partHeight - heights[index]);
           partAreas.set(partAreas.size() - 1, split.left);
           nextToAdd = split.right;
         } else {
           nextToAdd = it.next();
         }
-        splitParts.add(new ComplexVerticalArea(partAreas));
+        splitParts.put(node, new ComplexVerticalArea(partAreas));
+        index++;
       }
-      centerMostCommonPath(nodes);
     }
 
-    /**
-     * Put the most common path in the center of the parts list.
-     */
-    private void centerMostCommonPath(Collection<GraphNode> nodes) {
-      if (splitParts.size() <= 2) {
-        return;
-      }
-      int mostGenomes = 0;
-      GraphNode mostGenomeNode = null;
-      for (GraphNode node : nodes) {
-        if (node.getGenomeSize() > mostGenomes) {
-          mostGenomes = node.getGenomeSize();
-          mostGenomeNode = node;
-        }
-      }
-      int mostGenomeNodeLevelIndex = 0;
-      for (GraphNode node : nodes) {
-        if (node.getLevel() < mostGenomeNode.getLevel()) {
-          mostGenomeNodeLevelIndex++;
-        }
-      }
-      int mid = splitParts.size() / 2;
-      ComplexVerticalArea temp = splitParts.get(mid);
-      splitParts.set(mid, splitParts.get(mostGenomeNodeLevelIndex));
-      splitParts.set(mostGenomeNodeLevelIndex, temp);
-    }
-
-    private ComplexVerticalArea getPart() {
-      if (splitParts.size() == curPart) {
-        Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error in CompareSubgraphs, "
-            + "method: getPart -> index out of bounds. Two nodes possibly got the same vertical "
-            + "position because of this error.");
-        return splitParts.get(curPart - 1);
-      }
-      return splitParts.get(curPart++);
+    private ComplexVerticalArea getPart(GraphNode node) {
+      return splitParts.get(node);
     }
 
     private void mergeSequentialAreas() {

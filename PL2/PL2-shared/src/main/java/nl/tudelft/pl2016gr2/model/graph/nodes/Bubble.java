@@ -128,14 +128,15 @@ public abstract class Bubble extends AbstractGraphNode implements GraphNode {
 
   @Override
   public List<Integer> getGenomes() {
-    ArrayList<Integer> genomes = new ArrayList<>();
+    HashSet<Integer> genomeSet = new HashSet<>();
     for (GraphNode nestedNode : nestedNodes) {
-      genomes.addAll(nestedNode.getGenomes());
+      genomeSet.addAll(nestedNode.getGenomes());
     }
-    genomes.sort(null);
-    return genomes;
+    ArrayList<Integer> sortedGenomes = new ArrayList<>(genomeSet);
+    sortedGenomes.sort(null);
+    return sortedGenomes;
   }
-  
+
 
   @Override
   public boolean containsGenome(Integer genome) {

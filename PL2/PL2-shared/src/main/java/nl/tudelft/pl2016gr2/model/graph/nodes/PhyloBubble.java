@@ -9,6 +9,7 @@ import java.util.HashSet;
 public class PhyloBubble extends AbstractGraphBubble {
 
   private final IPhylogeneticTreeNode treeNode;
+  private int genomeSize = -1;
 
   /**
    * Construct a phylo bubble.
@@ -93,5 +94,13 @@ public class PhyloBubble extends AbstractGraphBubble {
   @Override
   public void accept(NodeVisitor visitor) {
     visitor.visit(this);
+  }
+
+  @Override
+  public int getGenomeSize() {
+    if (genomeSize == -1) {
+      genomeSize = getGenomes().size();
+    }
+    return genomeSize;
   }
 }
