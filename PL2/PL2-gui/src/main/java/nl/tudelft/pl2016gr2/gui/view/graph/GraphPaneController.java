@@ -35,6 +35,7 @@ import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.GraphBubbleDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IHeatmapColorer;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.IndelDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.MutationDensity;
+import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.NoOverlapHeatmap;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.OverlapHeatmap;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PhyloBubbleDensity;
 import nl.tudelft.pl2016gr2.gui.view.graph.heatmap.PointMutationDensity;
@@ -226,6 +227,8 @@ public class GraphPaneController implements Initializable {
     heatmapOptions.put("Graph based bubbles", new GraphBubbleDensity(heatmapGraphics, zoomFactor));
     heatmapOptions.put("Equalities between the graphs (dark = equal, light = not equal",
         new OverlapHeatmap(heatmapGraphics, zoomFactor));
+    heatmapOptions.put("Differences between the graphs (dark = not equal, light = equal",
+        new NoOverlapHeatmap(heatmapGraphics, zoomFactor));
   }
 
   /**
