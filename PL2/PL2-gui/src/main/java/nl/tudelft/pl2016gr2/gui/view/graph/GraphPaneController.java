@@ -27,6 +27,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.GraphOrdererThread;
 import nl.tudelft.pl2016gr2.core.algorithms.subgraph.OrderedGraph;
@@ -737,8 +738,8 @@ public class GraphPaneController implements Initializable {
         topEdgeCanvas.getWidth());
     bottomEdgeCanvas.getGraphicsContext2D().clearRect(0, 0, bottomEdgeCanvas.getWidth(),
         bottomEdgeCanvas.getWidth());
-    heatmap.getGraphicsContext2D().clearRect(0, 0, heatmap.getWidth(),
-        heatmap.getHeight());
+    heatmap.getGraphicsContext2D().setFill(Color.WHITE);
+    heatmap.getGraphicsContext2D().fillRect(0, 0, heatmap.getWidth(), heatmap.getHeight());
   }
 
   /**
