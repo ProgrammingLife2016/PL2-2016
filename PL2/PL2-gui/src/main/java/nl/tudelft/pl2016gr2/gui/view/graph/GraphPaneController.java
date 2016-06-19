@@ -868,7 +868,7 @@ public class GraphPaneController implements Initializable {
     if (!node.hasAnnotations()) {
       return;
     }
-    boolean odd = false;
+    double previousEndPosition = Double.NEGATIVE_INFINITY;
     for (Annotation annotation : node.getAnnotations()) {
       double annotationStart = calcAnnotationStart(annotation, viewNode, startLevel);
       double annotationEnd = getAnnotationEnd(annotation, viewNode, startLevel);
@@ -879,11 +879,13 @@ public class GraphPaneController implements Initializable {
       viewAnnotation.setLayoutY(viewNode.centerYProperty().get() - viewNode.getHeight() / 2.0);
       double maxHeight = viewNode.getHeight() / 2.0;
       viewAnnotation.setHeight(Math.min(maxHeight, ANNOTATION_HEIGHT));
-      viewAnnotation.setOddOffset(odd);
-
+      if (annotationStart < previousEndPosition) {
+        viewAnnotation.setOddOffset();
+      } else {
+        previousEndPosition = annotationEnd;
+      }
       pane.getChildren().add(viewAnnotation);
       viewAnnotation.addLabel(pane);
-      odd = !odd;
     }
   }
 
