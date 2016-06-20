@@ -16,7 +16,7 @@ import java.util.Collections;
  */
 public class ViewGraphNodeEllipse extends Ellipse implements IViewGraphNode {
 
-  private final GraphNode dataNode;
+  public final GraphNode dataNode;
 
   /**
    * Construct a node circle.
