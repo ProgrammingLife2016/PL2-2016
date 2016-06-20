@@ -44,7 +44,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
   private static final double MIN_EDGE_LENGTH = 20.0;
   private static final double EDGE_LENGTH_SCALAR = 3000.0;
 
-  private static final double EDGE_WIDTH = 12.0;
+  private static final double EDGE_WIDTH = 8.0;
   private static final double EDGE_INNER_WIDTH = 4.0;
 
 
@@ -135,6 +135,7 @@ public class TreeNodeCircle extends Circle implements ISelectable {
    * Recalculate the border color of this node.
    */
   private void resetBorderColor() {
+    getStyleClass().removeAll("treeNodeInBothGraphs", "treeNodeInTopGraph", "treeNodeInBottom");
     if (dataNode.getDrawnInTopProperty().get() && dataNode.getDrawnInBottomProperty().get()) {
       getStyleClass().add("treeNodeInBothGraphs");
     } else if (dataNode.getDrawnInTopProperty().get()) {

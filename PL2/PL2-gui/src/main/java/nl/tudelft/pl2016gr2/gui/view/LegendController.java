@@ -79,7 +79,7 @@ public class LegendController implements Initializable {
     textPane.setAlignment(Pos.CENTER_LEFT);
 
     HBox hBox = new HBox(symbolPane, textPane);
-    hBox.setAlignment(Pos.BASELINE_LEFT);
+    hBox.setAlignment(Pos.CENTER_LEFT);
     Tooltip.install(hBox, new Tooltip(item.description));
     return hBox;
   }

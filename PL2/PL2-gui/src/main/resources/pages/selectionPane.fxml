@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<HBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController">
-    <AnchorPane prefWidth="250" fx:id="primarySelectionPane" />
-    <AnchorPane HBox.hgrow="ALWAYS" minWidth="100"  fx:id="compareSelectionPane" />
-    <AnchorPane prefWidth="250" fx:id="secondarySelectionPane" />
-</HBox>
+<AnchorPane fx:id="mainAnchor" prefHeight="200.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController">
+   <children>
+      <AnchorPane fx:id="primarySelectionPane" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <Separator fx:id="separaror" orientation="VERTICAL" prefHeight="200.0" />
+      <AnchorPane fx:id="secondarySelectionPane" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <ImageView fx:id="copyButton" fitHeight="29.0" fitWidth="58.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <image>
+            <Image url="@../icons/copy_arrow.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

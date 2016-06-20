@@ -109,10 +109,9 @@ public class MetadataSearchPaneController implements Initializable {
     metaDataTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     metaDataTableView.getSelectionModel().getSelectedItems().addListener(
         (ListChangeListener<MetaData>) c -> {
-          System.out.println("SELECTED: ");
           selectionManager.getSearchBoxSelectedGenomes().setAll(
-              c.getList().stream().map(
-                  a -> GenomeMap.getInstance().getId(a.specimenId)
+              c.getList().stream().filter(metadata -> metadata != null).map(
+                  metadata -> GenomeMap.getInstance().getId(metadata.specimenId)
               ).collect(Collectors.toList())
           );
         }
@@ -265,12 +264,14 @@ public class MetadataSearchPaneController implements Initializable {
       int rowIndex = 1;
       for (CategoricalProperty property : map.values()) {
 
-        Label label = new Label(property.name);
         Button button = new Button("clear");
+        button.getStyleClass().addAll("filter-box-button", "clear-button");
+        button.setTranslateX(2.0);
 
         button.setOnAction(actionEvent -> {
           property.checkComboBox.getCheckModel().clearChecks();
         });
+        Label label = new Label(property.name);
 
         GridPane.setColumnIndex(label, 1);
         GridPane.setColumnIndex(property.checkComboBox, 2);
@@ -313,6 +314,7 @@ public class MetadataSearchPaneController implements Initializable {
     CategoricalProperty(String name) {
       this.name = name;
       checkComboBox = new CheckComboBox<>();
+      checkComboBox.getStyleClass().add("filter-box");
       checkComboBox.setMaxWidth(150);
     }
 

@@ -1,7 +1,7 @@
 package nl.tudelft.pl2016gr2.gui.view.graph;
 
+import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Pane;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.selection.AnnotationDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
@@ -9,6 +9,7 @@ import nl.tudelft.pl2016gr2.gui.view.selection.ISelectionInfo;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.model.Annotation;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
@@ -45,16 +46,16 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
    * rectangle. Make sure that the position and dimensions of this rectangle are set before calling
    * this!
    *
-   * @param pane the pane ot add the label to.
+   * @param nodes the list of nodes to which to add the label.
    */
-  public void addLabel(Pane pane) {
+  public void addLabel(ArrayList<Node> nodes) {
     if (getWidth() < MINIMUM_LABEL_WIDTH || getHeight() < MINIMUM_LABEL_HEIGHT) {
       return;
     }
     Label label = new Label(annotation.getName());
     label.getStyleClass().add("annotationBoxLabel");
     label.setMouseTransparent(true);
-    pane.getChildren().add(label);
+    nodes.add(label);
     label.setMaxWidth(getWidth());
     label.setLayoutY(getLayoutY());
     label.setLayoutX(getLayoutX());

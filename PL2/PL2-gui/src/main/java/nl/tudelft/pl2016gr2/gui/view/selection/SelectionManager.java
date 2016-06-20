@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 
 
@@ -44,12 +45,12 @@ public class SelectionManager {
     public ISelectionInfo getSelectionInfo() {
       return () -> {
         TextArea textArea = new TextArea("Nothing selected");
-
+        textArea.setEditable(false);
+        textArea.setBackground(Background.EMPTY);
         textArea.setWrapText(true);
-
         StackPane.setAlignment(textArea, Pos.CENTER);
 
-        return new StackPane(textArea);
+        return textArea;
       };
     }
 

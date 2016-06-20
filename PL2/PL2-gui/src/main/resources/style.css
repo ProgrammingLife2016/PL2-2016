@@ -5,69 +5,70 @@
  ******************************************************************************/
 
 .root {
-	-fx-base: grey7; 
+  -fx-base: grey7; 
 
-	light-text-color: grey7;
-	dark-text-color: grey1;
+  light-text-color: grey7;
+  dark-text-color: grey1;
 
-	-fx-accent: transparent;
-	-fx-focus-color: transparent;
-	-fx-faint-focus-color: transparent;
+  /*-fx-accent: transparent;*/
+  -fx-focus-color: transparent;
+  -fx-faint-focus-color: transparent;
 
-	/* General application colors */
-	grey8: rgb(255, 255, 255);
-	grey7: rgb(229, 229, 229); /* application background color */
-	grey6: rgb(153, 153, 153);
-	grey5: rgb(132, 132, 132);
-	grey4: rgb(113, 113, 113);
-	grey3: rgb(87, 87, 87);
-	grey2: rgb(53, 53, 53);
-	grey1: rgb(27, 27, 27);
-	grey0: rgb(0, 0, 0);
+  /* General application colors */
+  grey8: rgb(255, 255, 255);
+  grey7: rgb(229, 229, 229); /* application background color */
+  grey7-detail: rgb(180, 180, 180);
+  grey6: rgb(153, 153, 153);
+  grey5: rgb(132, 132, 132);
+  grey4: rgb(113, 113, 113);
+  grey3: rgb(87, 87, 87);
+  grey2: rgb(53, 53, 53);
+  grey1: rgb(27, 27, 27);
+  grey0: rgb(0, 0, 0);
 
-	/*  app-color-LIN-1: rgb(237, 0, 195);
-	  app-color-LIN-2: rgb(0, 0, 255);
-	  app-color-LIN-3: rgb(80, 0, 121);
-	  app-color-LIN-4: rgb(255, 0, 0);
-	  app-color-LIN-5: rgb(78, 44, 0);
-	  app-color-LIN-6: rgb(105, 202, 0);
-	  app-color-LIN-7: rgb(255, 126, 0);
-	  
-	  app-color-LIN-B: rgb(0, 255, 156);
-	  app-color-LIN-ANIMAL: app-color-LIN-B;
-	  app-color-LIN-CANETTI: rgb(0, 255, 255);
-	  app-color-LIN-UNKNOWN: rgb(0, 0, 0);*/
+  /*  app-color-LIN-1: rgb(237, 0, 195);
+    app-color-LIN-2: rgb(0, 0, 255);
+    app-color-LIN-3: rgb(80, 0, 121);
+    app-color-LIN-4: rgb(255, 0, 0);
+    app-color-LIN-5: rgb(78, 44, 0);
+    app-color-LIN-6: rgb(105, 202, 0);
+    app-color-LIN-7: rgb(255, 126, 0);
+    
+    app-color-LIN-B: rgb(0, 255, 156);
+    app-color-LIN-ANIMAL: app-color-LIN-B;
+    app-color-LIN-CANETTI: rgb(0, 255, 255);
+    app-color-LIN-UNKNOWN: rgb(0, 0, 0);*/
 
-	/* Graph colors */
-	graph-color-top-overlay: rgb(204, 114, 24);
-	graph-color-bottom-overlay: rgb(24, 114, 204);
-	graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
-	graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
+  /* Graph colors */
+  graph-color-top-overlay: rgb(204, 114, 24);
+  graph-color-bottom-overlay: rgb(24, 114, 204);
+  graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
+  graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
 
-	graph-color-node-overlap: rgb(0, 73, 73);
-	graph-color-node-no-overlap: rgb(255, 30, 30);
-	graph-color-bubble-straight: rgb(255, 168, 63);
-	graph-color-bubble-indel: rgb(112, 200, 255);
-	graph-color-bubble-point: rgb(255, 120, 255);
-	graph-color-bubble-phylo: rgb(200, 255, 255);
+  graph-color-node-overlap: rgb(0, 146, 146);
+  graph-color-node-no-overlap: rgb(255, 30, 30);
+  graph-color-bubble-straight: rgb(255, 168, 63);
+  graph-color-bubble-indel: rgb(112, 200, 255);
+  graph-color-bubble-point: rgb(255, 120, 255);
+  graph-color-bubble-phylo: rgb(200, 255, 255);
   graph-color-bubble-graph: rgb(150, 150, 200);
 
   graph-color-annotation: rgb(255, 220, 0);
   graph-color-annotation-selected: rgb(80,200,255);
 
-	/* Phylogenetic tree colors */
-	tree-color-node: rgb(150, 140, 150);
-	tree-color-node-leaf: rgb(0, 0, 0);
+  /* Phylogenetic tree colors */
+  tree-color-node: rgb(150, 140, 150);
+  tree-color-node-leaf: rgb(0, 0, 0);
 
-	tree-color-node-border-top-selected: graph-color-top-overlay;
-	tree-color-node-border-bottom-selected: graph-color-bottom-overlay;
-	tree-color-node-border-both-selected: linear-gradient(
-		to bottom right, 
-		tree-color-node-border-top-selected,
-		tree-color-node-border-bottom-selected
-		);
+  tree-color-node-border-top-selected: graph-color-top-overlay;
+  tree-color-node-border-bottom-selected: graph-color-bottom-overlay;
+  tree-color-node-border-both-selected: linear-gradient(
+    to bottom right, 
+    tree-color-node-border-top-selected,
+    tree-color-node-border-bottom-selected
+    );
 
-	/* Search area colors */
+  /* Search area colors */
 }
 
 .default-light-text {
@@ -125,7 +126,7 @@
 }
 
 .graphBubbleGraph {
-	-fx-fill: graph-color-bubble-graph;
+  -fx-fill: graph-color-bubble-graph;
 }
 
 /*******************************************************************************
@@ -171,20 +172,48 @@
 .button {
   -fx-font-family: 'Open Sans';
   -fx-text-fill: light-text-color;
-  -fx-background-color:grey4;
+  -fx-background-color:grey5;
 }
-
 .button:hover {
+  -fx-background-color: grey4;
+}
+.button:pressed {
   -fx-background-color: grey3;
 }
-
-.button:pressed {
-  -fx-background-color: grey2;
-}
-
 .button:disabled {
-  -fx-background-color: grey6;
+  -fx-background-color: grey7-detail;
 }
+
+.button:default {
+  -fx-background-color: rgb(120, 120, 160);
+}
+.button:default:hover {
+  -fx-background-color: derive(rgb(120, 120, 160), -10%);
+}
+.button:default:pressed {
+  -fx-background-color: derive(rgb(120, 120, 160), -30%);
+}
+.button:default:disabled {
+  -fx-background-color: derive(rgb(120, 120, 160), 20%);
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Clear button                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.clear-button {
+  -fx-text-fill: light-text-color;
+  -fx-background-color: rgb(85, 60, 60);
+}
+.clear-button:hover {
+  -fx-background-color: derive(rgb(85, 60, 60), -10%);
+}
+.clear-button:pressed {
+  -fx-background-color: derive(rgb(85, 60, 60), -30%);
+}
+
 
 /*******************************************************************************
  *                                                                             *
@@ -334,3 +363,113 @@
   -fx-text-fill: dark-text-color;
 }
 
+/*******************************************************************************
+ *                                                                             *
+ * Search table                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.table-view, .list-view {
+  -fx-background-color: grey6;
+  -fx-border-width: 0;
+  -fx-padding: 0;
+}
+
+.table-cell, .list-view .list-cell .label {
+  -fx-border-width: 0;
+  -fx-font: 9pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+
+.table-row-cell, .list-cell {
+  -fx-background-color: derive(grey7, -10%);
+  -fx-border-width: 0;
+  -fx-background-insets: 1px 0 0 0;
+}
+
+.table-row-cell:selected, .list-cell:selected {
+  -fx-background-color: grey5;
+}
+
+.table-row-cell:odd:selected, .list-cell:odd:selected {
+  -fx-background-color: derive(grey5, -20%);
+}
+
+.table-row-cell:odd, .list-cell:odd {
+  -fx-background-color: derive(grey7, -20%);
+  -fx-background-insets: 1px 0 0 0;
+  -fx-border-width: 0;    
+}
+
+.table-view .column-header {
+  -fx-background-color: grey2;
+}
+
+.table-view .column-header .label {
+  -fx-text-fill: light-text-color;
+}
+
+.table-view .column-drag-header {
+  -fx-background-color: grey1;
+  -fx-opacity: .6;
+  -fx-text-fill: light-text-color;
+}
+
+.table-view .column-overlay {
+  -fx-background-color: grey1;
+  -fx-opacity: .3;
+}
+
+.table-view .scroll-bar:vertical, .list-cell .scroll-bar:vertical {
+  -fx-background-insets: 1px 0 0 0;
+  -fx-padding: 1;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Filter lists                                                                *
+ *                                                                             *
+ ******************************************************************************/
+
+.filter-box .list-cell {
+  -fx-font: 8pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+  -fx-background-color: grey7-detail;
+  -fx-border-width: 1;
+}
+.filter-box .list-cell:hover {
+  -fx-background-color: grey6;
+}
+
+.filter-box-button {
+  -fx-font: 9pt 'Open Sans';
+  -fx-margig: 1px 0 0 0;
+  -fx-padding: 1.5px 5px 1.5px 5px;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Combobox                                                                    *
+ *                                                                             *
+ ******************************************************************************/
+
+.combo-box .list-cell, .combo-box .arrow-button{
+  -fx-background-color: derive(grey7-detail, -10%);
+}
+
+.combo-box-popup .list-view .list-cell {
+  -fx-background-color: derive(grey7-detail, 20%);
+}
+
+.combo-box-popup .list-view:hover .list-cell:hover {
+  -fx-background-color: grey7-detail;
+}
+
+.combo-box .list-view .list-cell {
+  -fx-font: 10pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}
+.combo-box .list-cell {
+  -fx-font: 10pt 'Open Sans';
+  -fx-text-fill: dark-text-color;
+}

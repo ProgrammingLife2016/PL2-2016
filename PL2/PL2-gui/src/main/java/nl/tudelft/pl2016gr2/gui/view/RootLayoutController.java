@@ -9,12 +9,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree.TreeBuilder;
 import nl.tudelft.pl2016gr2.core.factories.GraphFactory;
@@ -22,6 +25,7 @@ import nl.tudelft.pl2016gr2.core.factories.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.factories.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.factories.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.selection.AnnotationDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
@@ -57,6 +61,13 @@ public class RootLayoutController implements
     Initializable,
     FileChooserController.InputFileConsumer {
 
+  public static final Font MONO_SPACED_FONT;
+  
+  static {
+    MONO_SPACED_FONT = Font.loadFont(AnnotationDescription.class.getClassLoader()
+        .getResourceAsStream("misc/DroidSansMono.ttf"), 12);
+  }
+
   @FXML
   private AnchorPane rootPane;
   @FXML
@@ -87,7 +98,7 @@ public class RootLayoutController implements
 
   private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap
       = new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
-
+  
   /**
    * Initializes the controller class.
    *
@@ -196,34 +207,66 @@ public class RootLayoutController implements
     pointMutationBubble.getStyleClass().addAll("graphBubblePoint", "graphUnselectedNode");
     Rectangle indelBubble = new Rectangle(20.0, 20.0);
     indelBubble.getStyleClass().addAll("graphBubbleIndel", "graphUnselectedNode");
+    Rectangle graphBubble = new Rectangle(20.0, 20.0);
+    graphBubble.getStyleClass().addAll("graphBubbleGraph", "graphUnselectedNode");
     
     graphLegendController.initializeData(
         "Legend",
         -5.0, 5.0,
         new LegendController.LegendItem(
-            "This node contains several other nodes based on phylogeny.",
-            "Phylogenetic bubble",
+            "This bubble contains several nodes which are shared amongst the leaves of a node "
+                + "in the phylogenetic tree.",
+            "Bubble based on the phylogenetic tree",
             phyloBubble),
         new LegendController.LegendItem(
+            "This bubble contains several nodes which are grouped together based on the source "
+                + "sink pairs in the graph.",
+            "Bubble based on the graph",
+            graphBubble),
+        new LegendController.LegendItem(
             "This node contains several sequences without mutations.",
-            "Straight sequence bubble",
+            "Bubble which contains only point mutations and InDels",
             straightSequenceBubble),
         new LegendController.LegendItem(
-            "This node contains a sequence that is not present in other genomes (InDel).",
-            "InDel bubble",
+            "This bubble contains an InDel.",
+            "InDel",
             indelBubble),
         new LegendController.LegendItem(
-            "This node contains a point mutation.",
-            "Point Mutation bubble",
+            "This bubble contains a point mutation.",
+            "Point Mutation",
             pointMutationBubble),
         new LegendController.LegendItem(
-            "This node represents a straight sequence of multiple nodes.",
-            "Straight sequence.",
+            "This node is present in only one of the two graph.",
+            "Node in only one graph",
             noOverlapCircle),
         new LegendController.LegendItem(
-            "This node has overlap with other (different) nodes.",
-            "Overlapping sequence.",
-            overlapCircle)
+            "This node is present in both the top and bottom graphs.",
+            "Node in both graph",
+            overlapCircle),
+        new LegendController.LegendItem(
+            "Edge which is estimated to contain few genomes. "
+                + "Most genomes are from the red lineage.",
+            "Edge over which few genomes travel (NOTE: only an estimation)",
+            new ImageView(new Image(RootLayoutController.class.getClassLoader()
+                .getResourceAsStream("images/few_genome_edge.png")))),
+        new LegendController.LegendItem(
+            "Edge which is estimated to contain many genomes. "
+                + "Most genomes are from the red lineage.",
+            "Edge over which many genomes travel (NOTE: only an estimation)",
+            new ImageView(new Image(RootLayoutController.class.getClassLoader()
+                .getResourceAsStream("images/many_genome_edge.png")))),
+        new LegendController.LegendItem(
+            "Mutation through which few genomes travel. Most of these genomes are from the red "
+                + "lineage.",
+            "Mutation through which few genomes travel",
+            new ImageView(new Image(RootLayoutController.class.getClassLoader()
+                .getResourceAsStream("images/mutation_few_genomes.png")))),
+        new LegendController.LegendItem(
+            "Mutation through which many genomes travel. Most of these genomes are from the red "
+                + "lineage.",
+            "Mutation through which many genomes travel",
+            new ImageView(new Image(RootLayoutController.class.getClassLoader()
+                .getResourceAsStream("images/mutation_many_genomes.png"))))
     );
 
     Circle tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
@@ -245,21 +288,21 @@ public class RootLayoutController implements
     tempCircle.getStyleClass().addAll("treeNode", "treeNodeInTopGraph");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in orange section of the graph (top)",
-        "Top node",
-        tempCircle
-    ));
-    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
-    tempCircle.getStyleClass().addAll("treeNode", "treeNodeInBothGraphs");
-    treeLegendItems.add(new LegendController.LegendItem(
-        "Node both sections of the graph",
-        "Shared node",
+        "Node drawn in top graph",
         tempCircle
     ));
     tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
     tempCircle.getStyleClass().addAll("treeNode", "treeNodeInBottom");
     treeLegendItems.add(new LegendController.LegendItem(
         "Node in blue section of the graph (bottom)",
-        "Bottom node",
+        "Node drawn in bottom graph",
+        tempCircle
+    ));
+    tempCircle = new Circle(TreeNodeCircle.NODE_RADIUS);
+    tempCircle.getStyleClass().addAll("treeNode", "treeNodeInBothGraphs");
+    treeLegendItems.add(new LegendController.LegendItem(
+        "Node both sections of the graph",
+        "Node drawn in both graphs",
         tempCircle
     ));
     for (LineageColor color : LineageColor.values()) {

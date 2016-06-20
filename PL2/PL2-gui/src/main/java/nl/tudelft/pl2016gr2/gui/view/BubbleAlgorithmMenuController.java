@@ -30,10 +30,6 @@ public class BubbleAlgorithmMenuController implements Initializable {
   private CheckBox indelCheckbox;
   @FXML
   private CheckBox straightSequenceCheckbox;
-  @FXML
-  private CheckBox phylogeneticCheckbox;
-  @FXML
-  private CheckBox graphCheckbox;
 
   /**
    * Bind the properties of the checkboxes so the graph checkboxes are disabled when the mutation
@@ -46,14 +42,15 @@ public class BubbleAlgorithmMenuController implements Initializable {
   @Override
   public void initialize(URL location, ResourceBundle resources) {
     treeBasedCollapsingCheckbox.selectedProperty().addListener((obs, old, newValue) -> {
-      graphBasedCollapsingCheckbox.setSelected(!newValue);
+      if (newValue) {
+        graphBasedCollapsingCheckbox.setSelected(!newValue);
+      }
     });
     graphBasedCollapsingCheckbox.selectedProperty().addListener((obs, old, newValue) -> {
-      treeBasedCollapsingCheckbox.setSelected(!newValue);
+      if (newValue) {
+        treeBasedCollapsingCheckbox.setSelected(!newValue);
+      }
     });
-    graphCheckbox.disableProperty().bind(graphBasedCollapsingCheckbox.selectedProperty().not());
-    phylogeneticCheckbox.disableProperty()
-        .bind(treeBasedCollapsingCheckbox.selectedProperty().not());
     initializeMenuListener();
   }
 
@@ -68,9 +65,9 @@ public class BubbleAlgorithmMenuController implements Initializable {
       addAlgorithm(algorithms, BubbleAlgorithms.INDEL, indelCheckbox.isSelected());
       addAlgorithm(algorithms, BubbleAlgorithms.STRAIGHT, straightSequenceCheckbox.isSelected());
       if (treeBasedCollapsingCheckbox.isSelected()) {
-        addAlgorithm(algorithms, BubbleAlgorithms.PHYLO, phylogeneticCheckbox.isSelected());
+        addAlgorithm(algorithms, BubbleAlgorithms.PHYLO, treeBasedCollapsingCheckbox.isSelected());
       } else {
-        addAlgorithm(algorithms, BubbleAlgorithms.GRAPH, graphCheckbox.isSelected());
+        addAlgorithm(algorithms, BubbleAlgorithms.GRAPH, graphBasedCollapsingCheckbox.isSelected());
       }
       Settings.getInstance().setBubblingAlgorithms(algorithms);
     });

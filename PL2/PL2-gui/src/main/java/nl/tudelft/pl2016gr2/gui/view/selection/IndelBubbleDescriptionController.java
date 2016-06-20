@@ -1,8 +1,11 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import static nl.tudelft.pl2016gr2.gui.view.RootLayoutController.MONO_SPACED_FONT;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
@@ -10,7 +13,6 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -25,14 +27,18 @@ import java.util.stream.Collectors;
 public class IndelBubbleDescriptionController implements Initializable {
 
   @FXML
-  private ListView<String> listViewGenomesIn;
-
+  private Label genomeInsertLabel;
   @FXML
-  private ListView<String> listViewGenomesDel;
+  private Label genomeDeleteLabel;
+  @FXML
+  private TextArea genomesIn;
+  @FXML
+  private TextArea genomesDel;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-
+    genomesIn.setFont(MONO_SPACED_FONT);
+    genomesDel.setFont(MONO_SPACED_FONT);
   }
 
   /**
@@ -54,7 +60,8 @@ public class IndelBubbleDescriptionController implements Initializable {
     for (GraphNode inNode : bubble.getOutEdges()) {
       allGenomes.addAll(inNode.getGenomes());
     }
-    Collection<Integer> inGenomeIds = bubble.getGenomes();
+    Collection<Integer> inGenomeIds = new ArrayList<>();
+    bubble.getChildren().stream().map(child -> child.getGenomes()).forEach(inGenomeIds::addAll);
     Collection<Integer> delGenomeIds = allGenomes.stream().filter(
         id -> !inGenomeIds.contains(id)
     ).collect(Collectors.toCollection(ArrayList::new));
@@ -70,14 +77,20 @@ public class IndelBubbleDescriptionController implements Initializable {
    * </p>
    */
   private void setupListViews(Collection<Integer> inGenomeIds, Collection<Integer> delGenomeIds) {
-    List<String> inGenomes = inGenomeIds.stream().map(
-        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
-    ).sorted().collect(Collectors.toCollection(ArrayList::new));
-    List<String> delGenomes = delGenomeIds.stream().map(
-        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
-    ).sorted().collect(Collectors.toCollection(ArrayList::new));
+    setText(inGenomeIds, genomesIn);
+    genomeInsertLabel.setText("genomes in insertion (" + inGenomeIds.size() + "):");
+    setText(delGenomeIds, genomesDel);
+    genomeDeleteLabel.setText("genomes not in insertion (" + delGenomeIds.size() + "):");
+  }
 
-    listViewGenomesIn.getItems().addAll(inGenomes);
-    listViewGenomesDel.getItems().addAll(delGenomes);
+  private void setText(Collection<Integer> genomes, TextArea textArea) {
+    StringBuilder sb = new StringBuilder();
+    genomes.stream().map(
+        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
+    ).sorted().forEach(genome -> sb.append(genome).append('\n'));
+    if (sb.length() > 0) {
+      sb.deleteCharAt(sb.length() - 1);
+    }
+    textArea.setText(sb.toString());
   }
 }
