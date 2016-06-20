@@ -334,12 +334,21 @@ public class GraphPaneController implements Initializable {
     if (Double.isNaN(newValue) || Double.isInfinite(newValue)) {
       return;
     }
-    if (newValue < 0.0) {
+    if (newValue < 0.0 || amountOfLevels.get() == 0) {
       scrollbar.setValue(0.0);
-    } else if (scrollbar.getMax() > 0.0 && newValue > scrollbar.getMax()) {
-      scrollbar.setValue(scrollbar.getMax());
     } else {
-      scrollbar.setValue(newValue);
+      int levelsToDraw = (int) (mainPane.getWidth() / zoomFactor.get()) + 1;
+      double startLevel = amountOfLevels.get() * newValue;
+      if (startLevel + levelsToDraw > amountOfLevels.get()) {
+        startLevel = amountOfLevels.get() - levelsToDraw;
+        double scrollValue = startLevel / amountOfLevels.get();
+        if (scrollValue < 0.0) {
+          scrollValue = 0.0;
+        }
+        scrollbar.setValue(scrollValue);
+      } else {
+        scrollbar.setValue(newValue);
+      }
     }
   }
 
