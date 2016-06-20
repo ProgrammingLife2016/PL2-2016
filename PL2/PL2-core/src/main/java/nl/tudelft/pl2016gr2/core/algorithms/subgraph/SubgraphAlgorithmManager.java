@@ -44,6 +44,7 @@ public class SubgraphAlgorithmManager {
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
+  @SuppressWarnings("checkstyle:MethodLength")
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
       Collection<Integer> bottomGenomes, SequenceGraph mainGraph, GraphOrdererThread mainGraphOrder,
       IPhylogeneticTreeRoot<?> treeRoot) {
@@ -65,6 +66,8 @@ public class SubgraphAlgorithmManager {
     ArrayList<GraphNode> topGraphOrder = topFilter.getOrderedNodes();
     ArrayList<GraphNode> bottomGraphOrder = bottomFilter.getOrderedNodes();
     CompareSubgraphs.compareGraphs(topGraphOrder, bottomGraphOrder);
+    addDummyNodes(topGraphOrder);
+    addDummyNodes(bottomGraphOrder);
 
     OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
     OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
@@ -91,7 +94,9 @@ public class SubgraphAlgorithmManager {
 
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
     orderedNodes = performBubblingAlgorithms(orderedNodes, genomes, treeRoot);
-
+    
+    CompareSubgraphs.alignVertically(orderedNodes);
+    addDummyNodes(orderedNodes);
     return new OrderedGraph(subgraph, orderedNodes);
   }
 
@@ -115,9 +120,6 @@ public class SubgraphAlgorithmManager {
       GraphBubbleFilter graphFilter = new GraphBubbleFilter(orderedNodes);
       orderedNodes = graphFilter.filter();
     }
-    CompareSubgraphs.alignVertically(orderedNodes);
-
-    addDummyNodes(orderedNodes);
     return orderedNodes;
   }
 
@@ -130,7 +132,6 @@ public class SubgraphAlgorithmManager {
     ArrayList<GraphNode> newNodes = new ArrayList<>();
     for (GraphNode node : orderedNodes) {
       if (node.getInEdges().isEmpty()) {
-
         SequenceNode newerRoot = new SequenceNode(getUniqueDummyNodeId(), new BaseSequence(""));
         node.addInEdge(newerRoot);
         newerRoot.addOutEdge(node);

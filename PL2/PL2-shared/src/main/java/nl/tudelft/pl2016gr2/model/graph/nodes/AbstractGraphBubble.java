@@ -38,15 +38,6 @@ public abstract class AbstractGraphBubble extends Bubble {
     this.filter = filter;
   }
   
-  @Override
-  public int getGenomeSize() {
-    int count = 0;
-    for (GraphNode inEdge : getInEdges()) {
-      count += inEdge.getGenomeSize();
-    }
-    return count;
-  }
-  
   /**
    * Returns the bubblefilter of this bubble.
    * 
