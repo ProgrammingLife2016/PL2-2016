@@ -3,7 +3,7 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 public class GraphBubble extends AbstractGraphBubble {
 
@@ -39,8 +39,8 @@ public class GraphBubble extends AbstractGraphBubble {
    * @param outEdges    the out edges of the bubble.
    * @param nestedNodes the nested nodes of the bubble.
    */
-  public GraphBubble(int id, BubbleFilter filter,
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, List<GraphNode> nestedNodes) {
+  public GraphBubble(int id, BubbleFilter filter, Collection<GraphNode> inEdges, 
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes) {
     super(id, filter, inEdges, outEdges, nestedNodes);
   }
 

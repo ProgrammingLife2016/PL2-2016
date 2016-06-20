@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.PriorityQueue;
+import java.util.function.Consumer;
 
 /**
  * Aides in implementing the <code>GraphNode</code> interface by implementing methods that should
@@ -82,23 +84,41 @@ public abstract class AbstractGraphNode implements GraphNode {
 
   @Override
   public Collection<Integer> getGenomesOverEdge(GraphNode node) {
-    assert getOutEdges().contains(
-        node) : "Tried to get genomes over edge for node " + node.getId() + "but it is "
-        + "not a direct successor. This = " + this.getId();
-
     Collection<Integer> genomes = new ArrayList<>();
-    Collection<Integer> otherGenomes = new ArrayList<>();
+    Collection<Integer> otherGenomes = new HashSet<>();
     // Mark genomes that are seen in other out edges which appear before the node.
     this.getOutEdges().forEach(outEdge -> {
-      if (!outEdge.equals(node) && outEdge.getId() < node.getId()) {
+      if (outEdge.getLevel() < node.getLevel() && !outEdge.equals(node)) {
         otherGenomes.addAll(outEdge.getGenomes());
       }
     });
-    getGenomes().stream().filter(
-        genome -> node.getGenomes().contains(genome) && !otherGenomes.contains(genome)).forEach(
-            genomes::add);
-
+    List<Integer> thisGenomes = getGenomes();
+    node.forEachContainedGenome(thisGenomes, genome -> {
+      if (!otherGenomes.contains(genome)) {
+        genomes.add(genome);
+      }
+    });
     return genomes;
+  }
+
+  @Override
+  public void forEachContainedGenome(List<Integer> genomes, Consumer<Integer> genomeConsumer) {
+    List<Integer> thisGenomes = getGenomes();
+    int thisIndex = 0;
+    int otherIndex = 0;
+    while (thisIndex < thisGenomes.size() && otherIndex < genomes.size()) {
+      int thisValue = thisGenomes.get(thisIndex);
+      int otherValue = genomes.get(otherIndex);
+      if (thisValue < otherValue) {
+        thisIndex++;
+      } else if (thisValue > otherValue) {
+        otherIndex++;
+      } else {
+        thisIndex++;
+        otherIndex++;
+        genomeConsumer.accept(thisValue);
+      }
+    }
   }
 
   @Override
@@ -225,5 +245,52 @@ public abstract class AbstractGraphNode implements GraphNode {
       });
     }
     return lineage;
+  }
+  
+  @Override
+  public boolean containsAllGenomes(List<Integer> genomes) {
+    List<Integer> thisGenomes = getGenomes();
+    int index = 0;
+    for (int i = 0; i < thisGenomes.size() && index < genomes.size(); i++) {
+      if (thisGenomes.get(i).intValue() == genomes.get(index).intValue()) {
+        index++;
+      } else if (thisGenomes.get(i) > genomes.get(index)) {
+        return false;
+      }
+    }
+    return index == genomes.size();
+  }
+  
+  @Override
+  public boolean containsAnyGenome(List<Integer> genomes) {
+    List<Integer> thisGenomes = getGenomes();
+    int thisIndex = 0;
+    int otherIndex = 0;
+    while (thisIndex < thisGenomes.size() && otherIndex < genomes.size()) {
+      int thisValue = thisGenomes.get(thisIndex);
+      int otherValue = genomes.get(otherIndex);
+      if (thisValue < otherValue) {
+        thisIndex++;
+      } else if (thisValue > otherValue) {
+        otherIndex++;
+      } else {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public boolean hasSameGenomes(List<Integer> genomes) {
+    List<Integer> thisGenomes = getGenomes();
+    if (thisGenomes.size() != genomes.size()) {
+      return false;
+    }
+    for (int i = 0; i < genomes.size(); i++) {
+      if (genomes.get(i).intValue() != thisGenomes.get(i).intValue()) {
+        return false;
+      }
+    }
+    return true;
   }
 }

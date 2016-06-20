@@ -4,7 +4,7 @@ import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
 
 public class PhyloBubble extends AbstractGraphBubble {
 
@@ -48,7 +48,8 @@ public class PhyloBubble extends AbstractGraphBubble {
    * @param nestedNodes the nested nodes of the bubble.
    */
   public PhyloBubble(int id, IPhylogeneticTreeNode treeNode, BubbleFilter filter,
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, List<GraphNode> nestedNodes) {
+      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, 
+      HashSet<GraphNode> nestedNodes) {
     super(id, filter, inEdges, outEdges, nestedNodes);
     this.treeNode = treeNode;
   }

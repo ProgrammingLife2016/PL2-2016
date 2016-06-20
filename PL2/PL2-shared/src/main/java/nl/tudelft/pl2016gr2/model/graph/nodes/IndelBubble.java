@@ -3,7 +3,8 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -16,12 +17,12 @@ public class IndelBubble extends Bubble {
   private final IVerticalAligner aligner;
   private boolean isPopped;
   private boolean verticallyAligned;
-  private Collection<Integer> genomes;
+  private List<Integer> genomes;
 
   /**
-   * Constructs an indelBubble. In the constructor, the genomes of this indelBubble are set to
-   * the genomes of its inedge.
-   * 
+   * Constructs an indelBubble. In the constructor, the genomes of this indelBubble are set to the
+   * genomes of its inedge.
+   *
    * @param id          the id of the bubble.
    * @param inEdges     the in edges of the bubble.
    * @param outEdges    the out edges of the bubble.
@@ -29,25 +30,30 @@ public class IndelBubble extends Bubble {
    * @param aligner     aligner to align the nodes vertically.
    */
   public IndelBubble(int id, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, List<GraphNode> nestedNodes, IVerticalAligner aligner) {
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.genomes = inEdges.iterator().next().getGenomes();
     this.aligner = aligner;
   }
 
-  private IndelBubble(Bubble bubble, IVerticalAligner aligner) {
+  private IndelBubble(IndelBubble bubble, IVerticalAligner aligner) {
     super(bubble);
     this.aligner = aligner;
   }
 
   @Override
   public int getGenomeSize() {
-    return getInEdges().iterator().next().getGenomeSize();
+    return genomes.size();
   }
-  
+
   @Override
-  public Collection<Integer> getGenomes() {
+  public List<Integer> getGenomes() {
     return genomes;
+  }
+
+  @Override
+  public boolean containsGenome(Integer genome) {
+    return Collections.binarySearch(genomes, genome) >= 0;
   }
 
   @Override
@@ -75,10 +81,10 @@ public class IndelBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       setUnpoppedEdges();
       isPopped = false;
     }
@@ -90,17 +96,13 @@ public class IndelBubble extends Bubble {
   private void setPoppedEdges() {
     GraphNode inEdge = getInEdges().iterator().next();
     GraphNode outEdge = getOutEdges().iterator().next();
-
-    Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
+    
+    GraphNode firstNode = getFirstNode();
     inEdge.removeOutEdge(this);
     inEdge.addOutEdge(firstNode);
     inEdge.addOutEdge(outEdge);
-
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
-    }
+    
+    GraphNode lastNode = getLastNode();
     outEdge.removeInEdge(this);
     outEdge.addInEdge(lastNode);
     outEdge.addInEdge(inEdge);
@@ -116,17 +118,11 @@ public class IndelBubble extends Bubble {
     GraphNode inEdge = getInEdges().iterator().next();
     GraphNode outEdge = getOutEdges().iterator().next();
 
-    Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
-    inEdge.removeOutEdge(firstNode);
+    inEdge.removeOutEdge(getFirstNode());
     inEdge.removeOutEdge(outEdge);
     inEdge.addOutEdge(this);
 
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
-    }
-    outEdge.removeInEdge(lastNode);
+    outEdge.removeInEdge(getLastNode());
     outEdge.removeInEdge(inEdge);
     outEdge.addInEdge(this);
   }

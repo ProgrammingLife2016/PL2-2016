@@ -2,9 +2,9 @@ package nl.tudelft.pl2016gr2.model.graph.nodes;
 
 import nl.tudelft.pl2016gr2.visitor.NodeVisitor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -19,19 +19,19 @@ public class StraightSequenceBubble extends Bubble {
   private boolean verticallyAligned;
 
   public StraightSequenceBubble(int id, Collection<GraphNode> inEdges,
-      Collection<GraphNode> outEdges, List<GraphNode> nestedNodes, IVerticalAligner aligner) {
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes, IVerticalAligner aligner) {
     super(id, inEdges, outEdges, nestedNodes);
     this.aligner = aligner;
   }
 
-  private StraightSequenceBubble(Bubble bubble, IVerticalAligner aligner) {
+  private StraightSequenceBubble(StraightSequenceBubble bubble, IVerticalAligner aligner) {
     super(bubble);
     this.aligner = aligner;
   }
 
   @Override
   public int getGenomeSize() {
-    return getChildren().iterator().next().getGenomeSize();
+    return getFirstNode().getGenomeSize();
   }
 
   @Override
@@ -43,14 +43,25 @@ public class StraightSequenceBubble extends Bubble {
   public GraphNode copyAll() {
     return new StraightSequenceBubble(this, aligner);
   }
-  
+
   @Override
-  public Collection<Integer> getGenomes() {
-    HashSet<Integer> genomeSet = new HashSet<>();
+  public List<Integer> getGenomes() {
+    List<Integer> genomes = new ArrayList<>();
     for (GraphNode inEdge : getInEdges()) {
-      genomeSet.addAll(inEdge.getGenomes());
+      genomes.addAll(inEdge.getGenomes()); // only 1 in edge, so no duplicates
     }
-    return genomeSet;
+    genomes.sort(null);
+    return genomes;
+  }
+
+  @Override
+  public boolean containsGenome(Integer genome) {
+    for (GraphNode inEdge : getInEdges()) {
+      if (inEdge.containsGenome(genome)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
@@ -68,10 +79,10 @@ public class StraightSequenceBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       setUnpoppedEdges();
       isPopped = false;
     }
@@ -81,18 +92,14 @@ public class StraightSequenceBubble extends Bubble {
    * Remove the edges to this bubble and set the edges to the nested nodes.
    */
   private void setPoppedEdges() {
-    Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
+    GraphNode firstNode = getFirstNode();
     firstNode.setInEdges(getInEdges());
 
     for (GraphNode inEdge : getInEdges()) {
       inEdge.removeOutEdge(this);
       inEdge.addOutEdge(firstNode);
     }
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
-    }
+    GraphNode lastNode = getLastNode();
     lastNode.setOutEdges(getOutEdges());
     for (GraphNode outEdge : getOutEdges()) {
       outEdge.removeInEdge(this);
@@ -104,15 +111,12 @@ public class StraightSequenceBubble extends Bubble {
    * Remove the edges to the nodes in this bubble and set the edges to this bubble.
    */
   private void setUnpoppedEdges() {
-    Iterator<GraphNode> it = getChildren().iterator();
-    GraphNode firstNode = it.next();
+    GraphNode firstNode = getFirstNode();
+    GraphNode lastNode = getLastNode();
+    
     for (GraphNode inEdge : firstNode.getInEdges()) {
       inEdge.removeOutEdge(firstNode);
       inEdge.addOutEdge(this);
-    }
-    GraphNode lastNode = firstNode;
-    while (it.hasNext()) {
-      lastNode = it.next();
     }
     for (GraphNode outEdge : lastNode.getOutEdges()) {
       outEdge.removeInEdge(lastNode);

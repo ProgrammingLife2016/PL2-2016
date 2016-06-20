@@ -276,30 +276,6 @@ public class SequenceNodeTest {
   }
 
   @Test
-  public void getGenomes() {
-    final int testGenome = 0;
-    instance.addGenome(testGenome);
-    assertTrue(instance.getGenomes().contains(testGenome));
-  }
-
-  @Test
-  public void addGenomeLeavesOldUnchanged() {
-    final int oldGenome = 0;
-    instance.addGenome(oldGenome);
-    assertTrue(instance.getGenomes().contains(oldGenome));
-    instance.addGenome(1);
-    assertTrue(instance.getGenomes().contains(oldGenome));
-  }
-
-  @Test
-  public void addGenomeAddsNewElement() {
-    final int testGenome = 0;
-    assertFalse(instance.getGenomes().contains(testGenome));
-    instance.addGenome(testGenome);
-    assertTrue(instance.getGenomes().contains(testGenome));
-  }
-
-  @Test
   public void addAllGenomesAddsAllGenomes() {
     final int genomeOne = 50;
     final int genomeTwo = 60;
@@ -334,46 +310,6 @@ public class SequenceNodeTest {
     assertEquals(genomeCount + 2, instance.getGenomes().size());
   }
 
-  @Test
-  public void removeGenomeRemovesElement() {
-    final int testGenome = 1;
-    instance.addGenome(testGenome);
-    assertTrue(instance.getGenomes().contains(testGenome));
-
-    instance.removeGenome(testGenome);
-
-    assertFalse(instance.getGenomes().contains(testGenome));
-  }
-
-  @Test
-  public void removeGenomeDoesNotRemoveByIndex() {
-    final int outOfBounds = instance.getGenomes().size() + 50;
-    instance.addGenome(outOfBounds);
-    assertTrue(instance.getGenomes().contains(outOfBounds));
-
-    instance.removeGenome(outOfBounds);
-
-    assertFalse(instance.getGenomes().contains(outOfBounds));
-  }
-
-  @Test
-  public void removeGenomeLeavesOtherElements() {
-    final int otherElement = 0;
-    final int removedElement = 1;
-    instance.addGenome(otherElement);
-    instance.addGenome(removedElement);
-    assertTrue(instance.getGenomes().contains(otherElement));
-
-    instance.removeGenome(removedElement);
-
-    assertTrue(instance.getGenomes().contains(otherElement));
-  }
-
-  @Test
-  public void removeNonExistentGenomeThrowsAssertion() {
-    exception.expect(AssertionError.class);
-    instance.removeGenome(1100);
-  }
 
   @Test
   public void testCopyClass() {
@@ -445,17 +381,7 @@ public class SequenceNodeTest {
   public void testPop() {
     SequenceNode node = new SequenceNode(0);
     node.trimToSize();
-    assertEquals(1, node.pop().size());
-    assertTrue(node.pop().contains(node));
-  }
-
-  @Test
-  public void testGetGenomeSize() {
-    SequenceNode node = new SequenceNode(0);
-    node.addGenome(5);
-    node.addGenome(7);
-    node.addGenome(11);
-    assertEquals(3, node.getGenomeSize());
+    assertEquals(0, node.pop().size());
   }
 
   @Test

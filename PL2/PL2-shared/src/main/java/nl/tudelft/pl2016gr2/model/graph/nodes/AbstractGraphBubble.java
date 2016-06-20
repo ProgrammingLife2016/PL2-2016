@@ -27,8 +27,8 @@ public abstract class AbstractGraphBubble extends Bubble {
     this.filter = filter;
   }
   
-  protected AbstractGraphBubble(int id, BubbleFilter filter,
-      Collection<GraphNode> inEdges, Collection<GraphNode> outEdges, List<GraphNode> nestedNodes) {
+  protected AbstractGraphBubble(int id, BubbleFilter filter, Collection<GraphNode> inEdges, 
+      Collection<GraphNode> outEdges, HashSet<GraphNode> nestedNodes) {
     super(id, inEdges, outEdges, nestedNodes);
     this.filter = filter;
   }
@@ -87,10 +87,10 @@ public abstract class AbstractGraphBubble extends Bubble {
 
   @Override
   public void unpop() {
-    for (GraphNode child : getChildren()) {
-      child.unpop();
-    }
     if (isPopped) {
+      for (GraphNode child : getChildren()) {
+        child.unpop();
+      }
       isPopped = false;
       for (GraphNode node : getInEdges()) {
         unpoppedOutEdges.put(node.getId(), new HashSet<>(node.getOutEdges()));

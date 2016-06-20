@@ -22,7 +22,7 @@ import java.util.Set;
  */
 public class MutationBubbleAlgorithms {
 
-  private static int bubbleCount = 0;
+  private static int bubbleCount = Integer.MIN_VALUE;
 
   private MutationBubbleAlgorithms() {
   }
@@ -36,11 +36,13 @@ public class MutationBubbleAlgorithms {
    *         graph.
    */
   public static ArrayList<GraphNode> makeBubbels(ArrayList<GraphNode> orderedNodes) {
+    if (bubbleCount > Integer.MIN_VALUE / 4 * 3) {
+      bubbleCount = Integer.MIN_VALUE;
+    }
     return initStraightInDelPoint(orderedNodes);
   }
 
   private static ArrayList<GraphNode> initStraightInDelPoint(ArrayList<GraphNode> orderedGraph) {
-    bubbleCount = Integer.MIN_VALUE;
     Settings settings = Settings.getInstance();
     List<Settings.BubbleAlgorithms> algorithms = settings.getAlgorithms();
 
@@ -113,7 +115,7 @@ public class MutationBubbleAlgorithms {
    */
   private static PointMutationBubble createPointMutationBubble(GraphNode firstChild,
       GraphNode secondChild) {
-    ArrayList<GraphNode> nestedNodes = new ArrayList<>();
+    HashSet<GraphNode> nestedNodes = new HashSet<>();
     nestedNodes.add(firstChild);
     nestedNodes.add(secondChild);
 
@@ -202,8 +204,8 @@ public class MutationBubbleAlgorithms {
     ArrayList<GraphNode> outEdges = new ArrayList<>();
     outEdges.add(endNode);
 
-    IndelBubble bubble = new IndelBubble(bubbleCount++, inEdges, outEdges, nestedNodes,
-        VerticalAligner.INDEL_ALIGNER);
+    IndelBubble bubble = new IndelBubble(bubbleCount++, inEdges, outEdges,
+        new HashSet<>(nestedNodes), VerticalAligner.INDEL_ALIGNER);
 
     startNode.removeOutEdge(nestedNodes.get(0));
     startNode.removeOutEdge(endNode);
@@ -257,10 +259,11 @@ public class MutationBubbleAlgorithms {
    * @param visited   The visited list to avoid iterating over nodes multiple times
    * @return The <code>startNode</code> if no sequence was made, or the Bubble for the sequence
    */
+  @SuppressWarnings("checkstyle:MethodLength")
   private static Collection<GraphNode> detectStraightSequence(GraphNode startNode,
       Set<GraphNode> visited) {
     boolean overlap = startNode.getGuiData().overlapping;
-    List<GraphNode> nestedNodes = new ArrayList<>();
+    HashSet<GraphNode> nestedNodes = new HashSet<>();
     nestedNodes.add(startNode);
     GraphNode current = startNode;
     while (current.getOutEdges().size() == 1) {
