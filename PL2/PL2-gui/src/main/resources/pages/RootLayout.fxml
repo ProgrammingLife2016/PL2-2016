@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -11,17 +12,21 @@
             <fx:include fx:id="graphPane" source="CompareGraphsPane.fxml" />
         </SplitPane>
         <SplitPane dividerPositions="0.5" maxHeight="300" orientation="HORIZONTAL" VBox.vgrow="NEVER">
-            <TabPane>
+            <TabPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="620.0">
                 <tabs>
-                    <Tab text="Metadata" closable="false">
+                    <Tab closable="false" text="Metadata">
                         <fx:include fx:id="metadataSearchPane" source="MetadataSearchPane.fxml" />
                     </Tab>
-                    <Tab text="Annotations" closable="false">
+                    <Tab closable="false" text="Annotations">
                         <fx:include fx:id="annotationSearchPane" source="AnnotationSearchPane.fxml" />
                     </Tab>
                 </tabs>
             </TabPane>
-            <fx:include fx:id="selectionPane" maxWidth="750" minWidth="600" prefWidth="750" source="selectionPane.fxml" />
+            <fx:include fx:id="selectionPane" source="selectionPane.fxml">
+                <padding>
+                   <Insets left="1.0" />
+                </padding>
+            </fx:include>
         </SplitPane>
     </SplitPane>
     <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -9,12 +13,12 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
-
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Button?>
-<GridPane fx:id="root" prefHeight="300.0" xmlns="http://javafx.com/javafx/null" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.MetadataSearchPaneController">
+
+<GridPane fx:id="root" prefHeight="300.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.MetadataSearchPaneController">
     <AnchorPane GridPane.columnIndex="0" GridPane.hgrow="NEVER">
-        <TableView fx:id="metaDataTableView" maxWidth="300.0" minWidth="300.0" prefHeight="300.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
+        <TableView fx:id="metaDataTableView" maxWidth="250.0" minWidth="250.0" prefHeight="300.0" prefWidth="250.0" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
             <columns>
                 <TableColumn fx:id="specimenIdColumn" prefWidth="120.0" text="Specimen ID" />
                 <TableColumn fx:id="specimentTypeColumn" prefWidth="100.0" text="Type" />
@@ -30,14 +34,28 @@
         </HBox>
     </AnchorPane>
 
-    <GridPane  GridPane.columnIndex="1" >
-        <Label text="Go to:"  GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    <GridPane vgap="2.0" GridPane.columnIndex="1">
+        <Label text="Go to:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <TextField fx:id="goToField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <Button fx:id="goToButton" GridPane.columnIndex="3" GridPane.rowIndex="1" text="Go" />
+        <Button fx:id="goToButton" text="Go" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin></Button>
 
-        <ScrollPane GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2" minWidth="400" >
-            <GridPane fx:id="categoricalGridPane" maxWidth="380" minWidth="380"/>
+        <ScrollPane minWidth="350.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="2">
+            <GridPane fx:id="categoricalGridPane" maxWidth="330.0" minWidth="330.0" vgap="2.0" />
         </ScrollPane>
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
     </GridPane>
 
    <columnConstraints>

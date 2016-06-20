@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import net.sourceforge.olduvai.treejuxtaposer.drawer.Tree;
 import nl.tudelft.pl2016gr2.core.algorithms.bubbles.tree.TreeBuilder;
 import nl.tudelft.pl2016gr2.core.factories.GraphFactory;
@@ -22,6 +23,7 @@ import nl.tudelft.pl2016gr2.core.factories.InputStreamGraphFactory;
 import nl.tudelft.pl2016gr2.core.factories.InputStreamTreeFactory;
 import nl.tudelft.pl2016gr2.core.factories.TreeFactory;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.selection.AnnotationDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionPaneController;
 import nl.tudelft.pl2016gr2.gui.view.tree.TreeNodeCircle;
@@ -57,6 +59,13 @@ public class RootLayoutController implements
     Initializable,
     FileChooserController.InputFileConsumer {
 
+  public static final Font MONO_SPACED_FONT;
+  
+  static {
+    MONO_SPACED_FONT = Font.loadFont(AnnotationDescription.class.getClassLoader()
+        .getResourceAsStream("misc/DroidSansMono.ttf"), 12);
+  }
+
   @FXML
   private AnchorPane rootPane;
   @FXML
@@ -87,7 +96,7 @@ public class RootLayoutController implements
 
   private final ObjectProperty<MetadataPropertyMap> metadataPropertyMap
       = new SimpleObjectProperty<>(new MetadataPropertyMap(new ArrayList<>()));
-
+  
   /**
    * Initializes the controller class.
    *

@@ -1,19 +1,19 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import static nl.tudelft.pl2016gr2.gui.view.RootLayoutController.MONO_SPACED_FONT;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.IndelBubble;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * This controller controls the selection View for a {@link GraphBubble}.
@@ -28,16 +28,16 @@ public class GraphBubbleDescriptionController implements Initializable {
 
   @FXML
   private Label labelIndelCount;
-
   @FXML
   private Label labelPointMutationCount;
-
   @FXML
-  private ListView<String> listViewGenomes;
+  private Label genomesInBubble;
+  @FXML
+  private TextArea genomeList;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
-
+    genomeList.setFont(MONO_SPACED_FONT);
   }
 
   /**
@@ -48,15 +48,21 @@ public class GraphBubbleDescriptionController implements Initializable {
    * for more information about this view.
    * </p>
    *
-   * @param bubble the {@link GraphBubble} that holds the data.
+   * @param graphBubble the {@link GraphBubble} that holds the data.
    */
-  public void setup(GraphBubble bubble) {
-    List<String> genomes = bubble.getGenomes().stream().map(
+  public void setup(GraphBubble graphBubble) {
+    StringBuilder sb = new StringBuilder();
+    Collection<Integer> genomes = graphBubble.getGenomes();
+    genomes.stream().map(
         genomeId -> GenomeMap.getInstance().getGenome(genomeId)
-    ).sorted().collect(Collectors.toCollection(ArrayList::new));
-    listViewGenomes.getItems().addAll(genomes);
+    ).sorted().forEach(genome -> sb.append(genome).append('\n'));
+    if (sb.length() > 0) {
+      sb.deleteCharAt(sb.length() - 1);
+    }
+    genomeList.setText(sb.toString());
+    genomesInBubble.setText("Genomes in this bubble (" + genomes.size() + "):");
 
-    setupCountLabels(bubble);
+    setupCountLabels(graphBubble);
   }
 
   /**

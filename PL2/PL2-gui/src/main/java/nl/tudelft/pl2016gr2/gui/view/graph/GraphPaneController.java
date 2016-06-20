@@ -726,6 +726,7 @@ public class GraphPaneController implements Initializable {
     bottomPane.getChildren().clear();
     bottomGraph = null;
     topGraph = null;
+    amountOfLevels.set(0);
     updateGraphSize();
     graphUpdater.update();
   }

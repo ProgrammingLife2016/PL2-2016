@@ -4,11 +4,9 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Separator;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
@@ -30,23 +28,15 @@ import java.util.logging.Logger;
 public class SelectionPaneController implements Initializable {
 
   @FXML
+  private AnchorPane mainAnchor;
+  @FXML
   private AnchorPane primarySelectionPane;
+  @FXML
+  private Separator separaror;
   @FXML
   private AnchorPane secondarySelectionPane;
   @FXML
-  private AnchorPane compareSelectionPane;
-
-  private Button setSecondaryButton = new Button("Copy over from left to right");
-  private Button compareButton = new Button("Compare left to right");
-  // Add compareButton when wanting to do the actual comparison!
-  private Pane buttonContainer = new VBox(setSecondaryButton);
-
-  {
-    AnchorPane.setLeftAnchor(buttonContainer, 5.0d);
-    AnchorPane.setRightAnchor(buttonContainer, 5.0d);
-    setSecondaryButton.setWrapText(true);
-    compareButton.setWrapText(true);
-  }
+  private ImageView copyButton;
 
   private SimpleObjectProperty<ISelectable> primarySelection;
   private SimpleObjectProperty<ISelectable> secondarySelection;
@@ -76,7 +66,15 @@ public class SelectionPaneController implements Initializable {
   public void initialize(URL url, ResourceBundle resourceBundle) {
     this.primarySelection = new SimpleObjectProperty<>();
     this.secondarySelection = new SimpleObjectProperty<>();
+    initializeSeparatorAnchor();
 
+    primarySelectionPane.prefWidthProperty().bind(mainAnchor.widthProperty(
+    ).add(separaror.widthProperty().negate()).divide(2.0));
+    secondarySelectionPane.prefWidthProperty().bind(mainAnchor.widthProperty()
+        .add(separaror.widthProperty().negate()).divide(2.0));
+    copyButton.translateXProperty().bind(
+        mainAnchor.widthProperty().divide(2.0).add(copyButton.fitWidthProperty().negate()));
+    
     primarySelection.addListener((observable, oldValue, newValue) -> {
       expandInAnchorPane(safeGetDescription(newValue.getSelectionInfo()), primarySelectionPane);
     });
@@ -86,8 +84,15 @@ public class SelectionPaneController implements Initializable {
 
     primarySelection.set(SelectionManager.NO_SELECTION);
     secondarySelection.set(SelectionManager.NO_SELECTION);
-
-    resetCompare();
+  }
+  
+  /**
+   * Initialize the anchor of the separator so it will always be in the middle of the screen.
+   */
+  private void initializeSeparatorAnchor() {
+    mainAnchor.widthProperty().addListener((obs, old, newValue) -> {
+      AnchorPane.setLeftAnchor(separaror, (newValue.doubleValue() - separaror.getWidth()) / 2.0);
+    });
   }
 
   /**
@@ -100,41 +105,9 @@ public class SelectionPaneController implements Initializable {
       primarySelection.set(newValue);
     });
 
-    setSecondaryButton.setOnAction(actionEvent -> {
+    copyButton.setOnMouseClicked(event -> {
       secondarySelection.set(primarySelection.getValue());
     });
-    compareButton.setOnAction(actionEvent -> {
-      Pane pane = startCompare();
-      pane.setMaxWidth(150);
-      expandInAnchorPane(pane, compareSelectionPane);
-    });
-  }
-
-  /**
-   * Removes the visual comparison and puts button back.
-   */
-  private void resetCompare() {
-    compareSelectionPane.getChildren().clear();
-    compareSelectionPane.getChildren().add(buttonContainer);
-  }
-
-  /**
-   * This method is not used yet. It is called when
-   * the compare button (now hidden) is pressed.
-   * @return A pane that should contain a visual comparison of primary and secondary.
-   */
-  private Pane startCompare() {
-    Button cancelButton = new Button("Cancel");
-    cancelButton.setOnAction(actionEvent1 -> {
-      resetCompare();
-    });
-
-    TextArea textArea  = new TextArea(String.format("Compare %s to %s",
-        primarySelection.get().getSelectionInfo(),
-        secondarySelection.get().getSelectionInfo()));
-    textArea.setWrapText(true);
-
-    return new VBox(textArea, cancelButton);
   }
 
   /**
@@ -150,5 +123,4 @@ public class SelectionPaneController implements Initializable {
       anchorPane.getChildren().add(content);
     }
   }
-
 }

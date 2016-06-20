@@ -15,9 +15,9 @@ import java.io.IOException;
  */
 public class Dnav extends Application {
 
-  private static final double INITIAL_WINDOW_WIDTH = 1000d;
-  private static final double INITIAL_WINDOW_HEIGHT = 800d;
-  private static final double MINIMUM_WINDOW_WIDTH = 600d;
+  private static final double INITIAL_WINDOW_WIDTH = 960d;
+  private static final double INITIAL_WINDOW_HEIGHT = 1000d;
+  private static final double MINIMUM_WINDOW_WIDTH = 960d;
   private static final double MINIMUM_WINDOW_HEIGHT = 700d;
 
   @TestId(id = "primaryStage")
@@ -40,6 +40,7 @@ public class Dnav extends Application {
     primaryStage.setMinWidth(MINIMUM_WINDOW_WIDTH);
     primaryStage.setMinHeight(MINIMUM_WINDOW_HEIGHT);
     primaryStage.setScene(scene);
+    primaryStage.setMaximized(true);
     if (!Boolean.getBoolean("test")) {
       primaryStage.show();
       primaryStage.setMaximized(true);

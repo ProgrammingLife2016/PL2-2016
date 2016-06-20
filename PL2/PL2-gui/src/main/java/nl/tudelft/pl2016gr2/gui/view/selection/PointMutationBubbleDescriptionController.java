@@ -1,20 +1,19 @@
 package nl.tudelft.pl2016gr2.gui.view.selection;
 
+import static nl.tudelft.pl2016gr2.gui.view.RootLayoutController.MONO_SPACED_FONT;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import nl.tudelft.pl2016gr2.model.GenomeMap;
 import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.graph.nodes.Node;
 import nl.tudelft.pl2016gr2.model.graph.nodes.PointMutationBubble;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 /**
  * This controller controls the selection View for a {@link PointMutationBubble}.
@@ -32,13 +31,14 @@ public class PointMutationBubbleDescriptionController implements Initializable {
   private Label labelGenomesTwo;
 
   @FXML
-  private ListView<String> listViewGenomesOne;
-
+  private TextArea genomeListOne;
   @FXML
-  private ListView<String> listViewGenomesTwo;
+  private TextArea genomeListTwo;
 
   @Override
   public void initialize(URL url, ResourceBundle resourceBundle) {
+    genomeListOne.setFont(MONO_SPACED_FONT);
+    genomeListTwo.setFont(MONO_SPACED_FONT);
   }
 
   /**
@@ -72,23 +72,27 @@ public class PointMutationBubbleDescriptionController implements Initializable {
    * Sets up the labels.
    */
   private void setupLabels(Node seqOne, Node seqTwo) {
-    String labelText = "Genomes with base %s:";
-    labelGenomesOne.setText(String.format(labelText, seqOne.getSequence()));
-    labelGenomesTwo.setText(String.format(labelText, seqTwo.getSequence()));
+    String labelText = "Genomes with base %s (%d):";
+    labelGenomesOne.setText(String.format(labelText, seqOne.getSequence(), seqOne.getGenomeSize()));
+    labelGenomesTwo.setText(String.format(labelText, seqTwo.getSequence(), seqTwo.getGenomeSize()));
   }
 
   /**
    * Sets up the list views.
    */
   private void setupListViews(Node seqOne, Node seqTwo) {
-    List<String> genomesOne = seqOne.getGenomes().stream().map(
-        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
-    ).sorted().collect(Collectors.toCollection(ArrayList::new));
-    List<String> genomesTwo = seqTwo.getGenomes().stream().map(
-        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
-    ).sorted().collect(Collectors.toCollection(ArrayList::new));
+    setText(seqOne, genomeListOne);
+    setText(seqTwo, genomeListTwo);
+  }
 
-    listViewGenomesOne.getItems().addAll(genomesOne);
-    listViewGenomesTwo.getItems().addAll(genomesTwo);
+  private void setText(Node sequence, TextArea textArea) {
+    StringBuilder sb = new StringBuilder();
+    sequence.getGenomes().stream().map(
+        genomeId -> GenomeMap.getInstance().getGenome(genomeId)
+    ).sorted().forEach(genome -> sb.append(genome).append('\n'));
+    if (sb.length() > 0) {
+      sb.deleteCharAt(sb.length() - 1);
+    }
+    textArea.setText(sb.toString());
   }
 }
