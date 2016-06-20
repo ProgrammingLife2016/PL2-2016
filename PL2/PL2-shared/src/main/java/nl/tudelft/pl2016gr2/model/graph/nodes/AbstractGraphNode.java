@@ -159,7 +159,11 @@ public abstract class AbstractGraphNode implements GraphNode {
 
   @Override
   public void setOutEdges(Collection<GraphNode> edges) {
-    outEdges = new HashSet<>(edges);
+    if (edges == null) {
+      outEdges = new HashSet<>(0);
+    } else {
+      outEdges = new HashSet<>(edges);
+    }
     //outEdges.trimToSize();
   }
 
@@ -206,7 +210,7 @@ public abstract class AbstractGraphNode implements GraphNode {
   public GraphNodeGuiData getGuiData() {
     return guiData;
   }
-  
+
   protected void setAnnotations(AbstractGraphNode node) {
     this.annotations = node.annotations;
   }
@@ -246,7 +250,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     }
     return lineage;
   }
-  
+
   @Override
   public boolean containsAllGenomes(List<Integer> genomes) {
     List<Integer> thisGenomes = getGenomes();
@@ -260,7 +264,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     }
     return index == genomes.size();
   }
-  
+
   @Override
   public boolean containsAnyGenome(List<Integer> genomes) {
     List<Integer> thisGenomes = getGenomes();
@@ -279,7 +283,7 @@ public abstract class AbstractGraphNode implements GraphNode {
     }
     return false;
   }
-  
+
   @Override
   public boolean hasSameGenomes(List<Integer> genomes) {
     List<Integer> thisGenomes = getGenomes();

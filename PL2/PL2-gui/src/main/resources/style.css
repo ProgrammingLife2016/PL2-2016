@@ -45,7 +45,7 @@
   graph-color-top-overlay-transparent: rgba(204, 114, 24, 0.25);
   graph-color-bottom-overlay-transparent: rgba(24, 114, 204, 0.25);
 
-  graph-color-node-overlap: rgb(0, 73, 73);
+  graph-color-node-overlap: rgb(0, 146, 146);
   graph-color-node-no-overlap: rgb(255, 30, 30);
   graph-color-bubble-straight: rgb(255, 168, 63);
   graph-color-bubble-indel: rgb(112, 200, 255);
