@@ -22,11 +22,7 @@
                     </Tab>
                 </tabs>
             </TabPane>
-            <fx:include fx:id="selectionPane" source="selectionPane.fxml">
-                <padding>
-                   <Insets left="1.0" />
-                </padding>
-            </fx:include>
+            <fx:include fx:id="selectionPane" source="selectionPane.fxml" translateX="1.0" />
         </SplitPane>
     </SplitPane>
     <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -34,9 +30,6 @@
             <MenuItem mnemonicParsing="false" onAction="#openFileMenuItemClicked" text="Open" />
         </Menu>
         <fx:include source="BubbleAlgorithmMenu.fxml" />
-        <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About" />
-        </Menu>
     </MenuBar>
     <fx:include fx:id="graphLegend" source="Legend.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
     <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="315.0" AnchorPane.topAnchor="25.0" />
