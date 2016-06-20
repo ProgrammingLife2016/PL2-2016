@@ -12,6 +12,7 @@ import javafx.collections.ObservableSet;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
@@ -806,9 +807,11 @@ public class GraphPaneController implements Initializable {
     pane.getChildren().clear();
     HashSet<GraphNode> drawnGraphNodes = new HashSet<>();
     GraphViewRange fullRange = new GraphViewRange(0, pane.getPrefHeight());
+    ArrayList<Node> drawnChildNodes = new ArrayList<>();
     for (GraphNode node : orderedGraph.getGraphOrder()) {
-      drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, fullRange);
+      drawNode(pane, node, drawnGraphNodes, startLevel, endLevel, fullRange, drawnChildNodes);
     }
+    pane.getChildren().addAll(drawnChildNodes);
     drawEdges(canvas, drawnGraphNodes, startLevel, genomeCount);
   }
 
@@ -822,10 +825,12 @@ public class GraphPaneController implements Initializable {
    * @param startLevel      the start level: where to start drawing.
    * @param endLevel        the start level: where to stop drawing.
    * @param viewRange       the range of values which may be used as y coordinate to draw this node.
+   * @param drawnChildNodes the drawn nodes which don't have any child nodes.
    */
-  @SuppressWarnings("checkstyle:MethodLength") // either this or long lines.
+  @SuppressWarnings("checkstyle:MethodLength")
   private void drawNode(Pane pane, GraphNode node, HashSet<GraphNode> drawnGraphNodes,
-      double startLevel, double endLevel, GraphViewRange viewRange) {
+      double startLevel, double endLevel, GraphViewRange viewRange,
+      ArrayList<Node> drawnChildNodes) {
     drawnGraphNodes.add(node);
     node.getGuiData().range = viewRange;
     double width = calculateNodeWidth(node, zoomFactor.get());
@@ -850,7 +855,11 @@ public class GraphPaneController implements Initializable {
       });
       // select when previously selected node is equal to this new one
       selectionManager.checkSelected(viewNode);
-      pane.getChildren().add(viewNode.get());
+      if (node.hasChildren()) {
+        pane.getChildren().add(viewNode.get());
+      } else {
+        drawnChildNodes.add(viewNode.get());
+      }
       viewNode.setOpacity(fade);
     }
     viewNode.centerXProperty().set(zoomFactor.get()
@@ -859,11 +868,12 @@ public class GraphPaneController implements Initializable {
         + viewRange.rangeStartY);
     if (node.hasChildren() && (width > BUBBLE_POP_SIZE || node.getChildren().size() <= 2)) {
       GraphViewRange bubbleViewRange = new GraphViewRange(viewNode.getLayoutY(), height);
-      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, bubbleViewRange);
+      drawNestedNodes(pane, node, drawnGraphNodes, startLevel, endLevel, bubbleViewRange, 
+          drawnChildNodes);
     } else {
       node.unpop();
     }
-    drawAnnotationBox(node, viewNode, pane, startLevel);
+    drawAnnotationBox(node, viewNode, startLevel, drawnChildNodes);
     heatmapColorer.drawHeatmap(node, startLevel);
   }
 
@@ -877,12 +887,14 @@ public class GraphPaneController implements Initializable {
    * @param endLevel        the start level: where to stop drawing.
    * @param viewRange       the range of values which may be used as y coordinate to draw the
    *                        children of this bubble.
+   * @param drawnChildNodes the drawn nodes which don't have any child nodes.
    */
   private void drawNestedNodes(Pane pane, GraphNode bubble, HashSet<GraphNode> drawnGraphNodes,
-      double startLevel, double endLevel, GraphViewRange viewRange) {
+      double startLevel, double endLevel, GraphViewRange viewRange,
+      ArrayList<Node> drawChildNodes) {
     Collection<GraphNode> poppedNodes = bubble.pop();
     for (GraphNode poppedNode : poppedNodes) {
-      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange);
+      drawNode(pane, poppedNode, drawnGraphNodes, startLevel, endLevel, viewRange, drawChildNodes);
     }
   }
 
@@ -891,11 +903,11 @@ public class GraphPaneController implements Initializable {
    *
    * @param node       the node.
    * @param viewNode   the view node of the node.
-   * @param pane       the pane in which to draw the annotation.
    * @param startLevel the start level of the current view.
+   * @param drawnChildNodes the drawn nodes which don't have any child nodes.
    */
-  private void drawAnnotationBox(GraphNode node, IViewGraphNode viewNode, Pane pane,
-      double startLevel) {
+  private void drawAnnotationBox(GraphNode node, IViewGraphNode viewNode,
+      double startLevel, ArrayList<Node> drawnChildNodes) {
     if (!node.hasAnnotations()) {
       return;
     }
@@ -915,8 +927,8 @@ public class GraphPaneController implements Initializable {
       } else {
         previousEndPosition = annotationEnd;
       }
-      pane.getChildren().add(viewAnnotation);
-      viewAnnotation.addLabel(pane);
+      drawnChildNodes.add(viewAnnotation);
+      viewAnnotation.addLabel(drawnChildNodes);
     }
   }
 
