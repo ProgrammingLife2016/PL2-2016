@@ -1,4 +1,4 @@
-# DNAv [![Build Status](https://travis-ci.org/ProgrammingLife2016/PL2-2016.svg?branch=dev)](https://travis-ci.org/ProgrammingLife2016/PL2-2016)
+# DNAv [![Build Status](https://travis-ci.org/ProgrammingLife2016/PL2-2016.svg?branch=dev)](https://travis-ci.org/ProgrammingLife2016/PL2-2016) [![Coverage Status](https://coveralls.io/repos/github/ProgrammingLife2016/PL2-2016/badge.svg?branch=dev)](https://coveralls.io/github/ProgrammingLife2016/PL2-2016?branch=dev)
 
 DNAv (pronounced D-Nav) is a shorthand for DNA Navigation. This application is a semantic visualization tool for analysis of DNA sequences, aimed at biogenetic researchers. The application uses sophisticated data management to process a collection of sequences and detects areas of interest for the user, which it shows in a graphical user interface.
 
