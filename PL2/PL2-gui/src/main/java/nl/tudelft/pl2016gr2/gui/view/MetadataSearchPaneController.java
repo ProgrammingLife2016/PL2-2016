@@ -276,6 +276,7 @@ public class MetadataSearchPaneController implements Initializable {
         GridPane.setColumnIndex(label, 1);
         GridPane.setColumnIndex(property.checkComboBox, 2);
         GridPane.setColumnIndex(button, 3);
+        button.setMinSize(Button.USE_PREF_SIZE, Button.USE_PREF_SIZE);
 
         GridPane.setRowIndex(label, rowIndex);
         GridPane.setRowIndex(property.checkComboBox, rowIndex);
