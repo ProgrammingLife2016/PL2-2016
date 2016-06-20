@@ -13,8 +13,8 @@ import nl.tudelft.pl2016gr2.model.graph.nodes.SequenceNode;
  */
 public class OverlapHeatmap extends AbstractHeatmap {
 
-  private static final Color OVERLAP_COLOR = Color.rgb(0, 0, 0, 0.2);
-  private static final Color NO_OVERLAP_COLOR = Color.rgb(255, 255, 255, 0.2);
+  public static final Color OVERLAP_COLOR = Color.rgb(0, 0, 0, 0.2);
+  public static final Color NO_OVERLAP_COLOR = Color.rgb(255, 255, 255, 0.2);
 
   public OverlapHeatmap(GraphicsContext heatmapGraphics, ObservableDoubleValue zoomFactor) {
     super(heatmapGraphics, zoomFactor);

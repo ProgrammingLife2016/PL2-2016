@@ -61,14 +61,10 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
   }
 
   /**
-   * Sets a vertical offset if this label is the nth label of a node, where n is odd.
-   *
-   * @param setOffset if this is an odd node.
+   * Sets a vertical offset to this label so if doesn't overlap with a different label.
    */
-  public void setOddOffset(boolean setOffset) {
-    if (setOffset) {
-      setLayoutY(getLayoutY() + getHeight());
-    }
+  public void setOddOffset() {
+    setLayoutY(getLayoutY() + getHeight());
   }
 
   @Override
