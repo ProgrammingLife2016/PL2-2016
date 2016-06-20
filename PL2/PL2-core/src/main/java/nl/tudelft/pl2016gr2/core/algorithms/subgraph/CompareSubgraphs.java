@@ -125,12 +125,12 @@ public class CompareSubgraphs {
    * contain more genomes, because with more genomes the chance of many mutations is higher.
    *
    * @param nodes       the nodes to calculate the height for.
-   * @param totalHeight the total vertical space to devide between the nodes.
+   * @param totalHeight the total vertical space to divide between the nodes.
    * @return the vertical space to give each node.
    */
   @SuppressWarnings("checkstyle:MethodLength")
   private static int[] calculateNodeHeights(Collection<GraphNode> nodes, int totalHeight) {
-    // devide 25 percent of the space evenly amongst the parts
+    // divide 25 percent of the space evenly amongst the parts
     int[] heights = new int[nodes.size()];
     int evenSpace = totalHeight / 4;
     for (int i = 0; i < nodes.size(); i++) {
@@ -138,13 +138,13 @@ public class CompareSubgraphs {
     }
     heights[0] += evenSpace % nodes.size(); // use the leftover space
 
-    // devide the other 75 percent based on the amount of genomes which goes through each node
+    // divide the other 75 percent based on the amount of genomes which goes through each node
     int totalGenomes = 0;
     for (GraphNode node : nodes) {
       totalGenomes += node.getGenomeSize();
     }
     if (totalGenomes == 0) {
-      devideHeightsEvenly(heights, totalHeight);
+      divideHeightsEvenly(heights, totalHeight);
       return heights;
     }
     int leftoverSpace = totalHeight - evenSpace;
@@ -158,7 +158,7 @@ public class CompareSubgraphs {
     return heights;
   }
 
-  private static void devideHeightsEvenly(int[] heights, int totalHeight) {
+  private static void divideHeightsEvenly(int[] heights, int totalHeight) {
     int heightPerPart = totalHeight / heights.length;
     for (int i = 0; i < heights.length; i++) {
       heights[i] = heightPerPart;
