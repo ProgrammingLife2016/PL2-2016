@@ -22,6 +22,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Background;
@@ -221,6 +222,11 @@ public class MetadataSearchPaneController implements Initializable {
   }
 
   private void initializeGoTo() {
+    goToField.setOnKeyPressed(event -> {
+      if (event.getCode() == KeyCode.ENTER) {
+        goToButton.fire();
+      }
+    });
     goToButton.setOnAction(actionEvent -> {
       String fieldText = goToField.getText();
       if (fieldText.matches("\\d+")) {
