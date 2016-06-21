@@ -929,6 +929,7 @@ public class GraphPaneController implements Initializable {
       }
       drawnChildNodes.add(viewAnnotation);
       viewAnnotation.addLabel(drawnChildNodes);
+      viewAnnotation.addArrow(drawnChildNodes);
     }
   }
 
