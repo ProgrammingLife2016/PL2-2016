@@ -44,7 +44,7 @@ public class SubgraphAlgorithmManager {
    * @return a pair containing as left value the ordered graph of the top subgraph and as right
    *         value the ordered graph of the bottom subgraph.
    */
-  @SuppressWarnings("checkstyle:MethodLength")
+  @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:VariableDeclarationUsageDistance"})
   public static Pair<OrderedGraph, OrderedGraph> compareTwoGraphs(Collection<Integer> topGenomes,
       Collection<Integer> bottomGenomes, SequenceGraph mainGraph, GraphOrdererThread mainGraphOrder,
       IPhylogeneticTreeRoot<?> treeRoot) {
@@ -56,10 +56,14 @@ public class SubgraphAlgorithmManager {
     topSubGraphThread.start();
     bottomSubGraphThread.start();
 
-    FilterBubbleThread topFilter = new FilterBubbleThread(topSubGraphThread.getSubGraph(),
-        topGenomes, treeRoot);
-    FilterBubbleThread bottomFilter = new FilterBubbleThread(bottomSubGraphThread.getSubGraph(),
-        bottomGenomes, treeRoot);
+    FilterBubbleThread topFilter = new FilterBubbleThread(
+        topSubGraphThread.getSubGraph().getOrderedGraph(), topGenomes, treeRoot);
+    FilterBubbleThread bottomFilter = new FilterBubbleThread(
+        bottomSubGraphThread.getSubGraph().getOrderedGraph(), bottomGenomes, treeRoot);
+    int topGenomeCount = topSubGraphThread.getSubGraph().getGenomes().size();
+    int bottomGenomeCount = bottomSubGraphThread.getSubGraph().getGenomes().size();
+    topSubGraphThread = null; // allow garbage collecting
+    bottomSubGraphThread = null; // allow garbage collecting
     topFilter.start();
     bottomFilter.start();
 
@@ -69,9 +73,8 @@ public class SubgraphAlgorithmManager {
     addDummyNodes(topGraphOrder);
     addDummyNodes(bottomGraphOrder);
 
-    OrderedGraph orderedTopGraph = new OrderedGraph(topSubGraphThread.getSubGraph(), topGraphOrder);
-    OrderedGraph orderedBottomGraph = new OrderedGraph(bottomSubGraphThread.getSubGraph(),
-        bottomGraphOrder);
+    OrderedGraph orderedTopGraph = new OrderedGraph(topGenomeCount, topGraphOrder);
+    OrderedGraph orderedBottomGraph = new OrderedGraph(bottomGenomeCount, bottomGraphOrder);
     return new Pair<>(orderedTopGraph, orderedBottomGraph);
   }
 
@@ -84,6 +87,7 @@ public class SubgraphAlgorithmManager {
    * @param treeRoot       the root of the phylogenetic tree.
    * @return the ordered graph.
    */
+  @SuppressWarnings("checkstyle:VariableDeclarationUsageDistance")
   public static OrderedGraph alignOneGraph(Collection<Integer> genomes, SequenceGraph mainGraph,
       GraphOrdererThread mainGraphOrder, IPhylogeneticTreeRoot<?> treeRoot) {
     dummyRootNodeId = Integer.MAX_VALUE;
@@ -93,11 +97,13 @@ public class SubgraphAlgorithmManager {
     SequenceGraph subgraph = topSubGraphThread.getSubGraph();
 
     ArrayList<GraphNode> orderedNodes = subgraph.getOrderedGraph();
+    int amountOfGenomes = subgraph.getGenomes().size();
+    subgraph = null; // allow garbage collection
     orderedNodes = performBubblingAlgorithms(orderedNodes, genomes, treeRoot);
-    
+
     CompareSubgraphs.alignVertically(orderedNodes);
     addDummyNodes(orderedNodes);
-    return new OrderedGraph(subgraph, orderedNodes);
+    return new OrderedGraph(amountOfGenomes, orderedNodes);
   }
 
   /**
@@ -190,14 +196,13 @@ public class SubgraphAlgorithmManager {
 
   private static class FilterBubbleThread extends Thread {
 
-    private final SequenceGraph subgraph;
     private final Collection<Integer> genomes;
     private final IPhylogeneticTreeRoot<?> treeRoot;
     private ArrayList<GraphNode> orderedNodes;
 
-    private FilterBubbleThread(SequenceGraph subgraph, Collection<Integer> genomes,
+    private FilterBubbleThread(ArrayList<GraphNode> orderedSubgraph, Collection<Integer> genomes,
         IPhylogeneticTreeRoot<?> treeRoot) {
-      this.subgraph = subgraph;
+      this.orderedNodes = orderedSubgraph;
       this.genomes = genomes;
       this.treeRoot = treeRoot;
     }
@@ -213,7 +218,6 @@ public class SubgraphAlgorithmManager {
 
     @Override
     public void run() {
-      orderedNodes = subgraph.getOrderedGraph();
       orderedNodes = performBubblingAlgorithms(orderedNodes, genomes, treeRoot);
     }
   }
