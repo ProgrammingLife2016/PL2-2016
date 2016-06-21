@@ -783,12 +783,12 @@ public class GraphPaneController implements Initializable {
     }
     clearCanvas();
     if (topGraph != null) {
-      drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getSubgraph().getGenomes().size(),
-          startLevel, startLevel + levelsToDraw);
+      drawGraph(topPane, topEdgeCanvas, topGraph, topGraph.getGenomeSize(), startLevel,
+          startLevel + levelsToDraw);
     }
     if (bottomGraph != null) {
-      drawGraph(bottomPane, bottomEdgeCanvas, bottomGraph,
-          bottomGraph.getSubgraph().getGenomes().size(), startLevel, startLevel + levelsToDraw);
+      drawGraph(bottomPane, bottomEdgeCanvas, bottomGraph, bottomGraph.getGenomeSize(), startLevel,
+          startLevel + levelsToDraw);
     }
   }
 
