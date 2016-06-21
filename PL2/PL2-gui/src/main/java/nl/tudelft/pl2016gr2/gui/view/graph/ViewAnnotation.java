@@ -2,6 +2,8 @@ package nl.tudelft.pl2016gr2.gui.view.graph;
 
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.shape.Rectangle;
 import nl.tudelft.pl2016gr2.gui.view.selection.AnnotationDescription;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
@@ -11,6 +13,7 @@ import nl.tudelft.pl2016gr2.model.Annotation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * This is an annotation indicator object which can be added to a IViewGraphNode to indicate that it
@@ -22,7 +25,13 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
 
   private static final double MINIMUM_LABEL_WIDTH = 10.0;
   private static final double MINIMUM_LABEL_HEIGHT = 12.0;
+  private static final double MINIMUM_ARROW_WIDTH = 25.0;
+  private static final Image RIGHT_ARROW = new Image(
+      ViewAnnotation.class.getClassLoader().getResourceAsStream("images/arrow-right.png"));
+  private static final Image LEFT_ARROW = new Image(
+      ViewAnnotation.class.getClassLoader().getResourceAsStream("images/arrow-left.png"));
   private final Annotation annotation;
+  private boolean oddOffset = false;
 
   /**
    * Construct a view annotation which can be drawn in the UI.
@@ -62,9 +71,35 @@ public class ViewAnnotation extends Rectangle implements ISelectable {
   }
 
   /**
+   * Add an arrow to indicate the annotation direction.
+   *
+   * @param nodes the list of nodes to which to add the arrow.
+   */
+  public void addArrow(ArrayList<Node> nodes) {
+    if (getWidth() < MINIMUM_ARROW_WIDTH || getHeight() < MINIMUM_LABEL_HEIGHT) {
+      return;
+    }
+    ImageView arrow;
+    if (Objects.equals(annotation.strand, "-")) {
+      arrow = new ImageView(LEFT_ARROW);
+    } else {
+      arrow = new ImageView(RIGHT_ARROW);
+    }
+    nodes.add(arrow);
+    arrow.setMouseTransparent(true);
+    if (oddOffset || getLayoutY() - LEFT_ARROW.getHeight() < 0) {
+      arrow.setLayoutY(getLayoutY() + getHeight());
+    } else {
+      arrow.setLayoutY(getLayoutY() - LEFT_ARROW.getHeight());
+    }
+    arrow.setLayoutX(getLayoutX() + (getWidth() - LEFT_ARROW.getWidth()) / 2.0);
+  }
+
+  /**
    * Sets a vertical offset to this label so if doesn't overlap with a different label.
    */
   public void setOddOffset() {
+    oddOffset = true;
     setLayoutY(getLayoutY() + getHeight());
   }
 
