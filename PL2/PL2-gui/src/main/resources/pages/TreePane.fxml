@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+
+<AnchorPane maxWidth="360.0" prefWidth="360.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.tree.TreePaneController">
+   <Pane fx:id="firstHeatmap" maxWidth="-Infinity" minHeight="100.0" minWidth="-Infinity" prefHeight="337.0" prefWidth="10.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0" />
+   <Pane fx:id="secondHeatmap" maxWidth="-Infinity" minHeight="100.0" minWidth="-Infinity" prefHeight="337.0" prefWidth="10.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="0.0" />
+   <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="360.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <children>
+         <Line endX="45.689655172413794" endY="44.5" startX="15.0" strokeWidth="3.0" />
+         <MenuButton fx:id="firstMenuButton" layoutX="45.689655172413794" layoutY="32.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Select a value..." />
+         <Line endX="45.689655172413794" endY="15.5" startX="35.0" strokeWidth="3.0" />
+         <MenuButton fx:id="secondMenuButton" layoutX="45.689655172413794" layoutY="3.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="150.0" text="Select a value..." />
+         <Rectangle arcHeight="5.0" arcWidth="5.0" height="10.0" layoutX="235.0" layoutY="5.0" stroke="BLACK" strokeType="INSIDE" width="100.0">
+            <fill>
+               <LinearGradient endX="1.0" endY="1.0">
+                  <stops>
+                     <Stop color="WHITE" />
+                     <Stop color="WHITE" offset="0.007662835249042145" />
+                     <Stop color="#e63939" offset="0.5" />
+                     <Stop color="#000000cc" offset="1.0" />
+                  </stops>
+               </LinearGradient>
+            </fill>
+         </Rectangle>
+         <Label layoutX="235.0" layoutY="20.0" text="Low" />
+         <Label layoutX="309.0" layoutY="20.0" text="High" />
+      </children>
+   </Pane>
+   <Separator prefWidth="200.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+    <Pane fx:id="treePane" layoutX="10.0" layoutY="10.0" maxWidth="400.0" minHeight="100.0" minWidth="200.0" prefHeight="337.0" prefWidth="350.0" AnchorPane.bottomAnchor="63.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+</AnchorPane>

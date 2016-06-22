@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="rootPane" pickOnBounds="false" prefHeight="700.0" prefWidth="800.0" stylesheets="@../style.css" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.RootLayoutController">
+    <SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+        <SplitPane fx:id="mainPane" dividerPositions="0.5" orientation="HORIZONTAL">
+            <fx:include fx:id="treePane" source="TreePane.fxml" />
+            <fx:include fx:id="graphPane" source="CompareGraphsPane.fxml" />
+        </SplitPane>
+        <SplitPane dividerPositions="0.5" maxHeight="300" orientation="HORIZONTAL" VBox.vgrow="NEVER">
+            <TabPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="620.0">
+                <tabs>
+                    <Tab closable="false" text="Metadata">
+                        <fx:include fx:id="metadataSearchPane" source="MetadataSearchPane.fxml" />
+                    </Tab>
+                    <Tab closable="false" text="Annotations">
+                        <fx:include fx:id="annotationSearchPane" source="AnnotationSearchPane.fxml" />
+                    </Tab>
+                </tabs>
+            </TabPane>
+            <fx:include fx:id="selectionPane" source="selectionPane.fxml" translateX="1.0" />
+        </SplitPane>
+    </SplitPane>
+    <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Menu mnemonicParsing="false" text="File">
+            <MenuItem mnemonicParsing="false" onAction="#openFileMenuItemClicked" text="Open" />
+        </Menu>
+        <fx:include source="BubbleAlgorithmMenu.fxml" />
+    </MenuBar>
+    <fx:include fx:id="graphLegend" source="Legend.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0" />
+    <fx:include fx:id="treeLegend" source="Legend.fxml" AnchorPane.leftAnchor="315.0" AnchorPane.topAnchor="25.0" />
+</AnchorPane>

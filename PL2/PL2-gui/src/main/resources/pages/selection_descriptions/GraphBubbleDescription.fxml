@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.GraphBubbleDescriptionController">
+
+    <Label text="Graph Bubble" />
+
+    <Label text="In this bubble:" />
+    <Label fx:id="labelIndelCount" />
+    <Label fx:id="labelPointMutationCount" />
+    <Label fx:id="genomesInBubble" text="Genomes in this bubble:" />
+   <TextArea fx:id="genomeList" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" />
+
+</VBox>

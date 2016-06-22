@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.tudelft.pl2016gr2.gui.view.selection.IndelBubbleDescriptionController">
+
+    <Label text="Indel" />
+    <Label fx:id="genomeInsertLabel" text="genomes in insertion:" />
+   <TextArea fx:id="genomesIn" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" />
+    <Label fx:id="genomeDeleteLabel" text="genomes not in insertion:" />
+   <TextArea fx:id="genomesDel" editable="false" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" />
+
+</VBox>
