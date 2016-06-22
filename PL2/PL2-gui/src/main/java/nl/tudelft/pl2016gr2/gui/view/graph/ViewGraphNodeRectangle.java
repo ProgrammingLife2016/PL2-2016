@@ -20,7 +20,7 @@ public class ViewGraphNodeRectangle extends Rectangle implements IViewGraphNode 
 
   private final DoubleProperty centerXProperty = new SimpleDoubleProperty();
   private final DoubleProperty centerYProperty = new SimpleDoubleProperty();
-  private final GraphNode dataNode;
+  public final GraphNode dataNode;
 
   /**
    * Constructor.

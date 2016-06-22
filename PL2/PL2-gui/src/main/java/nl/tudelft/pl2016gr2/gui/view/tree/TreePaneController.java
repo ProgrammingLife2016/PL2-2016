@@ -12,9 +12,12 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import nl.tudelft.pl2016gr2.gui.view.MetadataPropertyMap;
 import nl.tudelft.pl2016gr2.gui.view.graph.GraphPaneController;
+import nl.tudelft.pl2016gr2.gui.view.graph.ViewGraphNodeEllipse;
+import nl.tudelft.pl2016gr2.gui.view.graph.ViewGraphNodeRectangle;
 import nl.tudelft.pl2016gr2.gui.view.selection.ISelectable;
 import nl.tudelft.pl2016gr2.gui.view.selection.SelectionManager;
 import nl.tudelft.pl2016gr2.gui.view.tree.heatmap.HeatmapManager;
+import nl.tudelft.pl2016gr2.model.graph.nodes.GraphNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeNode;
 import nl.tudelft.pl2016gr2.model.phylogenetictree.IPhylogeneticTreeRoot;
 import nl.tudelft.pl2016gr2.thirdparty.testing.utility.TestId;
@@ -91,6 +94,19 @@ public class TreePaneController implements Initializable {
     this.selectionManager = selectionManager;
     this.graphPaneController = graphPaneController;
     selectionManager.addListener((observable, oldValue, newValue) -> {
+      {
+        GraphNode dataNode = null;
+        if (newValue instanceof ViewGraphNodeEllipse) {
+          dataNode = ((ViewGraphNodeEllipse) newValue).dataNode;
+        } else if (newValue instanceof ViewGraphNodeRectangle) {
+          dataNode = ((ViewGraphNodeRectangle) newValue).dataNode;
+        }
+        if (dataNode != null) {
+          selectionManager.getSearchBoxSelectedGenomes().setAll(dataNode.getGenomes());
+        } else {
+          selectionManager.getSearchBoxSelectedGenomes().clear();
+        }
+      }
       checkSelectedForNodeAndLeaves(currentRoot);
     });
     initializeTopGraphSelectionManger();
