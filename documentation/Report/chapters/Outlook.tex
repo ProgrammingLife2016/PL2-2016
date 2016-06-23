@@ -1,0 +1,9 @@
+\chapter{Outlook}
+In this section, improvements that can be made for this product are discussed. This can be useful for further development of this application, or the development of a new application with the same purpose. Even though the time to build the program was limited, the application satisfies the client and is considered finished. There are points of improvement, which are discussed below.
+\par
+The biggest dataset that was available to run the program with, contained 328 genomes. Loading this graph takes 3-6 seconds, which is quick. There is a dataset containing 6000 genomes, which indicates a highly complex graph. Rendering this graph will take a lot longer, and it might also cause memory issues because everything is saved in main memory currently. A way to solve these problems is to use a dataserver with which the application communicates. This solves the problem of using too much memory. Using a remote dataserver it is possible to precompute big parts of the graph, which can increase the loading time. Concluding, adapting the application to work with a remote dataserver makes the application more scalable.
+\par
+In the current application, when the graph with 328 genomes is drawn, it’s impossible to explore parts of the graph with many branches. The reason for this is that there isn’t enough vertical space, which causes the nodes to become almost invisible. The ability to zoom vertically can solve this problem. 
+Finally, an improvement to the program would be highlighting of convergent evolution. Convergent evolution is a phenomenon which can be useful for biologists, so highlighting it would increase the value of the program for biologists.
+\par
+Concluding, there are areas in which the program can make steps to improve. Within a timespan of 10 weeks the developers managed to build a program which is appreciated by the client, and which forms a solid foundation for further development of tools to visualize DNA sequences. 
