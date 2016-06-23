@@ -24,12 +24,41 @@ The following tasks as set on the user. Each task is provided after the previous
 
 \section{Tasks}
 This usability test should be performed by at least 2 persons: the researcher and the participant. Because the whole test will be captured there is no need for more than one person to analyse the user, as the researcher can have another look at the experiment afterwards.
-Measurement
-\par
+\section{Measurement}
 The duration of each task is measured and the researcher takes notes of interactions that take significantly longer than expected. If the participant takes longer than the maximum amount of time to complete one of the tasks, the researcher provides a hint to steer the participant towards the answer. This signifies that the participant was not able to find the functionality required to complete the task autonomously. This can point to certain aspects of that task being unclear, unavailable, or insufficiently useful.
+\par
 In addition, the tasks that require the participant to derive a conclusion, are marked correct or incorrect.
 
 \section{Participants}
 The test users are currently students in biology related areas, such as medicine or (micro)biology. These backgrounds provide general understanding of DNA and proteins, but not necessarily about the bioinformatical aspects of DNA sequencing and sequence alignment. This knowledge is provided during the training.
 \section{Result}
 We provide the results of the measurements for each step in appendix \ref{ch:human-computer-interaction-design-results}. 
+\par
+The results show that especially finding the gene was a very hard task to the participants. In the majority of the time, they required a hint to know how to do this. After this, the last two tasks were easier than expected, requiring on average way less time. The last task was completely accurately performed, although the task of detecting a mutation sometimes led to wrong conclusions. The first task yielded expected results.
+\par
+The notes describe a few recurring events of confusion. Firstly, the coordinate system displayed in the scrollbar is a different system than the gene annotation coordinates. Participants tried to scroll to the location, but could not find the gene at the supposedly correct location. In order to find the gene, participants tried typing the name of the gene in the field where a base number can be chosen to jump to. Lastly, when participants clicked on the gene in the gene list, the jump did not trigger because they were fully zoomed out, therefore making it unclear that they could directly jump to them.
+
+\section{Discussion}
+We see from the results that the task of locating a gene was perceived as rather hard. Most participants required a hint to be able to do this. The experiment notes describe a lot of confusion about the search tools, either using them for the wrong purpose, or using the right tool but without the desired outcome. After the hint, all participants were able to instantly solve the task, showing that the tools and functionality works sufficiently, but the simplicity is suboptimal.
+\par
+All tasks can be completed within a total time of 1 minute, if done by an experienced user, i.e. a user who knows what every functionality does and has sufficient biological background. The participants could perform these steps afterwards as well within similar time, after being receiving the hints for every task.
+\par
+This is also in line with the last two tasks: as soon as participants had found the actual gene, the application provided sufficient information to understand mutational patterns in the data.
+
+\section{Conclusion}
+We conclude that the application has all functionality that is required to perform tasks very quickly and efficiently, however, the usage of these features are not intuitive enough to be understood by the user without the current amount of explanation.
+\par
+Because of this, we can expect that a short training, or additional tutorials or introductory features will improve the learning curve.
+\par
+We also note that participants were generally able to interpret the data correctly, even with limited biological knowledge. This means that users who are experts in this field of biology should be even more able to do so. 
+\section{Imperfections in Methodology}
+The experiment has a few flaws, which we will discuss for future improvement.
+Firstly, the participants were only partially representative of actual end users. They have no knowledge of the data set and what possible mutations are or could mean. They are not familiar with all jargon. All these aspects hinder in their intuitive knowledge of the application.
+Secondly, the measurement for the first task included the participants’ first impression of hte application. The measured time included more than solely the task and therefore came out higher than expected.
+Lastly, the experiment does not cover the learning curve, although we do expect that this will have an effect. To more firmly establish this claim, the experiment should be repeated with participants that are shortly introduced to the application, so that their results can be compared against untrained participants.
+\section{Recommendations}
+We finish with recommendations about the interaction design of the application.
+\par
+Firstly, we suggest that the jumping features also zoom in on the graph, so that the user will directly see the desired element, regardless of the current zoom level.
+\par
+Secondly, we suggest that the application is extended with a form of help, which can be in the form of introduction steps that describe the process of using the application, or with additional information that is shown per element in the application. We note that personal training is most likely the most effective strategy, although this might be not always possible.
