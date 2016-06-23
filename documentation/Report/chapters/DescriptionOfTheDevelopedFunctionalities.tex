@@ -4,15 +4,17 @@ This chapter will give a description of the functionalities that are developed f
 \section{Semantic zooming}
 \begin{wrapfigure}{r}{0.2\textwidth}
 	\centering
+	\vspace*{-2.7cm} % time pressue hacks
 	\includegraphics{images/mutation.jpg}
 	\caption{\label{fig:bubble}A mutation bubble}
 \end{wrapfigure}
-Semantic zooming should be provided to the customer which initially shows the entire graph, and on which the user can zoom in to see more details. This is implemented by making bubbles, which collapse nodes together, and showing these at a high-level view. When zooming in (which happens stepless), the bubbles are expanded and more details of the graph are shown. By creating bubbles, large amounts of genomes can be visualized. When nodes in the graph (which represent base sequences) are big enough they become visible. Figure X+1 shows an example of a bubble (the purple square), containing two nodes, which has been expanded. 
+Semantic zooming should be provided to the customer which initially shows the entire graph, and on which the user can zoom in to see more details. This is implemented by making bubbles, which collapse nodes together, and showing these at a high-level view. When zooming in (which happens stepless), the bubbles are expanded and more details of the graph are shown. By creating bubbles, large amounts of genomes can be visualized. When nodes in the graph (which represent base sequences) are big enough they become visible. Figure \ref{fig:bubble} shows an example of a bubble (the purple square), containing two nodes, which has been expanded. 
 
 \section{Phylogenetic tree}
 
-\begin{wrapfigure}{l}{5cm}
+\begin{wrapfigure}{l}{4cm}
 	\centering
+	\vspace*{-3.6cm} % time pressue hacks
 	\includegraphics[width=0.3\textwidth]{images/tree.jpg}
 	\caption{\label{fig:tree}The phylogenetic\\tree}
 \end{wrapfigure}
@@ -26,9 +28,17 @@ On the left of the tree is a heatmap which can be used to show the density of pr
 Nodes can be dragged from the phylogenetic tree to the main graph area and all genomes contained in the leaves of the selected tree are then drawn on the screen. When dragged to the main area a popup will appear asking if the genomes should be added to the existing graph, if a new graph has to be created, or if the specific nodes have to be removed from the current visualization. 
 \par
 Because the application builds on the idea that the comparison of two graphs can be useful, two graphs can be drawn on the main screen. Nodes in the tree have colouring to indicate in which graph(s) they are present. There is a legend present for all visuals in the tree. 
-Figure X+2 shows an example of the phylogenetic tree, with one heatmap containing the amount of hidden nodes in a branch and the other heatmap containing the amount of genotype DST:XDR in a branch.
+Figure \ref{fig:tree} shows an example of the phylogenetic tree, with one heatmap containing the amount of hidden nodes in a branch and the other heatmap containing the amount of genotype DST:XDR in a branch.
 \section{The main area}
-The main area is the part where the graph is drawn. As mentioned before, there can be a graph on the top half and a graph on the bottom half (see figure X). It is also possible to show only one graph. Loading is performed with simple dragging and dropping from the phylogenetic tree. When a graph is loaded, the user sees different rectangles, ellipses, and colours. These represent different types of bubbles, which are explained in the legend. 
+The main area is the part where the graph is drawn. As mentioned before, there can be a graph on the top half and a graph on the bottom half (see figure \ref{fig:graph}). It is also possible to show only one graph. Loading is performed with simple dragging and dropping from the phylogenetic tree. When a graph is loaded, the user sees different rectangles, ellipses, and colours. These represent different types of bubbles, which are explained in the legend. 
+
+\begin{figure}[ht]
+	\centering
+	\vspace*{-2cm} % time pressue hacks
+	\includegraphics[width=\textwidth]{images/graph.jpg}
+	\caption{\label{fig:graph}The main graph area}
+\end{figure}
+
 \section{Searching}
 On the main screen a searching pane is available. A search can be performed based on metadata about the genomes. Multiple genomes that resulted from a search can be selected and dragged to the main graph. This works the same as dragging and dropping from the phylogenetic tree.
 \section{Loading}
