@@ -1,0 +1,19 @@
+\chapter{Reflection on the product and development process (SEM)}
+This section evaluates the development process of the product and the technical aspects of the product. The evaluation of the development process includes evaluating the dynamics in the group, the use of sprints and the documentation. Evaluating the technical aspects of the project focuses on the quality of the code. 
+
+\section{Development process}
+\par
+The dynamics in the group were good. The communication in the group went through different channels, including e-mail, WhatsApp, Slack, GitHub, and face-to-face. In retrospect, it would have been better to have less channels of communication, because checking all aforementioned channels is cumbersome. However, during this project the high number of communication channels did not cause problems. 
+\par
+During this project, a new sprint planning was made weekly. This was not ideal, because a sprint of a week is short, and there have been big tasks which take longer than a week, which are therefore hard to put in a sprint planning. 
+\par
+The sprint plannings that have been made also tended to include too much work for a week. Often, the development of new features took longer than was accounted for in the spring planning, which meant not all tasks on the planning were done. For future projects, it’s important to better estimate the time it costs to develop new features.
+\par
+The formal documentation during this project included an Architecture Design, the weekly sprint planning and sprint retrospective. This documentation has not been used by any member of the group during the development phase. A useful form of documentation were the issues on GitHub. These were used extensively, and showed a nice overview of tasks to be done. 
+
+\section{Product evaluation}
+\par
+The code for the application has been split in modules. A big advantage of this is that a module can be taken out and replaced with another module, without changing the rest of the code. The use of modules brought challenges with it (e.g. the visibility of classes), but is a nice way to separate code. 
+\par
+An important principle which has been used a lot, is the use of interfaces. The model classes have all been implemented using an interface, which makes it more reusable. 
+A part of the program which is not as reusable, is the GUI part. Some of the classes in this module have become large, which is inherent to using JavaFX\footnote{http://docs.oracle.com/javase/8/javafx/get-started-tutorial/jfx-overview.htm}. Another reason that this happened, was the fact that the client demanded many new features every week. There is a constant tradeoff to be made between quality of code and the quality of the program (in terms of features). During this project the latter was often preferred.

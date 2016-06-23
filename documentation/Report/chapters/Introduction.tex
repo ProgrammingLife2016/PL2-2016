@@ -1,0 +1,15 @@
+\chapter{Introduction}
+\par
+Tuberculosis is a big problem in modern society. It’s a deadly disease (if untreated, the disease kills about half of those infected) and about one third of the world population is infected with it \citep{whoTB}. Curing this disease takes at least six months with the current medicines and possibly up to three years in which six variants of antibiotics have to be taken\citep{p1TB}.
+\par
+Drug-resistant tuberculosis is becoming an increasingly difficult problem. Research is being done in order to make new vaccines, drugs and diagnostics to improve the ability to cure this disease. One of the institutes performing this research is the Broad Institute, an institute for biomedical science, which is being run by MIT and Harvard. To do this research efficiently, an application to compare and visualize multiple DNA sequences (genomes) is needed. Last year an attempt was made by students from the Delft University of Technology, but the applications they created did not suffice. The main problems were that programs were not scalable (they could only load a small dataset of genomes) and missed semantic zooming. This year the development project is repeated. This report describes the development of such an application, which can help biologists explore Tuberculosis genomes.
+\par
+The goal for this application is to create a tool for interactive visualization of DNA sequence graphs to enable exploratory data analysis. The application must comply with the following requirements:
+\begin{itemize}
+	\item The visualization must be interactive (i.e. the user should be able to easily navigate the visualization).
+	\item Semantic zooming. The customer expects to be able to zoom in onto the visualization. As the visualization is more zoomed in, more information should become visible.
+	\item Integration between phylogeny (i.e. ancestral history of genomes) and the genomes. Usually represented as a tree. Such tree could be used as navigation device.
+	\item Metadata about genomes and annotations of parts of (the reference) genome should be integrated. Ideally these should be easily accessible (e.g. searchable).
+\end{itemize}
+
+Lastly, the customer would like to be able to detect a phenomenon called convergent evolution. This occurs when two two separate branches of the evolution of the genome separately mutated in the same way. This indicates that this mutation is likely to happen evolutionary, regardless of previous mutations of a genome.

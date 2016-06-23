@@ -1,0 +1,24 @@
+\chapter{Overview of the final product}
+The final product is a software tool which can be used by biologists to interactively explore one or two graphs which represent mutations in Tuberculosis genomes. Mutations in these genomes can cause resistance to certain antibiotics, and for biologists it’s useful to be able to determine which mutations cause resistances to antibiotics. This tool aims to help find those mutations. The program has an extensive list of features, of which a high-level overview is given in this chapter.
+
+\section{Representation of genomes}
+\par
+The most important part of this application is the representation of the genomes, which is done by drawing a graph. Each genome is represented by a path through the graph. When the graph is first drawn a top-level overview is given where the complete graph is visible (completely zoomed out). By zooming in, the user of the program can explore a part of the graph.
+\par
+The drawing of the graph is based on the phylogenetic tree, which represents the ancestral history of genomes. This is one of the strong suits of our application, the coupling of the phylogeny with the graph.
+\par
+Another aspect of representing the genomes which makes this application unique, is the fact that we can compare two graphs. It’s possible to select two subsets of the graph based on the phylogeny, and draw those subsets underneath each other. A comparison is then made between the two graphs which shows which nodes are in both graphs, and which nodes are unique to one graph. 
+\par
+Under the graph a heatmap is shown, which can be drawn with different properties. This can be used to show areas which are dense in the graph for the chosen property. 
+\par
+The top level overview of the graph is drawn with bubbles, which represent a group of nodes. There are different bubbles, which represent different things. These bubbles make the graph less complex, and one type of bubble (the phylogenetic bubble) can help find convergent evolution. 
+\par
+There is an option to only show certain types of bubbles (or none). When zooming in, the bubbles are expanded and the nested nodes (or nested bubbles) are shown. This allows the user to see more detail when he zooms in. 
+
+\section{Phylogenetic tree}
+\par
+Another important aspect of the application is the representation of the phylogenetic tree, which shows the ancestral history of genomes. This is a binary tree, with a leaf node for each genome. When the number of genomes that is loaded into the application is high (the biggest dataset available contains 328 genomes) it’s not possible to show all leaf nodes on the screen. To solve this, it’s possible to zoom in on nodes of the tree to go down a level in the tree.
+\par
+The tree contains a heatmap which shows information about the density of a property (to be selected by the user) in the tree (e.g. the number of leaf nodes in the tree).
+\par
+Nodes can be selected to get information about them or to draw a subset of the graph containing the selected genomes.

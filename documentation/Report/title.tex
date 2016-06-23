@@ -1,0 +1,75 @@
+\begin{titlepage}
+	
+	\begin{center}
+		
+		%% Insert the TU Delft logo at the bottom of the page.
+		\begin{tikzpicture}[remember picture,overlay]
+		\node at (current page.south)[anchor=south,inner sep=0pt]{
+			\includegraphics{cover/logo}
+		};
+		\end{tikzpicture}
+		
+		%% Print the title in cyan.
+		{\makeatletter
+			\tudtitlefamily\color{tudelft-cyan}\fontsize{64}{94}\selectfont\@title
+			%\largetitlestyle\color{tudelft-cyan}\Huge\@title
+			\makeatother}
+		
+		%% Print the optional subtitle in black.
+		{\makeatletter
+			\ifx\@subtitle\undefined\else
+			\bigskip
+			{\tudsffamily\color{tudelft-cyan}\fontsize{22}{32}\selectfont\@subtitle}    
+			%\titlefont\titleshape\LARGE\@subtitle
+			\fi
+			\makeatother}
+		
+		\bigskip
+		\bigskip
+		
+		by
+		%door
+		
+		\bigskip
+		\bigskip
+		
+		%% Print the name of the author.
+		{\makeatletter
+			%\largetitlefont\Large\bfseries\@author
+			\tudtitlefamily\color{tudelft-black}\fontsize{26}{26}\selectfont\@author
+			\makeatother}
+		
+		\bigskip
+		\bigskip
+		\bigskip
+		
+		\begin{tabular}{llll}
+			\multicolumn{4}{l}{Student numbers:}\\
+			
+			Wouter Smit & 4401409 & Faris Elghlan & 4341538\\
+			Justin van der Krieken & 4357116 & Cas Bilstra & 4381084\\
+			Casper Athmer & 4329066 &\\
+			
+			\\
+			\multicolumn{2}{l}{Project duration:} & \multicolumn{2}{l}{April 18, 2016 -- June 23, 2016} \\
+			\multicolumn{2}{l}{Context coordinator:} & \multicolumn{2}{l}{Thomas Abeel} \\ 
+			\multicolumn{2}{l}{Customer representative:} & \multicolumn{2}{l}{Thomas Abeel} \\ 
+			\\
+			\multicolumn{2}{l}{Teaching Assistants:} & \multicolumn{2}{l}{Sjoerd Huisman}\\
+			\multicolumn{2}{l}{} & \multicolumn{2}{l}{Jasper Linthorst}\\
+			\\
+			\multicolumn{2}{l}{Software Teaching Assistant:} & \multicolumn{2}{l}{Jim Hommes}\\
+		\end{tabular}
+		
+		%% Only include the following lines if confidentiality is applicable.
+		\bigskip
+		\bigskip
+		\emph{}
+		%\emph{}
+		
+		\bigskip
+		\bigskip
+		
+	\end{center}
+	
+\end{titlepage}

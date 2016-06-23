@@ -1,0 +1,62 @@
+% oneside to ensure no unnecessary blank pages are inserted and margins are equal across both odd and even pages.
+\documentclass[oneside, whitelogo]{tudelft-report}
+
+\usepackage{wrapfig}
+\begin{document}
+	
+	%% Use Roman numerals for the page numbers of the title pages and table of
+	%% contents.
+	\frontmatter
+	
+	% Title and subtitle color can be configured by entering a colour as parameter for the subtitle command. 
+	\title{Pantzerfaust\\DNav}
+	\subtitle[tudelft-white]{Final Product Report}
+	\author[tudelft-white]{
+		W.\ Smit\\
+		J.\ van der Krieken\\
+		C.\ Athmer\\
+		F.\ Elghlan\\
+		C.\ Bilstra\\
+	}
+	\affiliation{Delft University of Technology} 
+	\coverimage{cover.jpg}
+	\titleoffsetx{1cm}
+	\titleoffsety{6.5cm}
+	\afiloffsetx{1cm} 
+	\afiloffsety{18cm} 
+	
+	\makecover
+	
+	%% Include an optional title page.
+	\input{title}
+	
+	\tableofcontents
+	
+	%% Chapters are separated into files. 
+	
+	%% Use Arabic numerals for the page numbers of the chapters.
+	\mainmatter
+	
+	\input{chapters/Introduction}
+	\input{chapters/OverviewOfThefinalProduct}
+	\input{chapters/ReflectionOnTheProductAndDevelopementProcess}
+	\input{chapters/DescriptionOfTheDevelopedFunctionalities}
+	\input{chapters/EvaluationOfTheFunctionalModules}
+	
+%	\input{chapters/ProgramOfRequirements}
+	
+	\bibliographystyle{apalike}
+	\bibliography{report}
+	
+	%% Use letters for the chapter numbers of the appendices.
+	\appendix
+	%\input{appendices/appendices}
+	%\addcontentsline{toc}{chapter}{Appendices}
+	
+	
+	
+	
+	% All references should be in the bibliography, even when not cited in text.
+	\nocite{*}
+	
+\end{document}
