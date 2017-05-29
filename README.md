@@ -31,7 +31,7 @@ This jar can be than executed by double-clicking.
 ### Organization, Team and Contact
 DNAv is developed for the Contextproject course at the Delft University of Technology with course code TI2806, as part of the curriculum of the Bachelor Computer Science. The project is led by [Dr. Thomas Abeel](http://www.abeel.be/), who can be contacted by e-mail at [T.Abeel@tudelft.nl](mailto:T.Abeel@tudelft.nl).
 
-Questions regarding the application can be directed to Wouter Smit at [w.j.smit-1@student.tudelft.nl](mailto:w.j.smit-1@student.tudelft.nl) or to Justin van der Krieken at [j.m.vanderkrieken@student.tudelft.nl](mailto:j.m.vanderkrieken@student.tudelft.nl).
+Questions regarding the application can be directed to [Wouter Smit](https://github.com/Pathemeous) at [w.j.smit-1@student.tudelft.nl](mailto:w.j.smit-1@student.tudelft.nl) or to Justin van der Krieken at [j.m.vanderkrieken@student.tudelft.nl](mailto:j.m.vanderkrieken@student.tudelft.nl).
 
 #### Team Members
 Name | Student number
